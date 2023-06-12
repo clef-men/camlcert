@@ -1,0 +1,42 @@
+-w -redundant-canonical-projection
+-w -uniform-inheritance
+-w -ambiguous-paths
+
+theories -> simuliris
+
+theories/prelude.v
+
+theories/common/tactics.v
+theories/common/typeclasses.v
+theories/common/relation.v
+
+theories/base_logic/lib/cupd/definition.v
+theories/base_logic/lib/cupd/rules.v
+theories/base_logic/lib/cupd/proofmode.v
+theories/base_logic/lib/sim/heap.v
+theories/base_logic/lib/sim/heap_bij.v
+
+theories/program_logic/language.v
+theories/program_logic/ectx_language.v
+theories/program_logic/ectxi_language.v
+theories/program_logic/refinement.v
+theories/program_logic/sim/protocol.v
+theories/program_logic/sim/definition.v
+theories/program_logic/sim/notations.v
+theories/program_logic/sim/rules.v
+theories/program_logic/sim/proofmode.v
+
+theories/language/loc.v
+theories/language/syntax.v
+theories/language/notations.v
+theories/language/semantics.v
+theories/language/language.v
+theories/language/ectx_decompositions.v
+theories/language/tactics.v
+theories/language/subexpr.v
+
+theories/tmc/sim/definition.v
+theories/tmc/sim/notations.v
+theories/tmc/sim/basic_rules.v
+theories/tmc/definition.v
+theories/tmc/examples/list_map.v

@@ -1,0 +1,25 @@
+name:
+  "coq-tmc"
+synopsis:
+  "Verification of the TMC program transformation"
+opam-version:
+  "2.0"
+maintainer:
+  "clement.allain@inria.fr"
+authors: [
+  "Clément Allain"
+  "François Pottier"
+]
+homepage:
+  "https://github.com/clef-men/tmc"
+bug-reports:
+  "https://github.com/clef-men/tmc/issues"
+depends: [
+  "coq" {>= "8.15.0"}
+  "coq-stdpp" {>= "1.8.0"}
+  "coq-iris" {>= "4.0.0"}
+  "coq-autosubst"
+]
+build: [
+  make "-j%{jobs}%"
+]
