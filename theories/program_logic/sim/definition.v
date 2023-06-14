@@ -77,7 +77,7 @@ Section sim_state.
       ∀ σₛ σₜ,
       sim_state_interp σₛ σₜ ==∗ (
         sim_state_interp σₛ σₜ ∗
-        Φ eₛ eₜ
+        (⌜strongly_stuck progₛ eₛ ∧ strongly_stuck progₜ eₜ⌝ ∨ Φ eₛ eₜ)
       ) ∨ (
         ∃ eₛ' σₛ',
         ⌜tc (step progₛ) (eₛ, σₛ) (eₛ', σₛ')⌝ ∗
@@ -129,11 +129,10 @@ Section sim_state.
     sim_aux.(seal_eq).
   #[global] Arguments sim _%I _ _ : assert.
 
-  Definition sim_post_val Φ eₛ eₜ : PROP :=
-      ⌜strongly_stuck progₛ eₛ ∧ strongly_stuck progₜ eₜ⌝
-    ∨ ∃ vₛ vₜ,
-      ⌜eₛ = of_val vₛ ∧ eₜ = of_val vₜ⌝ ∗
-      Φ vₛ vₜ.
+  Definition sim_post_val (Φ : val_O Λₛ -d> val_O Λₜ -d> PROP) eₛ eₜ : PROP :=
+    ∃ vₛ vₜ,
+    ⌜eₛ = of_val vₛ ∧ eₜ = of_val vₜ⌝ ∗
+    Φ vₛ vₜ.
   #[local] Definition simv_def Φ :=
     sim (sim_post_val Φ).
   #[local] Definition simv_aux :

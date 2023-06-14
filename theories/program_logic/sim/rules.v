@@ -143,12 +143,30 @@ Section sim_state.
         rewrite /sim_body. repeat (f_equiv || apply HN || apply HM || reflexivity).
       Qed.
 
+      Lemma sim_body_strongly_stuck N M eₛ eₜ Φ :
+        strongly_stuck progₛ eₛ →
+        strongly_stuck progₜ eₜ →
+        ⊢ sim_body N M Φ eₛ eₜ.
+      Proof.
+        iIntros "%Hstuckₛ %Hstuckₜ %σₛ %σₜ Hsi !>".
+        auto with iFrame.
+      Qed.
+      Lemma sim_body_strongly_head_stuck N M eₛ eₜ Φ :
+        strongly_head_stuck progₛ eₛ →
+        strongly_head_stuck progₜ eₜ →
+        ⊢ sim_body N M Φ eₛ eₜ.
+      Proof.
+        intros.
+        apply sim_body_strongly_stuck; apply strongly_head_stuck_strongly_stuck; done.
+      Qed.
+
       Lemma sim_body_post N M Φ :
         Φ --∗ sim_body N M Φ.
       Proof.
         iIntros "%eₛ %eₜ H %σₛ %σₜ Hsi".
         auto with iFrame.
       Qed.
+
       Lemma sim_body_soloₛ N M eₛ eₜ Φ :
         ( ∀ σₛ σₜ,
           sim_state_interp σₛ σₜ ==∗
@@ -162,6 +180,7 @@ Section sim_state.
         iIntros "H %σₛ %σₜ Hsi".
         iRight. iLeft. iApply ("H" with "Hsi").
       Qed.
+
       Lemma sim_body_soloₜ N M eₛ eₜ Φ :
         ( ∀ σₛ σₜ,
           sim_state_interp σₛ σₜ ==∗
@@ -179,6 +198,7 @@ Section sim_state.
         iIntros "!> %eₜ' %σₜ' %Hstepₜ".
         iLeft. iApply ("H" with "[//]").
       Qed.
+
       Lemma sim_body_sync N M eₛ eₜ Φ :
         ( ∀ σₛ σₜ,
           sim_state_interp σₛ σₜ ==∗
@@ -198,6 +218,7 @@ Section sim_state.
         iIntros "!> %eₜ' %σₜ' %Hstepₜ".
         iRight. iApply ("H" with "[//]").
       Qed.
+
       Lemma sim_body_call Kₛ eₛ' Kₜ eₜ' Φ' N M eₛ eₜ Φ :
         eₛ = Kₛ @@ eₛ' →
         eₜ = Kₜ @@ eₜ' →
@@ -243,9 +264,9 @@ Section sim_state.
         setoid_rewrite sim_cupd_eq.
         iIntros "HN HM HΦ HR %eₛ %eₜ Hsim %σₛ %σₜ Hsi".
         iMod ("Hsim" with "Hsi") as "[Hsim | [Hsim | [Hsim | Hsim]]]".
-        - iDestruct "Hsim" as "(Hsi & HΦ1)".
-          iLeft.
-          iApply ("HΦ" with "HR HΦ1 Hsi").
+        - iDestruct "Hsim" as "(Hsi & [(%Hstuckₛ & %Hstuckₜ) | HΦ1])"; iLeft.
+          + auto with iFrame.
+          + iMod ("HΦ" with "HR HΦ1 Hsi") as "(Hsi & HΦ2)". auto with iFrame.
         - iDestruct "Hsim" as "(%eₛ' & %σₛ' & %Hstepsₛ & Hsi & HM1)".
           iRight. iLeft. iExists eₛ', σₛ'. iSplitR; first done.
           iApply ("HM" with "HR HM1 Hsi").
@@ -517,12 +538,28 @@ Section sim_state.
         iApply (sim_body_mono with "[] [] Hsim"); first auto with iFrame. clear Φ eₛ eₜ. iIntros "%Φ %eₛ %eₜ (HI & _) //".
       Qed.
 
+      Lemma sim_inner_strongly_stuck N eₛ eₜ Φ :
+        NonExpansive N →
+        strongly_stuck progₛ eₛ →
+        strongly_stuck progₜ eₜ →
+        ⊢ sim_inner N Φ eₛ eₜ.
+      Proof.
+        intros HN. rewrite sim_inner_fixpoint. apply sim_body_strongly_stuck.
+      Qed.
+      Lemma sim_inner_strongly_head_stuck N eₛ eₜ Φ :
+        NonExpansive N →
+        strongly_head_stuck progₛ eₛ →
+        strongly_head_stuck progₜ eₜ →
+        ⊢ sim_inner N Φ eₛ eₜ.
+      Proof.
+        intros HN. rewrite sim_inner_fixpoint. apply sim_body_strongly_head_stuck.
+      Qed.
+
       Lemma sim_inner_post N Φ :
         NonExpansive N →
         Φ --∗ sim_inner N Φ.
       Proof.
-        intros HN. setoid_rewrite sim_inner_fixpoint; last done.
-        apply sim_body_post.
+        intros HN. setoid_rewrite sim_inner_fixpoint; last done. apply sim_body_post.
       Qed.
 
       Lemma cupd_sim_inner N Φ eₛ eₜ :
@@ -705,7 +742,10 @@ Section sim_state.
         iApply (sim_inner_ind I with "[]"). clear Φ1 eₛ eₜ. iIntros "!> %Φ1 %eₛ %eₜ Hsim1 HN Hsim2".
         rewrite sim_inner_fixpoint. iIntros "%σₛ %σₜ Hsi".
         iMod ("Hsim1" with "Hsi") as "[Hsim1 | [Hsim1 | [Hsim1 | Hsim1]]]".
-        - iDestruct "Hsim1" as "(Hsi & HΦ1)".
+        - iDestruct "Hsim1" as "(Hsi & [(%Hstuckₛ & %Hstuckₜ) | HΦ1])".
+          + iLeft. iFrame. iLeft.
+            iPureIntro. split; (apply language_ctx_strongly_stuck; [apply _ | done]).
+          +
           iRevert (σₛ σₜ) "Hsi". iApply sim_inner_fixpoint. iApply ("Hsim2" with "HΦ1").
         - iDestruct "Hsim1" as "(%eₛ' & %σₛ' & %Hstepsₛ & Hsi & HI)".
           iRight. iLeft. iExists (Kₛ @@ eₛ'), σₛ'. iFrame. iSplitR.
@@ -810,11 +850,25 @@ Section sim_state.
         iLeft. done.
       Qed.
 
+      Lemma sim_strongly_stuck eₛ eₜ Φ :
+        strongly_stuck progₛ eₛ →
+        strongly_stuck progₜ eₜ →
+        ⊢ sim Φ eₛ eₜ.
+      Proof.
+        rewrite sim_fixpoint. apply sim_inner_strongly_stuck. solve_proper.
+      Qed.
+      Lemma sim_strongly_head_stuck eₛ eₜ Φ :
+        strongly_head_stuck progₛ eₛ →
+        strongly_head_stuck progₜ eₜ →
+        ⊢ sim Φ eₛ eₜ.
+      Proof.
+        rewrite sim_fixpoint. apply sim_inner_strongly_head_stuck. solve_proper.
+      Qed.
+
       Lemma sim_post Φ :
         Φ --∗ sim Φ.
       Proof.
-        setoid_rewrite sim_fixpoint.
-        apply sim_inner_post. solve_proper.
+        setoid_rewrite sim_fixpoint. apply sim_inner_post. solve_proper.
       Qed.
 
       Lemma cupd_sim Φ eₛ eₜ :
@@ -864,6 +918,14 @@ Section sim_state.
         iIntros "HΦ".
         iApply sim_bupd_mono. iIntros "%eₛ %eₜ HΦ1".
         iApply ("HΦ" with "HΦ1").
+      Qed.
+      Lemma sim_mono' eₛ eₜ Φ1 Φ2 :
+        sim Φ1 eₛ eₜ -∗
+        (Φ1 --∗ Φ2) -∗
+        sim Φ2 eₛ eₜ.
+      Proof.
+        iIntros "Hsim HΦ".
+        iApply (sim_mono with "HΦ Hsim").
       Qed.
 
       Lemma sim_cupd Φ :
@@ -1283,8 +1345,7 @@ Section sim_state.
         strongly_stuck progₜ eₜ →
         ⊢ simv Φ eₛ eₜ.
       Proof.
-        rewrite definition.simv_unseal. intros.
-        iApply sim_post. iLeft. done.
+        rewrite definition.simv_unseal. apply sim_strongly_stuck.
       Qed.
       Lemma simv_strongly_head_stuck eₛ eₜ Φ :
         strongly_head_stuck progₛ eₛ →
@@ -1303,7 +1364,7 @@ Section sim_state.
       Proof.
         rewrite definition.simv_unseal.
         iIntros (-> ->) "HΦ".
-        iApply sim_post. iRight. auto.
+        iApply sim_post. iExists vₛ, vₜ. auto.
       Qed.
 
       Lemma cupd_simv Φ eₛ eₜ :
@@ -1324,9 +1385,8 @@ Section sim_state.
         simv Φ1 --∗ simv Φ2.
       Proof.
         rewrite definition.simv_unseal -sim_cupd_mono.
-        iIntros "HΦ %eₛ %eₜ [(%Hstuckₛ & %Hstuckₜ) | (%vₛ & %vₜ & (-> & ->) & HΦ1)]".
-        - iLeft. done.
-        - iRight. iExists vₛ, vₜ. iSplitR; first done. iApply ("HΦ" with "HΦ1").
+        iIntros "HΦ %eₛ %eₜ (%vₛ & %vₜ & (-> & ->) & HΦ1)".
+        iExists vₛ, vₜ. iSplitR; first done. iApply ("HΦ" with "HΦ1").
       Qed.
       Lemma simv_bupd_mono Φ1 Φ2 :
         (Φ1 ===∗ Φ2) -∗
@@ -1343,6 +1403,14 @@ Section sim_state.
         iIntros "HΦ".
         iApply simv_bupd_mono. iIntros "%eₛ %eₜ HΦ1".
         iApply ("HΦ" with "HΦ1").
+      Qed.
+      Lemma simv_mono' eₛ eₜ Φ1 Φ2 :
+        simv Φ1 eₛ eₜ -∗
+        (Φ1 --∗ Φ2) -∗
+        simv Φ2 eₛ eₜ.
+      Proof.
+        iIntros "Hsim HΦ".
+        iApply (simv_mono with "HΦ Hsim").
       Qed.
 
       Lemma simv_cupd Φ :
@@ -1379,9 +1447,7 @@ Section sim_state.
       Proof.
         rewrite definition.simv_unseal.
         iIntros "Hsim".
-        iApply sim_bind. iApply (sim_mono with "[] Hsim"). iIntros "%eₛ' %eₜ' [(%Hstuckₛ & %Hstuckₜ) | (%vₛ & %vₜ & (-> & ->) & HΦ)] //".
-        iApply sim_post. iLeft.
-        iPureIntro. split; (apply language_ctx_strongly_stuck; [apply _ | done]).
+        iApply sim_bind. iApply (sim_mono with "[] Hsim"). iIntros "%eₛ' %eₜ' (%vₛ & %vₜ & (-> & ->) & HΦ) //".
       Qed.
       Lemma simv_bindₛ K eₛ eₜ Φ :
         SIM progₛ; eₛ ≳ progₜ; eₜ [[ X ]] [[ λ vₛ vₜ,

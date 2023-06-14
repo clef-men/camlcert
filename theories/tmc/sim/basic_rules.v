@@ -337,34 +337,24 @@ Section sim_GS.
     iMod (sim_state_interp_updateₜ v with "Hsi Hl") as "(Hsi & Hl)".
     iFrame. iApply ("Hsim" with "Hl").
   Qed.
-  Lemma sim_store lₛ vₛ lₜ vₜ Φ :
-    lₛ ≈ lₜ -∗
-    vₛ ≈ vₜ -∗
-    Φ #() #() -∗
-    SIM progₛ; lₛ <- vₛ ≳ progₜ; lₜ <- vₜ [[ X ]] {{ Φ }}.
-  Proof.
-    iIntros "Hl Hv HΦ".
-    iApply sim_head_step. iIntros "%σₛ %σₜ Hsi !>".
-    iDestruct (sim_state_interp_heap_bij_valid with "Hsi Hl") as "#(%wₛ2 & %wₜ2 & (% & %) & Hw)".
-    iSplit; first auto with language. iIntros "%eₜ' %σₜ' %Hstepₜ".
-    invert_head_step.
-    iMod (sim_state_interp_heap_bij_update with "Hsi Hl Hv").
-    iExists #(), _. iFrame. iSplitR; first auto with language.
-    iApply sim_post; done.
-  Qed.
-  Lemma simv_store vₛ1 vₛ2 vₜ1 vₜ2 Φ :
+  Lemma sim_store vₛ1 vₛ2 vₜ1 vₜ2 Φ :
     vₛ1 ≈ vₜ1 -∗
     vₛ2 ≈ vₜ2 -∗
-    Φ ()%V ()%V -∗
-    SIM progₛ; vₛ1 <- vₛ2 ≳ progₜ; vₜ1 <- vₜ2 [[ X ]] [[ Φ ]].
+    Φ #() #() -∗
+    SIM progₛ; vₛ1 <- vₛ2 ≳ progₜ; vₜ1 <- vₜ2 [[ X ]] {{ Φ }}.
   Proof.
     iIntros "Hv1 Hv2 HΦ".
     destruct vₛ1, vₜ1;
       try solve
       [ iDestruct "Hv1" as %[]
-      | iApply simv_strongly_stuck;
-        apply @is_strongly_stuck; auto with typeclass_instances
+      | iApply sim_strongly_head_stuck; apply is_strongly_head_stuck
       ].
-    rewrite definition.simv_unseal. iApply (sim_store with "Hv1 Hv2"). iRight. auto.
+    iApply sim_head_step. iIntros "%σₛ %σₜ Hsi !>".
+    iDestruct (sim_state_interp_heap_bij_valid with "Hsi Hv1") as "#(%wₛ2 & %wₜ2 & (% & %) & Hw)".
+    iSplit; first auto with language. iIntros "%eₜ' %σₜ' %Hstepₜ".
+    invert_head_step.
+    iMod (sim_state_interp_heap_bij_update with "Hsi Hv1 Hv2").
+    iExists #(), _. iFrame. iSplitR; first auto with language.
+    iApply sim_post; done.
   Qed.
 End sim_GS.

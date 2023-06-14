@@ -4,6 +4,12 @@ From Coq Require Export
 From simuliris Require Import
   prelude.
 
+Ltac goal_is_false :=
+  lazymatch goal with
+  | |- False => idtac
+  | _ => fail
+  end.
+
 Tactic Notation "protect" ident(x) :=
   rewrite -> (lock x) in *.
 Tactic Notation "protect" ident(x1) ident(x2) :=

@@ -25,11 +25,8 @@ Inductive val :=
   | Loc (l : loc)
   | Func (func : function).
 
-#[global] Instance val_eq_dec :
-  EqDecision val.
-Proof.
-  solve_decision.
-Qed.
+#[global] Instance val_eq_dec : EqDecision val :=
+  ltac:(solve_decision).
 #[global] Instance val_countable :
   Countable val.
 Proof.
@@ -92,11 +89,8 @@ Definition val_well_formed (funcs : gset function) v :=
 Inductive unop :=
   | OpNeg | OpUminus.
 
-#[global] Instance unop_eq_dec :
-  EqDecision unop.
-Proof.
-  solve_decision.
-Qed.
+#[global] Instance unop_eq_dec : EqDecision unop :=
+  ltac:(solve_decision).
 #[global] Instance unop_countable :
   Countable unop.
 Proof.
@@ -118,11 +112,8 @@ Inductive binop :=
   | OpLe | OpLt | OpEq
   | OpOffset.
 
-#[global] Instance binop_eq_dec :
-  EqDecision binop.
-Proof.
-  solve_decision.
-Qed.
+#[global] Instance binop_eq_dec : EqDecision binop :=
+  ltac:(solve_decision).
 #[global] Instance binop_countable :
   Countable binop.
 Proof.
@@ -166,11 +157,8 @@ Inductive expr :=
   | Load (e : expr)
   | Store (e1 e2 : expr).
 
-#[global] Instance expr_eq_dec :
-  EqDecision expr.
-Proof.
-  solve_decision.
-Qed.
+#[global] Instance expr_eq_dec : EqDecision expr :=
+  ltac:(solve_decision).
 #[global] Instance expr_countable :
   Countable expr.
 Proof.

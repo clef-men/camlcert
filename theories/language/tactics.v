@@ -87,6 +87,24 @@ Tactic Notation "invert_head_step" :=
 Proof.
   solve_strongly_head_stuck.
 Qed.
+#[global] Instance strongly_head_stuck_unop prog op v :
+  unop_eval op v = None →
+  IsStronglyHeadStuck prog (Unop op (Val v)).
+Proof.
+  solve_strongly_head_stuck.
+Qed.
+#[global] Instance strongly_head_stuck_binop prog op v1 v2 :
+  binop_eval op v1 v2 = None →
+  IsStronglyHeadStuck prog (Binop op (Val v1) (Val v2)).
+Proof.
+  solve_strongly_head_stuck.
+Qed.
+#[global] Instance strongly_head_stuck_if prog v0 e1 e2 :
+  (if v0 is Bool _ then False else True) →
+  IsStronglyHeadStuck prog (If (Val v0) e1 e2).
+Proof.
+  solve_strongly_head_stuck.
+Qed.
 #[global] Instance strongly_head_stuck_load prog v :
   (if v is Loc _ then False else True) →
   IsStronglyHeadStuck prog (Load (Val v)).
@@ -99,6 +117,12 @@ Qed.
 Proof.
   solve_strongly_head_stuck.
 Qed.
+#[global] Hint Extern 0 True => exact I
+: typeclass_instances.
+#[global] Hint Extern 0 (unop_eval _ _ = _) => reflexivity
+: typeclass_instances.
+#[global] Hint Extern 0 (binop_eval _ _ _ = _) => reflexivity
+: typeclass_instances.
 
 #[local] Ltac solve_pure_exec :=
   apply pure_head_exec_pure_exec;

@@ -38,5 +38,6 @@ theories/language/subexpr.v
 theories/tmc/sim/definition.v
 theories/tmc/sim/notations.v
 theories/tmc/sim/basic_rules.v
+theories/tmc/sim/proofmode.v
 theories/tmc/definition.v
 theories/tmc/examples/list_map.v
