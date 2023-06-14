@@ -3,6 +3,14 @@ From simuliris Require Import
 From simuliris.language Require Export
   syntax.
 
+Coercion index_to_Z idx : Z :=
+  match idx with
+  | Zero => 0
+  | One => 1
+  | Two => 2
+  end.
+
+Coercion Index : index >-> val.
 Coercion Int : Z >-> val.
 Coercion Bool : bool >-> val.
 Coercion Loc : loc >-> val.
@@ -10,6 +18,10 @@ Coercion Func : function >-> val.
 
 Coercion Val : val >-> expr.
 Coercion Call : expr >-> Funclass.
+
+Notation "𝟘" := Zero.
+Notation "𝟙" := One.
+Notation "𝟚" := Two.
 
 Declare Scope val_scope.
 Delimit Scope val_scope with V.
@@ -68,8 +80,6 @@ Notation "e1 = e2" := (Binop OpEq e1%E e2%E)
 : expr_scope.
 Notation "e1 ≠ e2" := (~ (e1 = e2))%E
 : expr_scope.
-Notation "e1 +ₗ e2" := (Binop OpOffset e1%E e2%E)
-: expr_scope.
 
 Notation "'if:' e0 'then' e1 'else' e2" := (If e0%E e1%E e2%E)
 ( at level 200,
@@ -91,38 +101,32 @@ Notation "&& constr" := (ConstrDet constr)
   format "&& constr"
 ) : expr_scope.
 
-Notation "! e" := (Load e%E)
+Notation "![ e2 ] e1" := (Load e1%E e2%E)
 ( at level 9,
-  right associativity
+  right associativity,
+  format "![ e2 ]  e1"
+) : expr_scope.
+Notation "! e" := (Load e%E 𝟘)
+( at level 9,
+  right associativity,
+  format "! e"
 ) : expr_scope.
 
-Notation "e1 <- e2" := (Store e1%E e2%E)
-( at level 20
-) : expr_scope.
-
-Notation "e .(1)" := (e +ₗ #1)%E
-( at level 6,
-  left associativity,
-  format "e .(1)"
-) : expr_scope.
-Notation "e .(2)" := (e +ₗ #2)%E
-( at level 6,
-  left associativity,
-  format "e .(2)"
+Notation "e1 <-[ e2 ]- e3" := (Store e1%E e2%E e3%E)
+( at level 20,
+  format "e1  <-[ e2 ]-  e3"
 ) : expr_scope.
 
 Definition CONSTR_PAIR := 0.
 Notation "( e1 , e2 , .. , en )" := (&CONSTR_PAIR .. (&CONSTR_PAIR e1 e2) .. en)%E
 : expr_scope.
-Notation FST e := (!e.(1))%E (only parsing).
-Notation SND e := (!e.(2))%E (only parsing).
 
 Definition CONSTR_NIL := 0.
 Definition CONSTR_CONS := 1.
 Notation NIL := (&CONSTR_NIL #() #())%E (only parsing).
 Notation CONS := (&CONSTR_CONS)%E (only parsing).
-Notation HEAD e := e.(1)%E (only parsing).
-Notation TAIL e := e.(2)%E (only parsing).
+Notation HEAD e := (![𝟙] e)%E (only parsing).
+Notation TAIL e := (![𝟚] e)%E (only parsing).
 Notation "'match:' e0 'with' 'NIL' => e1 | 'CONS' => e2 'end'" := (
   let: e0 in
   if: !$0 = #(Z.of_nat CONSTR_NIL) then (

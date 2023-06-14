@@ -7,11 +7,11 @@ From simuliris.tmc Require Import
 
 Definition list_mapₛ : program := {[
   "list_map" := (
-    match: SND $0 with
+    match: ![𝟚] $0 with
       NIL =>
         NIL
     | CONS =>
-        let: FST $2 in
+        let: ![𝟙] $2 in
         let: $0 $1 in
         CONS $0 ("list_map" ($1, $3))
     end
@@ -20,29 +20,31 @@ Definition list_mapₛ : program := {[
 
 Definition list_mapₜ : program := {[
   "list_map" := (
-    match: SND $0 with
+    match: ![𝟚] $0 with
       NIL =>
         NIL
     | CONS =>
-        let: FST $2 in
+        let: ![𝟙] $2 in
         let: $0 $1 in
         let: CONS $0 #() in
-        "list_map_dps" ($0.(2), ($2, $4)) ;;
+        "list_map_dps" (($0, 𝟚), ($2, $4)) ;;
         $0
     end
   )%E ;
   "list_map_dps" := (
-    let: FST $0 in
-    let: SND $1 in
-    match: SND $0 with
+    let: ![𝟙] $0 in
+    let: ![𝟚] $0 in
+    let: ![𝟙] $1 in
+    let: ![𝟚] $3 in
+    match: ![𝟚] $0 with
       NIL =>
-        $1 <- NIL
+        $1 <-[$2]- NIL
     | CONS =>
-        let: FST $2 in
+        let: ![𝟙] $2 in
         let: $0 $1 in
         let: CONS $0 #() in
-        $8 <- $0 ;;
-        "list_map_dps" ($0.(2), ($2, $4))
+        $8 <-[$9]- $0 ;;
+        "list_map_dps" (($0, 𝟚), ($2, $4))
     end
   )%E
 ]}.

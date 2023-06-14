@@ -17,6 +17,7 @@ Section sim_GS.
   Context `{sim_GS : !SimGS Σ}.
   Implicit Types constr : constructor.
   Implicit Types l lₜ lₛ : loc.
+  Implicit Types idx idxₜ idxₛ : index.
   Implicit Types v vₜ vₛ : val.
   Implicit Types e eₜ eₛ : expr.
   Implicit Types K Kₜ Kₛ : ectx.
@@ -50,7 +51,7 @@ Section sim_GS.
         envs_app false (Esnoc (Esnoc (Esnoc Enil
           id2 ((l +ₗ 2) ↦ₛ v2))
           id1 ((l +ₗ 1) ↦ₛ v1))
-          id0 (l ↦ₛ constr)
+          id0 ((l +ₗ 0) ↦ₛ constr)
         ) Δ
       with
       | None =>
@@ -67,7 +68,7 @@ Section sim_GS.
     apply bi.forall_intro => l. specialize (Hsim l).
     destruct (envs_app _ _ _) as [Δ' |] eqn:HΔ'; last done.
     rewrite envs_app_sound // /= right_id Hsim.
-    iIntros "H Hl Hl1 Hl2". iApply ("H" with "[$Hl $Hl1 $Hl2]").
+    iIntros "H Hl0 Hl1 Hl2". iApply ("H" with "[$Hl0 $Hl1 $Hl2]").
   Qed.
   Lemma tac_simv_constr_detₜ id0 id1 id2 e K constr v1 v2 Φ Δ :
     ( ∀ l,
@@ -75,7 +76,7 @@ Section sim_GS.
         envs_app false (Esnoc (Esnoc (Esnoc Enil
           id2 ((l +ₗ 2) ↦ₜ v2))
           id1 ((l +ₗ 1) ↦ₜ v1))
-          id0 (l ↦ₜ constr)
+          id0 ((l +ₗ 0) ↦ₜ constr)
         ) Δ
       with
       | None =>
@@ -92,19 +93,13 @@ Section sim_GS.
     apply bi.forall_intro => l. specialize (Hsim l).
     destruct (envs_app _ _ _) as [Δ' |] eqn:HΔ'; last done.
     rewrite envs_app_sound // /= right_id Hsim sim_bind_invₜ.
-    iIntros "H Hl Hl1 Hl2". iApply ("H" with "[$Hl $Hl1 $Hl2]").
+    iIntros "H Hl0 Hl1 Hl2". iApply ("H" with "[$Hl0 $Hl1 $Hl2]").
   Qed.
-  Lemma tac_simv_constr_det id0 id1 id2 constr Kₛ vₛ1 vₛ2 Kₜ vₜ1 vₜ2 Φ Δ :
+  Lemma tac_simv_constr_det id constr Kₛ vₛ1 vₛ2 Kₜ vₜ1 vₜ2 Φ Δ :
     envs_entails Δ (vₛ1 ≈ vₜ1) →
     envs_entails Δ (vₛ2 ≈ vₜ2) →
     ( ∀ lₛ lₜ,
-      match
-        envs_app true (Esnoc (Esnoc (Esnoc Enil
-          id2 ((lₛ +ₗ 2) ≈ (lₜ +ₗ 2)))
-          id1 ((lₛ +ₗ 1) ≈ (lₜ +ₗ 1)))
-          id0 (lₛ ≈ lₜ)
-        ) Δ
-      with
+      match envs_app true (Esnoc Enil id (Loc lₛ ≈ Loc lₜ)) Δ with
       | None =>
           False
       | Some Δ' =>
@@ -119,7 +114,7 @@ Section sim_GS.
     iDestruct (Hv1 with "HΔ") as "#Hv1".
     iDestruct (Hv2 with "HΔ") as "#Hv2".
     iApply sim_bind.
-    iApply (sim_constr_det with "Hv1 Hv2"). iIntros "%lₛ %lₜ #Hl #Hl1 #Hl2 !>".
+    iApply (sim_constr_det with "Hv1 Hv2"). iIntros "%lₛ %lₜ #Hl !>".
     specialize (Hsim lₛ lₜ). destruct (envs_app _ _ _) as [Δ' |] eqn:HΔ'; last done.
     iApply Hsim.
     iApply (envs_app_sound with "HΔ"); first done. simpl. auto with iFrame.
@@ -150,10 +145,10 @@ Section sim_GS.
     apply bi.and_intro; done.
   Qed.
 
-  Lemma tac_simv_loadₛ id p K l v e Φ Δ :
-    envs_lookup id Δ = Some (p, l ↦ₛ v)%I →
+  Lemma tac_simv_loadₛ id p K l idx v e Φ Δ :
+    envs_lookup id Δ = Some (p, (l +ₗ idx) ↦ₛ v)%I →
     envs_entails Δ (SIM progₛ; K @@ #v ≳ progₜ; e [[ X ]] [[ Φ ]]) →
-    envs_entails Δ (SIM progₛ; K @@ !l ≳ progₜ; e [[ X ]] [[ Φ ]]).
+    envs_entails Δ (SIM progₛ; K @@ ![idx] l ≳ progₜ; e [[ X ]] [[ Φ ]]).
   Proof.
     rewrite definition.simv_unseal /definition.simv_def.
     rewrite envs_entails_unseal => Hlookup Hsim.
@@ -164,10 +159,10 @@ Section sim_GS.
       iApply sim_bind_invₛ;
       iApply ("Hsim" with "[$]").
   Qed.
-  Lemma tac_simv_loadₜ id p e K l v Φ Δ :
-    envs_lookup id Δ = Some (p, l ↦ₜ v)%I →
+  Lemma tac_simv_loadₜ id p e K l idx v Φ Δ :
+    envs_lookup id Δ = Some (p, (l +ₗ idx) ↦ₜ v)%I →
     envs_entails Δ (SIM progₛ; e ≳ progₜ; K @@ #v [[ X ]] [[ Φ ]]) →
-    envs_entails Δ (SIM progₛ; e ≳ progₜ; K @@ !l [[ X ]] [[ Φ ]]).
+    envs_entails Δ (SIM progₛ; e ≳ progₜ; K @@ ![idx] l [[ X ]] [[ Φ ]]).
   Proof.
     rewrite definition.simv_unseal /definition.simv_def.
     rewrite envs_entails_unseal => Hlookup Hsim.
@@ -178,8 +173,9 @@ Section sim_GS.
       iApply sim_bind_invₜ;
       iApply ("Hsim" with "[$]").
   Qed.
-  Lemma tac_simv_load id Kₛ lₛ Kₜ lₜ Φ Δ :
-    envs_entails Δ (lₛ ≈ lₜ) →
+  Lemma tac_simv_load id Kₛ lₛ idxₛ Kₜ lₜ idxₜ Φ Δ :
+    envs_entails Δ (Loc lₛ ≈ Loc lₜ) →
+    envs_entails Δ (Index idxₛ ≈ Index idxₜ) →
     ( ∀ vₛ vₜ,
       match envs_app true (Esnoc Enil id (vₛ ≈ vₜ)) Δ with
       | None =>
@@ -188,27 +184,29 @@ Section sim_GS.
           envs_entails Δ' (SIM progₛ; Kₛ @@ #vₛ ≳ progₜ; Kₜ @@ #vₜ [[ X ]] [[ Φ ]])
       end
     ) →
-    envs_entails Δ (SIM progₛ; Kₛ @@ !lₛ ≳ progₜ; Kₜ @@ !lₜ [[ X ]] [[ Φ ]]).
+    envs_entails Δ (SIM progₛ; Kₛ @@ ![idxₛ] lₛ ≳ progₜ; Kₜ @@ ![idxₜ] lₜ [[ X ]] [[ Φ ]]).
   Proof.
     rewrite definition.simv_unseal /definition.simv_def.
-    rewrite envs_entails_unseal => Hl Hsim.
+    rewrite envs_entails_unseal => Hl Hidx Hsim.
     iIntros "HΔ".
+    iDestruct (Hl with "HΔ") as "#Hl".
+    iDestruct (Hidx with "HΔ") as "#Hidx".
     iApply sim_bind.
-    iApply (sim_load with "[#]"); first iApply (Hl with "HΔ"). iIntros "%vₛ %vₜ #Hv".
+    iApply (sim_load with "Hl Hidx"). iIntros "%vₛ %vₜ #Hv".
     specialize (Hsim vₛ vₜ). destruct (envs_app _ _ _) as [Δ' |] eqn:HΔ'; last done.
     iApply sim_bind_inv. iApply Hsim.
     iApply (envs_app_singleton_sound with "[HΔ] [Hv]"); naive_solver.
   Qed.
 
-  Lemma tac_simv_storeₛ id p K l v w e Φ Δ :
-    envs_lookup id Δ = Some (p, l ↦ₛ w)%I →
-    match envs_replace id p false (Esnoc Enil id (l ↦ₛ v)) Δ with
+  Lemma tac_simv_storeₛ id p K l idx v w e Φ Δ :
+    envs_lookup id Δ = Some (p, (l +ₗ idx) ↦ₛ w)%I →
+    match envs_replace id p false (Esnoc Enil id ((l +ₗ idx) ↦ₛ v)) Δ with
     | None =>
         False
     | Some Δ' =>
         envs_entails Δ' (SIM progₛ; K @@ #() ≳ progₜ; e [[ X ]] [[ Φ ]])
     end →
-    envs_entails Δ (SIM progₛ; K @@ #l <- v ≳ progₜ; e [[ X ]] [[ Φ ]]).
+    envs_entails Δ (SIM progₛ; K @@ #l <-[idx]- v ≳ progₜ; e [[ X ]] [[ Φ ]]).
   Proof.
     rewrite definition.simv_unseal /definition.simv_def.
     rewrite envs_entails_unseal => Hlookup Hsim.
@@ -217,15 +215,15 @@ Section sim_GS.
     rewrite bi.intuitionistically_if_elim /=.
     rewrite sim_bind_invₛ -sim_bindₛ. apply bi.wand_elim_l', sim_storeₛ.
   Qed.
-  Lemma tac_simv_storeₜ id p e K l v w Φ Δ :
-    envs_lookup id Δ = Some (p, l ↦ₜ w)%I →
-    match envs_replace id p false (Esnoc Enil id (l ↦ₜ v)) Δ with
+  Lemma tac_simv_storeₜ id p e K l idx v w Φ Δ :
+    envs_lookup id Δ = Some (p, (l +ₗ idx) ↦ₜ w)%I →
+    match envs_replace id p false (Esnoc Enil id ((l +ₗ idx) ↦ₜ v)) Δ with
     | None =>
         False
     | Some Δ' =>
         envs_entails Δ' (SIM progₛ; e ≳ progₜ; K @@ #() [[ X ]] [[ Φ ]])
     end →
-    envs_entails Δ (SIM progₛ; e ≳ progₜ; K @@ #l <- v [[ X ]] [[ Φ ]]).
+    envs_entails Δ (SIM progₛ; e ≳ progₜ; K @@ #l <-[idx]- v [[ X ]] [[ Φ ]]).
   Proof.
     rewrite definition.simv_unseal /definition.simv_def.
     rewrite envs_entails_unseal => Hlookup Hsim.
@@ -234,18 +232,20 @@ Section sim_GS.
     rewrite bi.intuitionistically_if_elim /=.
     rewrite sim_bind_invₜ -sim_bindₜ. apply bi.wand_elim_l', sim_storeₜ.
   Qed.
-  Lemma tac_simv_store Kₛ vₛ1 vₛ2 Kₜ vₜ1 vₜ2 Φ Δ :
+  Lemma tac_simv_store Kₛ vₛ1 vₛ2 vₛ3 Kₜ vₜ1 vₜ2 vₜ3 Φ Δ :
     envs_entails Δ (vₛ1 ≈ vₜ1) →
     envs_entails Δ (vₛ2 ≈ vₜ2) →
+    envs_entails Δ (vₛ3 ≈ vₜ3) →
     envs_entails Δ (SIM progₛ; Kₛ @@ #() ≳ progₜ; Kₜ @@ #() [[ X ]] [[ Φ ]]) →
-    envs_entails Δ (SIM progₛ; Kₛ @@ vₛ1 <- vₛ2 ≳ progₜ; Kₜ @@ vₜ1 <- vₜ2 [[ X ]] [[ Φ ]]).
+    envs_entails Δ (SIM progₛ; Kₛ @@ vₛ1 <-[vₛ2]- vₛ3 ≳ progₜ; Kₜ @@ vₜ1 <-[vₜ2]- vₜ3 [[ X ]] [[ Φ ]]).
   Proof.
     rewrite definition.simv_unseal /definition.simv_def.
-    rewrite envs_entails_unseal => Hv1 Hv2 Hsim.
+    rewrite envs_entails_unseal => Hv1 Hv2 Hv3 Hsim.
     iIntros "HΔ".
     iDestruct (Hv1 with "HΔ") as "#Hv1".
     iDestruct (Hv2 with "HΔ") as "#Hv2".
-    iApply sim_bind. iApply (sim_store with "Hv1 Hv2"). iApply (Hsim with "HΔ").
+    iDestruct (Hv3 with "HΔ") as "#Hv3".
+    iApply sim_bind. iApply (sim_store with "Hv1 Hv2 Hv3"). iApply (Hsim with "HΔ").
   Qed.
 End sim_GS.
 
@@ -268,12 +268,16 @@ Ltac expr_decompose e tac :=
         go (EctxiBinop1 op e1) e2
     | If ?e0 ?e1 ?e2 =>
         go (EctxiIf e1 e2) e0
-    | Load ?e =>
-        go EctxiLoad e
-    | Store ?e1 (Val ?v2) =>
-        go (EctxiStore2 v2) e1
-    | Store ?e1 ?e2 =>
-        go (EctxiStore1 e1) e2
+    | Load ?e1 (Val ?v2) =>
+        go (EctxiLoad2 v2) e1
+    | Load ?e1 ?e2 =>
+        go (EctxiLoad1 e1) e2
+    | Store ?e1 (Val ?v2) (Val ?v3) =>
+        go (EctxiStore3 v2 v3) e1
+    | Store ?e1 ?e2 (Val ?v3) =>
+        go (EctxiStore2 e1 v3) e2
+    | Store ?e1 ?e2 ?e3 =>
+        go (EctxiStore1 e1 e2) e3
     | _ =>
         tac K e
     end
@@ -428,12 +432,12 @@ Tactic Notation "simv_heap_bij_insert" :=
   let Hsimilar := iFresh in
   simv_heap_bij_insert as Hsimilar.
 
-Tactic Notation "simv_constr_detₛ" "as" simple_intropattern(l) constr(Hl) constr(Hl1) constr(Hl2) :=
+Tactic Notation "simv_constr_detₛ" "as" simple_intropattern(l) constr(Hl0) constr(Hl1) constr(Hl2) :=
   simv_pures;
   let e_foc := open_constr:(ConstrDet _ (Val _) (Val _)) in
   simv_focalizeₛ e_foc
     ltac:(fun K =>
-      eapply (tac_simv_constr_detₛ _ _ _ Hl Hl1 Hl2 K)
+      eapply (tac_simv_constr_detₛ _ _ _ Hl0 Hl1 Hl2 K)
     )
     ltac:(fun e =>
       fail "simv_constr_detₛ: cannot find" e_foc "in source" e
@@ -443,24 +447,24 @@ Tactic Notation "simv_constr_detₛ" "as" simple_intropattern(l) constr(Hl) cons
   );
   pm_reduce;
   tryif goal_is_false then (
-    fail "simv_constr_detₛ:" Hl "or" Hl1 "or" Hl2 "not fresh"
+    fail "simv_constr_detₛ:" Hl0 "or" Hl1 "or" Hl2 "not fresh"
   ) else (
     simv_finish
   ).
 Tactic Notation "simv_constr_detₛ" "as" simple_intropattern(l) :=
-  let Hl := iFresh in
+  let Hl0 := iFresh in
   let Hl1 := iFresh in
   let Hl2 := iFresh in
-  simv_constr_detₛ as l Hl Hl1 Hl2.
+  simv_constr_detₛ as l Hl0 Hl1 Hl2.
 Tactic Notation "simv_constr_detₛ" :=
   let l := fresh "lₛ" in
   simv_constr_detₛ as l.
-Tactic Notation "simv_constr_detₜ" "as" simple_intropattern(l) constr(Hl) constr(Hl1) constr(Hl2) :=
+Tactic Notation "simv_constr_detₜ" "as" simple_intropattern(l) constr(Hl0) constr(Hl1) constr(Hl2) :=
   simv_pures;
   let e_foc := open_constr:(ConstrDet _ (Val _) (Val _)) in
   simv_focalizeₜ e_foc
     ltac:(fun K =>
-      eapply (tac_simv_constr_detₜ _ _ _ Hl Hl1 Hl2 _ K)
+      eapply (tac_simv_constr_detₜ _ _ _ Hl0 Hl1 Hl2 _ K)
     )
     ltac:(fun e =>
       fail "simv_constr_detₜ: cannot find" e_foc "in target" e
@@ -470,25 +474,25 @@ Tactic Notation "simv_constr_detₜ" "as" simple_intropattern(l) constr(Hl) cons
   );
   pm_reduce;
   tryif goal_is_false then (
-    fail "simv_constr_detₜ:" Hl "or" Hl1 "or" Hl2 "not fresh"
+    fail "simv_constr_detₜ:" Hl0 "or" Hl1 "or" Hl2 "not fresh"
   ) else (
     simv_finish
   ).
 Tactic Notation "simv_constr_detₜ" "as" simple_intropattern(l) :=
-  let Hl := iFresh in
+  let Hl0 := iFresh in
   let Hl1 := iFresh in
   let Hl2 := iFresh in
-  simv_constr_detₜ as l Hl Hl1 Hl2.
+  simv_constr_detₜ as l Hl0 Hl1 Hl2.
 Tactic Notation "simv_constr_detₜ" :=
   let l := fresh "lₜ" in
   simv_constr_detₜ as l.
-Tactic Notation "simv_constr_det" "as" simple_intropattern(lₛ) simple_intropattern(lₜ) constr(Hl) constr(Hl1) constr(Hl2) :=
+Tactic Notation "simv_constr_det" "as" simple_intropattern(lₛ) simple_intropattern(lₜ) constr(Hl) :=
   simv_pures;
   let e_focₛ := open_constr:(ConstrDet _ (Val _) (Val _)) in
   let e_focₜ := open_constr:(ConstrDet _ (Val _) (Val _)) in
   simv_focalize e_focₛ e_focₜ
     ltac:(fun Kₛ Kₜ =>
-      eapply (tac_simv_constr_det _ _ _ Hl Hl1 Hl2 _ Kₛ _ _ Kₜ)
+      eapply (tac_simv_constr_det _ _ _ Hl _ Kₛ _ _ Kₜ)
     )
     ltac:(fun eₛ eₜ =>
       fail "simv_constr_det: cannot find" e_focₛ "in source" eₛ "or" e_focₜ "in target" eₜ
@@ -499,7 +503,7 @@ Tactic Notation "simv_constr_det" "as" simple_intropattern(lₛ) simple_intropat
       tryif intros lₜ then (
         pm_reduce;
         tryif goal_is_false then (
-          fail "simv_constr_det:" Hl "or" Hl1 "or" Hl2 "not fresh"
+          fail "simv_constr_det:" Hl "not fresh"
         ) else (
           simv_finish
         )
@@ -512,9 +516,7 @@ Tactic Notation "simv_constr_det" "as" simple_intropattern(lₛ) simple_intropat
   ].
 Tactic Notation "simv_constr_det" "as" simple_intropattern(lₛ) simple_intropattern(lₜ) :=
   let Hl := iFresh in
-  let Hl1 := iFresh in
-  let Hl2 := iFresh in
-  simv_constr_det as lₜ lₛ Hl Hl1 Hl2.
+  simv_constr_det as lₜ lₛ Hl.
 Tactic Notation "simv_constr_det" :=
   simv_constr_det as ? ?.
 
@@ -554,7 +556,7 @@ Ltac simv_constrₜ :=
 
 Tactic Notation "simv_loadₛ" :=
   simv_pures;
-  let e_foc := open_constr:(Load (Val (Loc _))) in
+  let e_foc := open_constr:(Load (Val (Loc _)) (Val (Index _))) in
   simv_focalizeₛ e_foc
     ltac:(fun K =>
       eapply (tac_simv_loadₛ _ _ _ _ _ K)
@@ -569,7 +571,7 @@ Tactic Notation "simv_loadₛ" :=
   ].
 Tactic Notation "simv_loadₜ" :=
   simv_pures;
-  let e_foc := open_constr:(Load (Val (Loc _))) in
+  let e_foc := open_constr:(Load (Val (Loc _)) (Val (Index _))) in
   simv_focalizeₜ e_foc
     ltac:(fun K =>
       eapply (tac_simv_loadₜ _ _ _ _ _ _ K)
@@ -584,16 +586,17 @@ Tactic Notation "simv_loadₜ" :=
   ].
 Tactic Notation "simv_load" "as" simple_intropattern(vₛ) simple_intropattern(vₜ) constr(Hv) :=
   simv_pures;
-  let e_focₛ := open_constr:(Load (Val (Loc _))) in
-  let e_focₜ := open_constr:(Load (Val (Loc _))) in
+  let e_focₛ := open_constr:(Load (Val (Loc _)) (Val (Index _))) in
+  let e_focₜ := open_constr:(Load (Val (Loc _)) (Val (Index _))) in
   simv_focalize e_focₛ e_focₜ
     ltac:(fun Kₛ Kₜ =>
-      eapply (tac_simv_load _ _ _ Hv Kₛ _ Kₜ)
+      eapply (tac_simv_load _ _ _ Hv Kₛ _ _ Kₜ)
     )
     ltac:(fun eₛ eₜ =>
       fail "simv_load: cannot find" e_focₛ "in source" eₛ "or" e_focₜ "in target" eₜ
     );
   [ try done
+  | try done
   | tryif intros vₛ then (
       tryif intros vₜ then (
         pm_reduce;
@@ -617,7 +620,7 @@ Tactic Notation "simv_load" :=
 
 Ltac simv_storeₛ :=
   simv_pures;
-  let e_foc := open_constr:(Store (Val (Loc _)) (Val _)) in
+  let e_foc := open_constr:(Store (Val (Loc _)) (Val (Index _)) (Val _)) in
   simv_focalizeₛ e_foc
     ltac:(fun K =>
       eapply (tac_simv_storeₛ _ _ _ _ _ K)
@@ -632,7 +635,7 @@ Ltac simv_storeₛ :=
   ].
 Ltac simv_storeₜ :=
   simv_pures;
-  let e_foc := open_constr:(Store (Val (Loc _)) (Val _)) in
+  let e_foc := open_constr:(Store (Val (Loc _)) (Val (Index _)) (Val _)) in
   simv_focalizeₜ e_foc
     ltac:(fun K =>
       eapply (tac_simv_storeₜ _ _ _ _ _ _ K)
@@ -647,16 +650,17 @@ Ltac simv_storeₜ :=
   ].
 Ltac simv_store :=
   simv_pures;
-  let e_focₜ := open_constr:(Store (Val (Loc _)) (Val _)) in
-  let e_focₛ := open_constr:(Store (Val (Loc _)) (Val _)) in
+  let e_focₜ := open_constr:(Store (Val (Loc _)) (Val (Index _)) (Val _)) in
+  let e_focₛ := open_constr:(Store (Val (Loc _)) (Val (Index _)) (Val _)) in
   simv_focalize e_focₜ e_focₛ
     ltac:(fun Kₛ Kₜ =>
-      eapply (tac_simv_store _ _ _ Kₛ _ _ Kₜ)
+      eapply (tac_simv_store _ _ _ Kₛ _ _ _ Kₜ)
     )
     ltac:(fun eₛ eₜ =>
       fail "simv_store: cannot find" e_focₛ "in source" eₛ "or" e_focₜ "in target" eₜ
     );
   [ try done
+  | try done
   | try done
   | simv_finish
   ].

@@ -60,13 +60,13 @@ Inductive tmc_dir ξ : expr → expr → Prop :=
         (&constr eₜ1 eₜ2)
   | tmc_dir_constr_dps_1 constr eₛ1 eₛ2 eₜ1 eₜ2 :
       tmc_dir ξ eₛ1 eₜ1 →
-      tmc_dps ξ $0.(2) eₛ2.[ren (+1)] eₜ2 →
+      tmc_dps ξ $0 𝟚 eₛ2.[ren (+1)] eₜ2 →
       tmc_dir ξ
         (&constr eₛ1 eₛ2)
         (let: &constr eₜ1 #() in eₜ2 ;; $0)
   | tmc_dir_constr_dps_2 constr eₛ1 eₛ2 eₜ1 eₜ2 :
       tmc_dir ξ eₛ2 eₜ2 →
-      tmc_dps ξ $0.(1) eₛ1.[ren (+1)] eₜ1 →
+      tmc_dps ξ $0 𝟙 eₛ1.[ren (+1)] eₜ1 →
       tmc_dir ξ
         (&constr eₛ1 eₛ2)
         (let: &constr #() eₜ2 in eₜ1 ;; $0)
@@ -76,54 +76,56 @@ Inductive tmc_dir ξ : expr → expr → Prop :=
       tmc_dir ξ
         (&&constr eₛ1 eₛ2)
         (&&constr eₜ1 eₜ2)
-  | tmc_dir_load eₛ eₜ :
-      tmc_dir ξ eₛ eₜ →
-      tmc_dir ξ
-        !eₛ
-        !eₜ
-  | tmc_dir_store eₛ1 eₛ2 eₜ1 eₜ2 :
+  | tmc_dir_load eₛ1 eₛ2 eₜ1 eₜ2 :
       tmc_dir ξ eₛ1 eₜ1 →
       tmc_dir ξ eₛ2 eₜ2 →
       tmc_dir ξ
-        (eₛ1 <- eₛ2)
-        (eₜ1 <- eₜ2)
-with tmc_dps ξ : expr → expr → expr → Prop :=
-  | tmc_dps_base dst eₛ eₜ :
-      tmc_dir ξ eₛ eₜ →
-      tmc_dps ξ dst
-        eₛ
-        (dst <- eₜ)
-  | tmc_dps_let dst eₛ1 eₛ2 eₜ1 eₜ2 :
+        (![eₛ2] eₛ1)
+        (![eₜ2] eₜ1)
+  | tmc_dir_store eₛ1 eₛ2 eₛ3 eₜ1 eₜ2 eₜ3 :
       tmc_dir ξ eₛ1 eₜ1 →
-      tmc_dps ξ dst.[ren (+1)] eₛ2 eₜ2 →
-      tmc_dps ξ dst
+      tmc_dir ξ eₛ2 eₜ2 →
+      tmc_dir ξ eₛ3 eₜ3 →
+      tmc_dir ξ
+        (eₛ1 <-[eₛ2]- eₛ3)
+        (eₜ1 <-[eₜ2]- eₜ3)
+with tmc_dps ξ : expr → expr → expr → expr → Prop :=
+  | tmc_dps_base dst idx eₛ eₜ :
+      tmc_dir ξ eₛ eₜ →
+      tmc_dps ξ dst idx
+        eₛ
+        (dst <-[idx]- eₜ)
+  | tmc_dps_let dst idx eₛ1 eₛ2 eₜ1 eₜ2 :
+      tmc_dir ξ eₛ1 eₜ1 →
+      tmc_dps ξ dst.[ren (+1)] idx.[ren (+1)] eₛ2 eₜ2 →
+      tmc_dps ξ dst idx
         (let: eₛ1 in eₛ2)
         (let: eₜ1 in eₜ2)
-  | tmc_dps_call dst func func_dps eₛ eₜ :
+  | tmc_dps_call dst idx func func_dps eₛ eₜ :
       ξ !! func = Some func_dps →
       tmc_dir ξ eₛ eₜ →
-      tmc_dps ξ dst
+      tmc_dps ξ dst idx
         (func eₛ)
-        (func_dps (dst, eₜ))%E
-  | tmc_dps_if dst eₛ0 eₛ1 eₛ2 eₜ0 eₜ1 eₜ2 :
+        (func_dps (dst, idx, eₜ))%E
+  | tmc_dps_if dst idx eₛ0 eₛ1 eₛ2 eₜ0 eₜ1 eₜ2 :
       tmc_dir ξ eₛ0 eₜ0 →
-      tmc_dps ξ dst eₛ1 eₜ1 →
-      tmc_dps ξ dst eₛ2 eₜ2 →
-      tmc_dps ξ dst
+      tmc_dps ξ dst idx eₛ1 eₜ1 →
+      tmc_dps ξ dst idx eₛ2 eₜ2 →
+      tmc_dps ξ dst idx
         (if: eₛ0 then eₛ1 else eₛ2)
         (if: eₜ0 then eₜ1 else eₜ2)
-  | tmc_dps_constr_1 dst constr eₛ1 eₛ2 eₜ eₜ1 eₜ2 :
+  | tmc_dps_constr_1 dst idx constr eₛ1 eₛ2 eₜ eₜ1 eₜ2 :
       tmc_dir ξ eₛ1 eₜ1 →
-      tmc_dps ξ $0.(2) eₛ2.[ren (+1)] eₜ2 →
-      eₜ = (let: &constr eₜ1 #() in dst.[ren (+1)] <- $0 ;; eₜ2)%E →
-      tmc_dps ξ dst
+      tmc_dps ξ $0 𝟚 eₛ2.[ren (+1)] eₜ2 →
+      eₜ = (let: &constr eₜ1 #() in dst.[ren (+1)] <-[idx.[ren (+1)]]- $0 ;; eₜ2)%E →
+      tmc_dps ξ dst idx
         (&constr eₛ1 eₛ2)
         eₜ
-  | tmc_dps_constr_2 dst constr eₛ1 eₛ2 eₜ eₜ1 eₜ2 :
+  | tmc_dps_constr_2 dst idx constr eₛ1 eₛ2 eₜ eₜ1 eₜ2 :
       tmc_dir ξ eₛ2 eₜ2 →
-      tmc_dps ξ $0.(1) eₛ1.[ren (+1)] eₜ1 →
-      eₜ = (let: &constr #() eₜ2 in dst.[ren (+1)] <- $0 ;; eₜ1)%E →
-      tmc_dps ξ dst
+      tmc_dps ξ $0 𝟙 eₛ1.[ren (+1)] eₜ1 →
+      eₜ = (let: &constr #() eₜ2 in dst.[ren (+1)] <-[idx.[ren (+1)]]- $0 ;; eₜ1)%E →
+      tmc_dps ξ dst idx
         (&constr eₛ1 eₛ2)
         eₜ.
 
@@ -151,16 +153,17 @@ Lemma tmc_subst ξ :
     eₜ' = eₜ.[ς] →
     tmc_dir ξ eₛ' eₜ'
   ) ∧ (
-    ∀ dst eₛ eₜ,
-    tmc_dps ξ dst eₛ eₜ →
-    ∀ dst' eₛ' eₜ' ς,
+    ∀ dst idx eₛ eₜ,
+    tmc_dps ξ dst idx eₛ eₜ →
+    ∀ dst' idx' eₛ' eₜ' ς,
     dst' = dst.[ς] →
+    idx' = idx.[ς] →
     eₛ' = eₛ.[ς] →
     eₜ' = eₜ.[ς] →
-    tmc_dps ξ dst' eₛ' eₜ'
+    tmc_dps ξ dst' idx' eₛ' eₜ'
   ).
 Proof.
-  apply tmc_ind; solve
+  apply tmc_ind; try solve
   [ intros; simplify; eauto with tmc
   | intros * ? ? ? IHdps **; simplify;
     econstructor; try naive_solver; first eapply IHdps with (up ς); autosubst
@@ -175,12 +178,13 @@ Proof.
   eauto using (proj1 (tmc_subst ξ)).
 Qed.
 #[export] Hint Resolve tmc_dir_subst : tmc.
-Lemma tmc_dps_subst ξ ς dst dst' eₛ eₛ' eₜ eₜ' :
-  tmc_dps ξ dst eₛ eₜ →
+Lemma tmc_dps_subst ξ ς dst dst' idx idx' eₛ eₛ' eₜ eₜ' :
+  tmc_dps ξ dst idx eₛ eₜ →
   dst' = dst.[ς] →
+  idx' = idx.[ς] →
   eₛ' = eₛ.[ς] →
   eₜ' = eₜ.[ς] →
-  tmc_dps ξ dst' eₛ' eₜ'.
+  tmc_dps ξ dst' idx' eₛ' eₜ'.
 Proof.
   eauto using (proj2 (tmc_subst ξ)).
 Qed.
@@ -206,6 +210,6 @@ Record tmc progₛ progₜ := {
     progₛ !! func = Some eₛ →
     tmc_ξ !! func = Some func_dps →
       ∃ eₜ,
-      progₜ !! func_dps = Some (let: FST $0 in let: SND $1 in eₜ)%E ∧
-      tmc_dps tmc_ξ $1 eₛ eₜ ;
+      progₜ !! func_dps = Some (let: ![𝟙] $0 in let: ![𝟚] $0 in let: ![𝟙] $1 in let: ![𝟚] $3 in eₜ)%E ∧
+      tmc_dps tmc_ξ $1 $2 eₛ eₜ ;
 }.

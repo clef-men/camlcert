@@ -32,9 +32,11 @@ Inductive ectxi :=
   | EctxiBinop1 (op : binop) e1
   | EctxiBinop2 (op : binop) v2
   | EctxiIf e1 e2
-  | EctxiLoad
-  | EctxiStore1 e1
-  | EctxiStore2 v2.
+  | EctxiLoad1 e1
+  | EctxiLoad2 v2
+  | EctxiStore1 e1 e2
+  | EctxiStore2 e1 v3
+  | EctxiStore3 v2 v3.
 
 Definition ectx := list ectxi.
 
@@ -54,12 +56,16 @@ Definition fill_item k e :=
       Binop op e (of_val v2)
   | EctxiIf e1 e2 =>
       If e e1 e2
-  | EctxiLoad =>
-      Load e
-  | EctxiStore1 e1 =>
-      Store e1 e
-  | EctxiStore2 v2 =>
-      Store e (of_val v2)
+  | EctxiLoad1 e1 =>
+      Load e1 e
+  | EctxiLoad2 v2 =>
+      Load e (of_val v2)
+  | EctxiStore1 e1 e2 =>
+      Store e1 e2 e
+  | EctxiStore2 e1 v3 =>
+      Store e1 e (of_val v3)
+  | EctxiStore3 v2 v3 =>
+      Store e (of_val v2) (of_val v3)
   end.
 #[global] Instance ectxi_fill : Fill ectxi expr :=
   Build_Fill fill_item.

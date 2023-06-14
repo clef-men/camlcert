@@ -36,14 +36,24 @@ Fixpoint ectx_decompositions e :=
       end
   | If e0 e1 e2 =>
       ectx_decompositions_with (EctxiIf e1 e2) e0
-  | Load e =>
-      ectx_decompositions_with EctxiLoad e
-  | Store e1 e2 =>
-      ectx_decompositions_with (EctxiStore1 e1) e2 ++
+  | Load e1 e2 =>
+      ectx_decompositions_with (EctxiLoad1 e1) e2 ++
       match to_val e2 with
       | None => []
       | Some v2 =>
-          ectx_decompositions_with (EctxiStore2 v2) e1
+          ectx_decompositions_with (EctxiLoad2 v2) e1
+      end
+  | Store e1 e2 e3 =>
+      ectx_decompositions_with (EctxiStore1 e1 e2) e3 ++
+      match to_val e3 with
+      | None => []
+      | Some v3 =>
+          ectx_decompositions_with (EctxiStore2 e1 v3) e2 ++
+          match to_val e2 with
+          | None => []
+          | Some v2 =>
+              ectx_decompositions_with (EctxiStore3 v2 v3) e1
+          end
       end
   end.
 

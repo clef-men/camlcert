@@ -46,12 +46,16 @@ Qed.
     match vₛ, vₜ with
     | Unit, Unit =>
         True
+    | Index idx1, Index idx2 =>
+        ⌜idx1 = idx2⌝
     | Int nₛ, Int nₜ =>
         ⌜nₛ = nₜ⌝
     | Bool bₛ, Bool bₜ =>
         ⌜bₛ = bₜ⌝
     | Loc lₛ, Loc lₜ =>
-        lₛ ≈ lₜ
+        (lₛ +ₗ 0) ≈ (lₜ +ₗ 0) ∗
+        (lₛ +ₗ 1) ≈ (lₜ +ₗ 1) ∗
+        (lₛ +ₗ 2) ≈ (lₜ +ₗ 2)
     | Func funcₛ, Func funcₜ =>
         ⌜funcₛ = funcₜ⌝
     | _, _ =>

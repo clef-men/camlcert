@@ -36,12 +36,16 @@ Inductive subexprdir : expr → expr → Prop :=
       subexprdir e1 (ConstrDet constr e1 e2)
   | subexprdir_constr_det_2 constr e1 e2 :
       subexprdir e2 (ConstrDet constr e1 e2)
-  | subexprdir_load e :
-      subexprdir e (Load e)
-  | subexprdir_store_1 e1 e2 :
-      subexprdir e1 (Store e1 e2)
-  | subexprdir_store_2 e1 e2 :
-      subexprdir e2 (Store e1 e2).
+  | subexprdir_load_1 e1 e2 :
+      subexprdir e1 (Load e1 e2)
+  | subexprdir_load_2 e1 e2 :
+      subexprdir e2 (Load e1 e2)
+  | subexprdir_store_1 e1 e2 e3 :
+      subexprdir e1 (Store e1 e2 e3)
+  | subexprdir_store_2 e1 e2 e3 :
+      subexprdir e2 (Store e1 e2 e3)
+  | subexprdir_store_3 e1 e2 e3 :
+      subexprdir e3 (Store e1 e2 e3).
 
 Lemma subexprdir_wf :
   wf subexprdir.
@@ -151,21 +155,33 @@ Lemma subexpr_constr_det_2 e constr e1 e2 :
 Proof.
   intros. eapply tc_r; eauto using subexprdir.
 Qed.
-Lemma subexpr_load e e' :
-  e ⊏ e' →
-  e ⊏ (Load e').
-Proof.
-  intros. eapply tc_r; eauto using subexprdir.
-Qed.
-Lemma subexpr_store_1 e e1 e2 :
+Lemma subexpr_load_1 e e1 e2 :
   e ⊏ e1 →
-  e ⊏ (Store e1 e2).
+  e ⊏ (Load e1 e2).
 Proof.
   intros. eapply tc_r; eauto using subexprdir.
 Qed.
-Lemma subexpr_store_2 e e1 e2 :
+Lemma subexpr_load_2 e e1 e2 :
   e ⊏ e2 →
-  e ⊏ (Store e1 e2).
+  e ⊏ (Load e1 e2).
+Proof.
+  intros. eapply tc_r; eauto using subexprdir.
+Qed.
+Lemma subexpr_store_1 e e1 e2 e3 :
+  e ⊏ e1 →
+  e ⊏ (Store e1 e2 e3).
+Proof.
+  intros. eapply tc_r; eauto using subexprdir.
+Qed.
+Lemma subexpr_store_2 e e1 e2 e3 :
+  e ⊏ e2 →
+  e ⊏ (Store e1 e2 e3).
+Proof.
+  intros. eapply tc_r; eauto using subexprdir.
+Qed.
+Lemma subexpr_store_3 e e1 e2 e3 :
+  e ⊏ e3 →
+  e ⊏ (Store e1 e2 e3).
 Proof.
   intros. eapply tc_r; eauto using subexprdir.
 Qed.
@@ -186,6 +202,8 @@ Qed.
 #[global] Hint Resolve subexpr_constr_2 | 2 : language.
 #[global] Hint Resolve subexpr_constr_det_1 | 2 : language.
 #[global] Hint Resolve subexpr_constr_det_2 | 2 : language.
-#[global] Hint Resolve subexpr_load | 2 : language.
+#[global] Hint Resolve subexpr_load_1 | 2 : language.
+#[global] Hint Resolve subexpr_load_2 | 2 : language.
 #[global] Hint Resolve subexpr_store_1 | 2 : language.
 #[global] Hint Resolve subexpr_store_2 | 2 : language.
+#[global] Hint Resolve subexpr_store_3 | 2 : language.

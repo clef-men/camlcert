@@ -22,6 +22,7 @@ Implicit Types b : bool.
 Implicit Types l : loc.
 Implicit Types func : function.
 Implicit Types constr : constructor.
+Implicit Types idx : index.
 Implicit Types v w : val.
 Implicit Types e : expr.
 Implicit Types prog : program.
@@ -55,24 +56,11 @@ Definition binop_eval_int op n1 n2 :=
       Some (Bool (bool_decide (n1 < n2)%Z))
   | OpEq =>
       Some (Bool (bool_decide (n1 = n2)%Z))
-  | _ =>
-      None
   end.
 Definition binop_eval_bool op b1 b2 :=
   match op with
   | OpEq =>
       Some (Bool (bool_decide (b1 = b2)))
-  | _ =>
-      None
-  end.
-Definition binop_eval_loc op l1 l2 :=
-  match op with
-  | OpLe =>
-      Some (Bool (bool_decide (l1 ≤ₗ l2)))
-  | OpLt =>
-      Some (Bool (bool_decide (l1 <ₗ l2)))
-  | OpEq =>
-      Some (Bool (bool_decide (l1 = l2)))
   | _ =>
       None
   end.
@@ -89,17 +77,8 @@ Definition binop_eval op v1 v2 :=
       binop_eval_int op n1 n2
   | Bool b1, Bool b2 =>
       binop_eval_bool op b1 b2
-  | Loc l1, Loc l2 =>
-      binop_eval_loc op l1 l2
   | Func func1, Func func2 =>
       binop_eval_function op func1 func2
-  | Loc l1, Int n2 =>
-      match op with
-      | OpOffset =>
-          Some (Loc (l1 +ₗ n2))
-      | _ =>
-          None
-      end
   | _, _ =>
       None
   end.
@@ -141,31 +120,30 @@ Inductive head_step prog : expr → state → expr → state → Prop :=
         (&constr e1 e2) σ
         e' σ
   | head_step_constr_det constr v1 v2 σ l :
-      σ !! l = None →
+      σ !! (l +ₗ 0) = None →
       σ !! (l +ₗ 1) = None →
       σ !! (l +ₗ 2) = None →
       head_step prog
         (&&constr v1 v2) σ
-        l (<[l +ₗ 2 := v2]> (<[l +ₗ 1 := v1]> (<[l := Int (Z.of_nat constr)]> σ)))
-  | head_step_load l v σ :
-      σ !! l = Some v →
+        l (<[l +ₗ 2 := v2]> (<[l +ₗ 1 := v1]> (<[l +ₗ 0 := Int (Z.of_nat constr)]> σ)))
+  | head_step_load l l' idx v σ :
+      σ !! (l +ₗ idx) = Some v →
       head_step prog
-        (! l) σ
+        (![idx] l) σ
         v σ
-  | head_step_store l v w σ :
-      σ !! l = Some v →
+  | head_step_store l idx v w σ :
+      σ !! (l +ₗ idx) = Some v →
       head_step prog
-        (l <- w) σ
-        #() (<[l := w]> σ).
+        (l <-[idx]- w) σ
+        #() (<[l +ₗ idx := w]> σ).
 
 Lemma head_step_constr_det' prog constr v1 v2 σ σ' :
   let l := loc_fresh (dom σ) in
-  σ' = <[l +ₗ 2 := v2]> (<[l +ₗ 1 := v1]> (<[l := Int (Z.of_nat constr)]> σ)) →
+  σ' = <[l +ₗ 2 := v2]> (<[l +ₗ 1 := v1]> (<[l +ₗ 0 := Int (Z.of_nat constr)]> σ)) →
   head_step prog
     (&&constr v1 v2) σ
     l σ'.
 Proof.
-  intros l ->. apply head_step_constr_det;
-    rewrite -not_elem_of_dom; first rewrite -(loc_add_0 l);
-    apply loc_fresh_fresh; lia.
+  intros l ->.
+  apply head_step_constr_det; rewrite -not_elem_of_dom; apply loc_fresh_fresh; lia.
 Qed.

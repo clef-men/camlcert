@@ -18,8 +18,34 @@ Notation function := string.
 
 Definition constructor := nat.
 
+Inductive index :=
+  | Zero
+  | One
+  | Two.
+
+#[global] Instance index_eq_dec : EqDecision index :=
+  ltac:(solve_decision).
+#[global] Instance index_countable :
+  Countable index.
+Proof.
+  pose encode idx :=
+    match idx with
+    | Zero => 0
+    | One => 1
+    | Two => 2
+    end.
+  pose decode idx :=
+    match idx with
+    | 0 => Zero
+    | 1 => One
+    | _ => Two
+    end.
+  apply (inj_countable' encode decode). intros []; done.
+Qed.
+
 Inductive val :=
   | Unit
+  | Index (idx : index)
   | Int (n : Z)
   | Bool (b : bool)
   | Loc (l : loc)
@@ -34,32 +60,36 @@ Proof.
     match v with
     | Unit =>
         inl ()
+    | Index idx =>
+        inr $ inl idx
     | Int n =>
-        inr $ inl n
+        inr $ inr $ inl n
     | Bool b =>
-        inr $ inr $ inl b
+        inr $ inr $ inr $ inl b
     | Loc l =>
-        inr $ inr $ inr $ inl l
+        inr $ inr $ inr $ inr $ inl l
     | Func func =>
-        inr $ inr $ inr $ inr func
+        inr $ inr $ inr $ inr $ inr func
     end.
   pose decode v :=
     match v with
     | inl () =>
         Unit
-    | inr (inl n) =>
+    | inr (inl idx) =>
+        Index idx
+    | inr (inr (inl n)) =>
         Int n
-    | inr (inr (inl b)) =>
+    | inr (inr (inr (inl b))) =>
         Bool b
-    | inr (inr (inr (inl l))) =>
+    | inr (inr (inr (inr (inl l)))) =>
         Loc l
-    | inr (inr (inr (inr func))) =>
+    | inr (inr (inr (inr (inr func)))) =>
         Func func
     end.
   apply (inj_countable' encode decode). intros []; done.
 Qed.
 #[global] Instance val_inhabited : Inhabited val :=
-  populate (Int inhabitant).
+  populate Unit.
 
 Definition val_well_formed (funcs : gset function) v :=
   match v with
@@ -76,6 +106,8 @@ Definition val_well_formed (funcs : gset function) v :=
     match v1, v2 with
     | Unit, Unit =>
         True
+    | Index idx1, Index idx2 =>
+        idx1 = idx2
     | Int i1, Int i2 =>
         i1 = i2
     | Loc _, Loc _ =>
@@ -109,8 +141,7 @@ Qed.
 
 Inductive binop :=
   | OpPlus | OpMinus | OpMult | OpQuot | OpRem
-  | OpLe | OpLt | OpEq
-  | OpOffset.
+  | OpLe | OpLt | OpEq.
 
 #[global] Instance binop_eq_dec : EqDecision binop :=
   ltac:(solve_decision).
@@ -127,7 +158,6 @@ Proof.
     | OpLe => 5
     | OpLt => 6
     | OpEq => 7
-    | OpOffset => 8
     end.
   pose decode op :=
     match op with
@@ -138,8 +168,7 @@ Proof.
     | 4 => OpRem
     | 5 => OpLe
     | 6 => OpLt
-    | 7 => OpEq
-    | _ => OpOffset
+    | _ => OpEq
     end.
   apply (inj_countable' encode decode). intros []; done.
 Qed.
@@ -154,8 +183,8 @@ Inductive expr :=
   | If (e0 e1 e2 : expr)
   | Constr (constr : constructor) (e1 e2 : expr)
   | ConstrDet (constr : constructor) (e1 e2 : expr)
-  | Load (e : expr)
-  | Store (e1 e2 : expr).
+  | Load (e1 e2 : expr)
+  | Store (e1 e2 e3 : expr).
 
 #[global] Instance expr_eq_dec : EqDecision expr :=
   ltac:(solve_decision).
@@ -182,10 +211,10 @@ Proof.
         GenNode 5 [GenLeaf (inr (inr (inr (inr constr)))); encode e1; encode e2]
     | ConstrDet constr e1 e2 =>
         GenNode 6 [GenLeaf (inr (inr (inr (inr constr)))); encode e1; encode e2]
-    | Load e =>
-        GenNode 7 [encode e]
-    | Store e1 e2 =>
-        GenNode 8 [encode e1; encode e2]
+    | Load e1 e2 =>
+        GenNode 7 [encode e1; encode e2]
+    | Store e1 e2 e3 =>
+        GenNode 8 [encode e1; encode e2; encode e3]
     end.
   pose fix decode e :=
     match e with
@@ -207,10 +236,10 @@ Proof.
         Constr constr (decode e1) (decode e2)
     | GenNode 6 [GenLeaf (inr (inr (inr (inr constr)))); e1; e2] =>
         ConstrDet constr (decode e1) (decode e2)
-    | GenNode 7 [e] =>
-        Load (decode e)
-    | GenNode 8 [e1; e2] =>
-        Store (decode e1) (decode e2)
+    | GenNode 7 [e1; e2] =>
+        Load (decode e1) (decode e2)
+    | GenNode 8 [e1; e2; e3] =>
+        Store (decode e1) (decode e2) (decode e3)
     | _ =>
         Val (Int 0)
     end.
@@ -245,11 +274,13 @@ Fixpoint expr_well_formed funcs lvl e :=
       expr_well_formed funcs lvl e2
   | ConstrDet _ _ _ =>
       False
-  | Load e =>
-      expr_well_formed funcs lvl e
-  | Store e1 e2 =>
+  | Load e1 e2 =>
       expr_well_formed funcs lvl e1 ∧
       expr_well_formed funcs lvl e2
+  | Store e1 e2 e3 =>
+      expr_well_formed funcs lvl e1 ∧
+      expr_well_formed funcs lvl e2 ∧
+      expr_well_formed funcs lvl e3
   end.
 
 #[global] Instance expr_ids : Ids expr. derive. Defined.

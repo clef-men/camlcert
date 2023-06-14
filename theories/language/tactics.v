@@ -105,15 +105,27 @@ Qed.
 Proof.
   solve_strongly_head_stuck.
 Qed.
-#[global] Instance strongly_head_stuck_load prog v :
-  (if v is Loc _ then False else True) →
-  IsStronglyHeadStuck prog (Load (Val v)).
+#[global] Instance strongly_head_stuck_load_1 prog v1 v2 :
+  (if v1 is Loc _ then False else True) →
+  IsStronglyHeadStuck prog (Load (Val v1) (Val v2)).
 Proof.
   solve_strongly_head_stuck.
 Qed.
-#[global] Instance strongly_head_stuck_store prog v1 v2 :
+#[global] Instance strongly_head_stuck_load_2 prog v1 v2 :
+  (if v2 is Index _ then False else True) →
+  IsStronglyHeadStuck prog (Load (Val v1) (Val v2)).
+Proof.
+  solve_strongly_head_stuck.
+Qed.
+#[global] Instance strongly_head_stuck_store_1 prog v1 v2 v3 :
   (if v1 is Loc _ then False else True) →
-  IsStronglyHeadStuck prog (Store (Val v1) (Val v2)).
+  IsStronglyHeadStuck prog (Store (Val v1) (Val v2) (Val v3)).
+Proof.
+  solve_strongly_head_stuck.
+Qed.
+#[global] Instance strongly_head_stuck_store_2 prog v1 v2 v3 :
+  (if v2 is Index _ then False else True) →
+  IsStronglyHeadStuck prog (Store (Val v1) (Val v2) (Val v3)).
 Proof.
   solve_strongly_head_stuck.
 Qed.
