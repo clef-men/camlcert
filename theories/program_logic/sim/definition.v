@@ -96,12 +96,12 @@ Section sim_state.
             N Φ eₛ' eₜ'
           )
       ) ∨ (
-        ∃ Kₛ eₛ' Kₜ eₜ' Φ',
+        ∃ Kₛ eₛ' Kₜ eₜ' Ψ,
         ⌜eₛ = Kₛ @@ eₛ' ∧ eₜ = Kₜ @@ eₜ'⌝ ∗
-        X Φ' eₛ' eₜ' ∗
+        X Ψ eₛ' eₜ' ∗
         sim_state_interp σₛ σₜ ∗
           ∀ eₛ eₜ,
-          Φ' eₛ eₜ ++∗
+          Ψ eₛ eₜ ++∗
           N Φ (Kₛ @@ eₛ) (Kₜ @@ eₜ)
       )
   )%I.
