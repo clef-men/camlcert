@@ -119,7 +119,7 @@ Notation "[[[ P ] ] ] progₛ ; eₛ ≳ progₜ ; eₜ [[[ Φ ] ] ]" := (
     ∀ Ψ,
     P%I -∗
     (∀ eₛ eₜ, Ψ eₛ eₜ -∗ Φ eₛ eₜ) -∗
-    SIM progₛ; eₛ ≳ progₜ; eₜ {{ Φ }}
+    SIM progₛ; eₛ ≳ progₜ; eₜ [[ Φ ]]
   )
 )%I (
   at level 20,
