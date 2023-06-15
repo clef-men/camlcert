@@ -36,6 +36,7 @@ theories/language/language.v
 theories/language/ectx_decompositions.v
 theories/language/tactics.v
 theories/language/subexpr.v
+theories/language/refinement.v
 
 theories/tmc/sim/definition.v
 theories/tmc/sim/notations.v
