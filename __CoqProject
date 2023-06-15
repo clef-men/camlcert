@@ -21,6 +21,7 @@ theories/program_logic/language.v
 theories/program_logic/ectx_language.v
 theories/program_logic/ectxi_language.v
 theories/program_logic/refinement.v
+theories/program_logic/idiverges.v
 theories/program_logic/sim/protocol.v
 theories/program_logic/sim/definition.v
 theories/program_logic/sim/notations.v

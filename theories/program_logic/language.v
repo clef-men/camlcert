@@ -1,6 +1,9 @@
 From stdpp Require Import
   gmap.
 
+From Paco Require Import
+  paco.
+
 From iris.algebra Require Export
   ofe.
 
@@ -73,6 +76,7 @@ Section language.
   Context {Λ : language}.
   Implicit Types v : val Λ.
   Implicit Types e : expr Λ.
+  Implicit Types prog : program Λ.
   Implicit Types σ : state Λ.
   Implicit Types cfg : config Λ.
 
@@ -99,11 +103,20 @@ Section language.
   Definition converges prog e σ e' σ' :=
     rtc (step prog) (e, σ) (e', σ') ∧ irreducible prog e' σ'.
 
-  CoInductive diverges prog e σ : Prop :=
-    | diverges_step e' σ' :
+  CoInductive diverges_body prog (diverges : expr Λ → state Λ → Prop) : expr Λ → state Λ → Prop :=
+    | diverges_step e σ e' σ' :
         prim_step prog e σ e' σ' →
-        diverges prog e' σ' →
-        diverges prog e σ.
+        diverges e' σ' →
+        diverges_body prog diverges e σ.
+  Definition diverges prog :=
+    paco2 (diverges_body prog) bot2.
+  Lemma diverges_body_mono prog :
+    monotone2 (diverges_body prog).
+  Proof.
+    intros e σ R1 R2 [] HR. econstructor; first done. apply HR. done.
+  Qed.
+  Hint Resolve diverges_body_mono
+  : paco.
 
   Record pure_step prog e1 e2 := {
     pure_step_safe σ1 :
@@ -178,7 +191,8 @@ Section language.
     diverges prog e σ →
     reducible prog e σ.
   Proof.
-    intros []. esplit. eauto.
+    intros Hdiv. punfold Hdiv.
+    destruct Hdiv. esplit. eauto.
   Qed.
   Lemma diverges_not_stuck prog e σ :
     diverges prog e σ →
@@ -190,7 +204,8 @@ Section language.
     diverges prog e σ →
     e ≠ of_val v.
   Proof.
-    intros [? ? ? %prim_step_not_val] ?%to_of_val. naive_solver.
+    intros Hdiv ?%to_of_val. punfold Hdiv.
+    destruct Hdiv as [? ? ? ? ?%prim_step_not_val]. naive_solver.
   Qed.
 
   Lemma strongly_stuck_stuck prog e σ :
@@ -325,3 +340,6 @@ Section language.
     Qed.
   End language_ctx.
 End language.
+
+#[global] Hint Resolve diverges_body_mono
+: paco.
