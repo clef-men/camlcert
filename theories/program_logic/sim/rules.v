@@ -75,9 +75,9 @@ Section sim_state.
   Implicit Types N M I : sim_protocol_O.
 
   Notation sim_body := (sim_body progₛ progₜ).
-  Notation sim_body' := (sim_body' progₛ progₜ).
+  Notation sim_body' := (definition.sim_body' progₛ progₜ).
   Notation sim_inner := (sim_inner progₛ progₜ).
-  Notation sim_inner' := (sim_inner' progₛ progₜ).
+  Notation sim_inner' := (definition.sim_inner' progₛ progₜ).
   Notation sim := (sim progₛ progₜ).
   Notation simv := (simv progₛ progₜ).
 
@@ -417,7 +417,7 @@ Section sim_state.
     End sim_body.
 
     Section sim_inner.
-      #[global] Instance sim_body'_ne n :
+      #[local] Instance sim_body'_ne n :
         Proper (
           ((≡{n}≡) ==> (≡{n}≡)) ==>
           ((≡{n}≡) ==> (≡{n}≡)) ==>
@@ -429,7 +429,7 @@ Section sim_state.
         simpl in HΦ, Heₛ, Heₜ. subst.
         apply sim_body_ne; done || solve_proper.
       Qed.
-      #[global] Instance sim_body'_ne' n :
+      #[local] Instance sim_body'_ne' n :
         Proper (
           ((≡{n}≡) ==> (≡{n}≡)) ==>
           (=) ==>
@@ -440,7 +440,7 @@ Section sim_state.
         intros N1 N2 HN M1 M2 -> ((Φ1 & eₛ1) & eₜ1) ((Φ2 & eₛ2) & eₜ2) ->.
         rewrite /sim_body' /uncurry3 /=. apply sim_body_ne'; done.
       Qed.
-      #[global] Instance sim_body'_proper :
+      #[local] Instance sim_body'_proper :
         Proper (
           ((≡) ==> (≡)) ==>
           ((≡) ==> (≡)) ==>
@@ -452,7 +452,7 @@ Section sim_state.
         simpl in HΦ, Heₛ, Heₜ. subst.
         apply sim_body_proper; done || solve_proper.
       Qed.
-      #[global] Instance sim_body'_proper' :
+      #[local] Instance sim_body'_proper' :
         Proper (
           ((≡) ==> (≡)) ==>
           (=) ==>
@@ -1767,7 +1767,7 @@ Section sim_state.
     SIM progₛ; eₛ ≳ progₜ; eₜ [[ X ]] [[ Φ ]] -∗
     SIM progₛ; eₛ ≳ progₜ; eₜ [[ Φ ]].
   Proof.
-    rewrite !definition.simv_unseal. iApply sim_close.
+    rewrite !definition.simv_unseal. apply sim_close.
   Qed.
   (* TODO: simv_close_pure_steps *)
   (* TODO: simv_close_pure_step *)

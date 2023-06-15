@@ -107,7 +107,7 @@ Section sim_state.
   )%I.
   #[global] Arguments sim_body _ _ _%I _ _ : assert.
 
-  Definition sim_body' N (M : prodO (prodO expr_relation_O (expr_O Λₛ)) (expr_O Λₜ) → PROP)
+  #[local] Definition sim_body' N (M : prodO (prodO expr_relation_O (expr_O Λₛ)) (expr_O Λₜ) → PROP)
   : prodO (prodO expr_relation_O (expr_O Λₛ)) (expr_O Λₜ) → PROP
   :=
     uncurry3 $ sim_body N $ curry3 M.
@@ -115,7 +115,7 @@ Section sim_state.
     curry3 $ bi_least_fixpoint (sim_body' N).
   #[global] Arguments sim_inner _ _%I _ _ : assert.
 
-  Definition sim_inner' (N : prodO (prodO expr_relation_O (expr_O Λₛ)) (expr_O Λₜ) → PROP)
+  #[local] Definition sim_inner' (N : prodO (prodO expr_relation_O (expr_O Λₛ)) (expr_O Λₜ) → PROP)
   : prodO (prodO expr_relation_O (expr_O Λₛ)) (expr_O Λₜ) → PROP
   :=
     uncurry3 $ sim_inner $ curry3 N.
