@@ -190,7 +190,7 @@ Proof.
 Qed.
 #[export] Hint Resolve tmc_dps_subst : tmc.
 
-Record tmc progₛ progₜ := {
+Record tmc {progₛ progₜ} := {
   tmc_ξ : gmap function function ;
 
   tmc_ξ_fresh :
@@ -213,3 +213,4 @@ Record tmc progₛ progₜ := {
       progₜ !! func_dps = Some (let: ![𝟙] $0 in let: ![𝟚] $0 in let: ![𝟙] $1 in let: ![𝟚] $3 in eₜ)%E ∧
       tmc_dps tmc_ξ $1 $2 eₛ eₜ ;
 }.
+#[global] Arguments tmc : clear implicits.
