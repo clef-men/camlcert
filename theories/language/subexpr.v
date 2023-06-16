@@ -5,7 +5,7 @@ From simuliris.common Require Import
   typeclasses
   relation.
 From simuliris.language Require Export
-  language.
+  tactics.
 
 Inductive subexprdir : expr → expr → Prop :=
   | subexprdir_let_1 e1 e2 :
