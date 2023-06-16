@@ -5,7 +5,8 @@ From simuliris.common Require Import
 From simuliris.language Require Export
   language.
 From simuliris.language Require Import
-  ectx_decompositions.
+  ectx_decompositions
+  well_formed.
 
 Create HintDb language.
 
@@ -46,10 +47,13 @@ Create HintDb language.
 Tactic Notation "invert_well_formed" "as" simple_intropattern(pat) :=
   repeat_on_hyps ltac:(fun H =>
     match type of H with
-    | expr_well_formed _ _ _ =>
-        invert H as pat; simplify
     | val_well_formed _ ?v =>
         solve [by destruct v]
+    | expr_well_formed _ _ _ =>
+        invert H as pat; simplify
+    | expr_well_formed' _ _ =>
+        let lvl := fresh "lvl" in
+        destruct H as (lvl & H)
     end
   );
   try done.
@@ -62,6 +66,11 @@ Tactic Notation "invert_well_formed" :=
   expr_well_formed _ _ _
 ) => (
   progress invert_well_formed
+) : language.
+#[global] Hint Extern 1 (
+  expr_well_formed' _ _
+) => (
+  invert_well_formed; eexists
 ) : language.
 
 Tactic Notation "invert_head_step" "as" simple_intropattern(pat) :=

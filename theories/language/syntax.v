@@ -91,16 +91,6 @@ Qed.
 #[global] Instance val_inhabited : Inhabited val :=
   populate Unit.
 
-Definition val_well_formed (funcs : gset function) v :=
-  match v with
-  | Loc _ =>
-      False
-  | Func func =>
-      func ∈ funcs
-  | _ =>
-      True
-  end.
-
 #[global] Instance val_similar : Similar val val :=
   λ v1 v2,
     match v1, v2 with
@@ -248,47 +238,9 @@ Qed.
 #[global] Instance expr_inhabited : Inhabited expr :=
   populate (Val inhabitant).
 
-Fixpoint expr_well_formed funcs lvl e :=
-  match e with
-  | Val v =>
-      val_well_formed funcs v
-  | Var x =>
-      x ≤ lvl
-  | Let e1 e2 =>
-      expr_well_formed funcs lvl e1 ∧
-      expr_well_formed funcs (S lvl) e2
-  | Call e1 e2 =>
-      expr_well_formed funcs lvl e1 ∧
-      expr_well_formed funcs lvl e2
-  | Unop _ e =>
-      expr_well_formed funcs lvl e
-  | Binop _ e1 e2 =>
-      expr_well_formed funcs lvl e1 ∧
-      expr_well_formed funcs lvl e2
-  | If e0 e1 e2 =>
-      expr_well_formed funcs lvl e0 ∧
-      expr_well_formed funcs lvl e1 ∧
-      expr_well_formed funcs lvl e2
-  | Constr constr e1 e2 =>
-      expr_well_formed funcs lvl e1 ∧
-      expr_well_formed funcs lvl e2
-  | ConstrDet _ _ _ =>
-      False
-  | Load e1 e2 =>
-      expr_well_formed funcs lvl e1 ∧
-      expr_well_formed funcs lvl e2
-  | Store e1 e2 e3 =>
-      expr_well_formed funcs lvl e1 ∧
-      expr_well_formed funcs lvl e2 ∧
-      expr_well_formed funcs lvl e3
-  end.
-
 #[global] Instance expr_ids : Ids expr. derive. Defined.
 #[global] Instance expr_rename : Rename expr. derive. Defined.
 #[global] Instance expr_subst : Subst expr. derive. Defined.
 #[global] Instance expr_subst_lemmas : SubstLemmas expr. derive. Qed.
 
 Definition program := gmap function expr.
-
-Definition program_well_formed (prog : program) :=
-  map_Forall (λ _, expr_well_formed (dom prog) 0) prog.

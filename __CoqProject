@@ -33,6 +33,7 @@ theories/language/syntax.v
 theories/language/notations.v
 theories/language/semantics.v
 theories/language/language.v
+theories/language/well_formed.v
 theories/language/ectx_decompositions.v
 theories/language/tactics.v
 theories/language/subexpr.v
