@@ -4,7 +4,7 @@ From Paco Require Import
 From iris.bi Require Import
   fixpoint.
 From iris.base_logic Require Import
-  lib.iprop.
+  bi.
 From iris.proofmode Require Import
   proofmode.
 
@@ -160,8 +160,8 @@ Section bi.
   Qed.
 End bi.
 
-Lemma idiverges_adequacy Σ Λ (prog : program Λ) e σ :
-  (⊢@{iPropI Σ} idiverges prog e σ) →
+Lemma idiverges_adequacy M Λ (prog : program Λ) e σ :
+  (⊢@{uPredI M} idiverges prog e σ) →
   diverges prog e σ.
 Proof.
   intros Hidiv%isat_intro.
