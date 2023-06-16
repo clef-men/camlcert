@@ -115,8 +115,7 @@ Section language.
   Proof.
     intros e σ R1 R2 [] HR. econstructor; first done. apply HR. done.
   Qed.
-  Hint Resolve diverges_body_mono
-  : paco.
+  Hint Resolve diverges_body_mono : paco.
 
   Record pure_step prog e1 e2 := {
     pure_step_safe σ1 :
@@ -341,5 +340,4 @@ Section language.
   End language_ctx.
 End language.
 
-#[global] Hint Resolve diverges_body_mono
-: paco.
+#[global] Hint Resolve diverges_body_mono : paco.
