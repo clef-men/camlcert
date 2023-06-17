@@ -31,16 +31,16 @@ Section sim.
   Qed.
 
   Lemma simv_call eₛ1 eₛ2 eₜ1 eₜ2 Φ :
+    SIM eₛ1 ≳ eₜ1 [[ X ]] [[ (≈) ]] -∗
+    SIM eₛ2 ≳ eₜ2 [[ X ]] [[ (≈) ]] -∗
     ( ∀ func vₛ vₜ,
       ⌜func ∈ dom sim_progₛ⌝ -∗
       vₛ ≈ vₜ -∗
       SIM func vₛ ≳ func vₜ [[ X ]] [[ Φ ]]
     ) -∗
-    SIM eₛ1 ≳ eₜ1 [[ X ]] [[ (≈) ]] -∗
-    SIM eₛ2 ≳ eₜ2 [[ X ]] [[ (≈) ]] -∗
     SIM eₛ1 eₛ2 ≳ eₜ1 eₜ2 [[ X ]] [[ Φ ]].
   Proof.
-    iIntros "Hsim Hsim1 Hsim2".
+    iIntros "Hsim1 Hsim2 Hsim".
     simv_mono "Hsim2". iIntros "%vₛ2 %vₜ2 #Hv2".
     simv_mono "Hsim1". iIntros "%vₛ1 %vₜ1 #Hv1".
     destruct vₛ1, vₜ1; try iDestruct "Hv1" as %[]; try simv_strongly_stuck.
