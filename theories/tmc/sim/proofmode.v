@@ -429,8 +429,8 @@ Tactic Notation "simv_heap_bij_insert" open_constr(Htie) :=
 Tactic Notation "simv_heap_bij_insert" "as" constr(Hsimilar) :=
   simv_heap_bij_insert _ as Hsimilar.
 Tactic Notation "simv_heap_bij_insert" :=
-  let Hsimilar := iFresh in
-  simv_heap_bij_insert as Hsimilar.
+  let Htie := open_constr:(_) in
+  simv_heap_bij_insert_core Htie Htie.
 
 Tactic Notation "simv_constr_detₛ" "as" simple_intropattern(l) constr(Hl0) constr(Hl1) constr(Hl2) :=
   simv_pures;
