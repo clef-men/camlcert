@@ -78,14 +78,19 @@ Section sim.
 
   Lemma simv_if eₛ0 eₛ1 eₛ2 eₜ0 eₜ1 eₜ2 Φ :
     SIM eₛ0 ≳ eₜ0 [[ X ]] [[ (≈) ]] -∗
-    SIM eₛ1 ≳ eₜ1 [[ X ]] [[ Φ ]] -∗
-    SIM eₛ2 ≳ eₜ2 [[ X ]] [[ Φ ]] -∗
+    ( SIM eₛ1 ≳ eₜ1 [[ X ]] [[ Φ ]] ∧
+      SIM eₛ2 ≳ eₜ2 [[ X ]] [[ Φ ]]
+    ) -∗
     SIM If eₛ0 eₛ1 eₛ2 ≳ If eₜ0 eₜ1 eₜ2 [[ X ]] [[ Φ ]].
   Proof.
-    iIntros "Hsim0 Hsim1 Hsim2".
+    iIntros "Hsim0 Hsim12".
     simv_mono "Hsim0". iIntros "%vₛ0 %vₜ0 #Hv0".
     destruct vₛ0, vₜ0; try iDestruct "Hv0" as %[]; try simv_strongly_stuck.
-    destruct b; [simv_smart_apply "Hsim1" | simv_smart_apply "Hsim2"].
+    destruct b.
+    - iDestruct "Hsim12" as "(Hsim1 & _)".
+      simv_smart_apply "Hsim1".
+    - iDestruct "Hsim12" as "(_ & Hsim2)".
+      simv_smart_apply "Hsim2".
   Qed.
 
   Lemma simv_constr constr eₛ1 eₛ2 eₜ1 eₜ2 Φ :
