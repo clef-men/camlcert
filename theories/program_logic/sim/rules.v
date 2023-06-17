@@ -212,7 +212,7 @@ Section sim.
         iRight. iApply ("H" with "[//]").
       Qed.
 
-      Lemma sim_body_call Kₛ eₛ' Kₜ eₜ' Ψ N M eₛ eₜ Φ :
+      Lemma sim_body_apply_protocol Kₛ eₛ' Kₜ eₜ' Ψ N M eₛ eₜ Φ :
         eₛ = Kₛ @@ eₛ' →
         eₜ = Kₜ @@ eₜ' →
         ( ∀ σₛ σₜ,
@@ -1301,22 +1301,7 @@ Section sim.
         intros. rewrite sim_pure_head_stepsₛ // sim_pure_head_stepsₜ //.
       Qed.
 
-      Lemma sim_call Kₛ eₛ' Kₜ eₜ' Ψ eₛ eₜ Φ :
-        eₛ = Kₛ @@ eₛ' →
-        eₜ = Kₜ @@ eₜ' →
-        ( ∀ σₛ σₜ,
-          sim_state_interp σₛ σₜ ==∗
-            X Ψ eₛ' eₜ' ∗
-            sim_state_interp σₛ σₜ ∗
-              ∀ eₛ eₜ,
-              Ψ eₛ eₜ ++∗
-              SIM Kₛ @@ eₛ ≳ Kₜ @@ eₜ [[ X ]] {{ Φ }}
-        ) -∗
-        SIM eₛ ≳ eₜ [[ X ]] {{ Φ }}.
-      Proof.
-        rewrite sim_eq. apply sim_body_call.
-      Qed.
-      Lemma sim_call' Ψ eₛ eₜ Φ :
+      Lemma sim_apply_protocol Ψ eₛ eₜ Φ :
         ( ∀ σₛ σₜ,
           sim_state_interp σₛ σₜ ==∗
             X Ψ eₛ eₜ ∗
@@ -1327,8 +1312,10 @@ Section sim.
         ) -∗
         SIM eₛ ≳ eₜ [[ X ]] {{ Φ }}.
       Proof.
-        iIntros "H".
-        iApply sim_call; [apply symmetry, fill_empty.. | setoid_rewrite fill_empty; done].
+        rewrite sim_eq. iIntros "Hsim".
+        iApply (sim_body_apply_protocol ∅ _ ∅); [rewrite fill_empty //.. |]. iIntros "%σₛ %σₜ Hsi".
+        iMod ("Hsim" with "Hsi") as "(HX & Hsi & Hsim)".
+        setoid_rewrite fill_empty. auto with iFrame.
       Qed.
     End sim.
 
@@ -1662,22 +1649,7 @@ Section sim.
         rewrite definition.simv_unseal. apply sim_pure_head_steps.
       Qed.
 
-      Lemma simv_call Kₛ eₛ' Kₜ eₜ' Ψ eₛ eₜ Φ :
-        eₛ = Kₛ @@ eₛ' →
-        eₜ = Kₜ @@ eₜ' →
-        ( ∀ σₛ σₜ,
-          sim_state_interp σₛ σₜ ==∗
-            X Ψ eₛ' eₜ' ∗
-            sim_state_interp σₛ σₜ ∗
-              ∀ eₛ eₜ,
-              Ψ eₛ eₜ ++∗
-              SIM Kₛ @@ eₛ ≳ Kₜ @@ eₜ [[ X ]] [[ Φ ]]
-        ) -∗
-        SIM eₛ ≳ eₜ [[ X ]] [[ Φ ]].
-      Proof.
-        rewrite definition.simv_unseal. apply sim_call.
-      Qed.
-      Lemma simv_call' Ψ eₛ eₜ Φ :
+      Lemma simv_apply_protocol Ψ eₛ eₜ Φ :
         ( ∀ σₛ σₜ,
           sim_state_interp σₛ σₜ ==∗
             X Ψ eₛ eₜ ∗
@@ -1688,7 +1660,7 @@ Section sim.
         ) -∗
         SIM eₛ ≳ eₜ [[ X ]] [[ Φ ]].
       Proof.
-        rewrite definition.simv_unseal. apply sim_call'.
+        rewrite definition.simv_unseal. apply sim_apply_protocol.
       Qed.
     End simv.
   End protocol.
