@@ -45,7 +45,7 @@ Section sim_programs.
   Context `{sim_programs : !SimPrograms ectx_language ectx_language}.
 
   #[global] Instance val_bi_similar `{sim_heap_bij_GS : !SimHeapBijGS Σ loc loc} : BiSimilar (iProp Σ) val val :=
-    λ vₛ vₜ,
+    Build_BiSimilar $ λ vₛ vₜ,
       match vₛ, vₜ with
       | Unit, Unit =>
           True

@@ -92,7 +92,7 @@ Qed.
   populate Unit.
 
 #[global] Instance val_similar : Similar val val :=
-  λ v1 v2,
+  Build_Similar $ λ v1 v2,
     match v1, v2 with
     | Unit, Unit =>
         True

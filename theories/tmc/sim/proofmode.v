@@ -40,7 +40,7 @@ Section sim.
     rewrite envs_replace_singleton_sound //.
     rewrite H.
     rewrite bi.intuitionistically_if_elim /= -bi.intuitionistic.
-    rewrite sim_state_interp_heap_bij_insert add_modal //.
+    setoid_rewrite sim_state_interp_heap_bij_insert. rewrite add_modal //.
   Qed.
 
   Context (X : sim_protocol Σ).

@@ -52,7 +52,7 @@ Section sim_heap_bij_GS.
   Definition sim_heap_bij_elem lₛ lₜ :=
     gset_bij_own_elem sim_heap_bij_GS_name lₛ lₜ.
   #[global] Instance sim_heap_bij_bi_similar : BiSimilar _ locₛ locₜ :=
-    sim_heap_bij_elem.
+    Build_BiSimilar sim_heap_bij_elem.
 
   #[global] Instance sim_heap_bij_auth_timeless bij :
     Timeless (sim_heap_bij_auth bij).
@@ -103,7 +103,7 @@ Section sim_heap_bij_GS.
       ∃ vₛ vₜ,
       lₛ ↦ₛ vₛ ∗ lₜ ↦ₜ vₜ ∗ vₛ ≈ vₜ.
     #[global] Instance sim_heap_bij_bi_tie : BiTie (iProp Σ) locₛ locₜ :=
-      sim_heap_bij_tie.
+      Build_BiTie sim_heap_bij_tie.
 
     Definition sim_heap_bij_inv : iProp Σ :=
       ∃ bij,

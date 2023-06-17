@@ -45,8 +45,10 @@ Notation "(.@@ e )" := (λ C, fill C e)
 ( only parsing
 ) : stdpp_scope.
 
-Class Similar X1 X2 :=
-  similar : X1 → X2 → Prop.
+Class Similar X1 X2 := {
+  similar : X1 → X2 → Prop ;
+}.
+#[global] Arguments Build_Similar {_ _} _ : assert.
 Infix "≈" := similar
 ( at level 70,
   no associativity
@@ -61,8 +63,10 @@ Notation "(.≈ x2 )" := (λ x1, similar x1 x2)
 ( only parsing
 ) : stdpp_scope.
 
-Class BiSimilar PROP X1 X2 :=
-  bi_similar : X1 → X2 → PROP.
+Class BiSimilar PROP X1 X2 := {
+  bi_similar : X1 → X2 → PROP ;
+}.
+#[global] Arguments Build_BiSimilar {_ _ _} _ : assert.
 Infix "≈" := bi_similar
 ( at level 70,
   no associativity
@@ -77,25 +81,10 @@ Notation "(.≈ x2 )" := (λ x1, bi_similar x1 x2)
 ( only parsing
 ) : bi_scope.
 
-Class BiSimilarAt PROP Y X1 X2 :=
-  bi_similar_at : Y → X1 → X2 → PROP.
-Notation "x1 ≈{ y }≈ x2" := (bi_similar_at y x1 x2)
-( at level 70,
-  no associativity,
-  format "x1  ≈{ y }≈  x2"
-) : bi_scope.
-Notation "(≈{ y }≈)" := (bi_similar_at y)
-( only parsing
-) : bi_scope.
-Notation "( x1 ≈{ y }≈.)" := (bi_similar_at y x1)
-( only parsing
-) : bi_scope.
-Notation "(.≈{ y }≈ x2 )" := (λ x1, bi_similar_at y x1 x2)
-( only parsing
-) : bi_scope.
-
-Class BiTie PROP X1 X2 :=
-  bi_tie : X1 → X2 → PROP.
+Class BiTie PROP X1 X2 := {
+  bi_tie : X1 → X2 → PROP ;
+}.
+#[global] Arguments Build_BiTie {_ _ _} _ : assert.
 Infix "⋈" := bi_tie
 ( at level 70,
   no associativity
@@ -107,22 +96,5 @@ Notation "( x1 ⋈.)" := (bi_tie x1)
 ( only parsing
 ) : bi_scope.
 Notation "(.⋈ x2 )" := (λ x1, bi_tie x1 x2)
-( only parsing
-) : bi_scope.
-
-Class BiTieAt PROP Y X1 X2 :=
-  bi_tie_at : Y → X1 → X2 → PROP.
-Notation "x1 ⋈{ y }⋈ x2" := (bi_tie_at y x1 x2)
-( at level 70,
-  no associativity,
-  format "x1  ⋈{ y }⋈  x2"
-) : bi_scope.
-Notation "(⋈{ y }⋈)" := (bi_tie_at y)
-( only parsing
-) : bi_scope.
-Notation "( x1 ⋈{ y }⋈.)" := (bi_tie_at y x1)
-( only parsing
-) : bi_scope.
-Notation "(.⋈{ y }⋈ x2 )" := (λ x1, bi_tie_at y x1 x2)
 ( only parsing
 ) : bi_scope.
