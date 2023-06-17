@@ -73,8 +73,8 @@ Notation "{{{ P } } } eₛ ≳ eₜ [[ X ] ] {{{ Φ } } }" := (
   □ (
     ∀ Ψ,
     P%I -∗
-    (∀ eₛ eₜ, Ψ eₛ eₜ -∗ Φ eₛ eₜ) -∗
-    SIM eₛ ≳ eₜ [[ X ]] {{ Φ }}
+    (∀ eₛ eₜ, Φ eₛ eₜ -∗ Ψ eₛ eₜ) -∗
+    SIM eₛ ≳ eₜ [[ X ]] {{ Ψ }}
   )
 )%I (
   at level 20,
@@ -84,8 +84,8 @@ Notation "{{{ P } } } eₛ ≳ eₜ {{{ Φ } } }" := (
   □ (
     ∀ Ψ,
     P%I -∗
-    (∀ eₛ eₜ, Ψ eₛ eₜ -∗ Φ eₛ eₜ) -∗
-    SIM eₛ ≳ eₜ {{ Φ }}
+    (∀ eₛ eₜ, Φ eₛ eₜ -∗ Ψ eₛ eₜ) -∗
+    SIM eₛ ≳ eₜ {{ Ψ }}
   )
 )%I (
   at level 20,
@@ -95,8 +95,8 @@ Notation "[[[ P ] ] ] eₛ ≳ eₜ [[ X ] ] [[[ Φ ] ] ]" := (
   □ (
     ∀ Ψ,
     P%I -∗
-    (∀ eₛ eₜ, Ψ eₛ eₜ -∗ Φ eₛ eₜ) -∗
-    SIM eₛ ≳ eₜ [[ X ]] [[ Φ ]]
+    (∀ eₛ eₜ, Φ eₛ eₜ -∗ Ψ eₛ eₜ) -∗
+    SIM eₛ ≳ eₜ [[ X ]] [[ Ψ ]]
   )
 )%I (
   at level 20,
@@ -106,8 +106,8 @@ Notation "[[[ P ] ] ] eₛ ≳ eₜ [[[ Φ ] ] ]" := (
   □ (
     ∀ Ψ,
     P%I -∗
-    (∀ eₛ eₜ, Ψ eₛ eₜ -∗ Φ eₛ eₜ) -∗
-    SIM eₛ ≳ eₜ [[ Φ ]]
+    (∀ eₛ eₜ, Φ eₛ eₜ -∗ Ψ eₛ eₜ) -∗
+    SIM eₛ ≳ eₜ [[ Ψ ]]
   )
 )%I (
   at level 20,
@@ -117,24 +117,24 @@ Notation "[[[ P ] ] ] eₛ ≳ eₜ [[[ Φ ] ] ]" := (
 Notation "{{{ P } } } eₛ ≳ eₜ [[ X ] ] {{{ Φ } } }" := (
   ⊢ ∀ Ψ,
     P%I -∗
-    (∀ eₛ eₜ, Ψ eₛ eₜ -∗ Φ eₛ eₜ) -∗
-    SIM eₛ ≳ eₜ [[ X ]] {{ Φ }}
+    (∀ eₛ eₜ, Φ eₛ eₜ -∗ Ψ eₛ eₜ) -∗
+    SIM eₛ ≳ eₜ [[ X ]] {{ Ψ }}
 ) : stdpp_scope.
 Notation "{{{ P } } } eₛ ≳ eₜ {{{ Φ } } }" := (
   ⊢ ∀ Ψ,
     P%I -∗
-    (∀ eₛ eₜ, Ψ eₛ eₜ -∗ Φ eₛ eₜ) -∗
-    SIM eₛ ≳ eₜ {{ Φ }}
+    (∀ eₛ eₜ, Φ eₛ eₜ -∗ Ψ eₛ eₜ) -∗
+    SIM eₛ ≳ eₜ {{ Ψ }}
 ) : stdpp_scope.
 Notation "[[[ P ] ] ] eₛ ≳ eₜ [[ X ] ] [[[ Φ ] ] ]" := (
   ⊢ ∀ Ψ,
     P%I -∗
-    (∀ eₛ eₜ, Ψ eₛ eₜ -∗ Φ eₛ eₜ) -∗
-    SIM eₛ ≳ eₜ [[ X ]] [[ Φ ]]
+    (∀ eₛ eₜ, Φ eₛ eₜ -∗ Ψ eₛ eₜ) -∗
+    SIM eₛ ≳ eₜ [[ X ]] [[ Ψ ]]
 ) : stdpp_scope.
 Notation "[[[ P ] ] ] eₛ ≳ eₜ [[[ Φ ] ] ]" := (
   ⊢ ∀ Ψ,
     P%I -∗
-    (∀ eₛ eₜ, Ψ eₛ eₜ -∗ Φ eₛ eₜ) -∗
-    SIM eₛ ≳ eₜ [[ Φ ]]
+    (∀ eₛ eₜ, Φ eₛ eₜ -∗ Ψ eₛ eₜ) -∗
+    SIM eₛ ≳ eₜ [[ Ψ ]]
 ) : stdpp_scope.
