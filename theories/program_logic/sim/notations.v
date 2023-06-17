@@ -3,44 +3,32 @@ From simuliris Require Import
 From simuliris.program_logic Require Export
   sim.definition.
 
-Notation "'SIM' progₛ ; eₛ ≳ progₜ ; eₜ [[ X ] ] {{ Φ } }" := (
-  sim progₛ progₜ X Φ%I eₛ eₜ
-) (
-  at level 20,
-  progₛ, eₛ, progₜ, eₜ, X, Φ at level 200,
-  format "'[hv' SIM  progₛ ;  eₛ  ≳  progₜ ;  eₜ  [[  X  ] ]  {{  '/  ' '[' Φ ']'  '/' } } ']'"
+Notation "'SIM' eₛ ≳ eₜ [[ X ] ] {{ Φ } }" := (sim X Φ%I eₛ eₜ)
+( at level 20,
+  eₛ, eₜ, X, Φ at level 200,
+  format "'[hv' SIM  eₛ  ≳  eₜ  [[  X  ] ]  {{  '/  ' '[' Φ ']'  '/' } } ']'"
 ) : bi_scope.
-Notation "'SIM' progₛ ; eₛ ≳ progₜ ; eₜ {{ Φ } }" := (
-  SIM progₛ; eₛ ≳ progₜ; eₜ [[ ⊥ ]] {{ Φ }}
-)%I (
-  at level 20,
-  progₛ, eₛ, progₜ, eₜ, Φ at level 200,
-  format "'[hv' SIM  progₛ ;  eₛ  ≳  progₜ ;  eₜ  {{  '/  ' '[' Φ ']'  '/' } } ']'"
+Notation "'SIM' eₛ ≳ eₜ {{ Φ } }" := (sim ⊥ Φ%I eₛ eₜ)
+( at level 20,
+  eₛ, eₜ, Φ at level 200,
+  format "'[hv' SIM  eₛ  ≳  eₜ  {{  '/  ' '[' Φ ']'  '/' } } ']'"
 ) : bi_scope.
-Notation "'SIM' progₛ ; eₛ ≳ progₜ ; eₜ [[ X ] ] [[ Φ ] ]" := (
-  simv progₛ progₜ X Φ%I eₛ eₜ
-) (
-  at level 20,
-  progₛ, eₛ, progₜ, eₜ, X, Φ at level 200,
-  format "'[hv' SIM  progₛ ;  eₛ  ≳  progₜ ;  eₜ  [[  X  ] ]  [[  '/  ' '[' Φ ']'  '/' ] ] ']'"
+Notation "'SIM' eₛ ≳ eₜ [[ X ] ] [[ Φ ] ]" := (simv X Φ%I eₛ eₜ)
+( at level 20,
+  eₛ, eₜ, X, Φ at level 200,
+  format "'[hv' SIM  eₛ  ≳  eₜ  [[  X  ] ]  [[  '/  ' '[' Φ ']'  '/' ] ] ']'"
 ) : bi_scope.
-Notation "'SIM' progₛ ; eₛ ≳ progₜ ; eₜ [[ Φ ] ]" := (
-  SIM progₛ; eₛ ≳ progₜ; eₜ [[ ⊥ ]] [[ Φ ]]
-)%I (
-  at level 20,
-  progₛ, eₛ, progₜ, eₜ, Φ at level 200,
-  format "'[hv' SIM  progₛ ;  eₛ  ≳  progₜ ;  eₜ  [[  '/  ' '[' Φ ']'  '/' ] ] ']'"
+Notation "'SIM' eₛ ≳ eₜ [[ Φ ] ]" := (simv ⊥ Φ%I eₛ eₜ)
+( at level 20,
+  eₛ, eₜ, Φ at level 200,
+  format "'[hv' SIM  eₛ  ≳  eₜ  [[  '/  ' '[' Φ ']'  '/' ] ] ']'"
 ) : bi_scope.
 
-Notation "'SIM' progₛ ; eₛ ≳ progₜ ; eₜ [[ X ] ] {{ Φ } }" := (
-  ⊢ SIM progₛ; eₛ ≳ progₜ; eₜ [[ X ]] {{ Φ }}
-) : stdpp_scope.
-Notation "'SIM' progₛ ; eₛ ≳ progₜ ; eₜ {{ Φ } }" := (
-  ⊢ SIM progₛ; eₛ ≳ progₜ; eₜ {{ Φ }}
-) : stdpp_scope.
-Notation "'SIM' progₛ ; eₛ ≳ progₜ ; eₜ [[ X ] ] [[ Φ ] ]" := (
-  ⊢ SIM progₛ; eₛ ≳ progₜ; eₜ [[ X ]] [[ Φ ]]
-) : stdpp_scope.
-Notation "'SIM' progₛ ; eₛ ≳ progₜ ; eₜ [[ Φ ] ]" := (
-  ⊢ SIM progₛ; eₛ ≳ progₜ; eₜ [[ Φ ]]
-) : stdpp_scope.
+Notation "'SIM' eₛ ≳ eₜ [[ X ] ] {{ Φ } }" := (⊢ SIM eₛ ≳ eₜ [[ X ]] {{ Φ }})
+: stdpp_scope.
+Notation "'SIM' eₛ ≳ eₜ {{ Φ } }" := (⊢ SIM eₛ ≳ eₜ {{ Φ }})
+: stdpp_scope.
+Notation "'SIM' eₛ ≳ eₜ [[ X ] ] [[ Φ ] ]" := (⊢ SIM eₛ ≳ eₜ [[ X ]] [[ Φ ]])
+: stdpp_scope.
+Notation "'SIM' eₛ ≳ eₜ [[ Φ ] ]" := (⊢ SIM eₛ ≳ eₜ [[ Φ ]])
+: stdpp_scope.

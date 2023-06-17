@@ -41,51 +41,55 @@ Proof.
   intros (HsubGₛ & (HsubGₜ & _)%subG_inv)%subG_inv. split; apply _.
 Qed.
 
-#[global] Instance val_bi_similar `{sim_heap_bij_GS : !SimHeapBijGS Σ loc loc} : BiSimilar (iProp Σ) val val :=
-  λ vₛ vₜ,
-    match vₛ, vₜ with
-    | Unit, Unit =>
-        True
-    | Index idx1, Index idx2 =>
-        ⌜idx1 = idx2⌝
-    | Int nₛ, Int nₜ =>
-        ⌜nₛ = nₜ⌝
-    | Bool bₛ, Bool bₜ =>
-        ⌜bₛ = bₜ⌝
-    | Loc lₛ, Loc lₜ =>
-        (lₛ +ₗ 0) ≈ (lₜ +ₗ 0) ∗
-        (lₛ +ₗ 1) ≈ (lₜ +ₗ 1) ∗
-        (lₛ +ₗ 2) ≈ (lₜ +ₗ 2)
-    | Func funcₛ, Func funcₜ =>
-        ⌜funcₛ = funcₜ⌝
-    | _, _ =>
-        False
-    end%I.
+Section sim_programs.
+  Context `{sim_programs : !SimPrograms ectx_language ectx_language}.
 
-#[global] Instance val_bi_similar_persistent `{sim_GS : !SimGS Σ} vₛ vₜ :
-  Persistent (vₛ ≈ vₜ).
-Proof.
-  destruct vₛ, vₜ; apply _.
-Qed.
+  #[global] Instance val_bi_similar `{sim_heap_bij_GS : !SimHeapBijGS Σ loc loc} : BiSimilar (iProp Σ) val val :=
+    λ vₛ vₜ,
+      match vₛ, vₜ with
+      | Unit, Unit =>
+          True
+      | Index idx1, Index idx2 =>
+          ⌜idx1 = idx2⌝
+      | Int nₛ, Int nₜ =>
+          ⌜nₛ = nₜ⌝
+      | Bool bₛ, Bool bₜ =>
+          ⌜bₛ = bₜ⌝
+      | Loc lₛ, Loc lₜ =>
+          (lₛ +ₗ 0) ≈ (lₜ +ₗ 0) ∗
+          (lₛ +ₗ 1) ≈ (lₜ +ₗ 1) ∗
+          (lₛ +ₗ 2) ≈ (lₜ +ₗ 2)
+      | Func funcₛ, Func funcₜ =>
+          ⌜funcₛ = funcₜ ∧ funcₛ ∈ dom sim_progₛ⌝
+      | _, _ =>
+          False
+      end%I.
 
-#[global] Instance sim_state `{sim_GS : !SimGS Σ} : SimState (iProp Σ) ectx_language ectx_language :=
-  Build_SimState (
-    λ (σₛ σₜ : state),
-      sim_heap_interpₛ σₛ ∗
-      sim_heap_interpₜ σₜ ∗
-      sim_heap_bij_inv
-  )%I.
+  #[global] Instance val_bi_similar_persistent `{sim_GS : !SimGS Σ} vₛ vₜ :
+    Persistent (vₛ ≈ vₜ).
+  Proof.
+    destruct vₛ, vₜ; apply _.
+  Qed.
 
-Lemma sim_init `{sim_GpreS : !SimGpreS Σ} σₛ σₜ :
-  ⊢ |==>
-    ∃ sim_GS : SimGS Σ,
-    sim_state_interp σₛ σₜ ∗
-    ([∗ map] lₛ ↦ vₛ ∈ σₛ, lₛ ↦ₛ vₛ) ∗
-    ([∗ map] lₛ ↦ _ ∈ σₛ, meta_tokenₛ lₛ ⊤) ∗
-    ([∗ map] lₜ ↦ vₜ ∈ σₜ, lₜ ↦ₜ vₜ) ∗
-    ([∗ map] lₜ ↦ _ ∈ σₜ, meta_tokenₜ lₜ ⊤).
-Proof.
-  iMod (sim_heap_init σₛ σₜ) as "(%sim_heap_GS & Hheapₛ & Hmapstoₛ & Hmetasₛ & Hheapₜ & Hmapstoₜ & Hmetasₜ)".
-  iMod sim_heap_bij_init as "(%sim_heap_bij_GS & Hbij)".
-  iExists (Build_SimGS Σ). auto with iFrame.
-Qed.
+  #[global] Instance sim_state `{sim_GS : !SimGS Σ} : SimState (iProp Σ) ectx_language ectx_language :=
+    Build_SimState (
+      λ (σₛ σₜ : state),
+        sim_heap_interpₛ σₛ ∗
+        sim_heap_interpₜ σₜ ∗
+        sim_heap_bij_inv
+    )%I.
+
+  Lemma sim_init `{sim_GpreS : !SimGpreS Σ} σₛ σₜ :
+    ⊢ |==>
+      ∃ sim_GS : SimGS Σ,
+      sim_state_interp σₛ σₜ ∗
+      ([∗ map] lₛ ↦ vₛ ∈ σₛ, lₛ ↦ₛ vₛ) ∗
+      ([∗ map] lₛ ↦ _ ∈ σₛ, meta_tokenₛ lₛ ⊤) ∗
+      ([∗ map] lₜ ↦ vₜ ∈ σₜ, lₜ ↦ₜ vₜ) ∗
+      ([∗ map] lₜ ↦ _ ∈ σₜ, meta_tokenₜ lₜ ⊤).
+  Proof.
+    iMod (sim_heap_init σₛ σₜ) as "(%sim_heap_GS & Hheapₛ & Hmapstoₛ & Hmetasₛ & Hheapₜ & Hmapstoₜ & Hmetasₜ)".
+    iMod sim_heap_bij_init as "(%sim_heap_bij_GS & Hbij)".
+    iExists (Build_SimGS Σ). auto with iFrame.
+  Qed.
+End sim_programs.

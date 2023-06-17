@@ -39,102 +39,102 @@ Notation "l ↦ₜ v" := (l ↦ₜ{#1} v)%I
   format "l  ↦ₜ  v"
 ) : bi_scope.
 
-Notation "'SIM' progₛ ; eₛ ≳ progₜ ; eₜ [[ X ] ] {{ Φ } }" := (
-  sim progₛ progₜ X Φ%I eₛ%E eₜ%E
-) (
-  at level 20,
-  progₛ, eₛ, progₜ, eₜ, X, Φ at level 200,
-  format "'[hv' SIM  progₛ ;  eₛ  ≳  progₜ ;  eₜ  [[  X  ] ]  {{  '/  ' '[' Φ ']'  '/' } } ']'"
+Notation "'SIM' eₛ ≳ eₜ [[ X ] ] {{ Φ } }" := (sim X Φ%I eₛ%E eₜ%E)
+( at level 20,
+  eₛ, eₜ, X, Φ at level 200,
+  format "'[hv' SIM  eₛ  ≳  eₜ  [[  X  ] ]  {{  '/  ' '[' Φ ']'  '/' } } ']'"
 ) : bi_scope.
-Notation "'SIM' progₛ ; eₛ ≳ progₜ ; eₜ {{ Φ } }" := (
-  SIM progₛ; eₛ ≳ progₜ; eₜ [[ ⊥ ]] {{ Φ }}
-)%I (
-  at level 20,
-  progₛ, eₛ, progₜ, eₜ, Φ at level 200,
-  format "'[hv' SIM  progₛ ;  eₛ  ≳  progₜ ;  eₜ  {{  '/  ' '[' Φ ']'  '/' } } ']'"
+Notation "'SIM' eₛ ≳ eₜ {{ Φ } }" := (SIM eₛ ≳ eₜ [[ ⊥ ]] {{ Φ }})%I
+( at level 20,
+  eₛ, eₜ, Φ at level 200,
+  format "'[hv' SIM  eₛ  ≳  eₜ  {{  '/  ' '[' Φ ']'  '/' } } ']'"
 ) : bi_scope.
-Notation "'SIM' progₛ ; eₛ ≳ progₜ ; eₜ [[ X ] ] [[ Φ ] ]" := (
-  simv progₛ progₜ X Φ%I eₛ%E eₜ%E
-) (
-  at level 20,
-  progₛ, eₛ, progₜ, eₜ, X, Φ at level 200,
-  format "'[hv' SIM  progₛ ;  eₛ  ≳  progₜ ;  eₜ  [[  X  ] ]  [[  '/  ' '[' Φ ']'  '/' ] ] ']'"
+Notation "'SIM' eₛ ≳ eₜ [[ X ] ] [[ Φ ] ]" := (simv X Φ%I eₛ%E eₜ%E)
+( at level 20,
+  eₛ, eₜ, X, Φ at level 200,
+  format "'[hv' SIM  eₛ  ≳  eₜ  [[  X  ] ]  [[  '/  ' '[' Φ ']'  '/' ] ] ']'"
 ) : bi_scope.
-Notation "'SIM' progₛ ; eₛ ≳ progₜ ; eₜ [[ Φ ] ]" := (
-  SIM progₛ; eₛ ≳ progₜ; eₜ [[ ⊥ ]] [[ Φ ]]
-)%I (
-  at level 20,
-  progₛ, eₛ, progₜ, eₜ, Φ at level 200,
-  format "'[hv' SIM  progₛ ;  eₛ  ≳  progₜ ;  eₜ  [[  '/  ' '[' Φ ']'  '/' ] ] ']'"
+Notation "'SIM' eₛ ≳ eₜ [[ Φ ] ]" := (SIM eₛ ≳ eₜ [[ ⊥ ]] [[ Φ ]])%I
+( at level 20,
+  eₛ, eₜ, Φ at level 200,
+  format "'[hv' SIM  eₛ  ≳  eₜ  [[  '/  ' '[' Φ ']'  '/' ] ] ']'"
 ) : bi_scope.
 
-Notation "'SIM' progₛ ; eₛ ≳ progₜ ; eₜ [[ X ] ] {{ Φ } }" := (
-  ⊢ SIM progₛ; eₛ ≳ progₜ; eₜ [[ X ]] {{ Φ }}
-) : stdpp_scope.
-Notation "'SIM' progₛ ; eₛ ≳ progₜ ; eₜ {{ Φ } }" := (
-  ⊢ SIM progₛ; eₛ ≳ progₜ; eₜ {{ Φ }}
-) : stdpp_scope.
-Notation "'SIM' progₛ ; eₛ ≳ progₜ ; eₜ [[ X ] ] [[ Φ ] ]" := (
-  ⊢ SIM progₛ; eₛ ≳ progₜ; eₜ [[ X ]] [[ Φ ]]
-) : stdpp_scope.
-Notation "'SIM' progₛ ; eₛ ≳ progₜ ; eₜ [[ Φ ] ]" := (
-  ⊢ SIM progₛ; eₛ ≳ progₜ; eₜ [[ Φ ]]
-) : stdpp_scope.
+Notation "'SIM' eₛ ≳ eₜ [[ X ] ] {{ Φ } }" := (⊢ SIM eₛ ≳ eₜ [[ X ]] {{ Φ }})
+: stdpp_scope.
+Notation "'SIM' eₛ ≳ eₜ {{ Φ } }" := (⊢ SIM eₛ ≳ eₜ {{ Φ }})
+: stdpp_scope.
+Notation "'SIM' eₛ ≳ eₜ [[ X ] ] [[ Φ ] ]" := (⊢ SIM eₛ ≳ eₜ [[ X ]] [[ Φ ]])
+: stdpp_scope.
+Notation "'SIM' eₛ ≳ eₜ [[ Φ ] ]" := (⊢ SIM eₛ ≳ eₜ [[ Φ ]])
+: stdpp_scope.
 
-Notation "{{{ P } } } progₛ ; eₛ ≳ progₜ ; eₜ [[ X ] ] {{{ Φ } } }" := (
+Notation "{{{ P } } } eₛ ≳ eₜ [[ X ] ] {{{ Φ } } }" := (
   □ (
     ∀ Ψ,
     P%I -∗
     (∀ eₛ eₜ, Ψ eₛ eₜ -∗ Φ eₛ eₜ) -∗
-    SIM progₛ; eₛ ≳ progₜ; eₜ [[ X ]] {{ Φ }}
+    SIM eₛ ≳ eₜ [[ X ]] {{ Φ }}
   )
 )%I (
   at level 20,
-  format "'[hv' {{{  '/  ' '[' P ']'  '/' } } }  '/  ' progₛ ;  eₛ  ≳  progₜ ;  eₜ  [[  X  ] ]  '/' {{{  '/  ' '[' Φ ']'  '/' } } } ']'"
+  format "'[hv' {{{  '/  ' '[' P ']'  '/' } } }  '/  ' eₛ  ≳  eₜ  [[  X  ] ]  '/' {{{  '/  ' '[' Φ ']'  '/' } } } ']'"
 ) : bi_scope.
-Notation "{{{ P } } } progₛ ; eₛ ≳ progₜ ; eₜ {{{ Φ } } }" := (
+Notation "{{{ P } } } eₛ ≳ eₜ {{{ Φ } } }" := (
   □ (
     ∀ Ψ,
     P%I -∗
     (∀ eₛ eₜ, Ψ eₛ eₜ -∗ Φ eₛ eₜ) -∗
-    SIM progₛ; eₛ ≳ progₜ; eₜ {{ Φ }}
+    SIM eₛ ≳ eₜ {{ Φ }}
   )
 )%I (
   at level 20,
-  format "'[hv' {{{  '/  ' '[' P ']'  '/' } } }  '/  ' progₛ ;  eₛ  ≳  progₜ ;  eₜ  '/' {{{  '/  ' '[' Φ ']'  '/' } } } ']'"
+  format "'[hv' {{{  '/  ' '[' P ']'  '/' } } }  '/  ' eₛ  ≳  eₜ  '/' {{{  '/  ' '[' Φ ']'  '/' } } } ']'"
 ) : bi_scope.
-Notation "[[[ P ] ] ] progₛ ; eₛ ≳ progₜ ; eₜ [[ X ] ] [[[ Φ ] ] ]" := (
+Notation "[[[ P ] ] ] eₛ ≳ eₜ [[ X ] ] [[[ Φ ] ] ]" := (
   □ (
     ∀ Ψ,
     P%I -∗
     (∀ eₛ eₜ, Ψ eₛ eₜ -∗ Φ eₛ eₜ) -∗
-    SIM progₛ; eₛ ≳ progₜ; eₜ [[ X ]] [[ Φ ]]
+    SIM eₛ ≳ eₜ [[ X ]] [[ Φ ]]
   )
 )%I (
   at level 20,
-  format "'[hv' [[[  '/  ' '[' P ']'  '/' ] ] ]  '/  ' progₛ ;  eₛ  ≳  progₜ ;  eₜ  [[  X  ] ]  '/' [[[  '/  ' '[' Φ ']'  '/' ] ] ] ']'"
+  format "'[hv' [[[  '/  ' '[' P ']'  '/' ] ] ]  '/  ' eₛ  ≳  eₜ  [[  X  ] ]  '/' [[[  '/  ' '[' Φ ']'  '/' ] ] ] ']'"
 ) : bi_scope.
-Notation "[[[ P ] ] ] progₛ ; eₛ ≳ progₜ ; eₜ [[[ Φ ] ] ]" := (
+Notation "[[[ P ] ] ] eₛ ≳ eₜ [[[ Φ ] ] ]" := (
   □ (
     ∀ Ψ,
     P%I -∗
     (∀ eₛ eₜ, Ψ eₛ eₜ -∗ Φ eₛ eₜ) -∗
-    SIM progₛ; eₛ ≳ progₜ; eₜ [[ Φ ]]
+    SIM eₛ ≳ eₜ [[ Φ ]]
   )
 )%I (
   at level 20,
-  format "'[hv' [[[  '/  ' '[' P ']'  '/' ] ] ]  '/  ' progₛ ;  eₛ  ≳  progₜ ;  eₜ  '/' [[[  '/  ' '[' Φ ']'  '/' ] ] ] ']'"
+  format "'[hv' [[[  '/  ' '[' P ']'  '/' ] ] ]  '/  ' eₛ  ≳  eₜ  '/' [[[  '/  ' '[' Φ ']'  '/' ] ] ] ']'"
 ) : bi_scope.
 
-Notation "{{{ P } } } progₛ ; eₛ ≳ progₜ ; eₜ [[ X ] ] {{{ Φ } } }" := (
-  ⊢ {{{ P }}} progₛ; eₛ ≳ progₜ; eₜ [[ X ]] {{{ Φ }}}
+Notation "{{{ P } } } eₛ ≳ eₜ [[ X ] ] {{{ Φ } } }" := (
+  ∀ Ψ,
+  P%I -∗
+  (∀ eₛ eₜ, Ψ eₛ eₜ -∗ Φ eₛ eₜ) -∗
+  SIM eₛ ≳ eₜ [[ X ]] {{ Φ }}
 ) : stdpp_scope.
-Notation "{{{ P } } } progₛ ; eₛ ≳ progₜ ; eₜ {{{ Φ } } }" := (
-  ⊢ {{{ P }}} progₛ; eₛ ≳ progₜ; eₜ {{{ Φ }}}
+Notation "{{{ P } } } eₛ ≳ eₜ {{{ Φ } } }" := (
+  ∀ Ψ,
+  P%I -∗
+  (∀ eₛ eₜ, Ψ eₛ eₜ -∗ Φ eₛ eₜ) -∗
+  SIM eₛ ≳ eₜ {{ Φ }}
 ) : stdpp_scope.
-Notation "[[[ P ] ] ] progₛ ; eₛ ≳ progₜ ; eₜ [[ X ] ] [[[ Φ ] ] ]" := (
-  ⊢ [[[ P ]]] progₛ; eₛ ≳ progₜ; eₜ [[ X ]] [[[ Φ ]]]
+Notation "[[[ P ] ] ] eₛ ≳ eₜ [[ X ] ] [[[ Φ ] ] ]" := (
+  ∀ Ψ,
+  P%I -∗
+  (∀ eₛ eₜ, Ψ eₛ eₜ -∗ Φ eₛ eₜ) -∗
+  SIM eₛ ≳ eₜ [[ X ]] [[ Φ ]]
 ) : stdpp_scope.
-Notation "[[[ P ] ] ] progₛ ; eₛ ≳ progₜ ; eₜ [[[ Φ ] ] ]" := (
-  ⊢ [[[ P ]]] progₛ; eₛ ≳ progₜ; eₜ [[[ Φ ]]]
+Notation "[[[ P ] ] ] eₛ ≳ eₜ [[[ Φ ] ] ]" := (
+  ∀ Ψ,
+  P%I -∗
+  (∀ eₛ eₜ, Ψ eₛ eₜ -∗ Φ eₛ eₜ) -∗
+  SIM eₛ ≳ eₜ [[ Φ ]]
 ) : stdpp_scope.

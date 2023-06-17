@@ -13,7 +13,13 @@ Class SimState PROP Λₛ Λₜ := {
 }.
 #[global] Arguments Build_SimState {_ _ _} _ : assert.
 
-Section sim_state.
+Class SimPrograms Λₛ Λₜ := {
+  sim_progₛ : program Λₛ ;
+  sim_progₜ : program Λₜ ;
+}.
+#[global] Arguments Build_SimPrograms {_ _} _ _ : assert.
+
+Section sim.
   Context `{!BiBUpd PROP, !BiAffine PROP}.
   Context `{sim_state : !SimState PROP Λₛ Λₜ}.
 
@@ -67,7 +73,7 @@ Section sim_state.
 
   #[global] Opaque sim_cupd.
 
-  Context (progₛ : program Λₛ) (progₜ : program Λₜ).
+  Context `{sim_programs : !SimPrograms Λₛ Λₜ}.
   Context (X : sim_protocol PROP Λₛ Λₜ).
   Implicit Types N M I : sim_protocol_O PROP Λₛ Λₜ.
   Implicit Types R : expr_relation_O → expr_relation_O → PROP.
@@ -77,21 +83,21 @@ Section sim_state.
       ∀ σₛ σₜ,
       sim_state_interp σₛ σₜ ==∗ (
         sim_state_interp σₛ σₜ ∗
-        (⌜strongly_stuck progₛ eₛ ∧ strongly_stuck progₜ eₜ⌝ ∨ Φ eₛ eₜ)
+        (⌜strongly_stuck sim_progₛ eₛ ∧ strongly_stuck sim_progₜ eₜ⌝ ∨ Φ eₛ eₜ)
       ) ∨ (
         ∃ eₛ' σₛ',
-        ⌜tc (step progₛ) (eₛ, σₛ) (eₛ', σₛ')⌝ ∗
+        ⌜tc (step sim_progₛ) (eₛ, σₛ) (eₛ', σₛ')⌝ ∗
         sim_state_interp σₛ' σₜ ∗
         M Φ eₛ' eₜ
       ) ∨ (
-        ⌜reducible progₜ eₜ σₜ⌝ ∗
+        ⌜reducible sim_progₜ eₜ σₜ⌝ ∗
           ∀ eₜ' σₜ',
-          ⌜prim_step progₜ eₜ σₜ eₜ' σₜ'⌝ ==∗ (
+          ⌜prim_step sim_progₜ eₜ σₜ eₜ' σₜ'⌝ ==∗ (
             sim_state_interp σₛ σₜ' ∗
             M Φ eₛ eₜ'
           ) ∨ (
             ∃ eₛ' σₛ',
-            ⌜tc (step progₛ) (eₛ, σₛ) (eₛ', σₛ')⌝ ∗
+            ⌜tc (step sim_progₛ) (eₛ, σₛ) (eₛ', σₛ')⌝ ∗
             sim_state_interp σₛ' σₜ' ∗
             N Φ eₛ' eₜ'
           )
@@ -142,4 +148,4 @@ Section sim_state.
   #[local] Definition simv_unseal : @simv = @simv_def :=
     simv_aux.(seal_eq).
   #[global] Arguments simv _%I _ _ : assert.
-End sim_state.
+End sim.

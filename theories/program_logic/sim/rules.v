@@ -64,30 +64,23 @@ From simuliris.program_logic Require Import
 ( only parsing
 ) : stdpp_scope.
 
-Section sim_state.
+Section sim.
   Context `{!BiBUpd PROP, !BiAffine PROP}.
   Context `{sim_state : !SimState PROP Λₛ Λₜ}.
-  Context (progₛ : program Λₛ) (progₜ : program Λₜ).
+  Context `{sim_programs : !SimPrograms Λₛ Λₜ}.
 
   Notation sim_protocol := (sim_protocol PROP Λₛ Λₜ).
   Notation sim_protocol_O := (sim_protocol_O PROP Λₛ Λₜ).
   Implicit Types X : sim_protocol.
   Implicit Types N M I : sim_protocol_O.
 
-  Notation sim_body := (sim_body progₛ progₜ).
-  Notation sim_body' := (definition.sim_body' progₛ progₜ).
-  Notation sim_inner := (sim_inner progₛ progₜ).
-  Notation sim_inner' := (definition.sim_inner' progₛ progₜ).
-  Notation sim := (sim progₛ progₜ).
-  Notation simv := (simv progₛ progₜ).
-
   Section protocol.
     Context X.
 
     Notation sim_body := (sim_body X).
-    Notation sim_body' := (sim_body' X).
+    Notation sim_body' := (definition.sim_body' X).
     Notation sim_inner := (sim_inner X).
-    Notation sim_inner' := (sim_inner' X).
+    Notation sim_inner' := (definition.sim_inner' X).
     Notation sim := (sim X).
     Notation simv := (simv X).
 
@@ -144,16 +137,16 @@ Section sim_state.
       Qed.
 
       Lemma sim_body_strongly_stuck N M eₛ eₜ Φ :
-        strongly_stuck progₛ eₛ →
-        strongly_stuck progₜ eₜ →
+        strongly_stuck sim_progₛ eₛ →
+        strongly_stuck sim_progₜ eₜ →
         ⊢ sim_body N M Φ eₛ eₜ.
       Proof.
         iIntros "%Hstuckₛ %Hstuckₜ %σₛ %σₜ Hsi !>".
         auto with iFrame.
       Qed.
       Lemma sim_body_strongly_head_stuck N M eₛ eₜ Φ :
-        strongly_head_stuck progₛ eₛ →
-        strongly_head_stuck progₜ eₜ →
+        strongly_head_stuck sim_progₛ eₛ →
+        strongly_head_stuck sim_progₜ eₜ →
         ⊢ sim_body N M Φ eₛ eₜ.
       Proof.
         intros.
@@ -171,7 +164,7 @@ Section sim_state.
         ( ∀ σₛ σₜ,
           sim_state_interp σₛ σₜ ==∗
             ∃ eₛ' σₛ',
-            ⌜tc (step progₛ) (eₛ, σₛ) (eₛ', σₛ')⌝ ∗
+            ⌜tc (step sim_progₛ) (eₛ, σₛ) (eₛ', σₛ')⌝ ∗
             sim_state_interp σₛ' σₜ ∗
             M Φ eₛ' eₜ
         ) -∗
@@ -184,9 +177,9 @@ Section sim_state.
       Lemma sim_body_soloₜ N M eₛ eₜ Φ :
         ( ∀ σₛ σₜ,
           sim_state_interp σₛ σₜ ==∗
-            ⌜reducible progₜ eₜ σₜ⌝ ∗
+            ⌜reducible sim_progₜ eₜ σₜ⌝ ∗
               ∀ eₜ' σₜ',
-              ⌜prim_step progₜ eₜ σₜ eₜ' σₜ'⌝ ==∗
+              ⌜prim_step sim_progₜ eₜ σₜ eₜ' σₜ'⌝ ==∗
                 sim_state_interp σₛ σₜ' ∗
                 M Φ eₛ eₜ'
         ) -∗
@@ -202,11 +195,11 @@ Section sim_state.
       Lemma sim_body_sync N M eₛ eₜ Φ :
         ( ∀ σₛ σₜ,
           sim_state_interp σₛ σₜ ==∗
-            ⌜reducible progₜ eₜ σₜ⌝ ∗
+            ⌜reducible sim_progₜ eₜ σₜ⌝ ∗
               ∀ eₜ' σₜ',
-              ⌜prim_step progₜ eₜ σₜ eₜ' σₜ'⌝ ==∗
+              ⌜prim_step sim_progₜ eₜ σₜ eₜ' σₜ'⌝ ==∗
                 ∃ eₛ' σₛ',
-                ⌜tc (step progₛ) (eₛ, σₛ) (eₛ', σₛ')⌝ ∗
+                ⌜tc (step sim_progₛ) (eₛ, σₛ) (eₛ', σₛ')⌝ ∗
                 sim_state_interp σₛ' σₜ' ∗
                 N Φ eₛ' eₜ'
         ) -∗
@@ -540,16 +533,16 @@ Section sim_state.
 
       Lemma sim_inner_strongly_stuck N eₛ eₜ Φ :
         NonExpansive N →
-        strongly_stuck progₛ eₛ →
-        strongly_stuck progₜ eₜ →
+        strongly_stuck sim_progₛ eₛ →
+        strongly_stuck sim_progₜ eₜ →
         ⊢ sim_inner N Φ eₛ eₜ.
       Proof.
         intros HN. rewrite sim_inner_fixpoint. apply sim_body_strongly_stuck.
       Qed.
       Lemma sim_inner_strongly_head_stuck N eₛ eₜ Φ :
         NonExpansive N →
-        strongly_head_stuck progₛ eₛ →
-        strongly_head_stuck progₜ eₜ →
+        strongly_head_stuck sim_progₛ eₛ →
+        strongly_head_stuck sim_progₜ eₜ →
         ⊢ sim_inner N Φ eₛ eₜ.
       Proof.
         intros HN. rewrite sim_inner_fixpoint. apply sim_body_strongly_head_stuck.
@@ -851,15 +844,15 @@ Section sim_state.
       Qed.
 
       Lemma sim_strongly_stuck eₛ eₜ Φ :
-        strongly_stuck progₛ eₛ →
-        strongly_stuck progₜ eₜ →
+        strongly_stuck sim_progₛ eₛ →
+        strongly_stuck sim_progₜ eₜ →
         ⊢ sim Φ eₛ eₜ.
       Proof.
         rewrite sim_fixpoint. apply sim_inner_strongly_stuck. solve_proper.
       Qed.
       Lemma sim_strongly_head_stuck eₛ eₜ Φ :
-        strongly_head_stuck progₛ eₛ →
-        strongly_head_stuck progₜ eₜ →
+        strongly_head_stuck sim_progₛ eₛ →
+        strongly_head_stuck sim_progₜ eₜ →
         ⊢ sim Φ eₛ eₜ.
       Proof.
         rewrite sim_fixpoint. apply sim_inner_strongly_head_stuck. solve_proper.
@@ -955,20 +948,20 @@ Section sim_state.
       Qed.
 
       Lemma sim_bind Kₛ eₛ Kₜ eₜ Φ :
-        SIM progₛ; eₛ ≳ progₜ; eₜ [[ X ]] {{ λ eₛ' eₜ',
-          SIM progₛ; Kₛ @@ eₛ' ≳ progₜ; Kₜ @@ eₜ' [[ X ]] {{ Φ }}
+        SIM eₛ ≳ eₜ [[ X ]] {{ λ eₛ' eₜ',
+          SIM Kₛ @@ eₛ' ≳ Kₜ @@ eₜ' [[ X ]] {{ Φ }}
         }} -∗
-        SIM progₛ; Kₛ @@ eₛ ≳ progₜ; Kₜ @@ eₜ [[ X ]] {{ Φ }}.
+        SIM Kₛ @@ eₛ ≳ Kₜ @@ eₜ [[ X ]] {{ Φ }}.
       Proof.
         set I : sim_protocol_O := λ Φ eₛ'' eₜ'', (
           ∃ Kₛ eₛ Kₜ eₜ,
           ⌜eₛ'' = Kₛ @@ eₛ ∧ eₜ'' = Kₜ @@ eₜ⌝ ∗
-          SIM progₛ; eₛ ≳ progₜ; eₜ [[ X ]] {{ λ eₛ' eₜ',
-            SIM progₛ; Kₛ @@ eₛ' ≳ progₜ; Kₜ @@ eₜ' [[ X ]] {{ Φ }}
+          SIM eₛ ≳ eₜ [[ X ]] {{ λ eₛ' eₜ',
+            SIM Kₛ @@ eₛ' ≳ Kₜ @@ eₜ' [[ X ]] {{ Φ }}
           }}
         )%I.
         assert (NonExpansive I) as HI by solve_proper+.
-        enough (∀ eₛ eₜ, I Φ eₛ eₜ -∗ SIM progₛ; eₛ ≳ progₜ; eₜ [[ X ]] {{ Φ }}) as H.
+        enough (∀ eₛ eₜ, I Φ eₛ eₜ -∗ SIM eₛ ≳ eₜ [[ X ]] {{ Φ }}) as H.
         { iIntros "Hsim". iApply H. iExists Kₛ, eₛ, Kₜ, eₜ. auto. }
         iApply (sim_coind with "[]"). clear Φ Kₛ eₛ Kₜ eₜ. iIntros "!> %Φ %eₛ'' %eₜ'' (%Kₛ & %eₛ & %Kₜ & %eₜ & (-> & ->) & Hsim)".
         rewrite sim_fixpoint. iApply (sim_inner_bind with "Hsim"); first solve_proper.
@@ -980,31 +973,31 @@ Section sim_state.
           iApply sim_post. rewrite !fill_empty //.
       Qed.
       Lemma sim_bind' Kₛ eₛ Kₜ eₜ Φ1 Φ2 :
-        SIM progₛ; eₛ ≳ progₜ; eₜ [[ X ]] {{ Φ1 }} -∗
+        SIM eₛ ≳ eₜ [[ X ]] {{ Φ1 }} -∗
         ( ∀ eₛ' eₜ',
           Φ1 eₛ' eₜ' -∗
-          SIM progₛ; Kₛ @@ eₛ' ≳ progₜ; Kₜ @@ eₜ' [[ X ]] {{ Φ2 }}
+          SIM Kₛ @@ eₛ' ≳ Kₜ @@ eₜ' [[ X ]] {{ Φ2 }}
         ) -∗
-        SIM progₛ; Kₛ @@ eₛ ≳ progₜ; Kₜ @@ eₜ [[ X ]] {{ Φ2 }}.
+        SIM Kₛ @@ eₛ ≳ Kₜ @@ eₜ [[ X ]] {{ Φ2 }}.
       Proof.
         iIntros "Hsim HΦ1".
         iApply sim_bind. iApply (sim_mono with "HΦ1 Hsim").
       Qed.
       Lemma sim_bindₛ K eₛ eₜ Φ :
-        SIM progₛ; eₛ ≳ progₜ; eₜ [[ X ]] {{ λ eₛ' eₜ',
-          SIM progₛ; K @@ eₛ' ≳ progₜ; eₜ' [[ X ]] {{ Φ }}
+        SIM eₛ ≳ eₜ [[ X ]] {{ λ eₛ' eₜ',
+          SIM K @@ eₛ' ≳ eₜ' [[ X ]] {{ Φ }}
         }} -∗
-        SIM progₛ; K @@ eₛ ≳ progₜ; eₜ [[ X ]] {{ Φ }}.
+        SIM K @@ eₛ ≳ eₜ [[ X ]] {{ Φ }}.
       Proof.
         rewrite -{2}(fill_empty eₜ) -(sim_bind ∅).
         iApply (sim_mono with "[]"). iIntros "%eₛ' %eₜ'".
         rewrite fill_empty. auto.
       Qed.
       Lemma sim_bindₜ eₛ K eₜ Φ :
-        SIM progₛ; eₛ ≳ progₜ; eₜ [[ X ]] {{ λ eₛ' eₜ',
-          SIM progₛ; eₛ' ≳ progₜ; K @@ eₜ' [[ X ]] {{ Φ }}
+        SIM eₛ ≳ eₜ [[ X ]] {{ λ eₛ' eₜ',
+          SIM eₛ' ≳ K @@ eₜ' [[ X ]] {{ Φ }}
         }} -∗
-        SIM progₛ; eₛ ≳ progₜ; K @@ eₜ [[ X ]] {{ Φ }}.
+        SIM eₛ ≳ K @@ eₜ [[ X ]] {{ Φ }}.
       Proof.
         rewrite -{2}(fill_empty eₛ) -(sim_bind ∅).
         iApply (sim_mono with "[]"). iIntros "%eₛ' %eₜ'".
@@ -1012,37 +1005,37 @@ Section sim_state.
       Qed.
 
       Lemma sim_bind_inv Kₛ eₛ Kₜ eₜ Φ :
-        SIM progₛ; Kₛ @@ eₛ ≳ progₜ; Kₜ @@ eₜ [[ X ]] {{ Φ }} -∗
-        SIM progₛ; eₛ ≳ progₜ; eₜ [[ X ]] {{ λ eₛ' eₜ',
-          SIM progₛ; Kₛ @@ eₛ' ≳ progₜ; Kₜ @@ eₜ' [[ X ]] {{ Φ }}
+        SIM Kₛ @@ eₛ ≳ Kₜ @@ eₜ [[ X ]] {{ Φ }} -∗
+        SIM eₛ ≳ eₜ [[ X ]] {{ λ eₛ' eₜ',
+          SIM Kₛ @@ eₛ' ≳ Kₜ @@ eₜ' [[ X ]] {{ Φ }}
         }}.
       Proof.
         iIntros "Hsim". iApply sim_post. done.
       Qed.
       Lemma sim_bind_invₛ K eₛ eₜ Φ :
-        SIM progₛ; K @@ eₛ ≳ progₜ; eₜ [[ X ]] {{ Φ }} -∗
-        SIM progₛ; eₛ ≳ progₜ; eₜ [[ X ]] {{ λ eₛ' eₜ',
-          SIM progₛ; K @@ eₛ' ≳ progₜ; eₜ' [[ X ]] {{ Φ }}
+        SIM K @@ eₛ ≳ eₜ [[ X ]] {{ Φ }} -∗
+        SIM eₛ ≳ eₜ [[ X ]] {{ λ eₛ' eₜ',
+          SIM K @@ eₛ' ≳ eₜ' [[ X ]] {{ Φ }}
         }}.
       Proof.
         iIntros "Hsim". iApply sim_post. done.
       Qed.
       Lemma sim_bind_invₜ eₛ K eₜ Φ :
-        SIM progₛ; eₛ ≳ progₜ; K @@ eₜ [[ X ]] {{ Φ }} -∗
-        SIM progₛ; eₛ ≳ progₜ; eₜ [[ X ]] {{ λ eₛ' eₜ',
-          SIM progₛ; eₛ' ≳ progₜ; K @@ eₜ' [[ X ]] {{ Φ }}
+        SIM eₛ ≳ K @@ eₜ [[ X ]] {{ Φ }} -∗
+        SIM eₛ ≳ eₜ [[ X ]] {{ λ eₛ' eₜ',
+          SIM eₛ' ≳ K @@ eₜ' [[ X ]] {{ Φ }}
         }}.
       Proof.
         iIntros "Hsim". iApply sim_post. done.
       Qed.
 
       Lemma sim_decompose eₛ eₜ Φ1 Φ2 :
-        SIM progₛ; eₛ ≳ progₜ; eₜ [[ X ]] {{ Φ1 }} -∗
+        SIM eₛ ≳ eₜ [[ X ]] {{ Φ1 }} -∗
         ( ∀ eₛ' eₜ',
           Φ1 eₛ' eₜ' -∗
-          SIM progₛ; eₛ' ≳ progₜ; eₜ' [[ X ]] {{ Φ2 }}
+          SIM eₛ' ≳ eₜ' [[ X ]] {{ Φ2 }}
         ) -∗
-        SIM progₛ; eₛ ≳ progₜ; eₜ [[ X ]] {{ Φ2 }}.
+        SIM eₛ ≳ eₜ [[ X ]] {{ Φ2 }}.
       Proof.
         iIntros "Hsim1 Hsim2".
         iEval (rewrite -(fill_empty eₛ) -(fill_empty eₜ)). iApply sim_bind.
@@ -1053,15 +1046,15 @@ Section sim_state.
       Lemma sim_steps eₛ eₜ Φ :
         ( ∀ σₛ σₜ,
           sim_state_interp σₛ σₜ ==∗
-            ⌜reducible progₜ eₜ σₜ⌝ ∗
+            ⌜reducible sim_progₜ eₜ σₜ⌝ ∗
               ∀ eₜ' σₜ',
-              ⌜prim_step progₜ eₜ σₜ eₜ' σₜ'⌝ ==∗
+              ⌜prim_step sim_progₜ eₜ σₜ eₜ' σₜ'⌝ ==∗
                 ∃ eₛ' σₛ',
-                ⌜rtc (step progₛ) (eₛ, σₛ) (eₛ', σₛ')⌝ ∗
+                ⌜rtc (step sim_progₛ) (eₛ, σₛ) (eₛ', σₛ')⌝ ∗
                 sim_state_interp σₛ' σₜ' ∗
-                SIM progₛ; eₛ' ≳ progₜ; eₜ' [[ X ]] {{ Φ }}
+                SIM eₛ' ≳ eₜ' [[ X ]] {{ Φ }}
         ) -∗
-        SIM progₛ; eₛ ≳ progₜ; eₜ [[ X ]] {{ Φ }}.
+        SIM eₛ ≳ eₜ [[ X ]] {{ Φ }}.
       Proof.
         iIntros "H". rewrite sim_eq. iIntros "%σₛ %σₜ Hsi".
         do 2 iRight. iLeft.
@@ -1074,15 +1067,15 @@ Section sim_state.
       Qed.
       Lemma sim_step eₛ eₜ Φ :
         ( ∀ σₛ σₜ, sim_state_interp σₛ σₜ ==∗
-            ⌜reducible progₜ eₜ σₜ⌝ ∗
+            ⌜reducible sim_progₜ eₜ σₜ⌝ ∗
               ∀ eₜ' σₜ',
-              ⌜prim_step progₜ eₜ σₜ eₜ' σₜ'⌝ ==∗
+              ⌜prim_step sim_progₜ eₜ σₜ eₜ' σₜ'⌝ ==∗
                 ∃ eₛ' σₛ',
-                ⌜prim_step progₛ eₛ σₛ eₛ' σₛ'⌝ ∗
+                ⌜prim_step sim_progₛ eₛ σₛ eₛ' σₛ'⌝ ∗
                 sim_state_interp σₛ' σₜ' ∗
-                SIM progₛ; eₛ' ≳ progₜ; eₜ' [[ X ]] {{ Φ }}
+                SIM eₛ' ≳ eₜ' [[ X ]] {{ Φ }}
         ) -∗
-        SIM progₛ; eₛ ≳ progₜ; eₜ [[ X ]] {{ Φ }}.
+        SIM eₛ ≳ eₜ [[ X ]] {{ Φ }}.
       Proof.
         iIntros "H".
         iApply sim_steps. iIntros "%σₛ %σₜ Hsi".
@@ -1094,15 +1087,15 @@ Section sim_state.
       Qed.
       Lemma sim_head_step eₛ eₜ Φ :
         ( ∀ σₛ σₜ, sim_state_interp σₛ σₜ ==∗
-            ⌜head_reducible progₜ eₜ σₜ⌝ ∗
+            ⌜head_reducible sim_progₜ eₜ σₜ⌝ ∗
               ∀ eₜ' σₜ',
-              ⌜head_step progₜ eₜ σₜ eₜ' σₜ'⌝ ==∗
+              ⌜head_step sim_progₜ eₜ σₜ eₜ' σₜ'⌝ ==∗
                 ∃ eₛ' σₛ',
-                ⌜head_step progₛ eₛ σₛ eₛ' σₛ'⌝ ∗
+                ⌜head_step sim_progₛ eₛ σₛ eₛ' σₛ'⌝ ∗
                 sim_state_interp σₛ' σₜ' ∗
-                SIM progₛ; eₛ' ≳ progₜ; eₜ' [[ X ]] {{ Φ }}
+                SIM eₛ' ≳ eₜ' [[ X ]] {{ Φ }}
         ) -∗
-        SIM progₛ; eₛ ≳ progₜ; eₜ [[ X ]] {{ Φ }}.
+        SIM eₛ ≳ eₜ [[ X ]] {{ Φ }}.
       Proof.
         iIntros "H".
         iApply sim_step. iIntros "%σₛ %σₜ Hsi".
@@ -1120,11 +1113,11 @@ Section sim_state.
         ( ∀ σₛ σₜ,
           sim_state_interp σₛ σₜ ==∗
             ∃ eₛ' σₛ',
-            ⌜rtc (step progₛ) (eₛ, σₛ) (eₛ', σₛ')⌝ ∗
+            ⌜rtc (step sim_progₛ) (eₛ, σₛ) (eₛ', σₛ')⌝ ∗
             sim_state_interp σₛ' σₜ ∗
-            SIM progₛ; eₛ' ≳ progₜ; eₜ [[ X ]] {{ Φ }}
+            SIM eₛ' ≳ eₜ [[ X ]] {{ Φ }}
         ) -∗
-        SIM progₛ; eₛ ≳ progₜ; eₜ [[ X ]] {{ Φ }}.
+        SIM eₛ ≳ eₜ [[ X ]] {{ Φ }}.
       Proof.
         iIntros "H".
         iApply sim_eq. iIntros "%σₛ %σₜ Hsi".
@@ -1137,11 +1130,11 @@ Section sim_state.
         ( ∀ σₛ σₜ,
           sim_state_interp σₛ σₜ ==∗
             ∃ eₛ' σₛ',
-            ⌜prim_step progₛ eₛ σₛ eₛ' σₛ'⌝ ∗
+            ⌜prim_step sim_progₛ eₛ σₛ eₛ' σₛ'⌝ ∗
             sim_state_interp σₛ' σₜ ∗
-            SIM progₛ; eₛ' ≳ progₜ; eₜ [[ X ]] {{ Φ }}
+            SIM eₛ' ≳ eₜ [[ X ]] {{ Φ }}
         ) -∗
-        SIM progₛ; eₛ ≳ progₜ; eₜ [[ X ]] {{ Φ }}.
+        SIM eₛ ≳ eₜ [[ X ]] {{ Φ }}.
       Proof.
         iIntros "H".
         iApply sim_stepsₛ. iIntros "%σₛ %σₜ Hsi".
@@ -1153,11 +1146,11 @@ Section sim_state.
         ( ∀ σₛ σₜ,
           sim_state_interp σₛ σₜ ==∗
             ∃ eₛ' σₛ',
-            ⌜head_step progₛ eₛ σₛ eₛ' σₛ'⌝ ∗
+            ⌜head_step sim_progₛ eₛ σₛ eₛ' σₛ'⌝ ∗
             sim_state_interp σₛ' σₜ ∗
-            SIM progₛ; eₛ' ≳ progₜ; eₜ [[ X ]] {{ Φ }}
+            SIM eₛ' ≳ eₜ [[ X ]] {{ Φ }}
         ) -∗
-        SIM progₛ; eₛ ≳ progₜ; eₜ [[ X ]] {{ Φ }}.
+        SIM eₛ ≳ eₜ [[ X ]] {{ Φ }}.
       Proof.
         iIntros "H".
         iApply sim_stepₛ. iIntros "%σₛ %σₜ Hsi".
@@ -1169,13 +1162,13 @@ Section sim_state.
       Lemma sim_stepₜ eₛ eₜ Φ :
         ( ∀ σₛ σₜ,
           sim_state_interp σₛ σₜ ==∗
-            ⌜reducible progₜ eₜ σₜ⌝ ∗
+            ⌜reducible sim_progₜ eₜ σₜ⌝ ∗
               ∀ eₜ' σₜ',
-              ⌜prim_step progₜ eₜ σₜ eₜ' σₜ'⌝ ==∗
+              ⌜prim_step sim_progₜ eₜ σₜ eₜ' σₜ'⌝ ==∗
                 sim_state_interp σₛ σₜ' ∗
-                SIM progₛ; eₛ ≳ progₜ; eₜ' [[ X ]] {{ Φ }}
+                SIM eₛ ≳ eₜ' [[ X ]] {{ Φ }}
         ) -∗
-        SIM progₛ; eₛ ≳ progₜ; eₜ [[ X ]] {{ Φ }}.
+        SIM eₛ ≳ eₜ [[ X ]] {{ Φ }}.
       Proof.
         iIntros "H".
         iApply sim_steps. iIntros "%σₛ %σₜ Hsi".
@@ -1187,13 +1180,13 @@ Section sim_state.
       Lemma sim_head_stepₜ eₛ eₜ Φ :
         ( ∀ σₛ σₜ,
           sim_state_interp σₛ σₜ ==∗
-            ⌜head_reducible progₜ eₜ σₜ⌝ ∗
+            ⌜head_reducible sim_progₜ eₜ σₜ⌝ ∗
               ∀ eₜ' σₜ',
-              ⌜head_step progₜ eₜ σₜ eₜ' σₜ'⌝ ==∗
+              ⌜head_step sim_progₜ eₜ σₜ eₜ' σₜ'⌝ ==∗
                 sim_state_interp σₛ σₜ' ∗
-                SIM progₛ; eₛ ≳ progₜ; eₜ' [[ X ]] {{ Φ }}
+                SIM eₛ ≳ eₜ' [[ X ]] {{ Φ }}
         ) -∗
-        SIM progₛ; eₛ ≳ progₜ; eₜ [[ X ]] {{ Φ }}.
+        SIM eₛ ≳ eₜ [[ X ]] {{ Φ }}.
       Proof.
         iIntros "H".
         iApply sim_stepₜ. iIntros "%σₛ %σₜ Hsi".
@@ -1206,9 +1199,9 @@ Section sim_state.
       Qed.
 
       Lemma sim_pure_stepₛ eₛ1 eₛ2 eₜ Φ :
-        pure_step progₛ eₛ1 eₛ2 →
-        SIM progₛ; eₛ2 ≳ progₜ; eₜ [[ X ]] {{ Φ }} -∗
-        SIM progₛ; eₛ1 ≳ progₜ; eₜ [[ X ]] {{ Φ }}.
+        pure_step sim_progₛ eₛ1 eₛ2 →
+        SIM eₛ2 ≳ eₜ [[ X ]] {{ Φ }} -∗
+        SIM eₛ1 ≳ eₜ [[ X ]] {{ Φ }}.
       Proof.
         iIntros "%Hstepₛ Hsim".
         iApply sim_stepₛ. iIntros "%σₛ %σₜ Hsi !>".
@@ -1216,33 +1209,33 @@ Section sim_state.
         iPureIntro. apply pure_step_prim_step. done.
       Qed.
       Lemma sim_pure_stepsₛ eₛ1 eₛ2 eₜ Φ :
-        rtc (pure_step progₛ) eₛ1 eₛ2 →
-        SIM progₛ; eₛ2 ≳ progₜ; eₜ [[ X ]] {{ Φ }} -∗
-        SIM progₛ; eₛ1 ≳ progₜ; eₜ [[ X ]] {{ Φ }}.
+        rtc (pure_step sim_progₛ) eₛ1 eₛ2 →
+        SIM eₛ2 ≳ eₜ [[ X ]] {{ Φ }} -∗
+        SIM eₛ1 ≳ eₜ [[ X ]] {{ Φ }}.
       Proof.
         induction 1 as [| eₛ1 eₛ2 eₛ3 Hstepₛ _ IH]; first done.
         rewrite IH. apply sim_pure_stepₛ. done.
       Qed.
       Lemma sim_pure_head_stepₛ eₛ1 eₛ2 eₜ Φ :
-        pure_head_step progₛ eₛ1 eₛ2 →
-        SIM progₛ; eₛ2 ≳ progₜ; eₜ [[ X ]] {{ Φ }} -∗
-        SIM progₛ; eₛ1 ≳ progₜ; eₜ [[ X ]] {{ Φ }}.
+        pure_head_step sim_progₛ eₛ1 eₛ2 →
+        SIM eₛ2 ≳ eₜ [[ X ]] {{ Φ }} -∗
+        SIM eₛ1 ≳ eₜ [[ X ]] {{ Φ }}.
       Proof.
         intros. iApply sim_pure_stepₛ. apply pure_head_step_pure_step. done.
       Qed.
       Lemma sim_pure_head_stepsₛ eₛ1 eₛ2 eₜ Φ :
-        rtc (pure_head_step progₛ) eₛ1 eₛ2 →
-        SIM progₛ; eₛ2 ≳ progₜ; eₜ [[ X ]] {{ Φ }} -∗
-        SIM progₛ; eₛ1 ≳ progₜ; eₜ [[ X ]] {{ Φ }}.
+        rtc (pure_head_step sim_progₛ) eₛ1 eₛ2 →
+        SIM eₛ2 ≳ eₜ [[ X ]] {{ Φ }} -∗
+        SIM eₛ1 ≳ eₜ [[ X ]] {{ Φ }}.
       Proof.
         induction 1 as [| eₛ1 eₛ2 eₛ3 Hstepₛ _ IH]; first done.
         rewrite IH. apply sim_pure_head_stepₛ. done.
       Qed.
 
       Lemma sim_pure_stepₜ eₛ eₜ1 eₜ2 Φ :
-        pure_step progₜ eₜ1 eₜ2 →
-        SIM progₛ; eₛ ≳ progₜ; eₜ2 [[ X ]] {{ Φ }} -∗
-        SIM progₛ; eₛ ≳ progₜ; eₜ1 [[ X ]] {{ Φ }}.
+        pure_step sim_progₜ eₜ1 eₜ2 →
+        SIM eₛ ≳ eₜ2 [[ X ]] {{ Φ }} -∗
+        SIM eₛ ≳ eₜ1 [[ X ]] {{ Φ }}.
       Proof.
         iIntros "%Hstepₛ Hsim".
         iApply sim_stepₜ. iIntros "%σₛ %σₜ Hsi !>".
@@ -1252,58 +1245,58 @@ Section sim_state.
         eapply pure_step_det in Hstepₜ as (-> & ->); last done. iFrame.
       Qed.
       Lemma sim_pure_stepsₜ eₛ eₜ1 eₜ2 Φ :
-        rtc (pure_step progₜ) eₜ1 eₜ2 →
-        SIM progₛ; eₛ ≳ progₜ; eₜ2 [[ X ]] {{ Φ }} -∗
-        SIM progₛ; eₛ ≳ progₜ; eₜ1 [[ X ]] {{ Φ }}.
+        rtc (pure_step sim_progₜ) eₜ1 eₜ2 →
+        SIM eₛ ≳ eₜ2 [[ X ]] {{ Φ }} -∗
+        SIM eₛ ≳ eₜ1 [[ X ]] {{ Φ }}.
       Proof.
         induction 1 as [| eₜ1 eₜ2 eₜ3 Hstepₜ _ IH]; first done.
         rewrite IH. apply sim_pure_stepₜ. done.
       Qed.
       Lemma sim_pure_head_stepₜ eₛ eₜ1 eₜ2 Φ :
-        pure_head_step progₜ eₜ1 eₜ2 →
-        SIM progₛ; eₛ ≳ progₜ; eₜ2 [[ X ]] {{ Φ }} -∗
-        SIM progₛ; eₛ ≳ progₜ; eₜ1 [[ X ]] {{ Φ }}.
+        pure_head_step sim_progₜ eₜ1 eₜ2 →
+        SIM eₛ ≳ eₜ2 [[ X ]] {{ Φ }} -∗
+        SIM eₛ ≳ eₜ1 [[ X ]] {{ Φ }}.
       Proof.
         intros. iApply sim_pure_stepₜ. apply pure_head_step_pure_step. done.
       Qed.
       Lemma sim_pure_head_stepsₜ eₛ eₜ1 eₜ2 Φ :
-        rtc (pure_head_step progₜ) eₜ1 eₜ2 →
-        SIM progₛ; eₛ ≳ progₜ; eₜ2 [[ X ]] {{ Φ }} -∗
-        SIM progₛ; eₛ ≳ progₜ; eₜ1 [[ X ]] {{ Φ }}.
+        rtc (pure_head_step sim_progₜ) eₜ1 eₜ2 →
+        SIM eₛ ≳ eₜ2 [[ X ]] {{ Φ }} -∗
+        SIM eₛ ≳ eₜ1 [[ X ]] {{ Φ }}.
       Proof.
         induction 1 as [| eₜ1 eₜ2 eₜ3 Hstepₜ _ IH]; first done.
         rewrite IH. apply sim_pure_head_stepₜ. done.
       Qed.
 
       Lemma sim_pure_step eₛ1 eₛ2 eₜ1 eₜ2 Φ :
-        pure_step progₛ eₛ1 eₛ2 →
-        pure_step progₜ eₜ1 eₜ2 →
-        SIM progₛ; eₛ2 ≳ progₜ; eₜ2 [[ X ]] {{ Φ }} -∗
-        SIM progₛ; eₛ1 ≳ progₜ; eₜ1 [[ X ]] {{ Φ }}.
+        pure_step sim_progₛ eₛ1 eₛ2 →
+        pure_step sim_progₜ eₜ1 eₜ2 →
+        SIM eₛ2 ≳ eₜ2 [[ X ]] {{ Φ }} -∗
+        SIM eₛ1 ≳ eₜ1 [[ X ]] {{ Φ }}.
       Proof.
         intros. rewrite sim_pure_stepₛ // sim_pure_stepₜ //.
       Qed.
       Lemma sim_pure_steps eₛ1 eₛ2 eₜ1 eₜ2 Φ :
-        rtc (pure_step progₛ) eₛ1 eₛ2 →
-        rtc (pure_step progₜ) eₜ1 eₜ2 →
-        SIM progₛ; eₛ2 ≳ progₜ; eₜ2 [[ X ]] {{ Φ }} -∗
-        SIM progₛ; eₛ1 ≳ progₜ; eₜ1 [[ X ]] {{ Φ }}.
+        rtc (pure_step sim_progₛ) eₛ1 eₛ2 →
+        rtc (pure_step sim_progₜ) eₜ1 eₜ2 →
+        SIM eₛ2 ≳ eₜ2 [[ X ]] {{ Φ }} -∗
+        SIM eₛ1 ≳ eₜ1 [[ X ]] {{ Φ }}.
       Proof.
         intros. rewrite sim_pure_stepsₛ // sim_pure_stepsₜ //.
       Qed.
       Lemma sim_pure_head_step eₛ1 eₛ2 eₜ1 eₜ2 Φ :
-        pure_head_step progₛ eₛ1 eₛ2 →
-        pure_head_step progₜ eₜ1 eₜ2 →
-        SIM progₛ; eₛ2 ≳ progₜ; eₜ2 [[ X ]] {{ Φ }} -∗
-        SIM progₛ; eₛ1 ≳ progₜ; eₜ1 [[ X ]] {{ Φ }}.
+        pure_head_step sim_progₛ eₛ1 eₛ2 →
+        pure_head_step sim_progₜ eₜ1 eₜ2 →
+        SIM eₛ2 ≳ eₜ2 [[ X ]] {{ Φ }} -∗
+        SIM eₛ1 ≳ eₜ1 [[ X ]] {{ Φ }}.
       Proof.
         intros. rewrite sim_pure_head_stepₛ // sim_pure_head_stepₜ //.
       Qed.
       Lemma sim_pure_head_steps eₛ1 eₛ2 eₜ1 eₜ2 Φ :
-        rtc (pure_head_step progₛ) eₛ1 eₛ2 →
-        rtc (pure_head_step progₜ) eₜ1 eₜ2 →
-        SIM progₛ; eₛ2 ≳ progₜ; eₜ2 [[ X ]] {{ Φ }} -∗
-        SIM progₛ; eₛ1 ≳ progₜ; eₜ1 [[ X ]] {{ Φ }}.
+        rtc (pure_head_step sim_progₛ) eₛ1 eₛ2 →
+        rtc (pure_head_step sim_progₜ) eₜ1 eₜ2 →
+        SIM eₛ2 ≳ eₜ2 [[ X ]] {{ Φ }} -∗
+        SIM eₛ1 ≳ eₜ1 [[ X ]] {{ Φ }}.
       Proof.
         intros. rewrite sim_pure_head_stepsₛ // sim_pure_head_stepsₜ //.
       Qed.
@@ -1317,9 +1310,9 @@ Section sim_state.
             sim_state_interp σₛ σₜ ∗
               ∀ eₛ eₜ,
               Ψ eₛ eₜ ++∗
-              SIM progₛ; Kₛ @@ eₛ ≳ progₜ; Kₜ @@ eₜ [[ X ]] {{ Φ }}
+              SIM Kₛ @@ eₛ ≳ Kₜ @@ eₜ [[ X ]] {{ Φ }}
         ) -∗
-        SIM progₛ; eₛ ≳ progₜ; eₜ [[ X ]] {{ Φ }}.
+        SIM eₛ ≳ eₜ [[ X ]] {{ Φ }}.
       Proof.
         rewrite sim_eq. apply sim_body_call.
       Qed.
@@ -1330,9 +1323,9 @@ Section sim_state.
             sim_state_interp σₛ σₜ ∗
               ∀ eₛ eₜ,
               Ψ eₛ eₜ ++∗
-              SIM progₛ; eₛ ≳ progₜ; eₜ [[ X ]] {{ Φ }}
+              SIM eₛ ≳ eₜ [[ X ]] {{ Φ }}
         ) -∗
-        SIM progₛ; eₛ ≳ progₜ; eₜ [[ X ]] {{ Φ }}.
+        SIM eₛ ≳ eₜ [[ X ]] {{ Φ }}.
       Proof.
         iIntros "H".
         iApply sim_call; [apply symmetry, fill_empty.. | setoid_rewrite fill_empty; done].
@@ -1341,15 +1334,15 @@ Section sim_state.
 
     Section simv.
       Lemma simv_strongly_stuck eₛ eₜ Φ :
-        strongly_stuck progₛ eₛ →
-        strongly_stuck progₜ eₜ →
+        strongly_stuck sim_progₛ eₛ →
+        strongly_stuck sim_progₜ eₜ →
         ⊢ simv Φ eₛ eₜ.
       Proof.
         rewrite definition.simv_unseal. apply sim_strongly_stuck.
       Qed.
       Lemma simv_strongly_head_stuck eₛ eₜ Φ :
-        strongly_head_stuck progₛ eₛ →
-        strongly_head_stuck progₜ eₜ →
+        strongly_head_stuck sim_progₛ eₛ →
+        strongly_head_stuck sim_progₜ eₜ →
         ⊢ simv Φ eₛ eₜ.
       Proof.
         intros.
@@ -1440,30 +1433,30 @@ Section sim_state.
       Qed.
 
       Lemma simv_bind Kₛ eₛ Kₜ eₜ Φ :
-        SIM progₛ; eₛ ≳ progₜ; eₜ [[ X ]] [[ λ vₛ vₜ,
-          SIM progₛ; Kₛ @@ of_val vₛ ≳ progₜ; Kₜ @@ of_val vₜ [[ X ]] [[ Φ ]]
+        SIM eₛ ≳ eₜ [[ X ]] [[ λ vₛ vₜ,
+          SIM Kₛ @@ of_val vₛ ≳ Kₜ @@ of_val vₜ [[ X ]] [[ Φ ]]
         ]] -∗
-        SIM progₛ; Kₛ @@ eₛ ≳ progₜ; Kₜ @@ eₜ [[ X ]] [[ Φ ]].
+        SIM Kₛ @@ eₛ ≳ Kₜ @@ eₜ [[ X ]] [[ Φ ]].
       Proof.
         rewrite definition.simv_unseal.
         iIntros "Hsim".
         iApply sim_bind. iApply (sim_mono with "[] Hsim"). iIntros "%eₛ' %eₜ' (%vₛ & %vₜ & (-> & ->) & HΦ) //".
       Qed.
       Lemma simv_bindₛ K eₛ eₜ Φ :
-        SIM progₛ; eₛ ≳ progₜ; eₜ [[ X ]] [[ λ vₛ vₜ,
-          SIM progₛ; K @@ of_val vₛ ≳ progₜ; of_val vₜ [[ X ]] [[ Φ ]]
+        SIM eₛ ≳ eₜ [[ X ]] [[ λ vₛ vₜ,
+          SIM K @@ of_val vₛ ≳ of_val vₜ [[ X ]] [[ Φ ]]
         ]] -∗
-        SIM progₛ; K @@ eₛ ≳ progₜ; eₜ [[ X ]] [[ Φ ]].
+        SIM K @@ eₛ ≳ eₜ [[ X ]] [[ Φ ]].
       Proof.
         rewrite -{2}(fill_empty eₜ) -(simv_bind ∅).
         iApply (simv_mono with "[]"). iIntros "%eₛ' %eₜ'".
         rewrite fill_empty. auto.
       Qed.
       Lemma simv_bindₜ eₛ K eₜ Φ :
-        SIM progₛ; eₛ ≳ progₜ; eₜ [[ X ]] [[ λ vₛ vₜ,
-          SIM progₛ; of_val vₛ ≳ progₜ; K @@ of_val vₜ [[ X ]] [[ Φ ]]
+        SIM eₛ ≳ eₜ [[ X ]] [[ λ vₛ vₜ,
+          SIM of_val vₛ ≳ K @@ of_val vₜ [[ X ]] [[ Φ ]]
         ]] -∗
-        SIM progₛ; eₛ ≳ progₜ; K @@ eₜ [[ X ]] [[ Φ ]].
+        SIM eₛ ≳ K @@ eₜ [[ X ]] [[ Φ ]].
       Proof.
         rewrite -{2}(fill_empty eₛ) -(simv_bind ∅).
         iApply (simv_mono with "[]"). iIntros "%eₛ' %eₜ'".
@@ -1473,43 +1466,43 @@ Section sim_state.
       Lemma simv_steps eₛ eₜ Φ :
         ( ∀ σₛ σₜ,
           sim_state_interp σₛ σₜ ==∗
-            ⌜reducible progₜ eₜ σₜ⌝ ∗
+            ⌜reducible sim_progₜ eₜ σₜ⌝ ∗
               ∀ eₜ' σₜ',
-              ⌜prim_step progₜ eₜ σₜ eₜ' σₜ'⌝ ==∗
+              ⌜prim_step sim_progₜ eₜ σₜ eₜ' σₜ'⌝ ==∗
                 ∃ eₛ' σₛ',
-                ⌜rtc (step progₛ) (eₛ, σₛ) (eₛ', σₛ')⌝ ∗
+                ⌜rtc (step sim_progₛ) (eₛ, σₛ) (eₛ', σₛ')⌝ ∗
                 sim_state_interp σₛ' σₜ' ∗
-                SIM progₛ; eₛ' ≳ progₜ; eₜ' [[ X ]] [[ Φ ]]
+                SIM eₛ' ≳ eₜ' [[ X ]] [[ Φ ]]
         ) -∗
-        SIM progₛ; eₛ ≳ progₜ; eₜ [[ X ]] [[ Φ ]].
+        SIM eₛ ≳ eₜ [[ X ]] [[ Φ ]].
       Proof.
         rewrite definition.simv_unseal. apply sim_steps.
       Qed.
       Lemma simv_step eₛ eₜ Φ :
         ( ∀ σₛ σₜ, sim_state_interp σₛ σₜ ==∗
-            ⌜reducible progₜ eₜ σₜ⌝ ∗
+            ⌜reducible sim_progₜ eₜ σₜ⌝ ∗
               ∀ eₜ' σₜ',
-              ⌜prim_step progₜ eₜ σₜ eₜ' σₜ'⌝ ==∗
+              ⌜prim_step sim_progₜ eₜ σₜ eₜ' σₜ'⌝ ==∗
                 ∃ eₛ' σₛ',
-                ⌜prim_step progₛ eₛ σₛ eₛ' σₛ'⌝ ∗
+                ⌜prim_step sim_progₛ eₛ σₛ eₛ' σₛ'⌝ ∗
                 sim_state_interp σₛ' σₜ' ∗
-                SIM progₛ; eₛ' ≳ progₜ; eₜ' [[ X ]] [[ Φ ]]
+                SIM eₛ' ≳ eₜ' [[ X ]] [[ Φ ]]
         ) -∗
-        SIM progₛ; eₛ ≳ progₜ; eₜ [[ X ]] [[ Φ ]].
+        SIM eₛ ≳ eₜ [[ X ]] [[ Φ ]].
       Proof.
         rewrite definition.simv_unseal. apply sim_step.
       Qed.
       Lemma simv_head_step eₛ eₜ Φ :
         ( ∀ σₛ σₜ, sim_state_interp σₛ σₜ ==∗
-            ⌜head_reducible progₜ eₜ σₜ⌝ ∗
+            ⌜head_reducible sim_progₜ eₜ σₜ⌝ ∗
               ∀ eₜ' σₜ',
-              ⌜head_step progₜ eₜ σₜ eₜ' σₜ'⌝ ==∗
+              ⌜head_step sim_progₜ eₜ σₜ eₜ' σₜ'⌝ ==∗
                 ∃ eₛ' σₛ',
-                ⌜head_step progₛ eₛ σₛ eₛ' σₛ'⌝ ∗
+                ⌜head_step sim_progₛ eₛ σₛ eₛ' σₛ'⌝ ∗
                 sim_state_interp σₛ' σₜ' ∗
-                SIM progₛ; eₛ' ≳ progₜ; eₜ' [[ X ]] [[ Φ ]]
+                SIM eₛ' ≳ eₜ' [[ X ]] [[ Φ ]]
         ) -∗
-        SIM progₛ; eₛ ≳ progₜ; eₜ [[ X ]] [[ Φ ]].
+        SIM eₛ ≳ eₜ [[ X ]] [[ Φ ]].
       Proof.
         rewrite definition.simv_unseal. apply sim_head_step.
       Qed.
@@ -1518,11 +1511,11 @@ Section sim_state.
         ( ∀ σₛ σₜ,
           sim_state_interp σₛ σₜ ==∗
             ∃ eₛ' σₛ',
-            ⌜rtc (step progₛ) (eₛ, σₛ) (eₛ', σₛ')⌝ ∗
+            ⌜rtc (step sim_progₛ) (eₛ, σₛ) (eₛ', σₛ')⌝ ∗
             sim_state_interp σₛ' σₜ ∗
-            SIM progₛ; eₛ' ≳ progₜ; eₜ [[ X ]] [[ Φ ]]
+            SIM eₛ' ≳ eₜ [[ X ]] [[ Φ ]]
         ) -∗
-        SIM progₛ; eₛ ≳ progₜ; eₜ [[ X ]] [[ Φ ]].
+        SIM eₛ ≳ eₜ [[ X ]] [[ Φ ]].
       Proof.
         rewrite definition.simv_unseal. apply sim_stepsₛ.
       Qed.
@@ -1530,11 +1523,11 @@ Section sim_state.
         ( ∀ σₛ σₜ,
           sim_state_interp σₛ σₜ ==∗
             ∃ eₛ' σₛ',
-            ⌜prim_step progₛ eₛ σₛ eₛ' σₛ'⌝ ∗
+            ⌜prim_step sim_progₛ eₛ σₛ eₛ' σₛ'⌝ ∗
             sim_state_interp σₛ' σₜ ∗
-            SIM progₛ; eₛ' ≳ progₜ; eₜ [[ X ]] [[ Φ ]]
+            SIM eₛ' ≳ eₜ [[ X ]] [[ Φ ]]
         ) -∗
-        SIM progₛ; eₛ ≳ progₜ; eₜ [[ X ]] [[ Φ ]].
+        SIM eₛ ≳ eₜ [[ X ]] [[ Φ ]].
       Proof.
         rewrite definition.simv_unseal. apply sim_stepₛ.
       Qed.
@@ -1542,11 +1535,11 @@ Section sim_state.
         ( ∀ σₛ σₜ,
           sim_state_interp σₛ σₜ ==∗
             ∃ eₛ' σₛ',
-            ⌜head_step progₛ eₛ σₛ eₛ' σₛ'⌝ ∗
+            ⌜head_step sim_progₛ eₛ σₛ eₛ' σₛ'⌝ ∗
             sim_state_interp σₛ' σₜ ∗
-            SIM progₛ; eₛ' ≳ progₜ; eₜ [[ X ]] [[ Φ ]]
+            SIM eₛ' ≳ eₜ [[ X ]] [[ Φ ]]
         ) -∗
-        SIM progₛ; eₛ ≳ progₜ; eₜ [[ X ]] [[ Φ ]].
+        SIM eₛ ≳ eₜ [[ X ]] [[ Φ ]].
       Proof.
         rewrite definition.simv_unseal. apply sim_head_stepₛ.
       Qed.
@@ -1554,117 +1547,117 @@ Section sim_state.
       Lemma simv_stepₜ eₛ eₜ Φ :
         ( ∀ σₛ σₜ,
           sim_state_interp σₛ σₜ ==∗
-            ⌜reducible progₜ eₜ σₜ⌝ ∗
+            ⌜reducible sim_progₜ eₜ σₜ⌝ ∗
               ∀ eₜ' σₜ',
-              ⌜prim_step progₜ eₜ σₜ eₜ' σₜ'⌝ ==∗
+              ⌜prim_step sim_progₜ eₜ σₜ eₜ' σₜ'⌝ ==∗
                 sim_state_interp σₛ σₜ' ∗
-                SIM progₛ; eₛ ≳ progₜ; eₜ' [[ X ]] [[ Φ ]]
+                SIM eₛ ≳ eₜ' [[ X ]] [[ Φ ]]
         ) -∗
-        SIM progₛ; eₛ ≳ progₜ; eₜ [[ X ]] [[ Φ ]].
+        SIM eₛ ≳ eₜ [[ X ]] [[ Φ ]].
       Proof.
         rewrite definition.simv_unseal. apply sim_stepₜ.
       Qed.
       Lemma simv_head_stepₜ eₛ eₜ Φ :
         ( ∀ σₛ σₜ,
           sim_state_interp σₛ σₜ ==∗
-            ⌜head_reducible progₜ eₜ σₜ⌝ ∗
+            ⌜head_reducible sim_progₜ eₜ σₜ⌝ ∗
               ∀ eₜ' σₜ',
-              ⌜head_step progₜ eₜ σₜ eₜ' σₜ'⌝ ==∗
+              ⌜head_step sim_progₜ eₜ σₜ eₜ' σₜ'⌝ ==∗
                 sim_state_interp σₛ σₜ' ∗
-                SIM progₛ; eₛ ≳ progₜ; eₜ' [[ X ]] [[ Φ ]]
+                SIM eₛ ≳ eₜ' [[ X ]] [[ Φ ]]
         ) -∗
-        SIM progₛ; eₛ ≳ progₜ; eₜ [[ X ]] [[ Φ ]].
+        SIM eₛ ≳ eₜ [[ X ]] [[ Φ ]].
       Proof.
         rewrite definition.simv_unseal. apply sim_head_stepₜ.
       Qed.
 
       Lemma simv_pure_stepₛ eₛ1 eₛ2 eₜ Φ :
-        pure_step progₛ eₛ1 eₛ2 →
-        SIM progₛ; eₛ2 ≳ progₜ; eₜ [[ X ]] [[ Φ ]] -∗
-        SIM progₛ; eₛ1 ≳ progₜ; eₜ [[ X ]] [[ Φ ]].
+        pure_step sim_progₛ eₛ1 eₛ2 →
+        SIM eₛ2 ≳ eₜ [[ X ]] [[ Φ ]] -∗
+        SIM eₛ1 ≳ eₜ [[ X ]] [[ Φ ]].
       Proof.
         rewrite definition.simv_unseal. apply sim_pure_stepₛ.
       Qed.
       Lemma simv_pure_stepsₛ eₛ1 eₛ2 eₜ Φ :
-        rtc (pure_step progₛ) eₛ1 eₛ2 →
-        SIM progₛ; eₛ2 ≳ progₜ; eₜ [[ X ]] [[ Φ ]] -∗
-        SIM progₛ; eₛ1 ≳ progₜ; eₜ [[ X ]] [[ Φ ]].
+        rtc (pure_step sim_progₛ) eₛ1 eₛ2 →
+        SIM eₛ2 ≳ eₜ [[ X ]] [[ Φ ]] -∗
+        SIM eₛ1 ≳ eₜ [[ X ]] [[ Φ ]].
       Proof.
         rewrite definition.simv_unseal. apply sim_pure_stepsₛ.
       Qed.
       Lemma simv_pure_head_stepₛ eₛ1 eₛ2 eₜ Φ :
-        pure_head_step progₛ eₛ1 eₛ2 →
-        SIM progₛ; eₛ2 ≳ progₜ; eₜ [[ X ]] [[ Φ ]] -∗
-        SIM progₛ; eₛ1 ≳ progₜ; eₜ [[ X ]] [[ Φ ]].
+        pure_head_step sim_progₛ eₛ1 eₛ2 →
+        SIM eₛ2 ≳ eₜ [[ X ]] [[ Φ ]] -∗
+        SIM eₛ1 ≳ eₜ [[ X ]] [[ Φ ]].
       Proof.
         rewrite definition.simv_unseal. apply sim_pure_head_stepₛ.
       Qed.
       Lemma simv_pure_head_stepsₛ eₛ1 eₛ2 eₜ Φ :
-        rtc (pure_head_step progₛ) eₛ1 eₛ2 →
-        SIM progₛ; eₛ2 ≳ progₜ; eₜ [[ X ]] [[ Φ ]] -∗
-        SIM progₛ; eₛ1 ≳ progₜ; eₜ [[ X ]] [[ Φ ]].
+        rtc (pure_head_step sim_progₛ) eₛ1 eₛ2 →
+        SIM eₛ2 ≳ eₜ [[ X ]] [[ Φ ]] -∗
+        SIM eₛ1 ≳ eₜ [[ X ]] [[ Φ ]].
       Proof.
         rewrite definition.simv_unseal. apply sim_pure_head_stepsₛ.
       Qed.
 
       Lemma simv_pure_stepₜ eₛ eₜ1 eₜ2 Φ :
-        pure_step progₜ eₜ1 eₜ2 →
-        SIM progₛ; eₛ ≳ progₜ; eₜ2 [[ X ]] [[ Φ ]] -∗
-        SIM progₛ; eₛ ≳ progₜ; eₜ1 [[ X ]] [[ Φ ]].
+        pure_step sim_progₜ eₜ1 eₜ2 →
+        SIM eₛ ≳ eₜ2 [[ X ]] [[ Φ ]] -∗
+        SIM eₛ ≳ eₜ1 [[ X ]] [[ Φ ]].
       Proof.
         rewrite definition.simv_unseal. apply sim_pure_stepₜ.
       Qed.
       Lemma simv_pure_stepsₜ eₛ eₜ1 eₜ2 Φ :
-        rtc (pure_step progₜ) eₜ1 eₜ2 →
-        SIM progₛ; eₛ ≳ progₜ; eₜ2 [[ X ]] [[ Φ ]] -∗
-        SIM progₛ; eₛ ≳ progₜ; eₜ1 [[ X ]] [[ Φ ]].
+        rtc (pure_step sim_progₜ) eₜ1 eₜ2 →
+        SIM eₛ ≳ eₜ2 [[ X ]] [[ Φ ]] -∗
+        SIM eₛ ≳ eₜ1 [[ X ]] [[ Φ ]].
       Proof.
         rewrite definition.simv_unseal. apply sim_pure_stepsₜ.
       Qed.
       Lemma simv_pure_head_stepₜ eₛ eₜ1 eₜ2 Φ :
-        pure_head_step progₜ eₜ1 eₜ2 →
-        SIM progₛ; eₛ ≳ progₜ; eₜ2 [[ X ]] [[ Φ ]] -∗
-        SIM progₛ; eₛ ≳ progₜ; eₜ1 [[ X ]] [[ Φ ]].
+        pure_head_step sim_progₜ eₜ1 eₜ2 →
+        SIM eₛ ≳ eₜ2 [[ X ]] [[ Φ ]] -∗
+        SIM eₛ ≳ eₜ1 [[ X ]] [[ Φ ]].
       Proof.
         rewrite definition.simv_unseal. apply sim_pure_head_stepₜ.
       Qed.
       Lemma simv_pure_head_stepsₜ eₛ eₜ1 eₜ2 Φ :
-        rtc (pure_head_step progₜ) eₜ1 eₜ2 →
-        SIM progₛ; eₛ ≳ progₜ; eₜ2 [[ X ]] [[ Φ ]] -∗
-        SIM progₛ; eₛ ≳ progₜ; eₜ1 [[ X ]] [[ Φ ]].
+        rtc (pure_head_step sim_progₜ) eₜ1 eₜ2 →
+        SIM eₛ ≳ eₜ2 [[ X ]] [[ Φ ]] -∗
+        SIM eₛ ≳ eₜ1 [[ X ]] [[ Φ ]].
       Proof.
         rewrite definition.simv_unseal. apply sim_pure_head_stepsₜ.
       Qed.
 
       Lemma simv_pure_step eₛ1 eₛ2 eₜ1 eₜ2 Φ :
-        pure_step progₛ eₛ1 eₛ2 →
-        pure_step progₜ eₜ1 eₜ2 →
-        SIM progₛ; eₛ2 ≳ progₜ; eₜ2 [[ X ]] [[ Φ ]] -∗
-        SIM progₛ; eₛ1 ≳ progₜ; eₜ1 [[ X ]] [[ Φ ]].
+        pure_step sim_progₛ eₛ1 eₛ2 →
+        pure_step sim_progₜ eₜ1 eₜ2 →
+        SIM eₛ2 ≳ eₜ2 [[ X ]] [[ Φ ]] -∗
+        SIM eₛ1 ≳ eₜ1 [[ X ]] [[ Φ ]].
       Proof.
         rewrite definition.simv_unseal. apply sim_pure_step.
       Qed.
       Lemma simv_pure_steps eₛ1 eₛ2 eₜ1 eₜ2 Φ :
-        rtc (pure_step progₛ) eₛ1 eₛ2 →
-        rtc (pure_step progₜ) eₜ1 eₜ2 →
-        SIM progₛ; eₛ2 ≳ progₜ; eₜ2 [[ X ]] [[ Φ ]] -∗
-        SIM progₛ; eₛ1 ≳ progₜ; eₜ1 [[ X ]] [[ Φ ]].
+        rtc (pure_step sim_progₛ) eₛ1 eₛ2 →
+        rtc (pure_step sim_progₜ) eₜ1 eₜ2 →
+        SIM eₛ2 ≳ eₜ2 [[ X ]] [[ Φ ]] -∗
+        SIM eₛ1 ≳ eₜ1 [[ X ]] [[ Φ ]].
       Proof.
         rewrite definition.simv_unseal. apply sim_pure_steps.
       Qed.
       Lemma simv_pure_head_step eₛ1 eₛ2 eₜ1 eₜ2 Φ :
-        pure_head_step progₛ eₛ1 eₛ2 →
-        pure_head_step progₜ eₜ1 eₜ2 →
-        SIM progₛ; eₛ2 ≳ progₜ; eₜ2 [[ X ]] [[ Φ ]] -∗
-        SIM progₛ; eₛ1 ≳ progₜ; eₜ1 [[ X ]] [[ Φ ]].
+        pure_head_step sim_progₛ eₛ1 eₛ2 →
+        pure_head_step sim_progₜ eₜ1 eₜ2 →
+        SIM eₛ2 ≳ eₜ2 [[ X ]] [[ Φ ]] -∗
+        SIM eₛ1 ≳ eₜ1 [[ X ]] [[ Φ ]].
       Proof.
         rewrite definition.simv_unseal. apply sim_pure_head_step.
       Qed.
       Lemma simv_pure_head_steps eₛ1 eₛ2 eₜ1 eₜ2 Φ :
-        rtc (pure_head_step progₛ) eₛ1 eₛ2 →
-        rtc (pure_head_step progₜ) eₜ1 eₜ2 →
-        SIM progₛ; eₛ2 ≳ progₜ; eₜ2 [[ X ]] [[ Φ ]] -∗
-        SIM progₛ; eₛ1 ≳ progₜ; eₜ1 [[ X ]] [[ Φ ]].
+        rtc (pure_head_step sim_progₛ) eₛ1 eₛ2 →
+        rtc (pure_head_step sim_progₜ) eₜ1 eₜ2 →
+        SIM eₛ2 ≳ eₜ2 [[ X ]] [[ Φ ]] -∗
+        SIM eₛ1 ≳ eₜ1 [[ X ]] [[ Φ ]].
       Proof.
         rewrite definition.simv_unseal. apply sim_pure_head_steps.
       Qed.
@@ -1678,9 +1671,9 @@ Section sim_state.
             sim_state_interp σₛ σₜ ∗
               ∀ eₛ eₜ,
               Ψ eₛ eₜ ++∗
-              SIM progₛ; Kₛ @@ eₛ ≳ progₜ; Kₜ @@ eₜ [[ X ]] [[ Φ ]]
+              SIM Kₛ @@ eₛ ≳ Kₜ @@ eₜ [[ X ]] [[ Φ ]]
         ) -∗
-        SIM progₛ; eₛ ≳ progₜ; eₜ [[ X ]] [[ Φ ]].
+        SIM eₛ ≳ eₜ [[ X ]] [[ Φ ]].
       Proof.
         rewrite definition.simv_unseal. apply sim_call.
       Qed.
@@ -1691,9 +1684,9 @@ Section sim_state.
             sim_state_interp σₛ σₜ ∗
               ∀ eₛ eₜ,
               Ψ eₛ eₜ ++∗
-              SIM progₛ; eₛ ≳ progₜ; eₜ [[ X ]] [[ Φ ]]
+              SIM eₛ ≳ eₜ [[ X ]] [[ Φ ]]
         ) -∗
-        SIM progₛ; eₛ ≳ progₜ; eₜ [[ X ]] [[ Φ ]].
+        SIM eₛ ≳ eₜ [[ X ]] [[ Φ ]].
       Proof.
         rewrite definition.simv_unseal. apply sim_call'.
       Qed.
@@ -1706,8 +1699,8 @@ Section sim_state.
       X Φ eₛ eₜ -∗
       sim_inner ⊥ (λ _, sim X Φ) (λ _ _, False) eₛ eₜ
     ) -∗
-    SIM progₛ; eₛ ≳ progₜ; eₜ [[ X ]] {{ Φ }} -∗
-    SIM progₛ; eₛ ≳ progₜ; eₜ {{ Φ }}.
+    SIM eₛ ≳ eₜ [[ X ]] {{ Φ }} -∗
+    SIM eₛ ≳ eₜ {{ Φ }}.
   Proof.
     (* iIntros "#H". *)
     (* iApply (sim_coind with "[]"); first solve_proper. clear Φ eₛ eₜ. iIntros "!> %Φ %eₛ %eₜ". *)
@@ -1764,11 +1757,11 @@ Section sim_state.
       X Ψ eₛ eₜ -∗
       sim_inner ⊥ (λ _, sim X Ψ) (λ _ _, False) eₛ eₜ
     ) -∗
-    SIM progₛ; eₛ ≳ progₜ; eₜ [[ X ]] [[ Φ ]] -∗
-    SIM progₛ; eₛ ≳ progₜ; eₜ [[ Φ ]].
+    SIM eₛ ≳ eₜ [[ X ]] [[ Φ ]] -∗
+    SIM eₛ ≳ eₜ [[ Φ ]].
   Proof.
     rewrite !definition.simv_unseal. apply sim_close.
   Qed.
   (* TODO: simv_close_pure_steps *)
   (* TODO: simv_close_pure_step *)
-End sim_state.
+End sim.

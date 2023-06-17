@@ -102,23 +102,23 @@ Section sim_heap_bij_GS.
     Definition sim_heap_bij_tie lₛ lₜ : iProp Σ :=
       ∃ vₛ vₜ,
       lₛ ↦ₛ vₛ ∗ lₜ ↦ₜ vₜ ∗ vₛ ≈ vₜ.
-    #[global] Instance sim_heap_bij_bi_tie : BiTie _ locₛ locₜ :=
+    #[global] Instance sim_heap_bij_bi_tie : BiTie (iProp Σ) locₛ locₜ :=
       sim_heap_bij_tie.
 
     Definition sim_heap_bij_inv : iProp Σ :=
       ∃ bij,
       sim_heap_bij_auth bij ∗
-      [∗ set] p ∈ bij, p.1 ⟷ p.2.
+      [∗ set] p ∈ bij, p.1 ⋈ p.2.
 
     Lemma sim_heap_bij_tie_eq lₛ lₜ :
-      lₛ ⟷ lₜ ⊣⊢
+      lₛ ⋈ lₜ ⊣⊢
         ∃ vₛ vₜ,
         lₛ ↦ₛ vₛ ∗ lₜ ↦ₜ vₜ ∗ vₛ ≈ vₜ.
     Proof.
       done.
     Qed.
     Lemma sim_heap_bij_tie_eq_1 lₛ lₜ :
-      lₛ ⟷ lₜ -∗
+      lₛ ⋈ lₜ -∗
         ∃ vₛ vₜ,
         lₛ ↦ₛ vₛ ∗ lₜ ↦ₜ vₜ ∗ vₛ ≈ vₜ.
     Proof.
@@ -128,22 +128,22 @@ Section sim_heap_bij_GS.
       lₛ ↦ₛ vₛ -∗
       lₜ ↦ₜ vₜ -∗
       vₛ ≈ vₜ -∗
-      lₛ ⟷ lₜ.
+      lₛ ⋈ lₜ.
     Proof.
       rewrite sim_heap_bij_tie_eq. auto with iFrame.
     Qed.
 
     Lemma sim_heap_bij_tie_exclusiveₛ lₛ lₜ1 lₜ2 :
-      lₛ ⟷ lₜ1 -∗
-      lₛ ⟷ lₜ2 -∗
+      lₛ ⋈ lₜ1 -∗
+      lₛ ⋈ lₜ2 -∗
       False.
     Proof.
       iIntros "(%vₛ1 & %vₜ1 & Hmapsto1 & _) (%vₛ2 & %vₜ2 & Hmapsto2 & _)".
       iApply (mapstoₛ_exclusive with "Hmapsto1 Hmapsto2").
     Qed.
     Lemma sim_heap_bij_tie_exclusiveₜ lₛ1 lₛ2 lₜ :
-      lₛ1 ⟷ lₜ -∗
-      lₛ2 ⟷ lₜ -∗
+      lₛ1 ⋈ lₜ -∗
+      lₛ2 ⋈ lₜ -∗
       False.
     Proof.
       iIntros "(%vₛ1 & %vₜ1 & _ & Hmapsto1 & _) (%vₛ2 & %vₜ2 & _ & Hmapsto2 & _)".
@@ -153,8 +153,8 @@ Section sim_heap_bij_GS.
     Lemma sim_heap_bij_access lₛ lₜ :
       sim_heap_bij_inv -∗
       lₛ ≈ lₜ -∗
-        lₛ ⟷ lₜ ∗
-        (lₛ ⟷ lₜ -∗ sim_heap_bij_inv).
+        lₛ ⋈ lₜ ∗
+        (lₛ ⋈ lₜ -∗ sim_heap_bij_inv).
     Proof.
       iIntros "(%bij & Hauth & Hbij) #Helem".
       iDestruct (gset_bij_elem_of with "Hauth Helem") as %?.
@@ -164,7 +164,7 @@ Section sim_heap_bij_GS.
 
     Lemma sim_heap_bij_insert lₛ lₜ :
       sim_heap_bij_inv -∗
-      lₛ ⟷ lₜ ==∗
+      lₛ ⋈ lₜ ==∗
         sim_heap_bij_inv ∗
         lₛ ≈ lₜ.
     Proof.

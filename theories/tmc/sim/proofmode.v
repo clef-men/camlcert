@@ -13,7 +13,8 @@ From simuliris.tmc Require Export
 From simuliris.tmc Require Import
   sim.notations.
 
-Section sim_GS.
+Section sim.
+  Context `{sim_programs : !SimPrograms ectx_language ectx_language}.
   Context `{sim_GS : !SimGS Σ}.
   Implicit Types constr : constructor.
   Implicit Types l lₜ lₛ : loc.
@@ -25,7 +26,7 @@ Section sim_GS.
 
   Lemma tac_simv_heap_bij_insert id1 p1 id2 lₛ lₜ P Δ :
     (∀ Q, AddModal (|++> Q) Q P) →
-    envs_lookup id1 Δ = Some (p1, lₛ ⟷ lₜ)%I →
+    envs_lookup id1 Δ = Some (p1, lₛ ⋈ lₜ)%I →
     match envs_replace id1 p1 true (Esnoc Enil id2 (lₛ ≈ lₜ)) Δ with
     | None =>
         False
@@ -42,7 +43,6 @@ Section sim_GS.
     rewrite sim_state_interp_heap_bij_insert add_modal //.
   Qed.
 
-  Context (progₛ progₜ : program).
   Context (X : sim_protocol Σ).
 
   Lemma tac_simv_constr_detₛ id0 id1 id2 K constr v1 v2 e Φ Δ :
@@ -57,10 +57,10 @@ Section sim_GS.
       | None =>
           False
       | Some Δ' =>
-          envs_entails Δ' (SIM progₛ; K @@ #l ≳ progₜ; e [[ X ]] [[ Φ ]])
+          envs_entails Δ' (SIM K @@ #l ≳ e [[ X ]] [[ Φ ]])
       end
     ) →
-    envs_entails Δ (SIM progₛ; K @@ &&constr v1 v2 ≳ progₜ; e [[ X ]] [[ Φ ]]).
+    envs_entails Δ (SIM K @@ &&constr v1 v2 ≳ e [[ X ]] [[ Φ ]]).
   Proof.
     rewrite definition.simv_unseal /definition.simv_def.
     rewrite envs_entails_unseal => Hsim.
@@ -82,10 +82,10 @@ Section sim_GS.
       | None =>
           False
       | Some Δ' =>
-          envs_entails Δ' (SIM progₛ; e ≳ progₜ; K @@ #l [[ X ]] [[ Φ ]])
+          envs_entails Δ' (SIM e ≳ K @@ #l [[ X ]] [[ Φ ]])
       end
     ) →
-    envs_entails Δ (SIM progₛ; e ≳ progₜ; K @@ &&constr v1 v2 [[ X ]] [[ Φ ]]).
+    envs_entails Δ (SIM e ≳ K @@ &&constr v1 v2 [[ X ]] [[ Φ ]]).
   Proof.
     rewrite definition.simv_unseal /definition.simv_def.
     rewrite envs_entails_unseal => Hsim.
@@ -103,10 +103,10 @@ Section sim_GS.
       | None =>
           False
       | Some Δ' =>
-          envs_entails Δ' (SIM progₛ; Kₛ @@ #lₛ ≳ progₜ; Kₜ @@ #lₜ [[ X ]] [[ Φ ]])
+          envs_entails Δ' (SIM Kₛ @@ #lₛ ≳ Kₜ @@ #lₜ [[ X ]] [[ Φ ]])
       end
     ) →
-    envs_entails Δ (SIM progₛ; Kₛ @@ &&constr vₛ1 vₛ2 ≳ progₜ; Kₜ @@ &&constr vₜ1 vₜ2 [[ X ]] [[ Φ ]]).
+    envs_entails Δ (SIM Kₛ @@ &&constr vₛ1 vₛ2 ≳ Kₜ @@ &&constr vₜ1 vₜ2 [[ X ]] [[ Φ ]]).
   Proof.
     rewrite definition.simv_unseal /definition.simv_def.
     rewrite envs_entails_unseal => Hv1 Hv2 Hsim.
@@ -121,23 +121,23 @@ Section sim_GS.
   Qed.
 
   Lemma tac_simv_constrₛ1 K constr e1 e2 e Φ Δ :
-    envs_entails Δ (SIM progₛ; K @@ let: e1 in let: e2.[ren (+1)] in &&constr $1 $0 ≳ progₜ; e [[ X ]] [[ Φ ]]) →
-    envs_entails Δ (SIM progₛ; K @@ &constr e1 e2 ≳ progₜ; e [[ X ]] [[ Φ ]]).
+    envs_entails Δ (SIM K @@ let: e1 in let: e2.[ren (+1)] in &&constr $1 $0 ≳ e [[ X ]] [[ Φ ]]) →
+    envs_entails Δ (SIM K @@ &constr e1 e2 ≳ e [[ X ]] [[ Φ ]]).
   Proof.
     rewrite definition.simv_unseal /definition.simv_def.
     rewrite envs_entails_unseal sim_bind_invₛ sim_constrₛ1 sim_bindₛ //.
   Qed.
   Lemma tac_simv_constrₛ2 K constr e1 e2 e Φ Δ :
-    envs_entails Δ (SIM progₛ; K @@ let: e2 in let: e1.[ren (+1)] in &&constr $0 $1 ≳ progₜ; e [[ X ]] [[ Φ ]]) →
-    envs_entails Δ (SIM progₛ; K @@ &constr e1 e2 ≳ progₜ; e [[ X ]] [[ Φ ]]).
+    envs_entails Δ (SIM K @@ let: e2 in let: e1.[ren (+1)] in &&constr $0 $1 ≳ e [[ X ]] [[ Φ ]]) →
+    envs_entails Δ (SIM K @@ &constr e1 e2 ≳ e [[ X ]] [[ Φ ]]).
   Proof.
     rewrite definition.simv_unseal /definition.simv_def.
     rewrite envs_entails_unseal sim_bind_invₛ sim_constrₛ2 sim_bindₛ //.
   Qed.
   Lemma tac_simv_constrₜ e K constr e1 e2 Φ Δ :
-    envs_entails Δ (SIM progₛ; e ≳ progₜ; K @@ let: e1 in let: e2.[ren (+1)] in &&constr $1 $0 [[ X ]] [[ Φ ]]) →
-    envs_entails Δ (SIM progₛ; e ≳ progₜ; K @@ let: e2 in let: e1.[ren (+1)] in &&constr $0 $1 [[ X ]] [[ Φ ]]) →
-    envs_entails Δ (SIM progₛ; e ≳ progₜ; K @@ &constr e1 e2 [[ X ]] [[ Φ ]]).
+    envs_entails Δ (SIM e ≳ K @@ let: e1 in let: e2.[ren (+1)] in &&constr $1 $0 [[ X ]] [[ Φ ]]) →
+    envs_entails Δ (SIM e ≳ K @@ let: e2 in let: e1.[ren (+1)] in &&constr $0 $1 [[ X ]] [[ Φ ]]) →
+    envs_entails Δ (SIM e ≳ K @@ &constr e1 e2 [[ X ]] [[ Φ ]]).
   Proof.
     rewrite definition.simv_unseal /definition.simv_def.
     rewrite envs_entails_unseal => Hsim1 Hsim2.
@@ -147,8 +147,8 @@ Section sim_GS.
 
   Lemma tac_simv_loadₛ id p K l idx v e Φ Δ :
     envs_lookup id Δ = Some (p, (l +ₗ idx) ↦ₛ v)%I →
-    envs_entails Δ (SIM progₛ; K @@ #v ≳ progₜ; e [[ X ]] [[ Φ ]]) →
-    envs_entails Δ (SIM progₛ; K @@ ![idx] l ≳ progₜ; e [[ X ]] [[ Φ ]]).
+    envs_entails Δ (SIM K @@ #v ≳ e [[ X ]] [[ Φ ]]) →
+    envs_entails Δ (SIM K @@ ![idx] l ≳ e [[ X ]] [[ Φ ]]).
   Proof.
     rewrite definition.simv_unseal /definition.simv_def.
     rewrite envs_entails_unseal => Hlookup Hsim.
@@ -161,8 +161,8 @@ Section sim_GS.
   Qed.
   Lemma tac_simv_loadₜ id p e K l idx v Φ Δ :
     envs_lookup id Δ = Some (p, (l +ₗ idx) ↦ₜ v)%I →
-    envs_entails Δ (SIM progₛ; e ≳ progₜ; K @@ #v [[ X ]] [[ Φ ]]) →
-    envs_entails Δ (SIM progₛ; e ≳ progₜ; K @@ ![idx] l [[ X ]] [[ Φ ]]).
+    envs_entails Δ (SIM e ≳ K @@ #v [[ X ]] [[ Φ ]]) →
+    envs_entails Δ (SIM e ≳ K @@ ![idx] l [[ X ]] [[ Φ ]]).
   Proof.
     rewrite definition.simv_unseal /definition.simv_def.
     rewrite envs_entails_unseal => Hlookup Hsim.
@@ -181,10 +181,10 @@ Section sim_GS.
       | None =>
           False
       | Some Δ' =>
-          envs_entails Δ' (SIM progₛ; Kₛ @@ #vₛ ≳ progₜ; Kₜ @@ #vₜ [[ X ]] [[ Φ ]])
+          envs_entails Δ' (SIM Kₛ @@ #vₛ ≳ Kₜ @@ #vₜ [[ X ]] [[ Φ ]])
       end
     ) →
-    envs_entails Δ (SIM progₛ; Kₛ @@ ![idxₛ] lₛ ≳ progₜ; Kₜ @@ ![idxₜ] lₜ [[ X ]] [[ Φ ]]).
+    envs_entails Δ (SIM Kₛ @@ ![idxₛ] lₛ ≳ Kₜ @@ ![idxₜ] lₜ [[ X ]] [[ Φ ]]).
   Proof.
     rewrite definition.simv_unseal /definition.simv_def.
     rewrite envs_entails_unseal => Hl Hidx Hsim.
@@ -204,9 +204,9 @@ Section sim_GS.
     | None =>
         False
     | Some Δ' =>
-        envs_entails Δ' (SIM progₛ; K @@ #() ≳ progₜ; e [[ X ]] [[ Φ ]])
+        envs_entails Δ' (SIM K @@ #() ≳ e [[ X ]] [[ Φ ]])
     end →
-    envs_entails Δ (SIM progₛ; K @@ #l <-[idx]- v ≳ progₜ; e [[ X ]] [[ Φ ]]).
+    envs_entails Δ (SIM K @@ #l <-[idx]- v ≳ e [[ X ]] [[ Φ ]]).
   Proof.
     rewrite definition.simv_unseal /definition.simv_def.
     rewrite envs_entails_unseal => Hlookup Hsim.
@@ -221,9 +221,9 @@ Section sim_GS.
     | None =>
         False
     | Some Δ' =>
-        envs_entails Δ' (SIM progₛ; e ≳ progₜ; K @@ #() [[ X ]] [[ Φ ]])
+        envs_entails Δ' (SIM e ≳ K @@ #() [[ X ]] [[ Φ ]])
     end →
-    envs_entails Δ (SIM progₛ; e ≳ progₜ; K @@ #l <-[idx]- v [[ X ]] [[ Φ ]]).
+    envs_entails Δ (SIM e ≳ K @@ #l <-[idx]- v [[ X ]] [[ Φ ]]).
   Proof.
     rewrite definition.simv_unseal /definition.simv_def.
     rewrite envs_entails_unseal => Hlookup Hsim.
@@ -236,8 +236,8 @@ Section sim_GS.
     envs_entails Δ (vₛ1 ≈ vₜ1) →
     envs_entails Δ (vₛ2 ≈ vₜ2) →
     envs_entails Δ (vₛ3 ≈ vₜ3) →
-    envs_entails Δ (SIM progₛ; Kₛ @@ #() ≳ progₜ; Kₜ @@ #() [[ X ]] [[ Φ ]]) →
-    envs_entails Δ (SIM progₛ; Kₛ @@ vₛ1 <-[vₛ2]- vₛ3 ≳ progₜ; Kₜ @@ vₜ1 <-[vₜ2]- vₜ3 [[ X ]] [[ Φ ]]).
+    envs_entails Δ (SIM Kₛ @@ #() ≳ Kₜ @@ #() [[ X ]] [[ Φ ]]) →
+    envs_entails Δ (SIM Kₛ @@ vₛ1 <-[vₛ2]- vₛ3 ≳ Kₜ @@ vₜ1 <-[vₜ2]- vₜ3 [[ X ]] [[ Φ ]]).
   Proof.
     rewrite definition.simv_unseal /definition.simv_def.
     rewrite envs_entails_unseal => Hv1 Hv2 Hv3 Hsim.
@@ -247,7 +247,7 @@ Section sim_GS.
     iDestruct (Hv3 with "HΔ") as "#Hv3".
     iApply sim_bind. iApply (sim_store with "Hv1 Hv2 Hv3"). iApply (Hsim with "HΔ").
   Qed.
-End sim_GS.
+End sim.
 
 (* #[local] *)
 Ltac expr_decompose e tac :=
@@ -303,7 +303,7 @@ Ltac simv_asimplₜ :=
 
 (* #[local] *)
 Ltac simv_focalizeₛ e_foc tac_succ tac_fail :=
-  on_simv ltac:(fun _ _ _ _ _ e _ =>
+  on_simv ltac:(fun _ _ _ e _ =>
     tryif
       expr_decompose e ltac:(fun K e' =>
         unify e' e_foc;
@@ -315,7 +315,7 @@ Ltac simv_focalizeₛ e_foc tac_succ tac_fail :=
   ).
 (* #[local] *)
 Ltac simv_focalizeₜ e_foc tac_succ tac_fail :=
-  on_simv ltac:(fun _ _ _ _ _ _ e =>
+  on_simv ltac:(fun _ _ _ _ e =>
     tryif
       expr_decompose e ltac:(fun K e' =>
         unify e' e_foc;
@@ -327,7 +327,7 @@ Ltac simv_focalizeₜ e_foc tac_succ tac_fail :=
   ).
 (* #[local] *)
 Ltac simv_focalize e_focₛ e_focₜ tac_succ tac_fail :=
-  on_simv ltac:(fun _ _ _ _ _ eₛ eₜ =>
+  on_simv ltac:(fun _ _ _ eₛ eₜ =>
     tryif
       expr_decompose eₛ ltac:(fun Kₛ eₛ' =>
         unify eₛ' e_focₛ;
@@ -362,7 +362,7 @@ Tactic Notation "simv_bindₜ" open_constr(e_foc) :=
 Tactic Notation "simv_bindₜ" :=
   simv_bindₜ _.
 Tactic Notation "simv_bind" open_constr(e_focₛ) open_constr(e_focₜ) :=
-  on_simv ltac:(fun _ _ _ _ _ eₛ eₜ =>
+  on_simv ltac:(fun _ _ _ eₛ eₜ =>
     let Kₛ := open_constr:(_) in
     expr_decompose eₛ ltac:(fun Kₛ' eₛ' =>
       unify eₛ' e_focₛ;
@@ -411,9 +411,9 @@ Ltac simv_pures :=
   [ iSolveTC
   | iAssumptionCore ||
     tryif is_evar Htie then (
-      fail "simv_heap_bij_insert: cannot find ? ⟷ ?"
+      fail "simv_heap_bij_insert: cannot find ? ⋈ ?"
     ) else (
-      fail "simv_heap_bij_insert: cannot find" Htie ": ? ⟷ ?"
+      fail "simv_heap_bij_insert: cannot find" Htie ": ? ⋈ ?"
     )
   | pm_reduce;
     tryif goal_is_false then (
@@ -437,7 +437,7 @@ Tactic Notation "simv_constr_detₛ" "as" simple_intropattern(l) constr(Hl0) con
   let e_foc := open_constr:(ConstrDet _ (Val _) (Val _)) in
   simv_focalizeₛ e_foc
     ltac:(fun K =>
-      eapply (tac_simv_constr_detₛ _ _ _ Hl0 Hl1 Hl2 K)
+      eapply (tac_simv_constr_detₛ _ Hl0 Hl1 Hl2 K)
     )
     ltac:(fun e =>
       fail "simv_constr_detₛ: cannot find" e_foc "in source" e
@@ -464,7 +464,7 @@ Tactic Notation "simv_constr_detₜ" "as" simple_intropattern(l) constr(Hl0) con
   let e_foc := open_constr:(ConstrDet _ (Val _) (Val _)) in
   simv_focalizeₜ e_foc
     ltac:(fun K =>
-      eapply (tac_simv_constr_detₜ _ _ _ Hl0 Hl1 Hl2 _ K)
+      eapply (tac_simv_constr_detₜ _ Hl0 Hl1 Hl2 _ K)
     )
     ltac:(fun e =>
       fail "simv_constr_detₜ: cannot find" e_foc "in target" e
@@ -492,7 +492,7 @@ Tactic Notation "simv_constr_det" "as" simple_intropattern(lₛ) simple_intropat
   let e_focₜ := open_constr:(ConstrDet _ (Val _) (Val _)) in
   simv_focalize e_focₛ e_focₜ
     ltac:(fun Kₛ Kₜ =>
-      eapply (tac_simv_constr_det _ _ _ Hl _ Kₛ _ _ Kₜ)
+      eapply (tac_simv_constr_det _ Hl _ Kₛ _ _ Kₜ)
     )
     ltac:(fun eₛ eₜ =>
       fail "simv_constr_det: cannot find" e_focₛ "in source" eₛ "or" e_focₜ "in target" eₜ
@@ -525,7 +525,7 @@ Ltac simv_constrₛ1 :=
   let e_foc := open_constr:(Constr _ _ _) in
   simv_focalizeₛ e_foc
     ltac:(fun K =>
-      eapply (tac_simv_constrₛ1 _ _ _ K)
+      eapply (tac_simv_constrₛ1 _ K)
     )
     ltac:(fun e =>
       fail "simv_constrₛ1: cannot find" e_foc "in source" e
@@ -536,7 +536,7 @@ Ltac simv_constrₛ2 :=
   let e_foc := open_constr:(Constr _ _ _) in
   simv_focalizeₛ e_foc
     ltac:(fun K =>
-      eapply (tac_simv_constrₛ2 _ _ _ K)
+      eapply (tac_simv_constrₛ2 _ K)
     )
     ltac:(fun e =>
       fail "simv_constrₛ2: cannot find" e_foc "in source" e
@@ -547,7 +547,7 @@ Ltac simv_constrₜ :=
   let e_foc := open_constr:(Constr _ _ _) in
   simv_focalizeₜ e_foc
     ltac:(fun K =>
-      eapply (tac_simv_constrₜ _ _ _ _ K)
+      eapply (tac_simv_constrₜ _ _ K)
     )
     ltac:(fun e =>
       fail "simv_constrₜ: cannot find" e_foc "in target" e
@@ -559,7 +559,7 @@ Tactic Notation "simv_loadₛ" :=
   let e_foc := open_constr:(Load (Val (Loc _)) (Val (Index _))) in
   simv_focalizeₛ e_foc
     ltac:(fun K =>
-      eapply (tac_simv_loadₛ _ _ _ _ _ K)
+      eapply (tac_simv_loadₛ _ _ _ K)
     )
     ltac:(fun e =>
       fail "simv_loadₛ: cannot find" e_foc "in source" e
@@ -574,7 +574,7 @@ Tactic Notation "simv_loadₜ" :=
   let e_foc := open_constr:(Load (Val (Loc _)) (Val (Index _))) in
   simv_focalizeₜ e_foc
     ltac:(fun K =>
-      eapply (tac_simv_loadₜ _ _ _ _ _ _ K)
+      eapply (tac_simv_loadₜ _ _ _ _ K)
     )
     ltac:(fun e =>
       fail "simv_loadₜ: cannot find" e_foc "in target" e
@@ -590,7 +590,7 @@ Tactic Notation "simv_load" "as" simple_intropattern(vₛ) simple_intropattern(v
   let e_focₜ := open_constr:(Load (Val (Loc _)) (Val (Index _))) in
   simv_focalize e_focₛ e_focₜ
     ltac:(fun Kₛ Kₜ =>
-      eapply (tac_simv_load _ _ _ Hv Kₛ _ _ Kₜ)
+      eapply (tac_simv_load _ Hv Kₛ _ _ Kₜ)
     )
     ltac:(fun eₛ eₜ =>
       fail "simv_load: cannot find" e_focₛ "in source" eₛ "or" e_focₜ "in target" eₜ
@@ -623,7 +623,7 @@ Ltac simv_storeₛ :=
   let e_foc := open_constr:(Store (Val (Loc _)) (Val (Index _)) (Val _)) in
   simv_focalizeₛ e_foc
     ltac:(fun K =>
-      eapply (tac_simv_storeₛ _ _ _ _ _ K)
+      eapply (tac_simv_storeₛ _ _ _ K)
     )
     ltac:(fun e =>
       fail "simv_storeₛ: cannot find" e_foc "in source" e
@@ -638,7 +638,7 @@ Ltac simv_storeₜ :=
   let e_foc := open_constr:(Store (Val (Loc _)) (Val (Index _)) (Val _)) in
   simv_focalizeₜ e_foc
     ltac:(fun K =>
-      eapply (tac_simv_storeₜ _ _ _ _ _ _ K)
+      eapply (tac_simv_storeₜ _ _ _ _ K)
     )
     ltac:(fun e =>
       fail "simv_storeₜ: cannot find" e_foc "in source" e
@@ -654,7 +654,7 @@ Ltac simv_store :=
   let e_focₛ := open_constr:(Store (Val (Loc _)) (Val (Index _)) (Val _)) in
   simv_focalize e_focₜ e_focₛ
     ltac:(fun Kₛ Kₜ =>
-      eapply (tac_simv_store _ _ _ Kₛ _ _ _ Kₜ)
+      eapply (tac_simv_store _ Kₛ _ _ _ Kₜ)
     )
     ltac:(fun eₛ eₜ =>
       fail "simv_store: cannot find" e_focₛ "in source" eₛ "or" e_focₜ "in target" eₜ
@@ -666,7 +666,7 @@ Ltac simv_store :=
   ].
 
 Tactic Notation "simv_apply" open_constr(H) :=
-  on_simv ltac:(fun _ _ _ _ _ eₛ eₜ =>
+  on_simv ltac:(fun _ _ _ eₛ eₜ =>
     tryif
       iPoseProofCore H as false ltac:(fun H =>
         expr_decompose [eₛ eₜ] ltac:(fun Kₛ _ Kₜ _ =>
@@ -685,7 +685,7 @@ Tactic Notation "simv_smart_apply" open_constr(H) :=
   simv_apply H.
 
 Tactic Notation "simv_mono" open_constr(H) :=
-  on_simv ltac:(fun _ _ _ _ _ eₛ eₜ =>
+  on_simv ltac:(fun _ _ _ eₛ eₜ =>
     tryif
       iPoseProofCore H as false ltac:(fun H =>
         expr_decompose [eₛ eₜ] ltac:(fun Kₛ _ Kₜ _ =>

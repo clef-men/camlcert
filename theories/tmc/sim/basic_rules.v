@@ -11,7 +11,8 @@ From simuliris.tmc Require Export
 From simuliris.tmc Require Import
   sim.notations.
 
-Section sim_GS.
+Section sim.
+  Context `{sim_programs : !SimPrograms ectx_language ectx_language}.
   Context `{sim_GS : !SimGS Σ}.
   Implicit Types constr : constructor.
   Implicit Types idx idxₛ idxₜ : index.
@@ -121,8 +122,8 @@ Section sim_GS.
   Lemma sim_state_interp_heap_bij_access σₛ lₛ σₜ lₜ :
     sim_state_interp σₛ σₜ -∗
     lₛ ≈ lₜ -∗
-      lₛ ⟷ lₜ ∗
-      (lₛ ⟷ lₜ -∗ sim_state_interp σₛ σₜ).
+      lₛ ⋈ lₜ ∗
+      (lₛ ⋈ lₜ -∗ sim_state_interp σₛ σₜ).
   Proof.
     iIntros "(Hheapₛ & Hheapₜ & Hbij) Hl".
     iDestruct (sim_heap_bij_access with "Hbij Hl") as "(Hl & Hbij)".
@@ -130,7 +131,7 @@ Section sim_GS.
   Qed.
 
   Lemma sim_state_interp_heap_bij_insert lₛ lₜ :
-    lₛ ⟷ lₜ ++∗
+    lₛ ⋈ lₜ ++∗
     lₛ ≈ lₜ.
   Proof.
     rewrite sim_cupd_eq.
@@ -153,7 +154,6 @@ Section sim_GS.
     iFrame. iApply "Hbij". iExists vₛ, vₜ. iFrame. done.
   Qed.
 
-  Context (progₛ progₜ : program).
   Context (X : sim_protocol Σ).
 
   Lemma sim_constr_detₛ constr v1 v2 e Φ :
@@ -161,9 +161,9 @@ Section sim_GS.
       (l +ₗ 0) ↦ₛ constr -∗
       (l +ₗ 1) ↦ₛ v1 -∗
       (l +ₗ 2) ↦ₛ v2 -∗
-      SIM progₛ; l ≳ progₜ; e [[ X ]] {{ Φ }}
+      SIM l ≳ e [[ X ]] {{ Φ }}
     ) -∗
-    SIM progₛ; &&constr v1 v2 ≳ progₜ; e [[ X ]] {{ Φ }}.
+    SIM &&constr v1 v2 ≳ e [[ X ]] {{ Φ }}.
   Proof.
     iIntros "Hsim".
     iApply sim_head_stepₛ. iIntros "%σₛ %σₜ Hsi".
@@ -189,9 +189,9 @@ Section sim_GS.
       (l +ₗ 0) ↦ₜ constr -∗
       (l +ₗ 1) ↦ₜ v1 -∗
       (l +ₗ 2) ↦ₜ v2 -∗
-      SIM progₛ; e ≳ progₜ; l [[ X ]] {{ Φ }}
+      SIM e ≳ l [[ X ]] {{ Φ }}
     ) -∗
-    SIM progₛ; e ≳ progₜ; &&constr v1 v2 [[ X ]] {{ Φ }}.
+    SIM e ≳ &&constr v1 v2 [[ X ]] {{ Φ }}.
   Proof.
     iIntros "Hsim".
     iApply sim_head_stepₜ. iIntros "%σₛ %σₜ Hsi".
@@ -215,7 +215,7 @@ Section sim_GS.
       Loc lₛ ≈ Loc lₜ ++∗
       Φ #lₛ #lₜ
     ) -∗
-    SIM progₛ; &&constr vₛ1 vₛ2 ≳ progₜ; &&constr vₜ1 vₜ2 [[ X ]] {{ Φ }}.
+    SIM &&constr vₛ1 vₛ2 ≳ &&constr vₜ1 vₜ2 [[ X ]] {{ Φ }}.
   Proof.
     iIntros "Hv1 Hv2 HΦ".
     iApply sim_constr_detₛ. iIntros "%lₛ Hlₛ0 Hlₛ1 Hlₛ2".
@@ -232,26 +232,26 @@ Section sim_GS.
   Qed.
 
   Lemma sim_constrₛ1 constr e1 e2 e Φ :
-    SIM progₛ; let: e1 in let: e2.[ren (+1)] in &&constr $1 $0 ≳ progₜ; e [[ X ]] {{ Φ }} -∗
-    SIM progₛ; &constr e1 e2 ≳ progₜ; e [[ X ]] {{ Φ }}.
+    SIM let: e1 in let: e2.[ren (+1)] in &&constr $1 $0 ≳ e [[ X ]] {{ Φ }} -∗
+    SIM &constr e1 e2 ≳ e [[ X ]] {{ Φ }}.
   Proof.
     iIntros "Hsim".
     iApply sim_head_stepₛ. iIntros "%σₛ %σₜ Hsi !>".
     iExists _, σₛ. iFrame. auto with language.
   Qed.
   Lemma sim_constrₛ2 constr e1 e2 e Φ :
-    SIM progₛ; let: e2 in let: e1.[ren (+1)] in &&constr $0 $1 ≳ progₜ; e [[ X ]] {{ Φ }} -∗
-    SIM progₛ; &constr e1 e2 ≳ progₜ; e [[ X ]] {{ Φ }}.
+    SIM let: e2 in let: e1.[ren (+1)] in &&constr $0 $1 ≳ e [[ X ]] {{ Φ }} -∗
+    SIM &constr e1 e2 ≳ e [[ X ]] {{ Φ }}.
   Proof.
     iIntros "Hsim".
     iApply sim_head_stepₛ. iIntros "%σₛ %σₜ Hsi !>".
     iExists _, σₛ. iFrame. auto with language.
   Qed.
   Lemma sim_constrₜ constr e e1 e2 Φ :
-      SIM progₛ; e ≳ progₜ; let: e1 in let: e2.[ren (+1)] in &&constr $1 $0 [[ X ]] {{ Φ }}
-    ∧ SIM progₛ; e ≳ progₜ; let: e2 in let: e1.[ren (+1)] in &&constr $0 $1 [[ X ]] {{ Φ }}
+      SIM e ≳ let: e1 in let: e2.[ren (+1)] in &&constr $1 $0 [[ X ]] {{ Φ }}
+    ∧ SIM e ≳ let: e2 in let: e1.[ren (+1)] in &&constr $0 $1 [[ X ]] {{ Φ }}
     -∗
-    SIM progₛ; e ≳ progₜ; &constr e1 e2 [[ X ]] {{ Φ }}.
+    SIM e ≳ &constr e1 e2 [[ X ]] {{ Φ }}.
   Proof.
     iIntros "Hsim".
     iApply sim_head_stepₜ. iIntros "%σₛ %σₜ Hsi !>".
@@ -264,9 +264,9 @@ Section sim_GS.
   Lemma sim_loadₛ l idx v e Φ :
     (l +ₗ idx) ↦ₛ v -∗
     ( (l +ₗ idx) ↦ₛ v -∗
-      SIM progₛ; v ≳ progₜ; e [[ X ]] {{ Φ }}
+      SIM v ≳ e [[ X ]] {{ Φ }}
     ) -∗
-    SIM progₛ; ![idx] l ≳ progₜ; e [[ X ]] {{ Φ }}.
+    SIM ![idx] l ≳ e [[ X ]] {{ Φ }}.
   Proof.
     iIntros "Hl Hsim".
     iApply sim_head_stepₛ. iIntros "%σₛ %σₜ Hsi !>".
@@ -277,9 +277,9 @@ Section sim_GS.
   Lemma sim_loadₜ e l idx v Φ :
     (l +ₗ idx) ↦ₜ v -∗
     ( (l +ₗ idx) ↦ₜ v -∗
-      SIM progₛ; e ≳ progₜ; v [[ X ]] {{ Φ }}
+      SIM e ≳ v [[ X ]] {{ Φ }}
     ) -∗
-    SIM progₛ; e ≳ progₜ; ![idx] l [[ X ]] {{ Φ }}.
+    SIM e ≳ ![idx] l [[ X ]] {{ Φ }}.
   Proof.
     iIntros "Hl Hsim".
     iApply sim_head_stepₜ. iIntros "%σₛ %σₜ Hsi !>".
@@ -293,9 +293,9 @@ Section sim_GS.
     Index idxₛ ≈ Index idxₜ -∗
     ( ∀ vₛ vₜ,
       vₛ ≈ vₜ -∗
-      SIM progₛ; vₛ ≳ progₜ; vₜ [[ X ]] {{ Φ }}
+      SIM vₛ ≳ vₜ [[ X ]] {{ Φ }}
     ) -∗
-    SIM progₛ; ![idxₛ] lₛ ≳ progₜ; ![idxₜ] lₜ [[ X ]] {{ Φ }}.
+    SIM ![idxₛ] lₛ ≳ ![idxₜ] lₜ [[ X ]] {{ Φ }}.
   Proof.
     iIntros "(Hl0 & Hl1 & Hl2) <- Hsim".
     iApply sim_head_step. iIntros "%σₛ %σₜ Hsi !>".
@@ -314,9 +314,9 @@ Section sim_GS.
   Lemma sim_storeₛ l idx v w e Φ :
     (l +ₗ idx) ↦ₛ w -∗
     ( (l +ₗ idx) ↦ₛ v -∗
-      SIM progₛ; #() ≳ progₜ; e [[ X ]] {{ Φ }}
+      SIM #() ≳ e [[ X ]] {{ Φ }}
     ) -∗
-    SIM progₛ; l <-[idx]- v ≳ progₜ; e [[ X ]] {{ Φ }}.
+    SIM l <-[idx]- v ≳ e [[ X ]] {{ Φ }}.
   Proof.
     iIntros "Hl Hsim".
     iApply sim_head_stepₛ. iIntros "%σₛ %σₜ Hsi".
@@ -328,9 +328,9 @@ Section sim_GS.
   Lemma sim_storeₜ e l idx v w Φ :
     (l +ₗ idx) ↦ₜ w -∗
     ( (l +ₗ idx) ↦ₜ v -∗
-      SIM progₛ; e ≳ progₜ; #() [[ X ]] {{ Φ }}
+      SIM e ≳ #() [[ X ]] {{ Φ }}
     ) -∗
-    SIM progₛ; e ≳ progₜ; l <-[idx]- v [[ X ]] {{ Φ }}.
+    SIM e ≳ l <-[idx]- v [[ X ]] {{ Φ }}.
   Proof.
     iIntros "Hl Hsim".
     iApply sim_head_stepₜ. iIntros "%σₛ %σₜ Hsi".
@@ -345,7 +345,7 @@ Section sim_GS.
     vₛ2 ≈ vₜ2 -∗
     vₛ3 ≈ vₜ3 -∗
     Φ #() #() -∗
-    SIM progₛ; vₛ1 <-[vₛ2]- vₛ3 ≳ progₜ; vₜ1 <-[vₜ2]- vₜ3 [[ X ]] {{ Φ }}.
+    SIM vₛ1 <-[vₛ2]- vₛ3 ≳ vₜ1 <-[vₜ2]- vₜ3 [[ X ]] {{ Φ }}.
   Proof.
     iIntros "Hv1 Hv2 Hv3 HΦ".
     destruct vₛ1, vₜ1; try iDestruct "Hv1" as %[];
@@ -365,4 +365,4 @@ Section sim_GS.
     all: iExists #(), _; iFrame; iSplitR; first auto with language.
     all: iApply sim_post; done.
   Qed.
-End sim_GS.
+End sim.
