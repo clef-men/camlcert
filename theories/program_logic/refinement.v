@@ -15,7 +15,6 @@ Section behaviour.
   Inductive has_behaviour prog e σ : behaviour → Prop :=
     | has_behaviour_converges e' σ' :
         converges prog e σ e' σ' →
-        irreducible prog e' σ' →
         has_behaviour prog e σ (behaviour_converges e')
     | has_behaviour_diverges :
         diverges prog e σ →
