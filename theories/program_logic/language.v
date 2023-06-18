@@ -155,6 +155,7 @@ Section language.
   Proof.
     intros []. simplify. eauto.
   Qed.
+
   Lemma irreducible_not_reducible prog e σ :
     irreducible prog e σ ↔
     ¬ reducible prog e σ.
@@ -186,6 +187,25 @@ Section language.
     rewrite /stuck. naive_solver.
   Qed.
 
+  Lemma strongly_reducible_reducible prog e σ :
+    strongly_reducible prog e →
+    reducible prog e σ.
+  Proof.
+    done.
+  Qed.
+  Lemma strongly_irreducible_irreducible prog e σ :
+    strongly_irreducible prog e →
+    irreducible prog e σ.
+  Proof.
+    done.
+  Qed.
+  Lemma strongly_stuck_stuck prog e σ :
+    strongly_stuck prog e →
+    stuck prog e σ.
+  Proof.
+    intros []. split; done.
+  Qed.
+
   Lemma diverges_reducible prog e σ :
     diverges prog e σ →
     reducible prog e σ.
@@ -205,13 +225,6 @@ Section language.
   Proof.
     intros Hdiv ?%to_of_val. punfold Hdiv.
     destruct Hdiv as [? ? ? ? ?%prim_step_not_val]. naive_solver.
-  Qed.
-
-  Lemma strongly_stuck_stuck prog e σ :
-    strongly_stuck prog e →
-    stuck prog e σ.
-  Proof.
-    intros []. split; done.
   Qed.
 
   Lemma pure_step_prim_step prog e1 e2 σ :
