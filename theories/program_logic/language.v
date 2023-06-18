@@ -162,6 +162,18 @@ Section language.
   Proof.
     rewrite /reducible /irreducible. naive_solver.
   Qed.
+  Lemma irreducible_not_reducible_1 prog e σ :
+    irreducible prog e σ →
+    ¬ reducible prog e σ.
+  Proof.
+    rewrite irreducible_not_reducible //.
+  Qed.
+  Lemma irreducible_not_reducible_2 prog e σ :
+    ¬ reducible prog e σ →
+    irreducible prog e σ.
+  Proof.
+    rewrite irreducible_not_reducible //.
+  Qed.
   Lemma reducible_not_val prog e σ :
     reducible prog e σ →
     to_val e = None.
