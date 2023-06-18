@@ -11,6 +11,11 @@ From simuliris.language Require Import
 Create HintDb language.
 
 #[global] Hint Extern 0 (
+  reducible _ _ _
+) => (
+  eapply head_reducible_reducible
+) : language.
+#[global] Hint Extern 0 (
   head_reducible _ _ _
 ) => (
   eexists _, _; simpl
