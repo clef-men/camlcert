@@ -49,6 +49,7 @@ Class Similar X1 X2 := {
   similar : X1 → X2 → Prop ;
 }.
 #[global] Arguments Build_Similar {_ _} _ : assert.
+#[global] Arguments similar {_ _ _} !_ !_ / : simpl nomatch, assert.
 Infix "≈" := similar
 ( at level 70,
   no associativity
@@ -67,6 +68,7 @@ Class BiSimilar PROP X1 X2 := {
   bi_similar : X1 → X2 → PROP ;
 }.
 #[global] Arguments Build_BiSimilar {_ _ _} _ : assert.
+#[global] Arguments bi_similar {_ _ _ _} !_ !_ / : simpl nomatch, assert.
 Infix "≈" := bi_similar
 ( at level 70,
   no associativity
@@ -85,6 +87,7 @@ Class BiTie PROP X1 X2 := {
   bi_tie : X1 → X2 → PROP ;
 }.
 #[global] Arguments Build_BiTie {_ _ _} _ : assert.
+#[global] Arguments bi_tie {_ _ _ _} !_ !_ / : simpl nomatch, assert.
 Infix "⋈" := bi_tie
 ( at level 70,
   no associativity
