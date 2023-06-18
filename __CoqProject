@@ -9,6 +9,7 @@ theories/prelude.v
 theories/common/tactics.v
 theories/common/typeclasses.v
 theories/common/relation.v
+theories/common/induction.v
 
 theories/base_logic/satisfiable.v
 theories/base_logic/lib/cupd/definition.v
