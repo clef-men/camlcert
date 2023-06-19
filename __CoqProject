@@ -46,5 +46,9 @@ theories/tmc/sim/notations.v
 theories/tmc/sim/basic_rules.v
 theories/tmc/sim/proofmode.v
 theories/tmc/sim/derived_rules.v
+theories/tmc/csim/bisubst.v
+theories/tmc/csim/definition.v
+theories/tmc/csim/notations.v
+theories/tmc/csim/rules.v
 theories/tmc/definition.v
 theories/tmc/examples/list_map.v
