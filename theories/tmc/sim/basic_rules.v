@@ -6,6 +6,8 @@ From simuliris.program_logic Require Export
   sim.rules.
 From simuliris.language Require Export
   tactics.
+From simuliris.language Require Import
+  well_formed.
 From simuliris.tmc Require Export
   sim.definition.
 From simuliris.tmc Require Import
@@ -19,6 +21,28 @@ Section sim.
   Implicit Types l lₛ lₜ : loc.
   Implicit Types e eₛ eₜ : expr.
   Implicit Types v vₛ vₜ w : val.
+
+  #[global] Instance val_bi_similar_persistent vₛ vₜ :
+    Persistent (vₛ ≈ vₜ).
+  Proof.
+    destruct vₛ, vₜ; apply _.
+  Qed.
+
+  Lemma val_similar_bi_similar vₛ vₜ :
+    val_well_formed sim_progₛ vₛ →
+    vₛ ≈ vₜ →
+    ⊢ vₛ ≈ vₜ.
+  Proof.
+    intros Hwf Hv.
+    destruct vₛ, vₜ; inversion Hwf; inversion Hv; naive_solver.
+  Qed.
+  Lemma val_bi_similar_similar vₛ vₜ :
+    vₛ ≈ vₜ -∗
+    ⌜vₛ ≈ vₜ⌝.
+  Proof.
+    iIntros "Hv".
+    destruct vₛ, vₜ; try iDestruct "Hv" as %[]; done.
+  Qed.
 
   Lemma sim_state_interp_allocₛ l v σₛ σₜ :
     σₛ !! l = None →
