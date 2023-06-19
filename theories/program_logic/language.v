@@ -103,7 +103,7 @@ Section language.
   Definition converges prog e σ e' σ' :=
     rtc (step prog) (e, σ) (e', σ') ∧ irreducible prog e' σ'.
 
-  CoInductive diverges_body prog (diverges : expr Λ → state Λ → Prop) : expr Λ → state Λ → Prop :=
+  Inductive diverges_body prog (diverges : expr Λ → state Λ → Prop) : expr Λ → state Λ → Prop :=
     | diverges_step e σ e' σ' :
         prim_step prog e σ e' σ' →
         diverges e' σ' →
