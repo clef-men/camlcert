@@ -28,6 +28,7 @@ theories/program_logic/sim/definition.v
 theories/program_logic/sim/notations.v
 theories/program_logic/sim/rules.v
 theories/program_logic/sim/proofmode.v
+theories/program_logic/sim/adequacy.v
 
 theories/language/loc.v
 theories/language/syntax.v
