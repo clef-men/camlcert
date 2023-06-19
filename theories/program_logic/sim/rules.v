@@ -90,50 +90,26 @@ Section sim.
           ((≡{n}≡) ==> (≡{n}≡)) ==>
           ((≡{n}≡) ==> (≡{n}≡)) ==>
           (≡{n}≡) ==>
-          (=) ==>
-          (=) ==>
+          (≡{n}≡) ==>
+          (≡{n}≡) ==>
           (≡{n}≡)
         ) sim_body.
       Proof.
-        intros N1 N2 HN M1 M2 HM Φ1 Φ2 HΦ eₛ1 eₛ2 -> eₜ1 eₜ2 ->.
+        intros N1 N2 HN M1 M2 HM Φ1 Φ2 HΦ eₛ1 eₛ2 ->%leibniz_equiv eₜ1 eₜ2 ->%leibniz_equiv.
         solve_proper_core ltac:(fun _ => f_equiv || apply HN || apply HM || apply HΦ).
-      Qed.
-      #[global] Instance sim_body_ne' n :
-        Proper (
-          ((≡{n}≡) ==> (≡{n}≡)) ==>
-          (=) ==>
-          (=) ==>
-          (≡{n}≡)
-        ) sim_body.
-      Proof.
-        intros N1 N2 HN M1 M2 -> Φ1 Φ2 -> eₛ eₜ.
-        solve_proper_core ltac:(fun _ => f_equiv || apply HN || reflexivity).
       Qed.
       #[global] Instance sim_body_proper :
         Proper (
           ((≡) ==> (≡)) ==>
           ((≡) ==> (≡)) ==>
           (≡) ==>
-          (=) ==>
-          (=) ==>
+          (≡) ==>
+          (≡) ==>
           (≡)
         ) sim_body.
       Proof.
-        intros N1 N2 HN M1 M2 HM Φ1 Φ2 HΦ eₛ1 eₛ2 -> eₜ1 eₜ2 ->.
+        intros N1 N2 HN M1 M2 HM Φ1 Φ2 HΦ eₛ1 eₛ2 ->%leibniz_equiv eₜ1 eₜ2 ->%leibniz_equiv.
         rewrite /sim_body. repeat (f_equiv || apply HN || apply HM || apply HΦ).
-      Qed.
-      #[global] Instance sim_body_proper' :
-        Proper (
-          ((≡) ==> (≡)) ==>
-          (=) ==>
-          (=) ==>
-          (=) ==>
-          (=) ==>
-          (≡)
-        ) sim_body.
-      Proof.
-        intros N1 N2 HN M1 M2 -> Φ1 Φ2 -> eₛ1 eₛ2 -> eₜ1 eₜ2 ->.
-        rewrite /sim_body. repeat (f_equiv || apply HN || apply HM || reflexivity).
       Qed.
 
       Lemma sim_body_strongly_stuck N M eₛ eₜ Φ :
@@ -422,17 +398,6 @@ Section sim.
         simpl in HΦ, Heₛ, Heₜ. subst.
         apply sim_body_ne; done || solve_proper.
       Qed.
-      #[local] Instance sim_body'_ne' n :
-        Proper (
-          ((≡{n}≡) ==> (≡{n}≡)) ==>
-          (=) ==>
-          (=) ==>
-          (≡{n}≡)
-        ) sim_body'.
-      Proof.
-        intros N1 N2 HN M1 M2 -> ((Φ1 & eₛ1) & eₜ1) ((Φ2 & eₛ2) & eₜ2) ->.
-        rewrite /sim_body' /uncurry3 /=. apply sim_body_ne'; done.
-      Qed.
       #[local] Instance sim_body'_proper :
         Proper (
           ((≡) ==> (≡)) ==>
@@ -444,17 +409,6 @@ Section sim.
         intros N1 N2 HN M1 M2 HM ((Φ1 & eₛ1) & eₜ1) ((Φ2 & eₛ2) & eₜ2) ((HΦ & Heₛ%leibniz_equiv) & Heₜ%leibniz_equiv).
         simpl in HΦ, Heₛ, Heₜ. subst.
         apply sim_body_proper; done || solve_proper.
-      Qed.
-      #[local] Instance sim_body'_proper' :
-        Proper (
-          ((≡) ==> (≡)) ==>
-          (=) ==>
-          (=) ==>
-          (≡)
-        ) sim_body'.
-      Proof.
-        intros N1 N2 HN M1 M2 -> ((Φ1 & eₛ1) & eₜ1) ((Φ2 & eₛ2) & eₜ2) ->.
-        rewrite /sim_body' /uncurry3 /=. apply sim_body_proper'; done.
       Qed.
 
       #[local] Instance sim_body'_mono_pred N :
@@ -471,19 +425,25 @@ Section sim.
         Proper (
           ((≡{n}≡) ==> (≡{n}≡)) ==>
           (≡{n}≡) ==>
+          (≡{n}≡) ==>
+          (≡{n}≡) ==>
           (≡{n}≡)
         ) sim_inner.
       Proof.
+        rewrite definition.sim_inner_unseal /definition.sim_inner_def /curry3.
         solve_proper.
       Qed.
       #[global] Instance sim_inner_proper :
         Proper (
           ((≡) ==> (≡)) ==>
           (≡) ==>
+          (≡) ==>
+          (≡) ==>
           (≡)
         ) sim_inner.
       Proof.
-        rewrite /sim_inner /curry3. solve_proper.
+        rewrite definition.sim_inner_unseal /definition.sim_inner_def /curry3.
+        solve_proper.
       Qed.
 
       Lemma sim_inner_fixpoint N Φ eₛ eₜ :
@@ -491,6 +451,7 @@ Section sim.
         sim_inner N Φ eₛ eₜ ⊣⊢
         sim_body N (sim_inner N) Φ eₛ eₜ.
       Proof.
+        rewrite definition.sim_inner_unseal.
         intros. setoid_rewrite least_fixpoint_unfold; [done | apply _].
       Qed.
       Lemma sim_inner_unfold N :
@@ -514,6 +475,7 @@ Section sim.
         □ (sim_body N (λ Φ eₛ eₜ, I Φ eₛ eₜ ∧ sim_inner N Φ eₛ eₜ) ---∗ I) -∗
         sim_inner N ---∗ I.
       Proof.
+        rewrite definition.sim_inner_unseal.
         iIntros "%HN %HI #Hind %Φ %eₛ %eₜ Hsim".
         replace (I Φ eₛ eₜ) with ((uncurry3 I) (Φ, eₛ, eₜ)); last done.
         iApply (least_fixpoint_ind with "[] Hsim"). clear Φ eₛ eₜ. iIntros "!>" (((Φ & eₛ) & eₜ)) "Hsim /=".
@@ -600,6 +562,7 @@ Section sim.
         □ (N1 ++++∗ N2) -∗
         sim_inner N1 ---∗ sim_inner N2.
       Proof.
+        rewrite definition.sim_inner_unseal.
         iIntros "%HN2 #HN %Φ %eₛ %eₜ Hsim". rewrite /sim_inner /curry3.
         iApply (least_fixpoint_iter with "[] Hsim"). clear Φ eₛ eₜ. iIntros "!>" (((Φ & eₛ) & eₜ)) "Hsim".
         rewrite least_fixpoint_unfold /sim_body' {1 3}/uncurry3.
@@ -770,6 +733,28 @@ Section sim.
     End sim_inner.
 
     Section sim.
+      #[local] Instance sim_inner'_ne n :
+        Proper (
+          ((≡{n}≡) ==> (≡{n}≡)) ==>
+          (≡{n}≡) ==>
+          (≡{n}≡)
+        ) sim_inner'.
+      Proof.
+        intros N1 N2 HN ((Φ1 & eₛ1) & eₜ1) ((Φ2 & eₛ2) & eₜ2) ((HΦ & Heₛ%leibniz_equiv) & Heₜ%leibniz_equiv).
+        simpl in HΦ, Heₛ, Heₜ. subst.
+        apply sim_inner_ne; done || solve_proper.
+      Qed.
+      #[local] Instance sim_inner'_proper :
+        Proper (
+          ((≡) ==> (≡)) ==>
+          (≡) ==>
+          (≡)
+        ) sim_inner'.
+      Proof.
+        intros N1 N2 HN ((Φ1 & eₛ1) & eₜ1) ((Φ2 & eₛ2) & eₜ2) ((HΦ & Heₛ%leibniz_equiv) & Heₜ%leibniz_equiv).
+        simpl in HΦ, Heₛ, Heₜ. subst.
+        apply sim_inner_proper; done || solve_proper.
+      Qed.
       #[local] Instance sim_inner'_mono_pred :
         BiMonoPred sim_inner'.
       Proof.
@@ -778,7 +763,8 @@ Section sim.
           iApply (sim_inner_mono with "[] Hsim"); first solve_proper. clear Φ eₛ eₜ. iIntros "!> %Φ %eₛ %eₜ HN1".
           iApply ("HN" with "HN1").
         - intros N HN n ((Φ1 & eₛ1) & eₜ1) ((Φ2 & eₛ2) & eₜ2) ((HΦ & Heₛ%leibniz_equiv) & Heₜ%leibniz_equiv).
-          rewrite /sim_inner' /=. solve_proper.
+          rewrite /sim_inner' /=.
+          apply sim_inner_ne; solve_proper.
       Qed.
 
       #[global] Instance sim_ne n :

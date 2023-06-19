@@ -117,8 +117,14 @@ Section sim.
   : prodO (prodO expr_relation_O (expr_O Λₛ)) (expr_O Λₜ) → PROP
   :=
     uncurry3 $ sim_body N $ curry3 M.
-  Definition sim_inner N : sim_protocol_O PROP Λₛ Λₜ :=
+  #[local] Definition sim_inner_def N : sim_protocol_O PROP Λₛ Λₜ :=
     curry3 $ bi_least_fixpoint (sim_body' N).
+  #[local] Definition sim_inner_aux :
+    seal (@sim_inner_def). Proof. by eexists. Qed.
+  Definition sim_inner :=
+    sim_inner_aux.(unseal).
+  #[local] Definition sim_inner_unseal : @sim_inner = @sim_inner_def :=
+    sim_inner_aux.(seal_eq).
   #[global] Arguments sim_inner _ _%I _ _ : assert.
 
   #[local] Definition sim_inner' (N : prodO (prodO expr_relation_O (expr_O Λₛ)) (expr_O Λₜ) → PROP)

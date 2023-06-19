@@ -22,9 +22,9 @@ Section bi.
 
   #[global] Instance sim_protocol_ne (X : sim_protocol_O) n :
     NonExpansive X →
-    Proper ((≡{n}≡) ==> (=) ==> (=) ==> (≡{n}≡)) X.
+    Proper ((≡{n}≡) ==> (≡{n}≡) ==> (≡{n}≡) ==> (≡{n}≡)) X.
   Proof.
-    intros HX Φ1 Φ2 HΦ eₛ1 eₛ2 -> eₜ1 eₜ2 ->.
+    intros HX Φ1 Φ2 HΦ eₛ1 eₛ2 ->%leibniz_equiv eₜ1 eₜ2 ->%leibniz_equiv.
     apply HX. done.
   Qed.
 
