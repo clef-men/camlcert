@@ -100,6 +100,8 @@ Qed.
         idx1 = idx2
     | Int i1, Int i2 =>
         i1 = i2
+    | Bool b1, Bool b2 =>
+        b1 = b2
     | Loc _, Loc _ =>
         True
     | Func func1, Func func2 =>
