@@ -51,4 +51,5 @@ theories/tmc/csim/definition.v
 theories/tmc/csim/notations.v
 theories/tmc/csim/rules.v
 theories/tmc/definition.v
+theories/tmc/soundness.v
 theories/tmc/examples/list_map.v

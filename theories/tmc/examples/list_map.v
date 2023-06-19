@@ -1,9 +1,11 @@
 From simuliris Require Import
   prelude.
+From simuliris.language Require Export
+  refinement.
 From simuliris.language Require Import
   notations.
 From simuliris.tmc Require Import
-  definition.
+  soundness.
 
 Definition list_mapₛ : program := {[
   "list_map" := (
@@ -52,6 +54,12 @@ Definition list_mapₜ : program := {[
   )%E
 ]}.
 
+Lemma list_map_well_formed :
+  program_well_formed list_mapₛ.
+Proof.
+  apply map_Forall_singleton. naive_solver lia.
+Qed.
+
 Lemma list_map_tmc :
   tmc list_mapₛ list_mapₜ.
 Proof.
@@ -68,4 +76,10 @@ Proof.
     eapply tmc_dps_constr_1; first repeat constructor.
     + asimpl. eapply tmc_dps_call; repeat constructor.
     + done.
+Qed.
+
+Lemma list_map_sound :
+  program_refinement list_mapₛ list_mapₜ.
+Proof.
+  apply tmc_sound, list_map_tmc. apply list_map_well_formed.
 Qed.
