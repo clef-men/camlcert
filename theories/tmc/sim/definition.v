@@ -71,6 +71,14 @@ Section sim_programs.
     destruct vₛ, vₜ; apply _.
   Qed.
 
+  Lemma val_bi_similar_similar `{sim_GS : !SimGS Σ} vₛ vₜ :
+    vₛ ≈ vₜ -∗
+    ⌜vₛ ≈ vₜ⌝.
+  Proof.
+    iIntros "Hv".
+    destruct vₛ, vₜ; try iDestruct "Hv" as %[]; done.
+  Qed.
+
   #[global] Instance sim_state `{sim_GS : !SimGS Σ} : SimState (iProp Σ) ectx_language ectx_language :=
     Build_SimState (
       λ (σₛ σₜ : state),
