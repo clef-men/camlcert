@@ -1,6 +1,6 @@
 From simuliris Require Import
   prelude.
-From simuliris.program_logic Require Import
+From simuliris.program_logic Require Export
   refinement.
 From simuliris.language Require Export
   language.
