@@ -49,21 +49,19 @@ Create HintDb language.
     decompose_elem_of_list; simplify
 ) : language.
 
-Tactic Notation "invert_well_formed" "as" simple_intropattern(pat) :=
+Ltac invert_well_formed :=
   repeat_on_hyps ltac:(fun H =>
     match type of H with
     | val_well_formed _ ?v =>
         solve [by destruct v]
     | expr_well_formed _ _ _ =>
-        invert H as pat; simplify
+        invert H; simplify
     | expr_well_formed' _ _ =>
         let lvl := fresh "lvl" in
         destruct H as (lvl & H)
     end
   );
   try done.
-Tactic Notation "invert_well_formed" :=
-  invert_well_formed as [].
 #[global] Hint Extern 0 => (
   solve [invert_well_formed]
 ) : language.
@@ -78,17 +76,15 @@ Tactic Notation "invert_well_formed" :=
   invert_well_formed; eexists
 ) : language.
 
-Tactic Notation "invert_head_step" "as" simple_intropattern(pat) :=
+Ltac invert_head_step :=
   repeat_on_hyps ltac:(fun H =>
     let ty := type of H in
     let ty := eval simpl in ty in
     match ty with head_step _ ?e _ _ _ =>
       try (is_var e; fail 1);
-      invert H as pat
+      invert H
     end
   ).
-Tactic Notation "invert_head_step" :=
-  invert_head_step as [].
 
 #[local] Ltac solve_strongly_head_stuck :=
   intros ?; split;
