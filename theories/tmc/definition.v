@@ -178,7 +178,6 @@ Lemma tmc_dir_subst ξ ς eₛ eₛ' eₜ eₜ' :
 Proof.
   eauto using (proj1 (tmc_subst ξ)).
 Qed.
-#[export] Hint Resolve tmc_dir_subst : tmc.
 Lemma tmc_dps_subst ξ ς dst dst' idx idx' eₛ eₛ' eₜ eₜ' :
   tmc_dps ξ dst idx eₛ eₜ →
   dst' = dst.[ς] →
@@ -189,7 +188,6 @@ Lemma tmc_dps_subst ξ ς dst dst' idx idx' eₛ eₛ' eₜ eₜ' :
 Proof.
   eauto using (proj2 (tmc_subst ξ)).
 Qed.
-#[export] Hint Resolve tmc_dps_subst : tmc.
 
 Record tmc {progₛ progₜ} := {
   tmc_ξ : gmap function function ;
