@@ -136,77 +136,6 @@ Section sim.
         auto with iFrame.
       Qed.
 
-      Lemma sim_body_soloₛ N M eₛ eₜ Φ :
-        ( ∀ σₛ σₜ,
-          sim_state_interp σₛ σₜ ==∗
-            ∃ eₛ' σₛ',
-            ⌜tc (step sim_progₛ) (eₛ, σₛ) (eₛ', σₛ')⌝ ∗
-            sim_state_interp σₛ' σₜ ∗
-            M Φ eₛ' eₜ
-        ) -∗
-        sim_body N M Φ eₛ eₜ.
-      Proof.
-        iIntros "H %σₛ %σₜ Hsi".
-        iRight. iLeft. iApply ("H" with "Hsi").
-      Qed.
-
-      Lemma sim_body_soloₜ N M eₛ eₜ Φ :
-        ( ∀ σₛ σₜ,
-          sim_state_interp σₛ σₜ ==∗
-            ⌜reducible sim_progₜ eₜ σₜ⌝ ∗
-              ∀ eₜ' σₜ',
-              ⌜prim_step sim_progₜ eₜ σₜ eₜ' σₜ'⌝ ==∗
-                sim_state_interp σₛ σₜ' ∗
-                M Φ eₛ eₜ'
-        ) -∗
-        sim_body N M Φ eₛ eₜ.
-      Proof.
-        iIntros "H %σₛ %σₜ Hsi".
-        do 2 iRight. iLeft.
-        iMod ("H" with "Hsi") as "($ & H)".
-        iIntros "!> %eₜ' %σₜ' %Hstepₜ".
-        iLeft. iApply ("H" with "[//]").
-      Qed.
-
-      Lemma sim_body_sync N M eₛ eₜ Φ :
-        ( ∀ σₛ σₜ,
-          sim_state_interp σₛ σₜ ==∗
-            ⌜reducible sim_progₜ eₜ σₜ⌝ ∗
-              ∀ eₜ' σₜ',
-              ⌜prim_step sim_progₜ eₜ σₜ eₜ' σₜ'⌝ ==∗
-                ∃ eₛ' σₛ',
-                ⌜tc (step sim_progₛ) (eₛ, σₛ) (eₛ', σₛ')⌝ ∗
-                sim_state_interp σₛ' σₜ' ∗
-                N Φ eₛ' eₜ'
-        ) -∗
-        sim_body N M Φ eₛ eₜ.
-      Proof.
-        iIntros "H %σₛ %σₜ Hsi".
-        do 2 iRight. iLeft.
-        iMod ("H" with "Hsi") as "($ & H)".
-        iIntros "!> %eₜ' %σₜ' %Hstepₜ".
-        iRight. iApply ("H" with "[//]").
-      Qed.
-
-      Lemma sim_body_apply_protocol Kₛ eₛ' Kₜ eₜ' Ψ N M eₛ eₜ Φ :
-        eₛ = Kₛ @@ eₛ' →
-        eₜ = Kₜ @@ eₜ' →
-        ( ∀ σₛ σₜ,
-          sim_state_interp σₛ σₜ ==∗
-            X Ψ eₛ' eₜ' ∗
-            sim_state_interp σₛ σₜ ∗
-              ∀ eₛ eₜ,
-              Ψ eₛ eₜ ++∗
-              N Φ (Kₛ @@ eₛ) (Kₜ @@ eₜ)
-
-        ) -∗
-        sim_body N M Φ eₛ eₜ.
-      Proof.
-        iIntros (-> ->) "H %σₛ %σₜ Hsi".
-        do 3 iRight. iExists Kₛ, eₛ', Kₜ, eₜ', Ψ. iSplitR; first done.
-        iApply ("H" with "Hsi").
-      Qed.
-
       Lemma cupd_sim_body N M Φ eₛ eₜ :
         (|++> sim_body N M Φ eₛ eₜ) -∗
         sim_body N M Φ eₛ eₜ.
@@ -383,6 +312,266 @@ Section sim.
       (* TODO: sim_body_bind_invₜ *)
 
       (* TODO: sim_body_decompose *)
+
+      Lemma sim_body_stepsₛ N M eₛ eₜ Φ :
+        ( ∀ σₛ σₜ,
+          sim_state_interp σₛ σₜ ==∗
+            ∃ eₛ' σₛ',
+            ⌜tc (step sim_progₛ) (eₛ, σₛ) (eₛ', σₛ')⌝ ∗
+            sim_state_interp σₛ' σₜ ∗
+            M Φ eₛ' eₜ
+        ) -∗
+        sim_body N M Φ eₛ eₜ.
+      Proof.
+        iIntros "HM %σₛ %σₜ Hsi".
+        iRight. iLeft. iApply ("HM" with "Hsi").
+      Qed.
+      Lemma sim_body_stepₛ N M eₛ eₜ Φ :
+        ( ∀ σₛ σₜ,
+          sim_state_interp σₛ σₜ ==∗
+            ∃ eₛ' σₛ',
+            ⌜prim_step sim_progₛ eₛ σₛ eₛ' σₛ'⌝ ∗
+            sim_state_interp σₛ' σₜ ∗
+            M Φ eₛ' eₜ
+        ) -∗
+        sim_body N M Φ eₛ eₜ.
+      Proof.
+        iIntros "HM".
+        iApply sim_body_stepsₛ. iIntros "%σₛ %σₜ Hsi".
+        iMod ("HM" with "Hsi") as "(%eₛ' & %σₛ' & %Hstepₛ & Hsi)".
+        iExists eₛ', σₛ'. iFrame. iPureIntro. eapply tc_once, prim_step_step; done.
+      Qed.
+      Lemma sim_body_head_stepₛ N M eₛ eₜ Φ :
+        ( ∀ σₛ σₜ,
+          sim_state_interp σₛ σₜ ==∗
+            ∃ eₛ' σₛ',
+            ⌜head_step sim_progₛ eₛ σₛ eₛ' σₛ'⌝ ∗
+            sim_state_interp σₛ' σₜ ∗
+            M Φ eₛ' eₜ
+        ) -∗
+        sim_body N M Φ eₛ eₜ.
+      Proof.
+        iIntros "HM".
+        iApply sim_body_stepₛ. iIntros "%σₛ %σₜ Hsi".
+        iMod ("HM" with "Hsi") as "(%eₛ' & %σₛ' & %Hstepₛ & Hsi)".
+        iExists eₛ', σₛ'. iFrame. iPureIntro. apply head_step_prim_step. done.
+      Qed.
+      Lemma sim_body_pure_stepsₛ N M eₛ1 eₛ2 eₜ Φ :
+        tc (pure_step sim_progₛ) eₛ1 eₛ2 →
+        M Φ eₛ2 eₜ -∗
+        sim_body N M Φ eₛ1 eₜ.
+      Proof.
+        iIntros "%Hstepsₛ HM".
+        iApply sim_body_stepsₛ. iIntros "%σₛ %σₜ Hsi".
+        iExists eₛ2, σₛ. iSplitR; last auto with iFrame. iPureIntro.
+        eapply (tc_congruence (λ eₛ, (eₛ, σₛ))); last done.
+        eauto using prim_step_step, pure_step_prim_step.
+      Qed.
+      Lemma sim_body_pure_stepₛ N M eₛ1 eₛ2 eₜ Φ :
+        pure_step sim_progₛ eₛ1 eₛ2 →
+        M Φ eₛ2 eₜ -∗
+        sim_body N M Φ eₛ1 eₜ.
+      Proof.
+        intros Hstepₛ.
+        iApply sim_body_pure_stepsₛ.
+        eauto using tc_once.
+      Qed.
+      Lemma sim_body_pure_head_stepsₛ N M eₛ1 eₛ2 eₜ Φ :
+        tc (pure_head_step sim_progₛ) eₛ1 eₛ2 →
+        M Φ eₛ2 eₜ -∗
+        sim_body N M Φ eₛ1 eₜ.
+      Proof.
+        intros Hstepsₛ.
+        iApply sim_body_pure_stepsₛ.
+        eauto using (tc_congruence id), pure_head_step_pure_step.
+      Qed.
+      Lemma sim_body_pure_head_stepₛ N M eₛ1 eₛ2 eₜ Φ :
+        pure_head_step sim_progₛ eₛ1 eₛ2 →
+        M Φ eₛ2 eₜ -∗
+        sim_body N M Φ eₛ1 eₜ.
+      Proof.
+        intros Hstepₛ.
+        iApply sim_body_pure_head_stepsₛ.
+        eauto using tc_once.
+      Qed.
+
+      Lemma sim_body_stepₜ N M eₛ eₜ Φ :
+        ( ∀ σₛ σₜ,
+          sim_state_interp σₛ σₜ ==∗
+            ⌜reducible sim_progₜ eₜ σₜ⌝ ∗
+              ∀ eₜ' σₜ',
+              ⌜prim_step sim_progₜ eₜ σₜ eₜ' σₜ'⌝ ==∗
+                sim_state_interp σₛ σₜ' ∗
+                M Φ eₛ eₜ'
+        ) -∗
+        sim_body N M Φ eₛ eₜ.
+      Proof.
+        iIntros "HM %σₛ %σₜ Hsi".
+        do 2 iRight. iLeft.
+        iMod ("HM" with "Hsi") as "($ & HM)".
+        iIntros "!> %eₜ' %σₜ' %Hstepₜ".
+        iLeft. iApply ("HM" with "[//]").
+      Qed.
+      Lemma sim_body_head_stepₜ N M eₛ eₜ Φ :
+        ( ∀ σₛ σₜ,
+          sim_state_interp σₛ σₜ ==∗
+            ⌜head_reducible sim_progₜ eₜ σₜ⌝ ∗
+              ∀ eₜ' σₜ',
+              ⌜head_step sim_progₜ eₜ σₜ eₜ' σₜ'⌝ ==∗
+                sim_state_interp σₛ σₜ' ∗
+                M Φ eₛ eₜ'
+        ) -∗
+        sim_body N M Φ eₛ eₜ.
+      Proof.
+        iIntros "HM".
+        iApply sim_body_stepₜ. iIntros "%σₛ %σₜ Hsi".
+        iMod ("HM" with "Hsi") as "(%Hreducibleₜ & HM)".
+        iSplitR; first auto using head_reducible_reducible. iIntros "!> %eₜ' %σₜ' %Hstepₜ".
+        apply head_reducible_prim_step in Hstepₜ; last done.
+        iApply "HM". done.
+      Qed.
+      Lemma sim_body_pure_stepₜ N M eₛ eₜ1 eₜ2 Φ :
+        pure_step sim_progₜ eₜ1 eₜ2 →
+        M Φ eₛ eₜ2 -∗
+        sim_body N M Φ eₛ eₜ1.
+      Proof.
+        iIntros "%Hstepₜ HM".
+        iApply sim_body_stepₜ. iIntros "%σₛ %σₜ Hsi !>".
+        iSplit; eauto using pure_step_safe. iIntros "%eₜ' %σₜ' %Hstepₜ' !>".
+        eapply pure_step_det in Hstepₜ; last done. destruct Hstepₜ as (-> & ->).
+        iFrame.
+      Qed.
+      Lemma sim_body_pure_head_stepₜ N M eₛ eₜ1 eₜ2 Φ :
+        pure_head_step sim_progₜ eₜ1 eₜ2 →
+        M Φ eₛ eₜ2 -∗
+        sim_body N M Φ eₛ eₜ1.
+      Proof.
+        intros Hstepₜ.
+        iApply sim_body_pure_stepₜ.
+        eauto using pure_head_step_pure_step.
+      Qed.
+
+      Lemma sim_body_steps N M eₛ eₜ Φ :
+        ( ∀ σₛ σₜ,
+          sim_state_interp σₛ σₜ ==∗
+            ⌜reducible sim_progₜ eₜ σₜ⌝ ∗
+              ∀ eₜ' σₜ',
+              ⌜prim_step sim_progₜ eₜ σₜ eₜ' σₜ'⌝ ==∗
+                ∃ eₛ' σₛ',
+                ⌜tc (step sim_progₛ) (eₛ, σₛ) (eₛ', σₛ')⌝ ∗
+                sim_state_interp σₛ' σₜ' ∗
+                N Φ eₛ' eₜ'
+        ) -∗
+        sim_body N M Φ eₛ eₜ.
+      Proof.
+        iIntros "HN %σₛ %σₜ Hsi".
+        do 2 iRight. iLeft.
+        iMod ("HN" with "Hsi") as "($ & HN)".
+        iIntros "!> %eₜ' %σₜ' %Hstepₜ".
+        iRight. iApply ("HN" with "[//]").
+      Qed.
+      Lemma sim_body_step N M eₛ eₜ Φ :
+        ( ∀ σₛ σₜ,
+          sim_state_interp σₛ σₜ ==∗
+            ⌜reducible sim_progₜ eₜ σₜ⌝ ∗
+              ∀ eₜ' σₜ',
+              ⌜prim_step sim_progₜ eₜ σₜ eₜ' σₜ'⌝ ==∗
+                ∃ eₛ' σₛ',
+                ⌜prim_step sim_progₛ eₛ σₛ eₛ' σₛ'⌝ ∗
+                sim_state_interp σₛ' σₜ' ∗
+                N Φ eₛ' eₜ'
+        ) -∗
+        sim_body N M Φ eₛ eₜ.
+      Proof.
+        iIntros "HN".
+        iApply sim_body_steps. iIntros "%σₛ %σₜ Hsi".
+        iMod ("HN" with "Hsi") as "(%Hreducibleₜ & HN)".
+        iSplitR; first done. iIntros "!> %eₜ' %σₜ' %Hstepₜ".
+        iMod ("HN" with "[//]") as "(%eₛ' & %σₛ' & %Hstepₛ & Hsi & HN)".
+        iExists eₛ', σₛ'. iFrame. eauto using tc_once, prim_step_step.
+      Qed.
+      Lemma sim_body_head_step N M eₛ eₜ Φ :
+        ( ∀ σₛ σₜ,
+          sim_state_interp σₛ σₜ ==∗
+            ⌜head_reducible sim_progₜ eₜ σₜ⌝ ∗
+              ∀ eₜ' σₜ',
+              ⌜head_step sim_progₜ eₜ σₜ eₜ' σₜ'⌝ ==∗
+                ∃ eₛ' σₛ',
+                ⌜head_step sim_progₛ eₛ σₛ eₛ' σₛ'⌝ ∗
+                sim_state_interp σₛ' σₜ' ∗
+                N Φ eₛ' eₜ'
+        ) -∗
+        sim_body N M Φ eₛ eₜ.
+      Proof.
+        iIntros "HN".
+        iApply sim_body_step. iIntros "%σₛ %σₜ Hsi".
+        iMod ("HN" with "Hsi") as "(%Hreducibleₜ & HN)".
+        iSplitR; first auto using head_reducible_reducible. iIntros "!> %eₜ' %σₜ' %Hstepₜ".
+        apply head_reducible_prim_step in Hstepₜ; last done.
+        iMod ("HN" with "[//]") as "(%eₛ' & %σₛ' & %Hstepₛ & Hsi & HN)".
+        iExists eₛ', σₛ'. iFrame. iPureIntro. apply head_step_prim_step. done.
+      Qed.
+      Lemma sim_body_pure_steps N M eₛ1 eₛ2 eₜ1 eₜ2 Φ :
+        tc (pure_step sim_progₛ) eₛ1 eₛ2 →
+        pure_step sim_progₜ eₜ1 eₜ2 →
+        N Φ eₛ2 eₜ2 -∗
+        sim_body N M Φ eₛ1 eₜ1.
+      Proof.
+        iIntros "%Hstepsₛ %Hstepₜ HN".
+        iApply sim_body_steps. iIntros "%σₛ %σₜ Hsi !>".
+        iSplit; first eauto using pure_step_safe. iIntros "%eₜ' %σₜ' %Hstepₜ' !>".
+        eapply pure_step_det in Hstepₜ; last done. destruct Hstepₜ as (-> & ->).
+        iExists eₛ2, σₛ. iFrame. iPureIntro.
+        eapply (tc_congruence (λ eₛ, (eₛ, σₛ))); last done.
+        eauto using prim_step_step, pure_step_prim_step.
+      Qed.
+      Lemma sim_body_pure_step N M eₛ1 eₛ2 eₜ1 eₜ2 Φ :
+        pure_step sim_progₛ eₛ1 eₛ2 →
+        pure_step sim_progₜ eₜ1 eₜ2 →
+        N Φ eₛ2 eₜ2 -∗
+        sim_body N M Φ eₛ1 eₜ1.
+      Proof.
+        iIntros "%Hstepₛ %Hstepₜ HN".
+        iApply (sim_body_pure_steps with "HN"); first apply tc_once; done.
+      Qed.
+      Lemma sim_body_pure_head_steps N M eₛ1 eₛ2 eₜ1 eₜ2 Φ :
+        tc (pure_head_step sim_progₛ) eₛ1 eₛ2 →
+        pure_head_step sim_progₜ eₜ1 eₜ2 →
+        N Φ eₛ2 eₜ2 -∗
+        sim_body N M Φ eₛ1 eₜ1.
+      Proof.
+        iIntros "%Hstepₛ %Hstepₜ HN".
+        iApply (sim_body_pure_steps with "HN");
+          eauto using (tc_congruence id), pure_head_step_pure_step.
+      Qed.
+      Lemma sim_body_pure_head_step N M eₛ1 eₛ2 eₜ1 eₜ2 Φ :
+        pure_head_step sim_progₛ eₛ1 eₛ2 →
+        pure_head_step sim_progₜ eₜ1 eₜ2 →
+        N Φ eₛ2 eₜ2 -∗
+        sim_body N M Φ eₛ1 eₜ1.
+      Proof.
+        iIntros "%Hstepₛ %Hstepₜ HN".
+        iApply (sim_body_pure_head_steps with "HN"); first apply tc_once; done.
+      Qed.
+
+      Lemma sim_body_apply_protocol Ψ Kₛ eₛ' Kₜ eₜ' N M eₛ eₜ Φ :
+        eₛ = Kₛ @@ eₛ' →
+        eₜ = Kₜ @@ eₜ' →
+        ( ∀ σₛ σₜ,
+          sim_state_interp σₛ σₜ ==∗
+            X Ψ eₛ' eₜ' ∗
+            sim_state_interp σₛ σₜ ∗
+              ∀ eₛ eₜ,
+              Ψ eₛ eₜ ++∗
+              N Φ (Kₛ @@ eₛ) (Kₜ @@ eₜ)
+
+        ) -∗
+        sim_body N M Φ eₛ eₜ.
+      Proof.
+        iIntros (-> ->) "H %σₛ %σₜ Hsi".
+        do 3 iRight. iExists Kₛ, eₛ', Kₜ, eₜ', Ψ. iSplitR; first done.
+        iApply ("H" with "Hsi").
+      Qed.
     End sim_body.
 
     Section sim_inner.
@@ -730,6 +919,265 @@ Section sim.
       (* TODO: sim_inner_bind_invₜ *)
 
       (* TODO: sim_inner_decompose *)
+
+      Lemma sim_inner_stepsₛ N eₛ eₜ Φ :
+        NonExpansive N →
+        ( ∀ σₛ σₜ,
+          sim_state_interp σₛ σₜ ==∗
+            ∃ eₛ' σₛ',
+            ⌜tc (step sim_progₛ) (eₛ, σₛ) (eₛ', σₛ')⌝ ∗
+            sim_state_interp σₛ' σₜ ∗
+            sim_inner N Φ eₛ' eₜ
+        ) -∗
+        sim_inner N Φ eₛ eₜ.
+      Proof.
+        intros HN.
+        rewrite sim_inner_fixpoint. apply sim_body_stepsₛ.
+      Qed.
+      Lemma sim_inner_stepₛ N eₛ eₜ Φ :
+        NonExpansive N →
+        ( ∀ σₛ σₜ,
+          sim_state_interp σₛ σₜ ==∗
+            ∃ eₛ' σₛ',
+            ⌜prim_step sim_progₛ eₛ σₛ eₛ' σₛ'⌝ ∗
+            sim_state_interp σₛ' σₜ ∗
+            sim_inner N Φ eₛ' eₜ
+        ) -∗
+        sim_inner N Φ eₛ eₜ.
+      Proof.
+        intros HN.
+        rewrite sim_inner_fixpoint. apply sim_body_stepₛ.
+      Qed.
+      Lemma sim_inner_head_stepₛ N eₛ eₜ Φ :
+        NonExpansive N →
+        ( ∀ σₛ σₜ,
+          sim_state_interp σₛ σₜ ==∗
+            ∃ eₛ' σₛ',
+            ⌜head_step sim_progₛ eₛ σₛ eₛ' σₛ'⌝ ∗
+            sim_state_interp σₛ' σₜ ∗
+            sim_inner N Φ eₛ' eₜ
+        ) -∗
+        sim_inner N Φ eₛ eₜ.
+      Proof.
+        intros HN.
+        rewrite sim_inner_fixpoint. apply sim_body_head_stepₛ.
+      Qed.
+      Lemma sim_inner_pure_stepsₛ N eₛ1 eₛ2 eₜ Φ :
+        NonExpansive N →
+        rtc (pure_step sim_progₛ) eₛ1 eₛ2 →
+        sim_inner N Φ eₛ2 eₜ -∗
+        sim_inner N Φ eₛ1 eₜ.
+      Proof.
+        intros HN [-> | Hstepsₛ]%rtc_tc; first done.
+        setoid_rewrite sim_inner_fixpoint at 2; first apply sim_body_pure_stepsₛ; done.
+      Qed.
+      Lemma sim_inner_pure_stepₛ N eₛ1 eₛ2 eₜ Φ :
+        NonExpansive N →
+        pure_step sim_progₛ eₛ1 eₛ2 →
+        sim_inner N Φ eₛ2 eₜ -∗
+        sim_inner N Φ eₛ1 eₜ.
+      Proof.
+        intros HN.
+        setoid_rewrite sim_inner_fixpoint at 2; [apply sim_body_pure_stepₛ | done].
+      Qed.
+      Lemma sim_inner_pure_head_stepsₛ N eₛ1 eₛ2 eₜ Φ :
+        NonExpansive N →
+        rtc (pure_head_step sim_progₛ) eₛ1 eₛ2 →
+        sim_inner N Φ eₛ2 eₜ -∗
+        sim_inner N Φ eₛ1 eₜ.
+      Proof.
+        intros HN [-> | Hstepsₛ]%rtc_tc; first done.
+        setoid_rewrite sim_inner_fixpoint at 2; first apply sim_body_pure_head_stepsₛ; done.
+      Qed.
+      Lemma sim_inner_pure_head_stepₛ N eₛ1 eₛ2 eₜ Φ :
+        NonExpansive N →
+        pure_head_step sim_progₛ eₛ1 eₛ2 →
+        sim_inner N Φ eₛ2 eₜ -∗
+        sim_inner N Φ eₛ1 eₜ.
+      Proof.
+        intros HN.
+        setoid_rewrite sim_inner_fixpoint at 2; [apply sim_body_pure_head_stepₛ | done].
+      Qed.
+
+      Lemma sim_inner_stepₜ N eₛ eₜ Φ :
+        NonExpansive N →
+        ( ∀ σₛ σₜ,
+          sim_state_interp σₛ σₜ ==∗
+            ⌜reducible sim_progₜ eₜ σₜ⌝ ∗
+              ∀ eₜ' σₜ',
+              ⌜prim_step sim_progₜ eₜ σₜ eₜ' σₜ'⌝ ==∗
+                sim_state_interp σₛ σₜ' ∗
+                sim_inner N Φ eₛ eₜ'
+        ) -∗
+        sim_inner N Φ eₛ eₜ.
+      Proof.
+        intros HN.
+        rewrite sim_inner_fixpoint. apply sim_body_stepₜ.
+      Qed.
+      Lemma sim_inner_head_stepₜ N eₛ eₜ Φ :
+        NonExpansive N →
+        ( ∀ σₛ σₜ,
+          sim_state_interp σₛ σₜ ==∗
+            ⌜head_reducible sim_progₜ eₜ σₜ⌝ ∗
+              ∀ eₜ' σₜ',
+              ⌜head_step sim_progₜ eₜ σₜ eₜ' σₜ'⌝ ==∗
+                sim_state_interp σₛ σₜ' ∗
+                sim_inner N Φ eₛ eₜ'
+        ) -∗
+        sim_inner N Φ eₛ eₜ.
+      Proof.
+        intros HN.
+        rewrite sim_inner_fixpoint. apply sim_body_head_stepₜ.
+      Qed.
+      Lemma sim_inner_pure_stepₜ N eₛ eₜ1 eₜ2 Φ :
+        NonExpansive N →
+        pure_step sim_progₜ eₜ1 eₜ2 →
+        sim_inner N Φ eₛ eₜ2 -∗
+        sim_inner N Φ eₛ eₜ1.
+      Proof.
+        intros HN.
+        setoid_rewrite sim_inner_fixpoint at 2; [apply sim_body_pure_stepₜ | done].
+      Qed.
+      Lemma sim_inner_pure_stepsₜ N eₛ eₜ1 eₜ2 Φ :
+        NonExpansive N →
+        rtc (pure_step sim_progₜ) eₜ1 eₜ2 →
+        sim_inner N Φ eₛ eₜ2 -∗
+        sim_inner N Φ eₛ eₜ1.
+      Proof.
+        intros HN.
+        induction 1 as [| eₜ eₜ' eₜ'' Hstepₜ Hstepsₜ IH]; first done.
+        rewrite IH. apply sim_inner_pure_stepₜ; done.
+      Qed.
+      Lemma sim_inner_pure_head_stepₜ N eₛ eₜ1 eₜ2 Φ :
+        NonExpansive N →
+        pure_head_step sim_progₜ eₜ1 eₜ2 →
+        sim_inner N Φ eₛ eₜ2 -∗
+        sim_inner N Φ eₛ eₜ1.
+      Proof.
+        intros HN.
+        setoid_rewrite sim_inner_fixpoint at 2; [apply sim_body_pure_head_stepₜ | done].
+      Qed.
+      Lemma sim_inner_pure_head_stepsₜ N eₛ eₜ1 eₜ2 Φ :
+        NonExpansive N →
+        rtc (pure_head_step sim_progₜ) eₜ1 eₜ2 →
+        sim_inner N Φ eₛ eₜ2 -∗
+        sim_inner N Φ eₛ eₜ1.
+      Proof.
+        intros HN.
+        induction 1 as [| eₜ eₜ' eₜ'' Hstepₜ Hstepsₜ IH]; first done.
+        rewrite IH. apply sim_inner_pure_head_stepₜ; done.
+      Qed.
+
+      Lemma sim_inner_steps N eₛ eₜ Φ :
+        NonExpansive N →
+        ( ∀ σₛ σₜ,
+          sim_state_interp σₛ σₜ ==∗
+            ⌜reducible sim_progₜ eₜ σₜ⌝ ∗
+              ∀ eₜ' σₜ',
+              ⌜prim_step sim_progₜ eₜ σₜ eₜ' σₜ'⌝ ==∗
+                ∃ eₛ' σₛ',
+                ⌜tc (step sim_progₛ) (eₛ, σₛ) (eₛ', σₛ')⌝ ∗
+                sim_state_interp σₛ' σₜ' ∗
+                N Φ eₛ' eₜ'
+        ) -∗
+        sim_inner N Φ eₛ eₜ.
+      Proof.
+        intros HN.
+        rewrite sim_inner_fixpoint. apply sim_body_steps.
+      Qed.
+      Lemma sim_inner_step N eₛ eₜ Φ :
+        NonExpansive N →
+        ( ∀ σₛ σₜ,
+          sim_state_interp σₛ σₜ ==∗
+            ⌜reducible sim_progₜ eₜ σₜ⌝ ∗
+              ∀ eₜ' σₜ',
+              ⌜prim_step sim_progₜ eₜ σₜ eₜ' σₜ'⌝ ==∗
+                ∃ eₛ' σₛ',
+                ⌜prim_step sim_progₛ eₛ σₛ eₛ' σₛ'⌝ ∗
+                sim_state_interp σₛ' σₜ' ∗
+                N Φ eₛ' eₜ'
+        ) -∗
+        sim_inner N Φ eₛ eₜ.
+      Proof.
+        intros HN.
+        rewrite sim_inner_fixpoint. apply sim_body_step.
+      Qed.
+      Lemma sim_inner_head_step N eₛ eₜ Φ :
+        NonExpansive N →
+        ( ∀ σₛ σₜ,
+          sim_state_interp σₛ σₜ ==∗
+            ⌜head_reducible sim_progₜ eₜ σₜ⌝ ∗
+              ∀ eₜ' σₜ',
+              ⌜head_step sim_progₜ eₜ σₜ eₜ' σₜ'⌝ ==∗
+                ∃ eₛ' σₛ',
+                ⌜head_step sim_progₛ eₛ σₛ eₛ' σₛ'⌝ ∗
+                sim_state_interp σₛ' σₜ' ∗
+                N Φ eₛ' eₜ'
+        ) -∗
+        sim_inner N Φ eₛ eₜ.
+      Proof.
+        intros HN.
+        rewrite sim_inner_fixpoint. apply sim_body_head_step.
+      Qed.
+      Lemma sim_inner_pure_steps N eₛ1 eₛ2 eₜ1 eₜ2 Φ :
+        NonExpansive N →
+        tc (pure_step sim_progₛ) eₛ1 eₛ2 →
+        pure_step sim_progₜ eₜ1 eₜ2 →
+        N Φ eₛ2 eₜ2 -∗
+        sim_inner N Φ eₛ1 eₜ1.
+      Proof.
+        intros HN.
+        rewrite sim_inner_fixpoint. apply sim_body_pure_steps.
+      Qed.
+      Lemma sim_inner_pure_step N eₛ1 eₛ2 eₜ1 eₜ2 Φ :
+        NonExpansive N →
+        pure_step sim_progₛ eₛ1 eₛ2 →
+        pure_step sim_progₜ eₜ1 eₜ2 →
+        N Φ eₛ2 eₜ2 -∗
+        sim_inner N Φ eₛ1 eₜ1.
+      Proof.
+        intros HN.
+        rewrite sim_inner_fixpoint. apply sim_body_pure_step.
+      Qed.
+      Lemma sim_inner_pure_head_steps N eₛ1 eₛ2 eₜ1 eₜ2 Φ :
+        NonExpansive N →
+        tc (pure_head_step sim_progₛ) eₛ1 eₛ2 →
+        pure_head_step sim_progₜ eₜ1 eₜ2 →
+        N Φ eₛ2 eₜ2 -∗
+        sim_inner N Φ eₛ1 eₜ1.
+      Proof.
+        intros HN.
+        rewrite sim_inner_fixpoint. apply sim_body_pure_head_steps.
+      Qed.
+      Lemma sim_inner_pure_head_step N eₛ1 eₛ2 eₜ1 eₜ2 Φ :
+        NonExpansive N →
+        pure_head_step sim_progₛ eₛ1 eₛ2 →
+        pure_head_step sim_progₜ eₜ1 eₜ2 →
+        N Φ eₛ2 eₜ2 -∗
+        sim_inner N Φ eₛ1 eₜ1.
+      Proof.
+        intros HN.
+        rewrite sim_inner_fixpoint. apply sim_body_pure_head_step.
+      Qed.
+
+      Lemma sim_inner_apply_protocol Ψ Kₛ eₛ' Kₜ eₜ' N eₛ eₜ Φ :
+        NonExpansive N →
+        eₛ = Kₛ @@ eₛ' →
+        eₜ = Kₜ @@ eₜ' →
+        ( ∀ σₛ σₜ,
+          sim_state_interp σₛ σₜ ==∗
+            X Ψ eₛ' eₜ' ∗
+            sim_state_interp σₛ σₜ ∗
+              ∀ eₛ eₜ,
+              Ψ eₛ eₜ ++∗
+              N Φ (Kₛ @@ eₛ) (Kₜ @@ eₜ)
+
+        ) -∗
+        sim_inner N Φ eₛ eₜ.
+      Proof.
+        intros HN.
+        rewrite sim_inner_fixpoint. apply sim_body_apply_protocol.
+      Qed.
     End sim_inner.
 
     Section sim.
@@ -1029,88 +1477,17 @@ Section sim.
         setoid_rewrite fill_empty. iApply "Hsim2".
       Qed.
 
-      Lemma sim_steps eₛ eₜ Φ :
-        ( ∀ σₛ σₜ,
-          sim_state_interp σₛ σₜ ==∗
-            ⌜reducible sim_progₜ eₜ σₜ⌝ ∗
-              ∀ eₜ' σₜ',
-              ⌜prim_step sim_progₜ eₜ σₜ eₜ' σₜ'⌝ ==∗
-                ∃ eₛ' σₛ',
-                ⌜rtc (step sim_progₛ) (eₛ, σₛ) (eₛ', σₛ')⌝ ∗
-                sim_state_interp σₛ' σₜ' ∗
-                SIM eₛ' ≳ eₜ' [[ X ]] {{ Φ }}
-        ) -∗
-        SIM eₛ ≳ eₜ [[ X ]] {{ Φ }}.
-      Proof.
-        iIntros "H". rewrite sim_eq. iIntros "%σₛ %σₜ Hsi".
-        do 2 iRight. iLeft.
-        iMod ("H" with "Hsi") as "($ & H)".
-        iIntros "!> %eₜ' %σₜ' %Hstepₜ".
-        iMod ("H" with "[//]") as "(%eₛ' & %σₛ' & %Hstepsₛ & Hsi & Hsim)".
-        apply rtc_tc in Hstepsₛ as [ [= <- <-] | Hstepsₛ].
-        - iLeft. auto with iFrame.
-        - iRight. iExists eₛ', σₛ'. auto with iFrame.
-      Qed.
-      Lemma sim_step eₛ eₜ Φ :
-        ( ∀ σₛ σₜ, sim_state_interp σₛ σₜ ==∗
-            ⌜reducible sim_progₜ eₜ σₜ⌝ ∗
-              ∀ eₜ' σₜ',
-              ⌜prim_step sim_progₜ eₜ σₜ eₜ' σₜ'⌝ ==∗
-                ∃ eₛ' σₛ',
-                ⌜prim_step sim_progₛ eₛ σₛ eₛ' σₛ'⌝ ∗
-                sim_state_interp σₛ' σₜ' ∗
-                SIM eₛ' ≳ eₜ' [[ X ]] {{ Φ }}
-        ) -∗
-        SIM eₛ ≳ eₜ [[ X ]] {{ Φ }}.
-      Proof.
-        iIntros "H".
-        iApply sim_steps. iIntros "%σₛ %σₜ Hsi".
-        iMod ("H" with "Hsi") as "($ & H)".
-        iIntros "!> %eₜ' %σₜ' %Hstepₜ".
-        iMod ("H" with "[//]") as "(%eₛ' & %σₛ' & %Hstepₛ & Hsi & Hsim)".
-        iExists eₛ', σₛ'. iFrame.
-        iPureIntro. eapply rtc_once, prim_step_step; done.
-      Qed.
-      Lemma sim_head_step eₛ eₜ Φ :
-        ( ∀ σₛ σₜ, sim_state_interp σₛ σₜ ==∗
-            ⌜head_reducible sim_progₜ eₜ σₜ⌝ ∗
-              ∀ eₜ' σₜ',
-              ⌜head_step sim_progₜ eₜ σₜ eₜ' σₜ'⌝ ==∗
-                ∃ eₛ' σₛ',
-                ⌜head_step sim_progₛ eₛ σₛ eₛ' σₛ'⌝ ∗
-                sim_state_interp σₛ' σₜ' ∗
-                SIM eₛ' ≳ eₜ' [[ X ]] {{ Φ }}
-        ) -∗
-        SIM eₛ ≳ eₜ [[ X ]] {{ Φ }}.
-      Proof.
-        iIntros "H".
-        iApply sim_step. iIntros "%σₛ %σₜ Hsi".
-        iMod ("H" with "Hsi") as "(%Hreducibleₜ & H)".
-        iSplitR.
-        { iPureIntro. apply head_reducible_reducible. done. }
-        iIntros "!> %eₜ' %σₜ' %Hstepₜ".
-        iMod ("H" with "[]") as "(%eₛ' & %σₛ' & %Hstepₛ & Hsi & Hsim)".
-        { iPureIntro. apply head_reducible_prim_step; done. }
-        iExists eₛ', σₛ'. iFrame.
-        iPureIntro. apply head_step_prim_step. done.
-      Qed.
-
       Lemma sim_stepsₛ eₛ eₜ Φ :
         ( ∀ σₛ σₜ,
           sim_state_interp σₛ σₜ ==∗
             ∃ eₛ' σₛ',
-            ⌜rtc (step sim_progₛ) (eₛ, σₛ) (eₛ', σₛ')⌝ ∗
+            ⌜tc (step sim_progₛ) (eₛ, σₛ) (eₛ', σₛ')⌝ ∗
             sim_state_interp σₛ' σₜ ∗
             SIM eₛ' ≳ eₜ [[ X ]] {{ Φ }}
         ) -∗
         SIM eₛ ≳ eₜ [[ X ]] {{ Φ }}.
       Proof.
-        iIntros "H".
-        iApply sim_eq. iIntros "%σₛ %σₜ Hsi".
-        iMod ("H" with "Hsi") as "(%eₛ' & %σₛ' & %Hstepsₛ & Hsi & Hsim)".
-        apply rtc_tc in Hstepsₛ as [ [= <- <-] | Hstepsₛ].
-        - iRevert "Hsi". iApply (sim_eq with "Hsim").
-        - iRight. iLeft. iExists eₛ', σₛ'. auto with iFrame.
+        setoid_rewrite sim_fixpoint. apply sim_inner_stepsₛ. solve_proper.
       Qed.
       Lemma sim_stepₛ eₛ eₜ Φ :
         ( ∀ σₛ σₜ,
@@ -1122,11 +1499,7 @@ Section sim.
         ) -∗
         SIM eₛ ≳ eₜ [[ X ]] {{ Φ }}.
       Proof.
-        iIntros "H".
-        iApply sim_stepsₛ. iIntros "%σₛ %σₜ Hsi".
-        iMod ("H" with "Hsi") as "(%eₛ' & %σₛ' & %Hstepₛ & Hsi & Hsim)".
-        iExists eₛ', σₛ'. iFrame.
-        iPureIntro. eapply rtc_once, prim_step_step; done.
+        setoid_rewrite sim_fixpoint. apply sim_inner_stepₛ. solve_proper.
       Qed.
       Lemma sim_head_stepₛ eₛ eₜ Φ :
         ( ∀ σₛ σₜ,
@@ -1138,11 +1511,35 @@ Section sim.
         ) -∗
         SIM eₛ ≳ eₜ [[ X ]] {{ Φ }}.
       Proof.
-        iIntros "H".
-        iApply sim_stepₛ. iIntros "%σₛ %σₜ Hsi".
-        iMod ("H" with "Hsi") as "(%eₛ' & %σₛ' & %Hstepₛ & Hsi & Hsim)".
-        iExists eₛ', σₛ'. iFrame.
-        iPureIntro. apply head_step_prim_step. done.
+        setoid_rewrite sim_fixpoint. apply sim_inner_head_stepₛ. solve_proper.
+      Qed.
+      Lemma sim_pure_stepsₛ eₛ1 eₛ2 eₜ Φ :
+        rtc (pure_step sim_progₛ) eₛ1 eₛ2 →
+        SIM eₛ2 ≳ eₜ [[ X ]] {{ Φ }} -∗
+        SIM eₛ1 ≳ eₜ [[ X ]] {{ Φ }}.
+      Proof.
+        rewrite !sim_fixpoint. apply sim_inner_pure_stepsₛ. solve_proper.
+      Qed.
+      Lemma sim_pure_stepₛ eₛ1 eₛ2 eₜ Φ :
+        pure_step sim_progₛ eₛ1 eₛ2 →
+        SIM eₛ2 ≳ eₜ [[ X ]] {{ Φ }} -∗
+        SIM eₛ1 ≳ eₜ [[ X ]] {{ Φ }}.
+      Proof.
+        rewrite !sim_fixpoint. apply sim_inner_pure_stepₛ. solve_proper.
+      Qed.
+      Lemma sim_pure_head_stepsₛ eₛ1 eₛ2 eₜ Φ :
+        rtc (pure_head_step sim_progₛ) eₛ1 eₛ2 →
+        SIM eₛ2 ≳ eₜ [[ X ]] {{ Φ }} -∗
+        SIM eₛ1 ≳ eₜ [[ X ]] {{ Φ }}.
+      Proof.
+        rewrite !sim_fixpoint. apply sim_inner_pure_head_stepsₛ. solve_proper.
+      Qed.
+      Lemma sim_pure_head_stepₛ eₛ1 eₛ2 eₜ Φ :
+        pure_head_step sim_progₛ eₛ1 eₛ2 →
+        SIM eₛ2 ≳ eₜ [[ X ]] {{ Φ }} -∗
+        SIM eₛ1 ≳ eₜ [[ X ]] {{ Φ }}.
+      Proof.
+        rewrite !sim_fixpoint. apply sim_inner_pure_head_stepₛ. solve_proper.
       Qed.
 
       Lemma sim_stepₜ eₛ eₜ Φ :
@@ -1156,12 +1553,7 @@ Section sim.
         ) -∗
         SIM eₛ ≳ eₜ [[ X ]] {{ Φ }}.
       Proof.
-        iIntros "H".
-        iApply sim_steps. iIntros "%σₛ %σₜ Hsi".
-        iMod ("H" with "Hsi") as "(%Hreducibleₛ & H)".
-        iSplitR; first done. iIntros "!> %eₜ' %σₜ' %Hstepₜ".
-        iMod ("H" with "[//]") as "(Hsi & Hsim)".
-        iExists eₛ, σₛ. auto with iFrame.
+        setoid_rewrite sim_fixpoint. apply sim_inner_stepₜ. solve_proper.
       Qed.
       Lemma sim_head_stepₜ eₛ eₜ Φ :
         ( ∀ σₛ σₜ,
@@ -1174,93 +1566,79 @@ Section sim.
         ) -∗
         SIM eₛ ≳ eₜ [[ X ]] {{ Φ }}.
       Proof.
-        iIntros "H".
-        iApply sim_stepₜ. iIntros "%σₛ %σₜ Hsi".
-        iMod ("H" with "Hsi") as "(%Hreducibleₜ & H)".
-        iSplitR.
-        { iPureIntro. apply head_reducible_reducible. done. }
-        iIntros "!> %eₜ' %σₜ' %Hstepₜ".
-        iApply "H".
-        iPureIntro. apply head_reducible_prim_step; done.
-      Qed.
-
-      Lemma sim_pure_stepₛ eₛ1 eₛ2 eₜ Φ :
-        pure_step sim_progₛ eₛ1 eₛ2 →
-        SIM eₛ2 ≳ eₜ [[ X ]] {{ Φ }} -∗
-        SIM eₛ1 ≳ eₜ [[ X ]] {{ Φ }}.
-      Proof.
-        iIntros "%Hstepₛ Hsim".
-        iApply sim_stepₛ. iIntros "%σₛ %σₜ Hsi !>".
-        iExists eₛ2, σₛ. iFrame.
-        iPureIntro. apply pure_step_prim_step. done.
-      Qed.
-      Lemma sim_pure_stepsₛ eₛ1 eₛ2 eₜ Φ :
-        rtc (pure_step sim_progₛ) eₛ1 eₛ2 →
-        SIM eₛ2 ≳ eₜ [[ X ]] {{ Φ }} -∗
-        SIM eₛ1 ≳ eₜ [[ X ]] {{ Φ }}.
-      Proof.
-        induction 1 as [| eₛ1 eₛ2 eₛ3 Hstepₛ _ IH]; first done.
-        rewrite IH. apply sim_pure_stepₛ. done.
-      Qed.
-      Lemma sim_pure_head_stepₛ eₛ1 eₛ2 eₜ Φ :
-        pure_head_step sim_progₛ eₛ1 eₛ2 →
-        SIM eₛ2 ≳ eₜ [[ X ]] {{ Φ }} -∗
-        SIM eₛ1 ≳ eₜ [[ X ]] {{ Φ }}.
-      Proof.
-        intros. iApply sim_pure_stepₛ. apply pure_head_step_pure_step. done.
-      Qed.
-      Lemma sim_pure_head_stepsₛ eₛ1 eₛ2 eₜ Φ :
-        rtc (pure_head_step sim_progₛ) eₛ1 eₛ2 →
-        SIM eₛ2 ≳ eₜ [[ X ]] {{ Φ }} -∗
-        SIM eₛ1 ≳ eₜ [[ X ]] {{ Φ }}.
-      Proof.
-        induction 1 as [| eₛ1 eₛ2 eₛ3 Hstepₛ _ IH]; first done.
-        rewrite IH. apply sim_pure_head_stepₛ. done.
-      Qed.
-
-      Lemma sim_pure_stepₜ eₛ eₜ1 eₜ2 Φ :
-        pure_step sim_progₜ eₜ1 eₜ2 →
-        SIM eₛ ≳ eₜ2 [[ X ]] {{ Φ }} -∗
-        SIM eₛ ≳ eₜ1 [[ X ]] {{ Φ }}.
-      Proof.
-        iIntros "%Hstepₛ Hsim".
-        iApply sim_stepₜ. iIntros "%σₛ %σₜ Hsi !>".
-        iSplit.
-        { iPureIntro. exists eₜ2, σₜ. apply pure_step_prim_step. done. }
-        iIntros "%eₜ' %σₜ' %Hstepₜ !>".
-        eapply pure_step_det in Hstepₜ as (-> & ->); last done. iFrame.
+        setoid_rewrite sim_fixpoint. apply sim_inner_head_stepₜ. solve_proper.
       Qed.
       Lemma sim_pure_stepsₜ eₛ eₜ1 eₜ2 Φ :
         rtc (pure_step sim_progₜ) eₜ1 eₜ2 →
         SIM eₛ ≳ eₜ2 [[ X ]] {{ Φ }} -∗
         SIM eₛ ≳ eₜ1 [[ X ]] {{ Φ }}.
       Proof.
-        induction 1 as [| eₜ1 eₜ2 eₜ3 Hstepₜ _ IH]; first done.
-        rewrite IH. apply sim_pure_stepₜ. done.
+        rewrite !sim_fixpoint. apply sim_inner_pure_stepsₜ. solve_proper.
       Qed.
-      Lemma sim_pure_head_stepₜ eₛ eₜ1 eₜ2 Φ :
-        pure_head_step sim_progₜ eₜ1 eₜ2 →
+      Lemma sim_pure_stepₜ eₛ eₜ1 eₜ2 Φ :
+        pure_step sim_progₜ eₜ1 eₜ2 →
         SIM eₛ ≳ eₜ2 [[ X ]] {{ Φ }} -∗
         SIM eₛ ≳ eₜ1 [[ X ]] {{ Φ }}.
       Proof.
-        intros. iApply sim_pure_stepₜ. apply pure_head_step_pure_step. done.
+        rewrite !sim_fixpoint. apply sim_inner_pure_stepₜ. solve_proper.
       Qed.
       Lemma sim_pure_head_stepsₜ eₛ eₜ1 eₜ2 Φ :
         rtc (pure_head_step sim_progₜ) eₜ1 eₜ2 →
         SIM eₛ ≳ eₜ2 [[ X ]] {{ Φ }} -∗
         SIM eₛ ≳ eₜ1 [[ X ]] {{ Φ }}.
       Proof.
-        induction 1 as [| eₜ1 eₜ2 eₜ3 Hstepₜ _ IH]; first done.
-        rewrite IH. apply sim_pure_head_stepₜ. done.
+        rewrite !sim_fixpoint. apply sim_inner_pure_head_stepsₜ. solve_proper.
+      Qed.
+      Lemma sim_pure_head_stepₜ eₛ eₜ1 eₜ2 Φ :
+        pure_head_step sim_progₜ eₜ1 eₜ2 →
+        SIM eₛ ≳ eₜ2 [[ X ]] {{ Φ }} -∗
+        SIM eₛ ≳ eₜ1 [[ X ]] {{ Φ }}.
+      Proof.
+        rewrite !sim_fixpoint. apply sim_inner_pure_head_stepₜ. solve_proper.
       Qed.
 
-      Lemma sim_pure_step eₛ1 eₛ2 eₜ1 eₜ2 Φ :
-        pure_step sim_progₛ eₛ1 eₛ2 →
-        pure_step sim_progₜ eₜ1 eₜ2 →
-        SIM eₛ2 ≳ eₜ2 [[ X ]] {{ Φ }} -∗
-        SIM eₛ1 ≳ eₜ1 [[ X ]] {{ Φ }}.
+      Lemma sim_steps eₛ eₜ Φ :
+        ( ∀ σₛ σₜ,
+          sim_state_interp σₛ σₜ ==∗
+            ⌜reducible sim_progₜ eₜ σₜ⌝ ∗
+              ∀ eₜ' σₜ',
+              ⌜prim_step sim_progₜ eₜ σₜ eₜ' σₜ'⌝ ==∗
+                ∃ eₛ' σₛ',
+                ⌜tc (step sim_progₛ) (eₛ, σₛ) (eₛ', σₛ')⌝ ∗
+                sim_state_interp σₛ' σₜ' ∗
+                SIM eₛ' ≳ eₜ' [[ X ]] {{ Φ }}
+        ) -∗
+        SIM eₛ ≳ eₜ [[ X ]] {{ Φ }}.
       Proof.
-        intros. rewrite sim_pure_stepₛ // sim_pure_stepₜ //.
+        rewrite sim_fixpoint. apply sim_inner_steps. solve_proper.
+      Qed.
+      Lemma sim_step eₛ eₜ Φ :
+        ( ∀ σₛ σₜ, sim_state_interp σₛ σₜ ==∗
+            ⌜reducible sim_progₜ eₜ σₜ⌝ ∗
+              ∀ eₜ' σₜ',
+              ⌜prim_step sim_progₜ eₜ σₜ eₜ' σₜ'⌝ ==∗
+                ∃ eₛ' σₛ',
+                ⌜prim_step sim_progₛ eₛ σₛ eₛ' σₛ'⌝ ∗
+                sim_state_interp σₛ' σₜ' ∗
+                SIM eₛ' ≳ eₜ' [[ X ]] {{ Φ }}
+        ) -∗
+        SIM eₛ ≳ eₜ [[ X ]] {{ Φ }}.
+      Proof.
+        rewrite sim_fixpoint. apply sim_inner_step. solve_proper.
+      Qed.
+      Lemma sim_head_step eₛ eₜ Φ :
+        ( ∀ σₛ σₜ, sim_state_interp σₛ σₜ ==∗
+            ⌜head_reducible sim_progₜ eₜ σₜ⌝ ∗
+              ∀ eₜ' σₜ',
+              ⌜head_step sim_progₜ eₜ σₜ eₜ' σₜ'⌝ ==∗
+                ∃ eₛ' σₛ',
+                ⌜head_step sim_progₛ eₛ σₛ eₛ' σₛ'⌝ ∗
+                sim_state_interp σₛ' σₜ' ∗
+                SIM eₛ' ≳ eₜ' [[ X ]] {{ Φ }}
+        ) -∗
+        SIM eₛ ≳ eₜ [[ X ]] {{ Φ }}.
+      Proof.
+        rewrite sim_fixpoint. apply sim_inner_head_step. solve_proper.
       Qed.
       Lemma sim_pure_steps eₛ1 eₛ2 eₜ1 eₜ2 Φ :
         rtc (pure_step sim_progₛ) eₛ1 eₛ2 →
@@ -1270,13 +1648,13 @@ Section sim.
       Proof.
         intros. rewrite sim_pure_stepsₛ // sim_pure_stepsₜ //.
       Qed.
-      Lemma sim_pure_head_step eₛ1 eₛ2 eₜ1 eₜ2 Φ :
-        pure_head_step sim_progₛ eₛ1 eₛ2 →
-        pure_head_step sim_progₜ eₜ1 eₜ2 →
+      Lemma sim_pure_step eₛ1 eₛ2 eₜ1 eₜ2 Φ :
+        pure_step sim_progₛ eₛ1 eₛ2 →
+        pure_step sim_progₜ eₜ1 eₜ2 →
         SIM eₛ2 ≳ eₜ2 [[ X ]] {{ Φ }} -∗
         SIM eₛ1 ≳ eₜ1 [[ X ]] {{ Φ }}.
       Proof.
-        intros. rewrite sim_pure_head_stepₛ // sim_pure_head_stepₜ //.
+        intros. rewrite sim_pure_stepₛ // sim_pure_stepₜ //.
       Qed.
       Lemma sim_pure_head_steps eₛ1 eₛ2 eₜ1 eₜ2 Φ :
         rtc (pure_head_step sim_progₛ) eₛ1 eₛ2 →
@@ -1285,6 +1663,14 @@ Section sim.
         SIM eₛ1 ≳ eₜ1 [[ X ]] {{ Φ }}.
       Proof.
         intros. rewrite sim_pure_head_stepsₛ // sim_pure_head_stepsₜ //.
+      Qed.
+      Lemma sim_pure_head_step eₛ1 eₛ2 eₜ1 eₜ2 Φ :
+        pure_head_step sim_progₛ eₛ1 eₛ2 →
+        pure_head_step sim_progₜ eₜ1 eₜ2 →
+        SIM eₛ2 ≳ eₜ2 [[ X ]] {{ Φ }} -∗
+        SIM eₛ1 ≳ eₜ1 [[ X ]] {{ Φ }}.
+      Proof.
+        intros. rewrite sim_pure_head_stepₛ // sim_pure_head_stepₜ //.
       Qed.
 
       Lemma sim_apply_protocol Ψ eₛ eₜ Φ :
@@ -1298,10 +1684,9 @@ Section sim.
         ) -∗
         SIM eₛ ≳ eₜ [[ X ]] {{ Φ }}.
       Proof.
-        rewrite sim_eq. iIntros "Hsim".
-        iApply (sim_body_apply_protocol ∅ _ ∅); [rewrite fill_empty //.. |]. iIntros "%σₛ %σₜ Hsi".
-        iMod ("Hsim" with "Hsi") as "(HX & Hsi & Hsim)".
-        setoid_rewrite fill_empty. auto with iFrame.
+        rewrite sim_fixpoint. iIntros "Hsim".
+        iApply (sim_inner_apply_protocol Ψ ∅ _ ∅); [solve_proper | rewrite fill_empty //.. |].
+        setoid_rewrite fill_empty. done.
       Qed.
     End sim.
 
@@ -1436,6 +1821,126 @@ Section sim.
         rewrite fill_empty. auto.
       Qed.
 
+      Lemma simv_stepsₛ eₛ eₜ Φ :
+        ( ∀ σₛ σₜ,
+          sim_state_interp σₛ σₜ ==∗
+            ∃ eₛ' σₛ',
+            ⌜tc (step sim_progₛ) (eₛ, σₛ) (eₛ', σₛ')⌝ ∗
+            sim_state_interp σₛ' σₜ ∗
+            SIM eₛ' ≳ eₜ [[ X ]] [[ Φ ]]
+        ) -∗
+        SIM eₛ ≳ eₜ [[ X ]] [[ Φ ]].
+      Proof.
+        rewrite definition.simv_unseal. apply sim_stepsₛ.
+      Qed.
+      Lemma simv_stepₛ eₛ eₜ Φ :
+        ( ∀ σₛ σₜ,
+          sim_state_interp σₛ σₜ ==∗
+            ∃ eₛ' σₛ',
+            ⌜prim_step sim_progₛ eₛ σₛ eₛ' σₛ'⌝ ∗
+            sim_state_interp σₛ' σₜ ∗
+            SIM eₛ' ≳ eₜ [[ X ]] [[ Φ ]]
+        ) -∗
+        SIM eₛ ≳ eₜ [[ X ]] [[ Φ ]].
+      Proof.
+        rewrite definition.simv_unseal. apply sim_stepₛ.
+      Qed.
+      Lemma simv_head_stepₛ eₛ eₜ Φ :
+        ( ∀ σₛ σₜ,
+          sim_state_interp σₛ σₜ ==∗
+            ∃ eₛ' σₛ',
+            ⌜head_step sim_progₛ eₛ σₛ eₛ' σₛ'⌝ ∗
+            sim_state_interp σₛ' σₜ ∗
+            SIM eₛ' ≳ eₜ [[ X ]] [[ Φ ]]
+        ) -∗
+        SIM eₛ ≳ eₜ [[ X ]] [[ Φ ]].
+      Proof.
+        rewrite definition.simv_unseal. apply sim_head_stepₛ.
+      Qed.
+      Lemma simv_pure_stepsₛ eₛ1 eₛ2 eₜ Φ :
+        rtc (pure_step sim_progₛ) eₛ1 eₛ2 →
+        SIM eₛ2 ≳ eₜ [[ X ]] [[ Φ ]] -∗
+        SIM eₛ1 ≳ eₜ [[ X ]] [[ Φ ]].
+      Proof.
+        rewrite definition.simv_unseal. apply sim_pure_stepsₛ.
+      Qed.
+      Lemma simv_pure_stepₛ eₛ1 eₛ2 eₜ Φ :
+        pure_step sim_progₛ eₛ1 eₛ2 →
+        SIM eₛ2 ≳ eₜ [[ X ]] [[ Φ ]] -∗
+        SIM eₛ1 ≳ eₜ [[ X ]] [[ Φ ]].
+      Proof.
+        rewrite definition.simv_unseal. apply sim_pure_stepₛ.
+      Qed.
+      Lemma simv_pure_head_stepsₛ eₛ1 eₛ2 eₜ Φ :
+        rtc (pure_head_step sim_progₛ) eₛ1 eₛ2 →
+        SIM eₛ2 ≳ eₜ [[ X ]] [[ Φ ]] -∗
+        SIM eₛ1 ≳ eₜ [[ X ]] [[ Φ ]].
+      Proof.
+        rewrite definition.simv_unseal. apply sim_pure_head_stepsₛ.
+      Qed.
+      Lemma simv_pure_head_stepₛ eₛ1 eₛ2 eₜ Φ :
+        pure_head_step sim_progₛ eₛ1 eₛ2 →
+        SIM eₛ2 ≳ eₜ [[ X ]] [[ Φ ]] -∗
+        SIM eₛ1 ≳ eₜ [[ X ]] [[ Φ ]].
+      Proof.
+        rewrite definition.simv_unseal. apply sim_pure_head_stepₛ.
+      Qed.
+
+      Lemma simv_stepₜ eₛ eₜ Φ :
+        ( ∀ σₛ σₜ,
+          sim_state_interp σₛ σₜ ==∗
+            ⌜reducible sim_progₜ eₜ σₜ⌝ ∗
+              ∀ eₜ' σₜ',
+              ⌜prim_step sim_progₜ eₜ σₜ eₜ' σₜ'⌝ ==∗
+                sim_state_interp σₛ σₜ' ∗
+                SIM eₛ ≳ eₜ' [[ X ]] [[ Φ ]]
+        ) -∗
+        SIM eₛ ≳ eₜ [[ X ]] [[ Φ ]].
+      Proof.
+        rewrite definition.simv_unseal. apply sim_stepₜ.
+      Qed.
+      Lemma simv_head_stepₜ eₛ eₜ Φ :
+        ( ∀ σₛ σₜ,
+          sim_state_interp σₛ σₜ ==∗
+            ⌜head_reducible sim_progₜ eₜ σₜ⌝ ∗
+              ∀ eₜ' σₜ',
+              ⌜head_step sim_progₜ eₜ σₜ eₜ' σₜ'⌝ ==∗
+                sim_state_interp σₛ σₜ' ∗
+                SIM eₛ ≳ eₜ' [[ X ]] [[ Φ ]]
+        ) -∗
+        SIM eₛ ≳ eₜ [[ X ]] [[ Φ ]].
+      Proof.
+        rewrite definition.simv_unseal. apply sim_head_stepₜ.
+      Qed.
+      Lemma simv_pure_stepsₜ eₛ eₜ1 eₜ2 Φ :
+        rtc (pure_step sim_progₜ) eₜ1 eₜ2 →
+        SIM eₛ ≳ eₜ2 [[ X ]] [[ Φ ]] -∗
+        SIM eₛ ≳ eₜ1 [[ X ]] [[ Φ ]].
+      Proof.
+        rewrite definition.simv_unseal. apply sim_pure_stepsₜ.
+      Qed.
+      Lemma simv_pure_stepₜ eₛ eₜ1 eₜ2 Φ :
+        pure_step sim_progₜ eₜ1 eₜ2 →
+        SIM eₛ ≳ eₜ2 [[ X ]] [[ Φ ]] -∗
+        SIM eₛ ≳ eₜ1 [[ X ]] [[ Φ ]].
+      Proof.
+        rewrite definition.simv_unseal. apply sim_pure_stepₜ.
+      Qed.
+      Lemma simv_pure_head_stepsₜ eₛ eₜ1 eₜ2 Φ :
+        rtc (pure_head_step sim_progₜ) eₜ1 eₜ2 →
+        SIM eₛ ≳ eₜ2 [[ X ]] [[ Φ ]] -∗
+        SIM eₛ ≳ eₜ1 [[ X ]] [[ Φ ]].
+      Proof.
+        rewrite definition.simv_unseal. apply sim_pure_head_stepsₜ.
+      Qed.
+      Lemma simv_pure_head_stepₜ eₛ eₜ1 eₜ2 Φ :
+        pure_head_step sim_progₜ eₜ1 eₜ2 →
+        SIM eₛ ≳ eₜ2 [[ X ]] [[ Φ ]] -∗
+        SIM eₛ ≳ eₜ1 [[ X ]] [[ Φ ]].
+      Proof.
+        rewrite definition.simv_unseal. apply sim_pure_head_stepₜ.
+      Qed.
+
       Lemma simv_steps eₛ eₜ Φ :
         ( ∀ σₛ σₜ,
           sim_state_interp σₛ σₜ ==∗
@@ -1443,7 +1948,7 @@ Section sim.
               ∀ eₜ' σₜ',
               ⌜prim_step sim_progₜ eₜ σₜ eₜ' σₜ'⌝ ==∗
                 ∃ eₛ' σₛ',
-                ⌜rtc (step sim_progₛ) (eₛ, σₛ) (eₛ', σₛ')⌝ ∗
+                ⌜tc (step sim_progₛ) (eₛ, σₛ) (eₛ', σₛ')⌝ ∗
                 sim_state_interp σₛ' σₜ' ∗
                 SIM eₛ' ≳ eₜ' [[ X ]] [[ Φ ]]
         ) -∗
@@ -1479,137 +1984,6 @@ Section sim.
       Proof.
         rewrite definition.simv_unseal. apply sim_head_step.
       Qed.
-
-      Lemma simv_stepsₛ eₛ eₜ Φ :
-        ( ∀ σₛ σₜ,
-          sim_state_interp σₛ σₜ ==∗
-            ∃ eₛ' σₛ',
-            ⌜rtc (step sim_progₛ) (eₛ, σₛ) (eₛ', σₛ')⌝ ∗
-            sim_state_interp σₛ' σₜ ∗
-            SIM eₛ' ≳ eₜ [[ X ]] [[ Φ ]]
-        ) -∗
-        SIM eₛ ≳ eₜ [[ X ]] [[ Φ ]].
-      Proof.
-        rewrite definition.simv_unseal. apply sim_stepsₛ.
-      Qed.
-      Lemma simv_stepₛ eₛ eₜ Φ :
-        ( ∀ σₛ σₜ,
-          sim_state_interp σₛ σₜ ==∗
-            ∃ eₛ' σₛ',
-            ⌜prim_step sim_progₛ eₛ σₛ eₛ' σₛ'⌝ ∗
-            sim_state_interp σₛ' σₜ ∗
-            SIM eₛ' ≳ eₜ [[ X ]] [[ Φ ]]
-        ) -∗
-        SIM eₛ ≳ eₜ [[ X ]] [[ Φ ]].
-      Proof.
-        rewrite definition.simv_unseal. apply sim_stepₛ.
-      Qed.
-      Lemma simv_head_stepₛ eₛ eₜ Φ :
-        ( ∀ σₛ σₜ,
-          sim_state_interp σₛ σₜ ==∗
-            ∃ eₛ' σₛ',
-            ⌜head_step sim_progₛ eₛ σₛ eₛ' σₛ'⌝ ∗
-            sim_state_interp σₛ' σₜ ∗
-            SIM eₛ' ≳ eₜ [[ X ]] [[ Φ ]]
-        ) -∗
-        SIM eₛ ≳ eₜ [[ X ]] [[ Φ ]].
-      Proof.
-        rewrite definition.simv_unseal. apply sim_head_stepₛ.
-      Qed.
-
-      Lemma simv_stepₜ eₛ eₜ Φ :
-        ( ∀ σₛ σₜ,
-          sim_state_interp σₛ σₜ ==∗
-            ⌜reducible sim_progₜ eₜ σₜ⌝ ∗
-              ∀ eₜ' σₜ',
-              ⌜prim_step sim_progₜ eₜ σₜ eₜ' σₜ'⌝ ==∗
-                sim_state_interp σₛ σₜ' ∗
-                SIM eₛ ≳ eₜ' [[ X ]] [[ Φ ]]
-        ) -∗
-        SIM eₛ ≳ eₜ [[ X ]] [[ Φ ]].
-      Proof.
-        rewrite definition.simv_unseal. apply sim_stepₜ.
-      Qed.
-      Lemma simv_head_stepₜ eₛ eₜ Φ :
-        ( ∀ σₛ σₜ,
-          sim_state_interp σₛ σₜ ==∗
-            ⌜head_reducible sim_progₜ eₜ σₜ⌝ ∗
-              ∀ eₜ' σₜ',
-              ⌜head_step sim_progₜ eₜ σₜ eₜ' σₜ'⌝ ==∗
-                sim_state_interp σₛ σₜ' ∗
-                SIM eₛ ≳ eₜ' [[ X ]] [[ Φ ]]
-        ) -∗
-        SIM eₛ ≳ eₜ [[ X ]] [[ Φ ]].
-      Proof.
-        rewrite definition.simv_unseal. apply sim_head_stepₜ.
-      Qed.
-
-      Lemma simv_pure_stepₛ eₛ1 eₛ2 eₜ Φ :
-        pure_step sim_progₛ eₛ1 eₛ2 →
-        SIM eₛ2 ≳ eₜ [[ X ]] [[ Φ ]] -∗
-        SIM eₛ1 ≳ eₜ [[ X ]] [[ Φ ]].
-      Proof.
-        rewrite definition.simv_unseal. apply sim_pure_stepₛ.
-      Qed.
-      Lemma simv_pure_stepsₛ eₛ1 eₛ2 eₜ Φ :
-        rtc (pure_step sim_progₛ) eₛ1 eₛ2 →
-        SIM eₛ2 ≳ eₜ [[ X ]] [[ Φ ]] -∗
-        SIM eₛ1 ≳ eₜ [[ X ]] [[ Φ ]].
-      Proof.
-        rewrite definition.simv_unseal. apply sim_pure_stepsₛ.
-      Qed.
-      Lemma simv_pure_head_stepₛ eₛ1 eₛ2 eₜ Φ :
-        pure_head_step sim_progₛ eₛ1 eₛ2 →
-        SIM eₛ2 ≳ eₜ [[ X ]] [[ Φ ]] -∗
-        SIM eₛ1 ≳ eₜ [[ X ]] [[ Φ ]].
-      Proof.
-        rewrite definition.simv_unseal. apply sim_pure_head_stepₛ.
-      Qed.
-      Lemma simv_pure_head_stepsₛ eₛ1 eₛ2 eₜ Φ :
-        rtc (pure_head_step sim_progₛ) eₛ1 eₛ2 →
-        SIM eₛ2 ≳ eₜ [[ X ]] [[ Φ ]] -∗
-        SIM eₛ1 ≳ eₜ [[ X ]] [[ Φ ]].
-      Proof.
-        rewrite definition.simv_unseal. apply sim_pure_head_stepsₛ.
-      Qed.
-
-      Lemma simv_pure_stepₜ eₛ eₜ1 eₜ2 Φ :
-        pure_step sim_progₜ eₜ1 eₜ2 →
-        SIM eₛ ≳ eₜ2 [[ X ]] [[ Φ ]] -∗
-        SIM eₛ ≳ eₜ1 [[ X ]] [[ Φ ]].
-      Proof.
-        rewrite definition.simv_unseal. apply sim_pure_stepₜ.
-      Qed.
-      Lemma simv_pure_stepsₜ eₛ eₜ1 eₜ2 Φ :
-        rtc (pure_step sim_progₜ) eₜ1 eₜ2 →
-        SIM eₛ ≳ eₜ2 [[ X ]] [[ Φ ]] -∗
-        SIM eₛ ≳ eₜ1 [[ X ]] [[ Φ ]].
-      Proof.
-        rewrite definition.simv_unseal. apply sim_pure_stepsₜ.
-      Qed.
-      Lemma simv_pure_head_stepₜ eₛ eₜ1 eₜ2 Φ :
-        pure_head_step sim_progₜ eₜ1 eₜ2 →
-        SIM eₛ ≳ eₜ2 [[ X ]] [[ Φ ]] -∗
-        SIM eₛ ≳ eₜ1 [[ X ]] [[ Φ ]].
-      Proof.
-        rewrite definition.simv_unseal. apply sim_pure_head_stepₜ.
-      Qed.
-      Lemma simv_pure_head_stepsₜ eₛ eₜ1 eₜ2 Φ :
-        rtc (pure_head_step sim_progₜ) eₜ1 eₜ2 →
-        SIM eₛ ≳ eₜ2 [[ X ]] [[ Φ ]] -∗
-        SIM eₛ ≳ eₜ1 [[ X ]] [[ Φ ]].
-      Proof.
-        rewrite definition.simv_unseal. apply sim_pure_head_stepsₜ.
-      Qed.
-
-      Lemma simv_pure_step eₛ1 eₛ2 eₜ1 eₜ2 Φ :
-        pure_step sim_progₛ eₛ1 eₛ2 →
-        pure_step sim_progₜ eₜ1 eₜ2 →
-        SIM eₛ2 ≳ eₜ2 [[ X ]] [[ Φ ]] -∗
-        SIM eₛ1 ≳ eₜ1 [[ X ]] [[ Φ ]].
-      Proof.
-        rewrite definition.simv_unseal. apply sim_pure_step.
-      Qed.
       Lemma simv_pure_steps eₛ1 eₛ2 eₜ1 eₜ2 Φ :
         rtc (pure_step sim_progₛ) eₛ1 eₛ2 →
         rtc (pure_step sim_progₜ) eₜ1 eₜ2 →
@@ -1618,13 +1992,13 @@ Section sim.
       Proof.
         rewrite definition.simv_unseal. apply sim_pure_steps.
       Qed.
-      Lemma simv_pure_head_step eₛ1 eₛ2 eₜ1 eₜ2 Φ :
-        pure_head_step sim_progₛ eₛ1 eₛ2 →
-        pure_head_step sim_progₜ eₜ1 eₜ2 →
+      Lemma simv_pure_step eₛ1 eₛ2 eₜ1 eₜ2 Φ :
+        pure_step sim_progₛ eₛ1 eₛ2 →
+        pure_step sim_progₜ eₜ1 eₜ2 →
         SIM eₛ2 ≳ eₜ2 [[ X ]] [[ Φ ]] -∗
         SIM eₛ1 ≳ eₜ1 [[ X ]] [[ Φ ]].
       Proof.
-        rewrite definition.simv_unseal. apply sim_pure_head_step.
+        rewrite definition.simv_unseal. apply sim_pure_step.
       Qed.
       Lemma simv_pure_head_steps eₛ1 eₛ2 eₜ1 eₜ2 Φ :
         rtc (pure_head_step sim_progₛ) eₛ1 eₛ2 →
@@ -1633,6 +2007,14 @@ Section sim.
         SIM eₛ1 ≳ eₜ1 [[ X ]] [[ Φ ]].
       Proof.
         rewrite definition.simv_unseal. apply sim_pure_head_steps.
+      Qed.
+      Lemma simv_pure_head_step eₛ1 eₛ2 eₜ1 eₜ2 Φ :
+        pure_head_step sim_progₛ eₛ1 eₛ2 →
+        pure_head_step sim_progₜ eₜ1 eₜ2 →
+        SIM eₛ2 ≳ eₜ2 [[ X ]] [[ Φ ]] -∗
+        SIM eₛ1 ≳ eₜ1 [[ X ]] [[ Φ ]].
+      Proof.
+        rewrite definition.simv_unseal. apply sim_pure_head_step.
       Qed.
 
       Lemma simv_apply_protocol Ψ eₛ eₜ Φ :
@@ -1706,8 +2088,6 @@ Section sim.
     (*   + iIntros "%eₛ' %eₜ' Hsim'". *)
     (*   + *)
   Admitted.
-  (* TODO: sim_close_pure_steps *)
-  (* TODO: sim_close_pure_step *)
 
   Lemma simv_close X eₛ eₜ Φ :
     □ (
@@ -1720,6 +2100,4 @@ Section sim.
   Proof.
     rewrite !definition.simv_unseal. apply sim_close.
   Qed.
-  (* TODO: simv_close_pure_steps *)
-  (* TODO: simv_close_pure_step *)
 End sim.
