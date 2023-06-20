@@ -12,7 +12,7 @@ Proof.
 Qed.
 #[export] Hint Resolve tmc_dir_refl : tmc.
 
-Lemma tmc_subst ξ :
+Lemma tmc_dir_dps_subst ξ :
   ( ∀ eₛ eₜ,
     tmc_dir ξ eₛ eₜ →
     ∀ eₛ' eₜ' ς,
@@ -42,7 +42,7 @@ Lemma tmc_dir_subst ξ ς eₛ eₛ' eₜ eₜ' :
   eₜ' = eₜ.[ς] →
   tmc_dir ξ eₛ' eₜ'.
 Proof.
-  eauto using (proj1 (tmc_subst ξ)).
+  eauto using (proj1 (tmc_dir_dps_subst ξ)).
 Qed.
 Lemma tmc_dps_subst ξ ς dst dst' idx idx' eₛ eₛ' eₜ eₜ' :
   tmc_dps ξ dst idx eₛ eₜ →
@@ -52,5 +52,5 @@ Lemma tmc_dps_subst ξ ς dst dst' idx idx' eₛ eₛ' eₜ eₜ' :
   eₜ' = eₜ.[ς] →
   tmc_dps ξ dst' idx' eₛ' eₜ'.
 Proof.
-  eauto using (proj2 (tmc_subst ξ)).
+  eauto using (proj2 (tmc_dir_dps_subst ξ)).
 Qed.
