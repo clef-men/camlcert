@@ -146,39 +146,38 @@ Qed.
 #[global] Hint Extern 0 (binop_eval _ _ _ = _) => reflexivity
 : typeclass_instances.
 
-#[local] Ltac solve_pure_exec :=
-  apply pure_head_exec_pure_exec;
+#[local] Ltac solve_pure_head_exec :=
   intros ?; apply nsteps_once; constructor;
   [ auto with language
   | intros; invert_head_step; auto
   ].
 #[global] Instance pure_exec_let prog v e :
-  PureExec prog True 1 (Let (Val v) e) e.[Val v/].
+  PureHeadExec prog True 1 (Let (Val v) e) e.[Val v/].
 Proof.
-  solve_pure_exec.
+  solve_pure_head_exec.
 Qed.
 #[global] Instance pure_exec_call prog func v e :
-  PureExec prog (prog !! func = Some e) 1 (Call (Val (Func func)) (Val v)) e.[Val v/].
+  PureHeadExec prog (prog !! func = Some e) 1 (Call (Val (Func func)) (Val v)) e.[Val v/].
 Proof.
-  solve_pure_exec.
+  solve_pure_head_exec.
 Qed.
 #[global] Instance pure_exec_unop prog op v w :
-  PureExec prog (unop_eval op v = Some w) 1 (Unop op (Val v)) (Val w).
+  PureHeadExec prog (unop_eval op v = Some w) 1 (Unop op (Val v)) (Val w).
 Proof.
-  solve_pure_exec.
+  solve_pure_head_exec.
 Qed.
 #[global] Instance pure_exec_binop prog op v1 v2 w :
-  PureExec prog (binop_eval op v1 v2 = Some w) 1 (Binop op (Val v1) (Val v2)) (Val w).
+  PureHeadExec prog (binop_eval op v1 v2 = Some w) 1 (Binop op (Val v1) (Val v2)) (Val w).
 Proof.
-  solve_pure_exec.
+  solve_pure_head_exec.
 Qed.
 #[global] Instance pure_exec_if_true prog e1 e2 :
-  PureExec prog True 1 (If (Val (Bool true)) e1 e2) e1.
+  PureHeadExec prog True 1 (If (Val (Bool true)) e1 e2) e1.
 Proof.
-  solve_pure_exec.
+  solve_pure_head_exec.
 Qed.
 #[global] Instance pure_exec_if_false prog e1 e2 :
-  PureExec prog True 1 (If (Val (Bool false)) e1 e2) e2.
+  PureHeadExec prog True 1 (If (Val (Bool false)) e1 e2) e2.
 Proof.
-  solve_pure_exec.
+  solve_pure_head_exec.
 Qed.
