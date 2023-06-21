@@ -856,7 +856,7 @@ Section sim.
         - iIntros "!> HR %eₛ %eₜ HΦ !>". iFrame.
       Qed.
 
-      Lemma sim_inner_bind N1 N2 Kₛ eₛ Kₜ eₜ Φ1 Φ2 :
+      Lemma sim_inner_bind' N1 N2 Kₛ eₛ Kₜ eₜ Φ1 Φ2 :
         NonExpansive N1 →
         NonExpansive N2 →
         sim_inner N1 Φ1 eₛ eₜ -∗
@@ -911,8 +911,89 @@ Section sim.
           do 3 iRight. iExists (Kₛ ⋅ Kₛ'), eₛ', (Kₜ ⋅ Kₜ'), eₜ', Ψ. iFrame. iSplitR; first rewrite !fill_op //. iIntros "!> %eₛ'' %eₜ'' HΨ".
           rewrite -!fill_op. iApply ("HN" with "(HN1 HΨ)").
       Qed.
-      (* TODO: sim_inner_bindₛ *)
-      (* TODO: sim_inner_bindₜ *)
+      Lemma sim_inner_bind N1 N2 Kₛ eₛ Kₜ eₜ Φ :
+        NonExpansive N1 →
+        NonExpansive N2 →
+        sim_inner N1 (λ eₛ' eₜ', sim_inner N2 Φ (Kₛ @@ eₛ') (Kₜ @@ eₜ')) eₛ eₜ -∗
+        ( ∀ eₛ' eₜ',
+          N1 (λ eₛ' eₜ', sim_inner N2 Φ (Kₛ @@ eₛ') (Kₜ @@ eₜ')) eₛ' eₜ' -∗
+          N2 Φ (Kₛ @@ eₛ') (Kₜ @@ eₜ')
+        ) -∗
+        sim_inner N2 Φ (Kₛ @@ eₛ) (Kₜ @@ eₜ).
+      Proof.
+        iIntros "%HN1 %HN2 Hsim HN".
+        iApply (sim_inner_bind' with "Hsim HN"). auto.
+      Qed.
+      Lemma sim_inner_bindₛ' N1 N2 K eₛ eₜ Φ1 Φ2 :
+        NonExpansive N1 →
+        NonExpansive N2 →
+        sim_inner N1 Φ1 eₛ eₜ -∗
+        ( ∀ eₛ' eₜ',
+          N1 Φ1 eₛ' eₜ' -∗
+          N2 Φ2 (K @@ eₛ') eₜ'
+        ) -∗
+        ( ∀ eₛ' eₜ',
+          Φ1 eₛ' eₜ' -∗
+          sim_inner N2 Φ2 (K @@ eₛ') eₜ'
+        ) -∗
+        sim_inner N2 Φ2 (K @@ eₛ) eₜ.
+      Proof.
+        iIntros "%HN1 %HN2 Hsim1 HN Hsim2".
+        iEval(rewrite -(fill_empty eₜ)).
+        iApply (sim_inner_bind' with "Hsim1 [HN] [Hsim2]").
+        - iIntros "%eₛ' %eₜ' HN1".
+          rewrite fill_empty. iApply ("HN" with "HN1").
+        - iIntros "%eₛ' %eₜ' HΦ1".
+          rewrite fill_empty. iApply ("Hsim2" with "HΦ1").
+      Qed.
+      Lemma sim_inner_bindₛ N1 N2 K eₛ eₜ Φ :
+        NonExpansive N1 →
+        NonExpansive N2 →
+        sim_inner N1 (λ eₛ' eₜ', sim_inner N2 Φ (K @@ eₛ') eₜ') eₛ eₜ -∗
+        ( ∀ eₛ' eₜ',
+          N1 (λ eₛ' eₜ', sim_inner N2 Φ (K @@ eₛ') eₜ') eₛ' eₜ' -∗
+          N2 Φ (K @@ eₛ') eₜ'
+        ) -∗
+        sim_inner N2 Φ (K @@ eₛ) eₜ.
+      Proof.
+        iIntros "%HN1 %HN2 Hsim HN".
+        iApply (sim_inner_bindₛ' with "Hsim HN"). auto.
+      Qed.
+      Lemma sim_inner_bindₜ' N1 N2 eₛ K eₜ Φ1 Φ2 :
+        NonExpansive N1 →
+        NonExpansive N2 →
+        sim_inner N1 Φ1 eₛ eₜ -∗
+        ( ∀ eₛ' eₜ',
+          N1 Φ1 eₛ' eₜ' -∗
+          N2 Φ2 eₛ' (K @@ eₜ')
+        ) -∗
+        ( ∀ eₛ' eₜ',
+          Φ1 eₛ' eₜ' -∗
+          sim_inner N2 Φ2 eₛ' (K @@ eₜ')
+        ) -∗
+        sim_inner N2 Φ2 eₛ (K @@ eₜ).
+      Proof.
+        iIntros "%HN1 %HN2 Hsim1 HN Hsim2".
+        iEval(rewrite -(fill_empty eₛ)).
+        iApply (sim_inner_bind' with "Hsim1 [HN] [Hsim2]").
+        - iIntros "%eₛ' %eₜ' HN1".
+          rewrite fill_empty. iApply ("HN" with "HN1").
+        - iIntros "%eₛ' %eₜ' HΦ1".
+          rewrite fill_empty. iApply ("Hsim2" with "HΦ1").
+      Qed.
+      Lemma sim_inner_bindₜ N1 N2 eₛ K eₜ Φ :
+        NonExpansive N1 →
+        NonExpansive N2 →
+        sim_inner N1 (λ eₛ' eₜ', sim_inner N2 Φ eₛ' (K @@ eₜ')) eₛ eₜ -∗
+        ( ∀ eₛ' eₜ',
+          N1 (λ eₛ' eₜ', sim_inner N2 Φ eₛ' (K @@ eₜ')) eₛ' eₜ' -∗
+          N2 Φ eₛ' (K @@ eₜ')
+        ) -∗
+        sim_inner N2 Φ eₛ (K @@ eₜ).
+      Proof.
+        iIntros "%HN1 %HN2 Hsim HN".
+        iApply (sim_inner_bindₜ' with "Hsim HN"). auto.
+      Qed.
 
       (* TODO: sim_inner_bind_inv *)
       (* TODO: sim_inner_bind_invₛ *)
@@ -1398,7 +1479,7 @@ Section sim.
         enough (∀ eₛ eₜ, I Φ eₛ eₜ -∗ SIM eₛ ≳ eₜ [[ X ]] {{ Φ }}) as H.
         { iIntros "Hsim". iApply H. iExists Kₛ, eₛ, Kₜ, eₜ. auto. }
         iApply (sim_coind with "[]"). clear Φ Kₛ eₛ Kₜ eₜ. iIntros "!> %Φ %eₛ'' %eₜ'' (%Kₛ & %eₛ & %Kₜ & %eₜ & (-> & ->) & Hsim)".
-        rewrite sim_fixpoint. iApply (sim_inner_bind with "Hsim"); first solve_proper.
+        rewrite sim_fixpoint. iApply (sim_inner_bind' with "Hsim"); first solve_proper.
         - iIntros "%eₛ' %eₜ' Hsim ".
           iExists Kₛ, eₛ', Kₜ, eₜ'. auto.
         - iIntros "%eₛ' %eₜ' Hsim".
