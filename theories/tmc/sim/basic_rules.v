@@ -374,7 +374,7 @@ Section sim.
     iIntros "Hv1 Hv2 Hv3 HΦ".
     destruct vₛ1, vₜ1; try iDestruct "Hv1" as %[];
     destruct vₛ2, vₜ2; try iDestruct "Hv2" as %[];
-    try (iApply sim_strongly_head_stuck; apply is_strongly_head_stuck).
+    try solve [iApply sim_strongly_head_stuck; auto with language].
     iDestruct "Hv1" as "(Hl0 & Hl1 & Hl2)".
     iApply sim_head_step. iIntros "%σₛ %σₜ Hsi !>".
     destruct idx.

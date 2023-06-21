@@ -40,6 +40,26 @@ Create HintDb language.
 ) => (
   eapply head_step_constr_det'
 ) : language.
+#[global] Hint Extern 0 (
+  pure_step _ _ _
+) => (
+  eapply pure_exec_pure_step; [apply _ |]
+) : language.
+#[global] Hint Extern 0 (
+  pure_head_step _ _ _
+) => (
+  eapply pure_head_exec_pure_head_step; [apply _ |]
+) : language.
+#[global] Hint Extern 0 (
+  strongly_stuck _ _
+) => (
+  eapply @is_strongly_stuck; [apply _]
+) : language.
+#[global] Hint Extern 0 (
+  strongly_head_stuck _ _
+) => (
+  eapply @is_strongly_head_stuck; [apply _]
+) : language.
 
 #[global] Hint Extern 1 (
   sub_redexes_are_values _

@@ -128,7 +128,7 @@ Section language.
   Class IsStronglyStuck prog e :=
     is_strongly_stuck : strongly_stuck prog e.
   Class PureExec prog (ϕ : Prop) n e1 e2 :=
-    pure_exec : ϕ → nsteps (pure_step prog) n e1 e2.
+    pure_exec_pure_steps : ϕ → nsteps (pure_step prog) n e1 e2.
 
   Lemma to_of_val e v :
     e = of_val v →
@@ -258,6 +258,13 @@ Section language.
     PureExec prog True 1 e1 e2.
   Proof.
     intros. eapply pure_steps_pure_exec, nsteps_once. done.
+  Qed.
+  Lemma pure_exec_pure_step prog ϕ e1 e2 :
+    PureExec prog ϕ 1 e1 e2 →
+    ϕ →
+    pure_step prog e1 e2.
+  Proof.
+    intros. apply nsteps_once_inv, pure_exec_pure_steps. done.
   Qed.
 
   Lemma rtc_step_val prog v cfg1 cfg2 :
