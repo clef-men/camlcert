@@ -169,7 +169,7 @@ Section sim.
   Proof.
     pose proof @pure_exec_fill_pure_exec.
     rewrite envs_entails_unseal => ? ? ->.
-    eapply simv_pure_stepsₛ, rtc_nsteps_2, pure_exec; done.
+    eapply simv_pure_stepsₛ, rtc_nsteps_2, pure_exec_pure_steps; done.
   Qed.
   Lemma tac_simv_pure_execₜ ϕ n eₛ K eₜ1 eₜ2 Φ Δ :
     PureExec sim_progₜ ϕ n eₜ1 eₜ2 →
@@ -179,12 +179,9 @@ Section sim.
   Proof.
     pose proof @pure_exec_fill_pure_exec.
     rewrite envs_entails_unseal => ? ? ->.
-    eapply simv_pure_stepsₜ, rtc_nsteps_2, pure_exec; done.
+    eapply simv_pure_stepsₜ, rtc_nsteps_2, pure_exec_pure_steps; done.
   Qed.
 End sim.
-
-Tactic Notation "expr_is_val" open_constr(e) :=
-  eunify (of_val _) e.
 
 Tactic Notation "ectx_is_empty" open_constr(K) :=
   let ectx := type of K in
