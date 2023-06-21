@@ -8,6 +8,7 @@ From simuliris.language Require Import
 From simuliris.tmc Require Export
   definition.
 From simuliris.tmc Require Import
+  substitution
   sim.proofmode
   csim.rules
   csim.notations.
@@ -90,27 +91,27 @@ Section sim.
     clear eₛ IHeₛ. apply tmc_ind;
       rewrite /tmc_dir_spec' /tmc_dps_spec';
       intros *;
-      [ intros _ _ Hwf
-      | intros _ _ Hwf
-      | intros Hdir1 _ Hdir2 _ IHdirₛ _ Hwf
-      | intros Hdir1 _ Hdir2 _ IHdirₛ _ Hwf
-      | intros Hdir _ IHdirₛ _ Hwf
-      | intros Hdir1 _ Hdir2 _ IHdirₛ _ Hwf
-      | intros Hdir0 _ Hdir1 _ Hdir2 _ IHdirₛ _ Hwf
-      | intros Hdir1 _ Hdir2 _ IHdirₛ _ Hwf
-      | intros Hdir1 _ Hdps2 _ IHdirₛ IHdpsₛ Hwf
-      | intros Hdir1 _ Hdps2 _ IHdirₛ IHdpsₛ Hwf
-      | intros _ _ _ _ _ _ Hwf
-      | intros Hdir1 _ Hdir2 _ IHdirₛ _ Hwf
-      | intros Hdir1 _ Hdir2 _ Hdir3 _ IHdirₛ _ Hwf
-      | intros Hdir IHdir IHdirₛ IHdpsₛ dst' idx' -> -> Hwf
-      | intros Hdir1 _ Hdps2 _ IHdirₛ IHdpsₛ dst' idx' -> -> Hwf
-      | intros Hfunc Hdir _ -> IHdirₛ _ dst' idx' -> -> Hwf
-      | intros Hdir0 _ Hdps1 _ Hdps2 _ IHdirₛ IHdpsₛ dst' idx' -> -> Hwf
-      | intros Hdir1 _ Hdps2 _ -> IHdirₛ IHdpsₛ dst' idx' -> -> Hwf
-      | intros Hdir2 _ Hdps1 _ -> IHdirₛ IHdpsₛ dst' idx' -> -> Hwf
+      [ intros _ _
+      | intros _ _
+      | intros Hdir1 _ Hdir2 _ IHdirₛ _
+      | intros Hdir1 _ Hdir2 _ IHdirₛ _
+      | intros Hdir _ IHdirₛ _
+      | intros Hdir1 _ Hdir2 _ IHdirₛ _
+      | intros Hdir0 _ Hdir1 _ Hdir2 _ IHdirₛ _
+      | intros Hdir1 _ Hdir2 _ IHdirₛ _
+      | intros Hdir1 _ Hdps2 _ IHdirₛ IHdpsₛ
+      | intros Hdir1 _ Hdps2 _ IHdirₛ IHdpsₛ
+      | intros _ _ _ _ _ _
+      | intros Hdir1 _ Hdir2 _ IHdirₛ _
+      | intros Hdir1 _ Hdir2 _ Hdir3 _ IHdirₛ _
+      | intros Hdir IHdir IHdirₛ IHdpsₛ dst' idx' -> ->
+      | intros Hdir1 _ Hdps2 _ IHdirₛ IHdpsₛ dst' idx' -> ->
+      | intros Hfunc Hdir _ -> IHdirₛ _ dst' idx' -> ->
+      | intros Hdir0 _ Hdps1 _ Hdps2 _ IHdirₛ IHdpsₛ dst' idx' -> ->
+      | intros Hdir1 _ Hdps2 _ -> IHdirₛ IHdpsₛ dst' idx' -> ->
+      | intros Hdir2 _ Hdps1 _ -> IHdirₛ IHdpsₛ dst' idx' -> ->
       ];
-      iIntros "%Φ Hpre HΦ".
+      iIntros "%Hwf %Φ Hpre HΦ".
     (* tmc_dir *)
     - iApply csimv_val; auto with language.
     - iApply csimv_var. done.
@@ -260,7 +261,6 @@ Section tmc_sound.
 
   Notation Σ := sim_Σ.
   Notation M := (iResUR Σ).
-  Notation PROP := (iPropI Σ).
 
   #[local] Instance tmc_sim_programs : SimPrograms ectx_language ectx_language :=
     Build_SimPrograms progₛ progₜ.
