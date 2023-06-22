@@ -2,7 +2,6 @@ From simuliris Require Import
   prelude.
 From simuliris.common Require Import
   tactics
-  typeclasses
   relation.
 From simuliris.language Require Export
   tactics.
