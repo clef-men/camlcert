@@ -1,5 +1,7 @@
 From simuliris Require Import
   prelude.
+From simuliris.common Require Export
+  fin_maps.
 From simuliris.language Require Export
   syntax.
 From simuliris.language Require Import
@@ -140,24 +142,33 @@ Create HintDb tmc.
 Record tmc {progₛ progₜ} := {
   tmc_ξ : gmap function function ;
 
+  tmc_ξ_dom :
+    dom tmc_ξ ⊆ dom progₛ ;
   tmc_ξ_fresh :
-    map_Forall (λ _ func_dps, func_dps ∉ dom progₛ) tmc_ξ ;
+    dom progₛ ## map_img tmc_ξ ;
   tmc_ξ_inj func1 func2 func_dps :
     tmc_ξ !! func1 = Some func_dps →
     tmc_ξ !! func2 = Some func_dps →
     func1 = func2 ;
 
+  tmc_dom :
+    dom progₜ = dom progₛ ∪ map_img tmc_ξ ;
   tmc_dirs func eₛ :
     progₛ !! func = Some eₛ →
       ∃ eₜ,
-      progₜ !! func = Some eₜ ∧
-      tmc_dir tmc_ξ eₛ eₜ ;
-
-  tmc_dpss func func_dps eₛ :
+      tmc_dir tmc_ξ eₛ eₜ ∧
+      progₜ !! func = Some eₜ ;
+  tmc_dpss func eₛ func_dps :
     progₛ !! func = Some eₛ →
     tmc_ξ !! func = Some func_dps →
       ∃ eₜ,
-      progₜ !! func_dps = Some (let: ![𝟙] $0 in let: ![𝟚] $0 in let: ![𝟙] $1 in let: ![𝟚] $3 in eₜ)%E ∧
-      tmc_dps tmc_ξ $1 $2 eₛ eₜ ;
+      tmc_dps tmc_ξ $1 $2 eₛ eₜ ∧
+      progₜ !! func_dps = Some (
+        let: ![𝟙] $0 in
+        let: ![𝟚] $0 in
+        let: ![𝟙] $1 in
+        let: ![𝟚] $3 in
+        eₜ
+      )%E ;
 }.
 #[global] Arguments tmc : clear implicits.

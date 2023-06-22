@@ -9,7 +9,7 @@ From simuliris.tmc Require Import
   sim.proofmode
   csim.notations.
 
-Section sim.
+Section sim_GS.
   Context `{sim_programs : !SimPrograms ectx_language ectx_language}.
   Context `{sim_GS : !SimGS Σ}.
   Context (X : sim_protocol Σ).
@@ -22,14 +22,14 @@ Section sim.
   Notation csimv := (csimv X).
 
   #[local] Ltac csimv_start :=
-    iIntros "%Γ % % (-> & ->) #HΓ"; simv_simpl.
+    iIntros "%Γ % % (-> & ->) #HΓ"; sim_simpl.
 
   Lemma csimv_mono eₛ eₜ Φ1 Φ2 :
     (∀ vₛ vₜ, Φ1 vₛ vₜ -∗ Φ2 vₛ vₜ) -∗
     csimv Φ1 eₛ eₜ -∗ csimv Φ2 eₛ eₜ.
   Proof.
     iIntros "HΦ Hcsim". csimv_start.
-    simv_mono "Hcsim".
+    sim_mono "Hcsim".
   Qed.
 
   Lemma cupd_csimv eₛ eₜ Φ :
@@ -37,14 +37,14 @@ Section sim.
     SIM eₛ ⩾ eₜ [[ X ]] [[ Φ ]].
   Proof.
     iIntros "Hcsim". csimv_start.
-    iMod "Hcsim". simv_apply ("Hcsim" with "[//] HΓ").
+    iMod "Hcsim". sim_apply ("Hcsim" with "[//] HΓ").
   Qed.
   Lemma bupd_csimv eₛ eₜ Φ :
     (|==> SIM eₛ ⩾ eₜ [[ X ]] [[ Φ ]]) -∗
     SIM eₛ ⩾ eₜ [[ X ]] [[ Φ ]].
   Proof.
     iIntros "Hcsim". csimv_start.
-    iMod "Hcsim". simv_apply ("Hcsim" with "[//] HΓ").
+    iMod "Hcsim". sim_apply ("Hcsim" with "[//] HΓ").
   Qed.
 
   Lemma csimv_cupd eₛ eₜ Φ :
@@ -52,14 +52,14 @@ Section sim.
     SIM eₛ ⩾ eₜ [[ X ]] [[ Φ ]].
   Proof.
     iIntros "Hcsim". csimv_start.
-    simv_cupd. simv_apply ("Hcsim" with "[//] HΓ").
+    sim_cupd. sim_apply ("Hcsim" with "[//] HΓ").
   Qed.
   Lemma csimv_bupd eₛ eₜ Φ :
     SIM eₛ ⩾ eₜ [[ X ]] [[ λ vₛ vₜ, |==> Φ vₛ vₜ ]] -∗
     SIM eₛ ⩾ eₜ [[ X ]] [[ Φ ]].
   Proof.
     iIntros "Hcsim". csimv_start.
-    simv_bupd. simv_apply ("Hcsim" with "[//] HΓ").
+    sim_bupd. sim_apply ("Hcsim" with "[//] HΓ").
   Qed.
 
   Lemma csimv_val v Φ :
@@ -68,7 +68,7 @@ Section sim.
     SIM v ⩾ v [[ X ]] [[ Φ ]].
   Proof.
     iIntros "%Hwf HΦ". csimv_start.
-    simv_post. iApply "HΦ". invert_well_formed.
+    sim_post. iApply "HΦ". invert_well_formed.
   Qed.
 
   Lemma csimv_var x Φ :
@@ -76,7 +76,7 @@ Section sim.
     SIM $x ⩾ $x [[ X ]] [[ Φ ]].
   Proof.
     iIntros "HΦ". csimv_start.
-    simv_post. iApply ("HΦ" with "HΓ").
+    sim_post. iApply ("HΦ" with "HΓ").
   Qed.
 
   Lemma csimv_let eₛ1 eₛ2 eₜ1 eₜ2 Φ :
@@ -85,11 +85,11 @@ Section sim.
     SIM let: eₜ1 in eₜ2 ⩾ let: eₛ1 in eₛ2 [[ X ]] [[ Φ ]].
   Proof.
     iIntros "Hcsim1 Hcsim2". csimv_start.
-    simv_apply (simv_let with "(Hcsim1 [//] HΓ)"). iIntros "%vₛ1 %vₜ1 #Hv1".
-    simv_asimpl.
-    simv_evalₛ (rewrite (bisubst_consₛ _ vₜ1)).
-    simv_evalₜ (rewrite (bisubst_consₜ vₛ1)).
-    simv_apply ("Hcsim2" with "[//]").
+    sim_apply (simv_let with "(Hcsim1 [//] HΓ)"). iIntros "%vₛ1 %vₜ1 #Hv1".
+    sim_asimpl.
+    sim_evalₛ (rewrite (bisubst_consₛ _ vₜ1)).
+    sim_evalₜ (rewrite (bisubst_consₜ vₛ1)).
+    sim_apply ("Hcsim2" with "[//]").
     iApply bisubst_cons_well_formed; done.
   Qed.
 
@@ -104,7 +104,7 @@ Section sim.
     SIM eₜ1 eₜ2 ⩾ eₛ1 eₛ2 [[ X ]] [[ Φ ]].
   Proof.
     iIntros "Hcsim1 Hcsim2 Hsim". csimv_start.
-    simv_apply (simv_call with "(Hcsim1 [//] HΓ) (Hcsim2 [//] HΓ) Hsim").
+    sim_apply (simv_call with "(Hcsim1 [//] HΓ) (Hcsim2 [//] HΓ) Hsim").
   Qed.
 
   Lemma csimv_unop op eₛ eₜ Φ :
@@ -113,7 +113,7 @@ Section sim.
     SIM Unop op eₛ ⩾ Unop op eₜ [[ X ]] [[ Φ ]].
   Proof.
     iIntros "Hcsim HΦ". csimv_start.
-    simv_apply (simv_unop with "(Hcsim [//] HΓ)").
+    sim_apply (simv_unop with "(Hcsim [//] HΓ)").
   Qed.
 
   Lemma csimv_binop op eₛ1 eₛ2 eₜ1 eₜ2 Φ :
@@ -123,7 +123,7 @@ Section sim.
     SIM Binop op eₛ1 eₛ2 ⩾ Binop op eₜ1 eₜ2 [[ X ]] [[ Φ ]].
   Proof.
     iIntros "Hcsim1 Hcsim2 HΦ". csimv_start.
-    simv_apply (simv_binop with "(Hcsim1 [//] HΓ) (Hcsim2 [//] HΓ)").
+    sim_apply (simv_binop with "(Hcsim1 [//] HΓ) (Hcsim2 [//] HΓ)").
   Qed.
 
   Lemma csimv_if eₛ0 eₛ1 eₛ2 eₜ0 eₜ1 eₜ2 Φ :
@@ -134,7 +134,7 @@ Section sim.
     SIM If eₛ0 eₛ1 eₛ2 ⩾ If eₜ0 eₜ1 eₜ2 [[ X ]] [[ Φ ]].
   Proof.
     iIntros "Hcsim0 Hcsim12". csimv_start.
-    simv_apply (simv_if with "(Hcsim0 [//] HΓ)").
+    sim_apply (simv_if with "(Hcsim0 [//] HΓ)").
     iSplit.
     - iDestruct "Hcsim12" as "(Hcsim1 & _)".
       iApply ("Hcsim1" with "[//] HΓ").
@@ -149,7 +149,7 @@ Section sim.
     SIM &constr eₛ1 eₛ2 ⩾ &constr eₜ1 eₜ2 [[ X ]] [[ Φ ]].
   Proof.
     iIntros "Hcsim1 Hcsim2 HΦ". csimv_start.
-    simv_apply (simv_constr with "(Hcsim1 [//] HΓ) (Hcsim2 [//] HΓ)"). iIntros "%lₛ %lₜ #Hl".
+    sim_apply (simv_constr with "(Hcsim1 [//] HΓ) (Hcsim2 [//] HΓ)"). iIntros "%lₛ %lₜ #Hl".
     iApply ("HΦ" with "Hl").
   Qed.
   Lemma csimv_constr_valₜ1 constr eₛ eₜ Φ :
@@ -164,7 +164,7 @@ Section sim.
     SIM eₛ ⩾ &constr eₜ #() [[ X ]] [[ Φ ]].
   Proof.
     iIntros "Hcsim HΦ". csimv_start.
-    simv_apply (simv_constr_valₜ1 with "(Hcsim [//] HΓ)").
+    sim_apply (simv_constr_valₜ1 with "(Hcsim [//] HΓ)").
   Qed.
   Lemma csimv_constr_valₜ2 constr eₛ eₜ Φ :
     SIM eₛ ⩾ eₜ [[ X ]] [[ (≈) ]] -∗
@@ -178,7 +178,7 @@ Section sim.
     SIM eₛ ⩾ &constr #() eₜ [[ X ]] [[ Φ ]].
   Proof.
     iIntros "Hcsim HΦ". csimv_start.
-    simv_apply (simv_constr_valₜ2 with "(Hcsim [//] HΓ)").
+    sim_apply (simv_constr_valₜ2 with "(Hcsim [//] HΓ)").
   Qed.
 
   Lemma csimv_load eₛ1 eₛ2 eₜ1 eₜ2 Φ :
@@ -188,7 +188,7 @@ Section sim.
     SIM ![eₛ2] eₛ1 ⩾ ![eₜ2] eₜ1 [[ X ]] [[ Φ ]].
   Proof.
     iIntros "Hcsim1 Hcsim2 HΦ". csimv_start.
-    simv_apply (simv_load with "(Hcsim1 [//] HΓ) (Hcsim2 [//] HΓ)").
+    sim_apply (simv_load with "(Hcsim1 [//] HΓ) (Hcsim2 [//] HΓ)").
   Qed.
 
   Lemma csimv_store eₛ1 eₛ2 eₛ3 eₜ1 eₜ2 eₜ3 Φ :
@@ -199,6 +199,6 @@ Section sim.
     SIM eₛ1 <-[eₛ2]- eₛ3 ⩾ eₜ1 <-[eₜ2]- eₜ3 [[ X ]] [[ Φ ]].
   Proof.
     iIntros "Hcsim1 Hcsim2 Hcsim3 HΦ". csimv_start.
-    simv_apply (simv_store with "(Hcsim1 [//] HΓ) (Hcsim2 [//] HΓ) (Hcsim3 [//] HΓ)").
+    sim_apply (simv_store with "(Hcsim1 [//] HΓ) (Hcsim2 [//] HΓ) (Hcsim3 [//] HΓ)").
   Qed.
-End sim.
+End sim_GS.

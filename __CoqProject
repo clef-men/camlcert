@@ -8,8 +8,10 @@ theories/prelude.v
 
 theories/common/tactics.v
 theories/common/typeclasses.v
+theories/common/autosubst.v
 theories/common/relation.v
 theories/common/induction.v
+theories/common/fin_maps.v
 
 theories/base_logic/satisfiable.v
 theories/base_logic/lib/cupd/definition.v
@@ -51,6 +53,6 @@ theories/tmc/csim/definition.v
 theories/tmc/csim/notations.v
 theories/tmc/csim/rules.v
 theories/tmc/definition.v
-theories/tmc/substitution.v
+theories/tmc/properties.v
 theories/tmc/soundness.v
 theories/tmc/examples/list_map.v

@@ -4,12 +4,10 @@ From stdpp Require Export
 From stdpp Require Import
   countable.
 
-From Autosubst Require Export
-  Autosubst.
-
 From simuliris Require Import
   prelude.
-From simuliris.common Require Import
+From simuliris.common Require Export
+  autosubst
   typeclasses.
 From simuliris.language Require Export
   loc.

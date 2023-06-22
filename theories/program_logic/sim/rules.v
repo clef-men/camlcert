@@ -64,10 +64,10 @@ From simuliris.program_logic Require Import
 ( only parsing
 ) : stdpp_scope.
 
-Section sim.
+Section sim_state.
+  Context `{sim_programs : !SimPrograms Λₛ Λₜ}.
   Context `{!BiBUpd PROP, !BiAffine PROP}.
   Context `{sim_state : !SimState PROP Λₛ Λₜ}.
-  Context `{sim_programs : !SimPrograms Λₛ Λₜ}.
 
   Notation sim_protocol := (sim_protocol PROP Λₛ Λₜ).
   Notation sim_protocol_O := (sim_protocol_O PROP Λₛ Λₜ).
@@ -2181,4 +2181,4 @@ Section sim.
   Proof.
     rewrite !definition.simv_unseal. apply sim_close.
   Qed.
-End sim.
+End sim_state.

@@ -63,15 +63,15 @@ Qed.
 Lemma list_map_tmc :
   tmc list_mapₛ list_mapₜ.
 Proof.
-  exists {["list_map" := "list_map_dps"]}.
-  - apply map_Forall_singleton. done.
+  exists {["list_map" := "list_map_dps"]};
+    try set_solver;
+    rewrite /list_mapₛ /list_mapₜ.
   - intros * (<- & <-)%lookup_singleton_Some (<- & _)%lookup_singleton_Some. done.
-  - rewrite /list_mapₛ /list_mapₜ.
-    intros * (<- & <-)%lookup_singleton_Some.
-    eexists. split; first done. repeat econstructor.
-  - rewrite /list_mapₛ /list_mapₜ.
-    intros * (<- & <-)%lookup_singleton_Some (_ & <-)%lookup_singleton_Some.
-    eexists. split; first done.
+  - intros * (<- & <-)%lookup_singleton_Some.
+    rewrite lookup_insert.
+    eexists. split; last done. repeat econstructor.
+  - intros * (<- & <-)%lookup_singleton_Some (_ & <-)%lookup_singleton_Some.
+    eexists. split; last done.
     do 6 constructor; [repeat constructor.. |].
     eapply tmc_dps_constr_1; first repeat constructor.
     + asimpl. eapply tmc_dps_call; repeat constructor.

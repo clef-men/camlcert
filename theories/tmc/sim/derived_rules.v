@@ -6,7 +6,7 @@ From simuliris.tmc Require Import
   sim.proofmode
   sim.notations.
 
-Section sim.
+Section sim_GS.
   Context `{sim_programs : !SimPrograms ectx_language ectx_language}.
   Context `{sim_GS : !SimGS Σ}.
   Context (X : sim_protocol Σ).
@@ -26,8 +26,8 @@ Section sim.
     SIM let: eₛ1 in eₛ2 ≳ let: eₜ1 in eₜ2 [[ X ]] [[ Φ ]].
   Proof.
     iIntros "Hsim1 Hsim2".
-    simv_mono "Hsim1". iIntros "%vₛ %vₜ #Hv".
-    simv_smart_mono ("Hsim2" with "Hv").
+    sim_mono "Hsim1". iIntros "%vₛ %vₜ #Hv".
+    sim_smart_mono ("Hsim2" with "Hv").
   Qed.
 
   Lemma simv_call eₛ1 eₛ2 eₜ1 eₜ2 Φ :
@@ -41,10 +41,10 @@ Section sim.
     SIM eₛ1 eₛ2 ≳ eₜ1 eₜ2 [[ X ]] [[ Φ ]].
   Proof.
     iIntros "Hsim1 Hsim2 Hsim".
-    simv_mono "Hsim2". iIntros "%vₛ2 %vₜ2 #Hv2".
-    simv_mono "Hsim1". iIntros "%vₛ1 %vₜ1 #Hv1".
-    destruct vₛ1, vₜ1; try iDestruct "Hv1" as %[]; try simv_strongly_stuck.
-    subst. simv_apply ("Hsim" with "[//] Hv2").
+    sim_mono "Hsim2". iIntros "%vₛ2 %vₜ2 #Hv2".
+    sim_mono "Hsim1". iIntros "%vₛ1 %vₜ1 #Hv1".
+    destruct vₛ1, vₜ1; try iDestruct "Hv1" as %[]; try sim_strongly_stuck.
+    subst. sim_apply ("Hsim" with "[//] Hv2").
   Qed.
 
   Lemma simv_unop op eₛ eₜ Φ :
@@ -53,10 +53,10 @@ Section sim.
     SIM Unop op eₛ ≳ Unop op eₜ [[ X ]] [[ Φ ]].
   Proof.
     iIntros "Hsim HΦ".
-    simv_mono "Hsim". iIntros "%vₛ %vₜ #Hv".
+    sim_mono "Hsim". iIntros "%vₛ %vₜ #Hv".
     destruct vₛ, vₜ; try iDestruct "Hv" as %[];
-    destruct op; try simv_strongly_stuck;
-      simv_pures;
+    destruct op; try sim_strongly_stuck;
+      sim_pures;
       iApply "HΦ"; auto.
   Qed.
 
@@ -67,12 +67,12 @@ Section sim.
     SIM Binop op eₛ1 eₛ2 ≳ Binop op eₜ1 eₜ2 [[ X ]] [[ Φ ]].
   Proof.
     iIntros "Hsim1 Hsim2 HΦ".
-    simv_mono "Hsim2". iIntros "%vₛ2 %vₜ2 #Hv2".
-    simv_mono "Hsim1". iIntros "%vₛ1 %vₜ1 #Hv1".
+    sim_mono "Hsim2". iIntros "%vₛ2 %vₜ2 #Hv2".
+    sim_mono "Hsim1". iIntros "%vₛ1 %vₜ1 #Hv1".
     destruct vₛ1, vₜ1; try iDestruct "Hv1" as %[];
     destruct vₛ2, vₜ2; try iDestruct "Hv2" as %[];
-    destruct op; try simv_strongly_stuck;
-      simv_pures;
+    destruct op; try sim_strongly_stuck;
+      sim_pures;
       iApply "HΦ"; subst; auto.
   Qed.
 
@@ -84,13 +84,13 @@ Section sim.
     SIM If eₛ0 eₛ1 eₛ2 ≳ If eₜ0 eₜ1 eₜ2 [[ X ]] [[ Φ ]].
   Proof.
     iIntros "Hsim0 Hsim12".
-    simv_mono "Hsim0". iIntros "%vₛ0 %vₜ0 #Hv0".
-    destruct vₛ0, vₜ0; try iDestruct "Hv0" as %[]; try simv_strongly_stuck.
+    sim_mono "Hsim0". iIntros "%vₛ0 %vₜ0 #Hv0".
+    destruct vₛ0, vₜ0; try iDestruct "Hv0" as %[]; try sim_strongly_stuck.
     destruct b.
     - iDestruct "Hsim12" as "(Hsim1 & _)".
-      simv_smart_apply "Hsim1".
+      sim_smart_apply "Hsim1".
     - iDestruct "Hsim12" as "(_ & Hsim2)".
-      simv_smart_apply "Hsim2".
+      sim_smart_apply "Hsim2".
   Qed.
 
   Lemma simv_constr constr eₛ1 eₛ2 eₜ1 eₜ2 Φ :
@@ -100,12 +100,12 @@ Section sim.
     SIM &constr eₛ1 eₛ2 ≳ &constr eₜ1 eₜ2 [[ X ]] [[ Φ ]].
   Proof.
     iIntros "Hsim1 Hsim2 HΦ".
-    simv_constrₜ;
+    sim_constrₜ;
       [| iCombine "Hsim1 Hsim2" as "(Hsim2 & Hsim1)"];
-      [simv_constrₛ1 | simv_constrₛ2];
-      simv_mono "Hsim1"; iIntros "%vₛ1 %vₜ1 #Hv1";
-      simv_smart_mono "Hsim2"; iIntros "%vₛ2 %vₜ2 #Hv2";
-      simv_constr_det as lₛ lₜ "Hl";
+      [sim_constrₛ1 | sim_constrₛ2];
+      sim_mono "Hsim1"; iIntros "%vₛ1 %vₜ1 #Hv1";
+      sim_smart_mono "Hsim2"; iIntros "%vₛ2 %vₜ2 #Hv2";
+      sim_constr_det as lₛ lₜ "Hl";
       iApply "HΦ"; done.
   Qed.
   Lemma simv_constr_valₜ1 eₛ constr eₜ vₜ2 Φ :
@@ -120,9 +120,9 @@ Section sim.
     SIM eₛ ≳ &constr eₜ vₜ2 [[ X ]] [[ Φ ]].
   Proof.
     iIntros "Hsim HΦ".
-    simv_constrₜ;
-      simv_smart_mono "Hsim"; iIntros "%vₛ %vₜ1 #Hv";
-      simv_constr_detₜ as l "Hl0" "Hl1" "Hl2";
+    sim_constrₜ;
+      sim_smart_mono "Hsim"; iIntros "%vₛ %vₜ1 #Hv";
+      sim_constr_detₜ as l "Hl0" "Hl1" "Hl2";
       iApply ("HΦ" with "Hl0 Hl1 Hl2 Hv").
   Qed.
   Lemma simv_constr_valₜ2 eₛ constr vₜ1 eₜ Φ :
@@ -137,9 +137,9 @@ Section sim.
     SIM eₛ ≳ &constr vₜ1 eₜ [[ X ]] [[ Φ ]].
   Proof.
     iIntros "Hsim HΦ".
-    simv_constrₜ;
-      simv_smart_mono "Hsim"; iIntros "%vₛ %vₜ2 #Hv";
-      simv_constr_detₜ as l "Hl0" "Hl1" "Hl2";
+    sim_constrₜ;
+      sim_smart_mono "Hsim"; iIntros "%vₛ %vₜ2 #Hv";
+      sim_constr_detₜ as l "Hl0" "Hl1" "Hl2";
       iApply ("HΦ" with "Hl0 Hl1 Hl2 Hv").
   Qed.
 
@@ -150,12 +150,12 @@ Section sim.
     SIM ![eₛ2] eₛ1 ≳ ![eₜ2] eₜ1 [[ X ]] [[ Φ ]].
   Proof.
     iIntros "Hsim1 Hsim2 HΦ".
-    simv_mono "Hsim2". iIntros "%vₛ2 %vₜ2 #Hv2".
-    simv_mono "Hsim1". iIntros "%vₛ1 %vₜ1 #Hv1".
+    sim_mono "Hsim2". iIntros "%vₛ2 %vₜ2 #Hv2".
+    sim_mono "Hsim1". iIntros "%vₛ1 %vₜ1 #Hv1".
     destruct vₛ1, vₜ1; try iDestruct "Hv1" as %[];
     destruct vₛ2, vₜ2; try iDestruct "Hv2" as %[];
-      try simv_strongly_stuck.
-    simv_load as wₛ wₜ "Hw".
+      try sim_strongly_stuck.
+    sim_load as wₛ wₜ "Hw".
     iApply ("HΦ" with "Hw").
   Qed.
 
@@ -167,12 +167,12 @@ Section sim.
     SIM eₛ1 <-[eₛ2]- eₛ3 ≳ eₜ1 <-[eₜ2]- eₜ3 [[ X ]] [[ Φ ]].
   Proof.
     iIntros "Hsim1 Hsim2 Hsim3 HΦ".
-    simv_mono "Hsim3". iIntros "%vₛ3 %vₜ3 #Hv3".
-    simv_mono "Hsim2". iIntros "%vₛ2 %vₜ2 #Hv2".
-    simv_mono "Hsim1". iIntros "%vₛ1 %vₜ1 #Hv1".
+    sim_mono "Hsim3". iIntros "%vₛ3 %vₜ3 #Hv3".
+    sim_mono "Hsim2". iIntros "%vₛ2 %vₜ2 #Hv2".
+    sim_mono "Hsim1". iIntros "%vₛ1 %vₜ1 #Hv1".
     destruct vₛ1, vₜ1; try iDestruct "Hv1" as %[];
     destruct vₛ2, vₜ2; try iDestruct "Hv2" as %[];
-      try simv_strongly_stuck.
-    simv_store.
+      try sim_strongly_stuck.
+    sim_store.
   Qed.
-End sim.
+End sim_GS.
