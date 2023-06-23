@@ -128,12 +128,13 @@ Notation CONS := (&CONSTR_CONS)%E (only parsing).
 Notation HEAD e := (![𝟙] e)%E (only parsing).
 Notation TAIL e := (![𝟚] e)%E (only parsing).
 Notation "'match:' e0 'with' 'NIL' => e1 | 'CONS' => e2 'end'" := (
-  if: !e0 = #(Z.of_nat CONSTR_NIL) then (
-    e1
+  let: e0 in
+  if: !$0 = #(Z.of_nat CONSTR_NIL) then (
+    e1.[ren (+1)]
   ) else (
     let: TAIL $0 in
     let: HEAD $1 in
-    e2
+    e2.[$0 .: $1 .: ren (+3)]
   )
 )%E (
   only parsing,
