@@ -190,17 +190,43 @@ Section ectx_language.
     eauto using fill_head_step_prim_step, fill_op.
   Qed.
 
-  Lemma head_irreducible_not_head_reducible prog e σ :
-    head_irreducible prog e σ ↔
-    ¬ head_reducible prog e σ.
+  Lemma fill_val K e :
+    is_Some (to_val (K @@ e)) →
+    is_Some (to_val e).
   Proof.
-    rewrite /head_reducible /head_irreducible. naive_solver.
+    rewrite -!not_eq_None_Some. eauto using fill_not_val.
   Qed.
+  Lemma fill_prim_step_inv prog K e1' σ1 e2 σ2 :
+    to_val e1' = None →
+    prim_step prog (K @@ e1') σ1 e2 σ2 →
+    ∃ e2', e2 = K @@ e2' ∧ prim_step prog e1' σ1 e2' σ2.
+  Proof.
+    intros ? [K_redex e1_redex e2_redex Heq -> Hstep].
+    edestruct fill_redex as [K' ?]; eauto; simplify.
+    rewrite -fill_op in Heq; apply (inj (_ @@.)) in Heq.
+    eexists. rewrite -fill_op. eauto using prim_step.
+  Qed.
+
   Lemma reducible_fill_reducible prog K e σ :
     reducible prog e σ →
     reducible prog (K @@ e) σ.
   Proof.
     intros (? & ? & ?). do 2 eexists. eapply prim_step_fill_prim_step. eauto.
+  Qed.
+  Lemma reducible_fill_prim_step prog K e1 σ1 e2 σ2 :
+    reducible prog e1 σ1 →
+    prim_step prog (K @@ e1) σ1 e2 σ2 →
+    ∃ e2', e2 = K @@ e2' ∧ prim_step prog e1 σ1 e2' σ2.
+  Proof.
+    intros Hreducible.
+    eapply fill_prim_step_inv, reducible_not_val. done.
+  Qed.
+
+  Lemma head_irreducible_not_head_reducible prog e σ :
+    head_irreducible prog e σ ↔
+    ¬ head_reducible prog e σ.
+  Proof.
+    rewrite /head_reducible /head_irreducible. naive_solver.
   Qed.
   Lemma head_reducible_fill_reducible prog K e σ :
     head_reducible prog e σ →
@@ -252,23 +278,6 @@ Section ectx_language.
     intros.
     edestruct (head_reducible_fill_prim_step prog ∅) as (? & ? & ?); rewrite ?fill_empty //.
     simplify. rewrite fill_empty //.
-  Qed.
-
-  Lemma fill_val K e :
-    is_Some (to_val (K @@ e)) →
-    is_Some (to_val e).
-  Proof.
-    rewrite -!not_eq_None_Some. eauto using fill_not_val.
-  Qed.
-  Lemma fill_prim_step_inv prog K e1' σ1 e2 σ2 :
-    to_val e1' = None →
-    prim_step prog (K @@ e1') σ1 e2 σ2 →
-    ∃ e2', e2 = K @@ e2' ∧ prim_step prog e1' σ1 e2' σ2.
-  Proof.
-    intros ? [K_redex e1_redex e2_redex Heq -> Hstep].
-    edestruct fill_redex as [K' ?]; eauto; simplify.
-    rewrite -fill_op in Heq; apply (inj (_ @@.)) in Heq.
-    eexists. rewrite -fill_op. eauto using prim_step.
   Qed.
 
   Lemma strongly_head_reducible_strongly_reducible prog e :

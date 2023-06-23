@@ -272,11 +272,11 @@ Section sim.
   Proof.
     intros (Hprogₛ_wf & Hprogₛ_closed).
     eapply program_closed_tmc in Hprogₛ_closed as Hprogₜ_closed; last done.
-    iApply simv_close. clear eₛ eₜ. iIntros "!> %Ψ %eₛ %eₜ [Hprotocol | Hprotocol]".
+    iApply simv_close_pure_head_step. clear eₛ eₜ. iIntros "!> %Ψ %eₛ %eₜ [Hprotocol | Hprotocol]".
     - iDestruct "Hprotocol" as "(%func & %vₛ & %vₜ & %Hfuncₛ & (-> & ->) & #Hv & HΨ)".
-      simpl in Hfuncₛ. apply lookup_lookup_total_dom in Hfuncₛ.
+      simpl in Hfuncₛ. apply lookup_lookup_total_dom in Hfuncₛ. set (eₛ := _ !!! _) in Hfuncₛ.
       edestruct tmc.(tmc_dirs) as (eₜ & Hdir & Hfuncₜ); first done.
-      iApply sim_inner_pure_head_step; [auto with language.. |].
+      iExists eₛ.[#vₛ/], eₜ.[#vₜ/]. iSplit; first auto with language.
       erewrite (subst_program_closed' ids inhabitant); last done; last done.
       erewrite (subst_program_closed' ids inhabitant); last done; last done.
       iDestruct (tmc_dir_specification $! tmc_dir_post with "[//] [] [//] []") as "Hsim"; eauto.
@@ -289,11 +289,11 @@ Section sim.
     - iDestruct "Hprotocol" as "(%func & %func_dps & %vₛ & %l1 & %l2 & %dst & %idx & %vₜ & (%Hfuncₛ & %Hξ) & (-> & ->) & Hl11 & Hl12 & Hl21 & Hl22 & Hdst & #Hv & HΨ)".
       simpl in Hfuncₛ. apply lookup_lookup_total_dom in Hfuncₛ. set (eₛ := _ !!! _) in Hfuncₛ.
       edestruct tmc.(tmc_dpss) as (eₜ & Hdps & Hfunc_dpsₜ); [done.. |].
-      iApply sim_inner_pure_head_step; [auto with language.. |].
+      iExists eₛ.[#vₛ/], _. iSplit; first auto with language.
       do 4 sim_loadₜ. sim_pures.
       eapply (tmc_dps_subst _ (ids 0 .: #dst .: #idx .: ren (+1))) in Hdps; [| autosubst..].
       erewrite (subst_program_closed' _ (ren (+1))) in Hdps; last done; last done. asimpl in Hdps.
-      assert (eₜ.[#vₜ, #dst, #idx, #l2, #l1/] = eₜ.[ids 0 .: #dst .: #idx .: ren (+1)].[#vₜ, #l2, #l1/]) as -> by autosubst.
+      replace eₜ.[#vₜ, #dst, #idx, #l2, #l1/] with eₜ.[ids 0 .: #dst .: #idx .: ren (+1)].[#vₜ, #l2, #l1/] by autosubst.
       erewrite (subst_program_closed' ids inhabitant); last done; last done.
       erewrite (subst_expr_closed_1' (#l2 .: #l1 .: ids) inhabitant); last first.
       { eapply expr_closed_tmc_dps; naive_solver. }
