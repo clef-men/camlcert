@@ -56,3 +56,4 @@ theories/tmc/definition.v
 theories/tmc/properties.v
 theories/tmc/soundness.v
 theories/tmc/examples/list_map.v
+theories/tmc/examples/list_append.v
