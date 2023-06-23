@@ -12,7 +12,9 @@ From simuliris.common Require Export
 From simuliris.tmc_lang Require Export
   loc.
 
-Notation function := string.
+Notation function := string
+( only parsing
+).
 
 Definition constructor := nat.
 
