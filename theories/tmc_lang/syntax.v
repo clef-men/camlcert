@@ -51,6 +51,8 @@ Inductive val :=
   | Loc (l : loc)
   | Func (func : function).
 
+#[global] Instance val_inhabited : Inhabited val :=
+  populate Unit.
 #[global] Instance val_eq_dec : EqDecision val :=
   ltac:(solve_decision).
 #[global] Instance val_countable :
@@ -88,8 +90,6 @@ Proof.
     end.
   apply (inj_countable' encode decode). intros []; done.
 Qed.
-#[global] Instance val_inhabited : Inhabited val :=
-  populate Unit.
 
 #[global] Instance val_similar : Similar val val :=
   Build_Similar $ λ v1 v2,
@@ -178,6 +178,8 @@ Inductive expr :=
   | Load (e1 e2 : expr)
   | Store (e1 e2 e3 : expr).
 
+#[global] Instance expr_inhabited : Inhabited expr :=
+  populate (Val inhabitant).
 #[global] Instance expr_eq_dec : EqDecision expr :=
   ltac:(solve_decision).
 #[global] Instance expr_countable :
@@ -188,21 +190,21 @@ Proof.
     | Val v =>
         GenLeaf (inl v)
     | Var x =>
-        GenLeaf (inr (inl x))
+        GenLeaf (inr $ inl x)
     | Let e1 e2 =>
         GenNode 0 [encode e1; encode e2]
     | Call e1 e2 =>
         GenNode 1 [encode e1; encode e2]
     | Unop op e =>
-        GenNode 2 [GenLeaf (inr (inr (inl op))); encode e]
+        GenNode 2 [GenLeaf (inr $ inr $ inl op); encode e]
     | Binop op e1 e2 =>
-        GenNode 3 [GenLeaf (inr (inr (inr (inl op)))); encode e1; encode e2]
+        GenNode 3 [GenLeaf (inr $ inr $ inr $ inl op); encode e1; encode e2]
     | If e0 e1 e2 =>
         GenNode 4 [encode e0; encode e1; encode e2]
     | Constr constr e1 e2 =>
-        GenNode 5 [GenLeaf (inr (inr (inr (inr constr)))); encode e1; encode e2]
+        GenNode 5 [GenLeaf (inr $ inr $ inr $ inr constr); encode e1; encode e2]
     | ConstrDet constr e1 e2 =>
-        GenNode 6 [GenLeaf (inr (inr (inr (inr constr)))); encode e1; encode e2]
+        GenNode 6 [GenLeaf (inr $ inr $ inr $ inr constr); encode e1; encode e2]
     | Load e1 e2 =>
         GenNode 7 [encode e1; encode e2]
     | Store e1 e2 e3 =>
@@ -233,12 +235,10 @@ Proof.
     | GenNode 8 [e1; e2; e3] =>
         Store (decode e1) (decode e2) (decode e3)
     | _ =>
-        Val (Int 0)
+        @inhabitant _ expr_inhabited
     end.
   apply (inj_countable' encode decode). intros e. induction e; simpl; congruence.
 Qed.
-#[global] Instance expr_inhabited : Inhabited expr :=
-  populate (Val inhabitant).
 
 #[global] Instance expr_ids : Ids expr. derive. Defined.
 #[global] Instance expr_rename : Rename expr. derive. Defined.
