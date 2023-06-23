@@ -8,7 +8,7 @@ From simuliris Require Import
   prelude.
 From simuliris.tmc Require Export
   sim.definition.
-From simuliris.language Require Import
+From simuliris.tmc_lang Require Import
   notations.
 
 Definition bisubst := var → val * val.
@@ -31,7 +31,7 @@ Notation "Γ .ₜ#" := (of_val ∘ Γ.ₜ)
 ).
 
 Section sim.
-  Context `{sim_programs : !SimPrograms ectx_language ectx_language}.
+  Context `{sim_programs : !SimPrograms tmc_ectx_lang tmc_ectx_lang}.
   Context `{sim_GS : !SimGS Σ}.
   Implicit Types v vₛ vₜ : val.
   Implicit Types Γ : bisubst.

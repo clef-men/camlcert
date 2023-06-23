@@ -2,64 +2,64 @@ From simuliris Require Import
   prelude.
 From simuliris.common Require Import
   tactics.
-From simuliris.language Require Export
+From simuliris.tmc_lang Require Export
   language.
-From simuliris.language Require Import
+From simuliris.tmc_lang Require Import
   ectx_decompositions
   well_formed.
 
-Create HintDb language.
+Create HintDb tmc_lang.
 
 #[global] Hint Extern 0 (
   reducible _ _ _
 ) => (
   eapply head_reducible_reducible
-) : language.
+) : tmc_lang.
 #[global] Hint Extern 0 (
   head_reducible _ _ _
 ) => (
   eexists _, _; simpl
-) : language.
+) : tmc_lang.
 #[global] Hint Extern 1 (
   head_step _ _ _ _ _
 ) => (
   econstructor
-) : language.
+) : tmc_lang.
 #[global] Hint Extern 1 (
   ectx_language.head_step _ _ _ _ _
 ) => (
   econstructor
-) : language.
+) : tmc_lang.
 #[global] Hint Extern 0 (
   head_step _ (ConstrDet _ _ _) _ _ _
 ) => (
   eapply head_step_constr_det'
-) : language.
+) : tmc_lang.
 #[global] Hint Extern 0 (
   ectx_language.head_step _ (ConstrDet _ _ _) _ _ _
 ) => (
   eapply head_step_constr_det'
-) : language.
+) : tmc_lang.
 #[global] Hint Extern 0 (
   pure_step _ _ _
 ) => (
   eapply pure_exec_pure_step; [apply _ |]
-) : language.
+) : tmc_lang.
 #[global] Hint Extern 0 (
   pure_head_step _ _ _
 ) => (
   eapply pure_head_exec_pure_head_step; [apply _ |]
-) : language.
+) : tmc_lang.
 #[global] Hint Extern 0 (
   strongly_stuck _ _
 ) => (
   eapply @is_strongly_stuck; [apply _]
-) : language.
+) : tmc_lang.
 #[global] Hint Extern 0 (
   strongly_head_stuck _ _
 ) => (
   eapply @is_strongly_head_stuck; [apply _]
-) : language.
+) : tmc_lang.
 
 #[global] Hint Extern 1 (
   sub_redexes_are_values _
@@ -67,7 +67,7 @@ Create HintDb language.
   let Hdecomps := fresh "Hdecomps" in
   intros ?* Hdecomps%ectx_decompositions_spec; invert Hdecomps; first done;
     decompose_elem_of_list; simplify
-) : language.
+) : tmc_lang.
 
 Ltac expr_simplifier :=
   repeat_on_hyps ltac:(fun H =>
@@ -83,17 +83,17 @@ Ltac expr_simplifier :=
   try done.
 #[global] Hint Extern 0 => (
   solve [expr_simplifier]
-) : language.
+) : tmc_lang.
 #[global] Hint Extern 1 (
   expr_well_formed _ _
 ) => (
   progress expr_simplifier
-) : language.
+) : tmc_lang.
 #[global] Hint Extern 1 (
   expr_closed _ _
 ) => (
   progress expr_simplifier
-) : language.
+) : tmc_lang.
 
 Ltac invert_head_step :=
   repeat_on_hyps ltac:(fun H =>
@@ -108,7 +108,7 @@ Ltac invert_head_step :=
 #[local] Ltac solve_strongly_head_stuck :=
   intros ?; split;
   [ intros ?** ?** ?; invert_head_step; done
-  | auto with language
+  | auto with tmc_lang
   ].
 #[global] Instance strongly_head_stuck_call prog v1 v2 :
   (if v1 is Func _ then False else True) →
@@ -167,7 +167,7 @@ Qed.
 
 #[local] Ltac solve_pure_head_exec :=
   intros ?; apply nsteps_once; constructor;
-  [ auto with language
+  [ auto with tmc_lang
   | intros; invert_head_step; auto
   ].
 #[global] Instance pure_exec_let prog v e :

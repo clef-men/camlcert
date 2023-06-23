@@ -4,9 +4,9 @@ From simuliris.base_logic Require Import
   lib.cupd.proofmode.
 From simuliris.program_logic Require Export
   sim.rules.
-From simuliris.language Require Export
+From simuliris.tmc_lang Require Export
   tactics.
-From simuliris.language Require Import
+From simuliris.tmc_lang Require Import
   well_formed.
 From simuliris.tmc Require Export
   sim.definition.
@@ -14,7 +14,7 @@ From simuliris.tmc Require Import
   sim.notations.
 
 Section sim.
-  Context `{sim_programs : !SimPrograms ectx_language ectx_language}.
+  Context `{sim_programs : !SimPrograms tmc_ectx_lang tmc_ectx_lang}.
   Context `{sim_GS : !SimGS Σ}.
   Implicit Types constr : constructor.
   Implicit Types idx idxₛ idxₜ : index.
@@ -219,7 +219,7 @@ Section sim.
   Proof.
     iIntros "Hsim".
     iApply sim_head_stepₜ. iIntros "%σₛ %σₜ Hsi".
-    iSplitR; first auto with language. iIntros "!> %eₜ' %σₜ'' %Hstepₜ".
+    iSplitR; first auto with tmc_lang. iIntros "!> %eₜ' %σₜ'' %Hstepₜ".
     invert_head_step.
     set (σₜ' := {[l +ₗ 2 := v2 ; l +ₗ 1 := v1 ; l +ₗ 0 := Int (Z.of_nat constr)]} : state).
     iMod (sim_state_interp_alloc_bigₜ σₜ' with "Hsi") as "(Hsi & Hmapstos & _)".
@@ -261,7 +261,7 @@ Section sim.
   Proof.
     iIntros "Hsim".
     iApply sim_head_stepₛ. iIntros "%σₛ %σₜ Hsi !>".
-    iExists _, σₛ. iFrame. auto with language.
+    iExists _, σₛ. iFrame. auto with tmc_lang.
   Qed.
   Lemma sim_constrₛ2 constr e1 e2 e Φ :
     SIM let: e2 in let: e1.[ren (+1)] in &&constr $0 $1 ≳ e [[ X ]] {{ Φ }} -∗
@@ -269,7 +269,7 @@ Section sim.
   Proof.
     iIntros "Hsim".
     iApply sim_head_stepₛ. iIntros "%σₛ %σₜ Hsi !>".
-    iExists _, σₛ. iFrame. auto with language.
+    iExists _, σₛ. iFrame. auto with tmc_lang.
   Qed.
   Lemma sim_constrₜ constr e e1 e2 Φ :
       SIM e ≳ let: e1 in let: e2.[ren (+1)] in &&constr $1 $0 [[ X ]] {{ Φ }}
@@ -279,7 +279,7 @@ Section sim.
   Proof.
     iIntros "Hsim".
     iApply sim_head_stepₜ. iIntros "%σₛ %σₜ Hsi !>".
-    iSplit; first auto with language. iIntros "%eₜ' %σₜ' %Hstepₜ".
+    iSplit; first auto with tmc_lang. iIntros "%eₜ' %σₜ' %Hstepₜ".
     invert_head_step; iFrame.
     - iDestruct "Hsim" as "($ & _)". done.
     - iDestruct "Hsim" as "(_ & $)". done.
@@ -295,7 +295,7 @@ Section sim.
     iIntros "Hl Hsim".
     iApply sim_head_stepₛ. iIntros "%σₛ %σₜ Hsi !>".
     iDestruct (sim_state_interp_validₛ with "Hsi Hl") as %?.
-    iExists #v, σₛ. iSplit; first auto with language. iFrame.
+    iExists #v, σₛ. iSplit; first auto with tmc_lang. iFrame.
     iApply ("Hsim" with "Hl").
   Qed.
   Lemma sim_loadₜ e l idx v Φ :
@@ -308,7 +308,7 @@ Section sim.
     iIntros "Hl Hsim".
     iApply sim_head_stepₜ. iIntros "%σₛ %σₜ Hsi !>".
     iDestruct (sim_state_interp_validₜ with "Hsi Hl") as %?.
-    iSplit; first auto with language. iIntros "%eₜ' %σₜ' %Hstepₜ !>".
+    iSplit; first auto with tmc_lang. iIntros "%eₜ' %σₜ' %Hstepₜ !>".
     invert_head_step. iFrame.
     iApply ("Hsim" with "Hl").
   Qed.
@@ -327,9 +327,9 @@ Section sim.
     1: iDestruct (sim_state_interp_heap_bij_valid with "Hsi Hl0") as "#(%vₛ0 & %vₜ0 & (% & %) & Hv0)".
     2: iDestruct (sim_state_interp_heap_bij_valid with "Hsi Hl1") as "#(%vₛ1 & %vₜ1 & (% & %) & Hv1)".
     3: iDestruct (sim_state_interp_heap_bij_valid with "Hsi Hl2") as "#(%vₛ2 & %vₜ2 & (% & %) & Hv2)".
-    all: iSplit; first auto with language; iIntros "%eₜ' %σₜ' %Hstepₜ !>".
+    all: iSplit; first auto with tmc_lang; iIntros "%eₜ' %σₜ' %Hstepₜ !>".
     all: invert_head_step.
-    all: iExists _, σₛ; iFrame; iSplit; first auto with language.
+    all: iExists _, σₛ; iFrame; iSplit; first auto with tmc_lang.
     - iApply ("Hsim" with "Hv0").
     - iApply ("Hsim" with "Hv1").
     - iApply ("Hsim" with "Hv2").
@@ -346,7 +346,7 @@ Section sim.
     iApply sim_head_stepₛ. iIntros "%σₛ %σₜ Hsi".
     iDestruct (sim_state_interp_validₛ with "Hsi Hl") as %?.
     iMod (sim_state_interp_updateₛ v with "Hsi Hl") as "(Hsi & Hl)".
-    iExists #(), (<[l +ₗ idx := v]> σₛ). iFrame. iSplitR; first auto with language.
+    iExists #(), (<[l +ₗ idx := v]> σₛ). iFrame. iSplitR; first auto with tmc_lang.
     iApply ("Hsim" with "Hl").
   Qed.
   Lemma sim_storeₜ e l idx v w Φ :
@@ -359,7 +359,7 @@ Section sim.
     iIntros "Hl Hsim".
     iApply sim_head_stepₜ. iIntros "%σₛ %σₜ Hsi".
     iDestruct (sim_state_interp_validₜ with "Hsi Hl") as %?.
-    iSplitR; first auto with language. iIntros "!> %eₜ' %σₜ' %Hstepₜ".
+    iSplitR; first auto with tmc_lang. iIntros "!> %eₜ' %σₜ' %Hstepₜ".
     invert_head_step.
     iMod (sim_state_interp_updateₜ v with "Hsi Hl") as "(Hsi & Hl)".
     iFrame. iApply ("Hsim" with "Hl").
@@ -374,19 +374,19 @@ Section sim.
     iIntros "Hv1 Hv2 Hv3 HΦ".
     destruct vₛ1, vₜ1; try iDestruct "Hv1" as %[];
     destruct vₛ2, vₜ2; try iDestruct "Hv2" as %[];
-    try solve [iApply sim_strongly_head_stuck; auto with language].
+    try solve [iApply sim_strongly_head_stuck; auto with tmc_lang].
     iDestruct "Hv1" as "(Hl0 & Hl1 & Hl2)".
     iApply sim_head_step. iIntros "%σₛ %σₜ Hsi !>".
     destruct idx.
     1: iDestruct (sim_state_interp_heap_bij_valid with "Hsi Hl0") as "#(%wₛ0 & %wₜ0 & (% & %) & Hw0)".
     2: iDestruct (sim_state_interp_heap_bij_valid with "Hsi Hl1") as "#(%wₛ1 & %wₜ1 & (% & %) & Hw1)".
     3: iDestruct (sim_state_interp_heap_bij_valid with "Hsi Hl2") as "#(%wₛ2 & %wₜ2 & (% & %) & Hw2)".
-    all: iSplit; first auto with language; iIntros "%eₜ' %σₜ' %Hstepₜ".
+    all: iSplit; first auto with tmc_lang; iIntros "%eₜ' %σₜ' %Hstepₜ".
     all: invert_head_step.
     1: iMod (sim_state_interp_heap_bij_update with "Hsi Hl0 Hv3").
     2: iMod (sim_state_interp_heap_bij_update with "Hsi Hl1 Hv3").
     3: iMod (sim_state_interp_heap_bij_update with "Hsi Hl2 Hv3").
-    all: iExists #(), _; iFrame; iSplitR; first auto with language.
+    all: iExists #(), _; iFrame; iSplitR; first auto with tmc_lang.
     all: iApply sim_post; done.
   Qed.
 End sim.

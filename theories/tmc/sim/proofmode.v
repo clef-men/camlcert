@@ -14,7 +14,7 @@ From simuliris.tmc Require Import
   sim.notations.
 
 Section sim_GS.
-  Context `{sim_programs : !SimPrograms ectx_language ectx_language}.
+  Context `{sim_programs : !SimPrograms tmc_ectx_lang tmc_ectx_lang}.
   Context `{sim_GS : !SimGS Σ}.
   Implicit Types constr : constructor.
   Implicit Types l lₜ lₛ : loc.

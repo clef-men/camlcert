@@ -2,9 +2,9 @@ From simuliris Require Import
   prelude.
 From simuliris.common Require Import
   tactics.
-From simuliris.language Require Export
+From simuliris.tmc_lang Require Export
   well_formed.
-From simuliris.language Require Import
+From simuliris.tmc_lang Require Import
   notations.
 From simuliris.tmc Require Export
   definition.

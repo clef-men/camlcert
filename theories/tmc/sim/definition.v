@@ -7,13 +7,13 @@ From simuliris.base_logic Require Export
   lib.sim.heap_bij.
 From simuliris.program_logic Require Export
   sim.definition.
-From simuliris.language Require Export
+From simuliris.tmc_lang Require Export
   language.
 
 Import heap.notations.
 
 Definition sim_protocol Σ :=
-  sim_protocol (iPropI Σ) ectx_language ectx_language.
+  sim_protocol (iPropI Σ) tmc_ectx_lang tmc_ectx_lang.
 
 Class SimGpreS Σ := {
   sim_GpreS_heap_GpreS : SimHeapGpreS Σ loc val loc val ;
@@ -42,7 +42,7 @@ Proof.
 Qed.
 
 Section sim_programs.
-  Context `{sim_programs : !SimPrograms ectx_language ectx_language}.
+  Context `{sim_programs : !SimPrograms tmc_ectx_lang tmc_ectx_lang}.
 
   #[global] Instance val_bi_similar `{sim_heap_bij_GS : !SimHeapBijGS Σ loc loc} : BiSimilar (iProp Σ) val val :=
     Build_BiSimilar $ λ vₛ vₜ,
@@ -65,7 +65,7 @@ Section sim_programs.
           False
       end%I.
 
-  #[global] Instance sim_state `{sim_GS : !SimGS Σ} : SimState (iProp Σ) ectx_language ectx_language :=
+  #[global] Instance sim_state `{sim_GS : !SimGS Σ} : SimState (iProp Σ) tmc_ectx_lang tmc_ectx_lang :=
     Build_SimState (
       λ (σₛ σₜ : state),
         sim_heap_interpₛ σₛ ∗

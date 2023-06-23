@@ -32,16 +32,16 @@ theories/program_logic/sim/rules.v
 theories/program_logic/sim/proofmode.v
 theories/program_logic/sim/adequacy.v
 
-theories/language/loc.v
-theories/language/syntax.v
-theories/language/notations.v
-theories/language/semantics.v
-theories/language/language.v
-theories/language/well_formed.v
-theories/language/ectx_decompositions.v
-theories/language/tactics.v
-theories/language/subexpr.v
-theories/language/refinement.v
+theories/tmc_lang/loc.v
+theories/tmc_lang/syntax.v
+theories/tmc_lang/notations.v
+theories/tmc_lang/semantics.v
+theories/tmc_lang/language.v
+theories/tmc_lang/well_formed.v
+theories/tmc_lang/ectx_decompositions.v
+theories/tmc_lang/tactics.v
+theories/tmc_lang/subexpr.v
+theories/tmc_lang/refinement.v
 
 theories/tmc/sim/definition.v
 theories/tmc/sim/notations.v

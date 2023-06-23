@@ -2,9 +2,9 @@ From simuliris Require Import
   prelude.
 From simuliris.common Require Export
   fin_maps.
-From simuliris.language Require Export
+From simuliris.tmc_lang Require Export
   syntax.
-From simuliris.language Require Import
+From simuliris.tmc_lang Require Import
   notations.
 
 Implicit Types func func_dps : function.

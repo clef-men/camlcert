@@ -9,7 +9,7 @@ From simuliris Require Import
 From simuliris.common Require Export
   autosubst
   typeclasses.
-From simuliris.language Require Export
+From simuliris.tmc_lang Require Export
   loc.
 
 Notation function := string.

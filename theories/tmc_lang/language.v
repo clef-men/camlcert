@@ -4,7 +4,7 @@ From simuliris.common Require Import
   tactics.
 From simuliris.program_logic Require Export
   ectxi_language.
-From simuliris.language Require Export
+From simuliris.tmc_lang Require Export
   semantics.
 
 Implicit Types l : loc.
@@ -70,7 +70,7 @@ Definition fill_item k e :=
 #[global] Instance ectxi_fill : Fill ectxi expr :=
   Build_Fill fill_item.
 
-Lemma ectxi_language_mixin :
+Lemma tmc_ectxi_lang_mixin :
   EctxiLanguageMixin of_val to_val head_step ectxi.
 Proof.
   split.
@@ -82,9 +82,9 @@ Proof.
   - intros [] ? []; naive_solver.
   - intros ? [] * Hstep; invert Hstep; naive_solver.
 Qed.
-Canonical ectxi_language :=
-  Build_ectxi_language ectxi_language_mixin.
-Canonical ectx_language :=
-  ectx_language_of_ectxi_language ectxi_language.
-Canonical language :=
-  language_of_ectx_language ectx_language.
+Canonical tmc_ectxi_lang :=
+  Build_ectxi_language tmc_ectxi_lang_mixin.
+Canonical tmc_ectx_lang :=
+  ectx_language_of_ectxi_language tmc_ectxi_lang.
+Canonical tmc_lang :=
+  language_of_ectx_language tmc_ectx_lang.

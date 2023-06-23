@@ -1,6 +1,6 @@
 From simuliris Require Import
   prelude.
-From simuliris.language Require Export
+From simuliris.tmc_lang Require Export
   well_formed.
 From simuliris.tmc Require Export
   sim.derived_rules
@@ -10,7 +10,7 @@ From simuliris.tmc Require Import
   csim.notations.
 
 Section sim_GS.
-  Context `{sim_programs : !SimPrograms ectx_language ectx_language}.
+  Context `{sim_programs : !SimPrograms tmc_ectx_lang tmc_ectx_lang}.
   Context `{sim_GS : !SimGS Σ}.
   Context (X : sim_protocol Σ).
   Implicit Types func : function.

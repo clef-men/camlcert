@@ -3,7 +3,7 @@ From simuliris Require Import
 From simuliris.common Require Import
   tactics
   relation.
-From simuliris.language Require Export
+From simuliris.tmc_lang Require Export
   tactics.
 
 Inductive subexprdir : expr → expr → Prop :=
@@ -185,24 +185,24 @@ Proof.
   intros. eapply tc_r; eauto using subexprdir.
 Qed.
 
-#[global] Hint Constructors subexprdir : language.
-#[global] Hint Resolve subexprdir_subexpr : language.
-#[global] Hint Resolve subexpr_let_1 | 2 : language.
-#[global] Hint Resolve subexpr_let_2 | 2 : language.
-#[global] Hint Resolve subexpr_call_1 | 2 : language.
-#[global] Hint Resolve subexpr_call_2 | 2 : language.
-#[global] Hint Resolve subexpr_unop | 2 : language.
-#[global] Hint Resolve subexpr_binop_1 | 2 : language.
-#[global] Hint Resolve subexpr_binop_2 | 2 : language.
-#[global] Hint Resolve subexpr_if_0 | 2 : language.
-#[global] Hint Resolve subexpr_if_1 | 2 : language.
-#[global] Hint Resolve subexpr_if_2 | 2 : language.
-#[global] Hint Resolve subexpr_constr_1 | 2 : language.
-#[global] Hint Resolve subexpr_constr_2 | 2 : language.
-#[global] Hint Resolve subexpr_constr_det_1 | 2 : language.
-#[global] Hint Resolve subexpr_constr_det_2 | 2 : language.
-#[global] Hint Resolve subexpr_load_1 | 2 : language.
-#[global] Hint Resolve subexpr_load_2 | 2 : language.
-#[global] Hint Resolve subexpr_store_1 | 2 : language.
-#[global] Hint Resolve subexpr_store_2 | 2 : language.
-#[global] Hint Resolve subexpr_store_3 | 2 : language.
+#[global] Hint Constructors subexprdir : tmc_lang.
+#[global] Hint Resolve subexprdir_subexpr : tmc_lang.
+#[global] Hint Resolve subexpr_let_1 | 2 : tmc_lang.
+#[global] Hint Resolve subexpr_let_2 | 2 : tmc_lang.
+#[global] Hint Resolve subexpr_call_1 | 2 : tmc_lang.
+#[global] Hint Resolve subexpr_call_2 | 2 : tmc_lang.
+#[global] Hint Resolve subexpr_unop | 2 : tmc_lang.
+#[global] Hint Resolve subexpr_binop_1 | 2 : tmc_lang.
+#[global] Hint Resolve subexpr_binop_2 | 2 : tmc_lang.
+#[global] Hint Resolve subexpr_if_0 | 2 : tmc_lang.
+#[global] Hint Resolve subexpr_if_1 | 2 : tmc_lang.
+#[global] Hint Resolve subexpr_if_2 | 2 : tmc_lang.
+#[global] Hint Resolve subexpr_constr_1 | 2 : tmc_lang.
+#[global] Hint Resolve subexpr_constr_2 | 2 : tmc_lang.
+#[global] Hint Resolve subexpr_constr_det_1 | 2 : tmc_lang.
+#[global] Hint Resolve subexpr_constr_det_2 | 2 : tmc_lang.
+#[global] Hint Resolve subexpr_load_1 | 2 : tmc_lang.
+#[global] Hint Resolve subexpr_load_2 | 2 : tmc_lang.
+#[global] Hint Resolve subexpr_store_1 | 2 : tmc_lang.
+#[global] Hint Resolve subexpr_store_2 | 2 : tmc_lang.
+#[global] Hint Resolve subexpr_store_3 | 2 : tmc_lang.

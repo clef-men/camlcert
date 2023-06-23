@@ -2,7 +2,7 @@ From simuliris Require Import
   prelude.
 From simuliris.program_logic Require Import
   sim.adequacy.
-From simuliris.language Require Import
+From simuliris.tmc_lang Require Import
   refinement
   subexpr.
 From simuliris.tmc Require Export
@@ -14,7 +14,7 @@ From simuliris.tmc Require Import
   csim.notations.
 
 Section sim.
-  Context `{sim_programs : !SimPrograms ectx_language ectx_language}.
+  Context `{sim_programs : !SimPrograms tmc_ectx_lang tmc_ectx_lang}.
   Context `{sim_GS : !SimGS Σ}.
   Context (tmc : tmc sim_progₛ sim_progₜ).
   Implicit Types func func_dps : function.
@@ -139,10 +139,10 @@ Section sim.
       ];
       iIntros "%Hwf %Φ Hpre HΦ".
     (* tmc_dir *)
-    - iApply csimv_val; auto with language.
+    - iApply csimv_val; auto with tmc_lang.
     - iApply csimv_var. done.
-    - iApply csimv_let; iApply IHdirₛ; auto with language.
-    - iApply csimv_call; [iApply IHdirₛ; auto with language.. |].
+    - iApply csimv_let; iApply IHdirₛ; auto with tmc_lang.
+    - iApply csimv_call; [iApply IHdirₛ; auto with tmc_lang.. |].
       iIntros "%func %vₛ %vₜ %Hfunc #Hv".
       pose Ψ := sim_post_val tmc_dir_post.
       iApply (simv_apply_protocol _ Ψ). iIntros "%σₛ %σₜ $". iSplitR.
@@ -151,19 +151,19 @@ Section sim.
       }
       iIntros "!> % % (%vₛ' & %vₜ' & (-> & ->) & HΨ) !>".
       sim_post. iApply ("HΦ" with "HΨ").
-    - iApply csimv_unop; [iApply IHdirₛ; auto with language | auto].
-    - iApply csimv_binop; [iApply IHdirₛ; auto with language.. | auto].
-    - iApply csimv_if; last iSplit; iApply IHdirₛ; auto with language.
-    - iApply csimv_constr; [iApply IHdirₛ; auto with language.. | auto].
+    - iApply csimv_unop; [iApply IHdirₛ; auto with tmc_lang | auto].
+    - iApply csimv_binop; [iApply IHdirₛ; auto with tmc_lang.. | auto].
+    - iApply csimv_if; last iSplit; iApply IHdirₛ; auto with tmc_lang.
+    - iApply csimv_constr; [iApply IHdirₛ; auto with tmc_lang.. | auto].
     - iIntros "%Γ % % (-> & ->) #HΓ /=".
       sim_constrₛ1.
-      sim_apply simv_constr_valₜ1; first (iApply (IHdirₛ eₛ1); auto with language).
+      sim_apply simv_constr_valₜ1; first (iApply (IHdirₛ eₛ1); auto with tmc_lang).
       iIntros "%vₛ1 %lₜ %vₜ1 Hlₜ0 Hlₜ1 Hlₜ2 #Hv1".
       sim_smart_apply (IHdpsₛ lₜ 𝟚 eₛ2 eₜ2.[#lₜ/] with "Hlₜ2 [Hlₜ0 Hlₜ1 HΦ]"); first 4 last.
       { autosubst. }
-      { auto with language. }
+      { auto with tmc_lang. }
       { eapply tmc_dps_subst; eauto; autosubst. }
-      { auto with language. }
+      { auto with tmc_lang. }
       iIntros "%vₛ2 % (%vₜ2 & -> & Hlₜ2 & #Hv2)".
       sim_constr_detₛ as lₛ "Hlₛ0" "Hlₛ1" "Hlₛ2".
       iDestruct (sim_heap_bij_tie_eq_2 with "Hlₛ0 Hlₜ0 [//]") as "Hl0".
@@ -175,13 +175,13 @@ Section sim.
       iApply "HΦ". iFrame "#∗". done.
     - iIntros "%Γ % % (-> & ->) #HΓ /=".
       sim_constrₛ2.
-      sim_apply simv_constr_valₜ2; first (iApply (IHdirₛ eₛ2); auto with language).
+      sim_apply simv_constr_valₜ2; first (iApply (IHdirₛ eₛ2); auto with tmc_lang).
       iIntros "%vₛ2 %lₜ %vₜ2 Hlₜ0 Hlₜ1 Hlₜ2 #Hv2".
       sim_smart_apply (IHdpsₛ lₜ 𝟙 eₛ1 eₜ1.[#lₜ/] with "Hlₜ1 [Hlₜ0 Hlₜ2 HΦ]"); first 4 last.
       { autosubst. }
-      { auto with language. }
+      { auto with tmc_lang. }
       { eapply tmc_dps_subst; eauto; autosubst. }
-      { auto with language. }
+      { auto with tmc_lang. }
       iIntros "%vₛ1 % (%vₜ1 & -> & Hlₜ1 & #Hv1)".
       sim_constr_detₛ as lₛ "Hlₛ0" "Hlₛ1" "Hlₛ2".
       iDestruct (sim_heap_bij_tie_eq_2 with "Hlₛ0 Hlₜ0 [//]") as "Hl0".
@@ -191,9 +191,9 @@ Section sim.
       iDestruct (sim_heap_bij_tie_eq_2 with "Hlₛ2 Hlₜ2 [//]") as "Hl2".
       sim_heap_bij_insert.
       iApply "HΦ". iFrame "#∗". done.
-    - auto with language.
-    - iApply csimv_load; [iApply IHdirₛ; auto with language.. | auto].
-    - iApply csimv_store; [iApply IHdirₛ; auto with language.. |].
+    - auto with tmc_lang.
+    - iApply csimv_load; [iApply IHdirₛ; auto with tmc_lang.. | auto].
+    - iApply csimv_store; [iApply IHdirₛ; auto with tmc_lang.. |].
       iApply "HΦ". done.
     (* tmc_dps *)
     - iIntros "%Γ % % (-> & ->) #HΓ". sim_simpl.
@@ -201,29 +201,29 @@ Section sim.
       sim_storeₜ.
       iApply "HΦ". iExists vₜ. iFrame "#∗". done.
     - iApply csimv_let.
-      { iApply (IHdirₛ with "[//] []"); auto with language. }
-      iApply (IHdpsₛ with "Hpre [HΦ]"); [auto with language.. |]. iIntros "%vₛ % (%vₜ & -> & Hdst' & #Hv)".
+      { iApply (IHdirₛ with "[//] []"); auto with tmc_lang. }
+      iApply (IHdpsₛ with "Hpre [HΦ]"); [auto with tmc_lang.. |]. iIntros "%vₛ % (%vₜ & -> & Hdst' & #Hv)".
       iApply "HΦ". iExists vₜ. auto with iFrame.
     - iIntros "%Γ % % (-> & ->) #HΓ". sim_simpl.
-      sim_apply (IHdirₛ with "[//] [Hpre HΦ] [//] HΓ"); [auto with language.. | ]. iIntros "%vₛ %vₜ #Hv".
-      sim_smart_apply (tmc_protocol_dps' with "Hpre Hv"); [auto with language.. |]. iIntros "%vₛ' %vₜ' Hdst' #Hv'".
+      sim_apply (IHdirₛ with "[//] [Hpre HΦ] [//] HΓ"); [auto with tmc_lang.. | ]. iIntros "%vₛ %vₜ #Hv".
+      sim_smart_apply (tmc_protocol_dps' with "Hpre Hv"); [auto with tmc_lang.. |]. iIntros "%vₛ' %vₜ' Hdst' #Hv'".
       iApply "HΦ". iExists vₜ'. auto with iFrame.
     - iApply csimv_if.
-      { iApply (IHdirₛ with "[//] []"); auto with language. }
+      { iApply (IHdirₛ with "[//] []"); auto with tmc_lang. }
       iSplit;
-        iApply (IHdpsₛ with "Hpre [HΦ]"); [auto with language.. |]; iIntros "%vₛ % (%vₜ & -> & Hdst' & #Hv)";
+        iApply (IHdpsₛ with "Hpre [HΦ]"); [auto with tmc_lang.. |]; iIntros "%vₛ % (%vₜ & -> & Hdst' & #Hv)";
         iApply "HΦ"; iExists vₜ; auto with iFrame.
     - iIntros "%Γ % % (-> & ->) #HΓ". sim_simpl.
       sim_constrₛ1.
       sim_apply simv_constr_valₜ1.
-      { sim_apply (IHdirₛ with "[//] [] [//] HΓ"); auto with language. }
+      { sim_apply (IHdirₛ with "[//] [] [//] HΓ"); auto with tmc_lang. }
       iIntros "%vₛ1 %lₜ %vₜ1 Hlₜ0 Hlₜ1 Hlₜ2 #Hv1".
       sim_storeₜ.
       sim_smart_apply (IHdpsₛ lₜ 𝟚 eₛ2 eₜ2.[#lₜ/] with "Hlₜ2 [Hpre Hlₜ0 Hlₜ1 HΦ] [] HΓ"); first 4 last.
       { autosubst. }
-      { auto with language. }
+      { auto with tmc_lang. }
       { eapply tmc_dps_subst; eauto; autosubst. }
-      { auto with language. }
+      { auto with tmc_lang. }
       iIntros "%vₛ2 % (%vₜ2 & -> & Hlₜ2 & #Hv2)".
       sim_constr_detₛ as lₛ "Hlₛ0" "Hlₛ1" "Hlₛ2".
       iDestruct (sim_heap_bij_tie_eq_2 with "Hlₛ0 Hlₜ0 [//]") as "Hl0".
@@ -236,14 +236,14 @@ Section sim.
     - iIntros "%Γ % % (-> & ->) #HΓ". sim_simpl.
       sim_constrₛ2.
       sim_apply simv_constr_valₜ2.
-      { sim_apply (IHdirₛ with "[//] [] [//] HΓ"); auto with language. }
+      { sim_apply (IHdirₛ with "[//] [] [//] HΓ"); auto with tmc_lang. }
       iIntros "%vₛ2 %lₜ %vₜ2 Hlₜ0 Hlₜ1 Hlₜ2 #Hv2".
       sim_storeₜ.
       sim_smart_apply (IHdpsₛ lₜ 𝟙 eₛ1 eₜ1.[#lₜ/] with "Hlₜ1 [Hpre Hlₜ0 Hlₜ2 HΦ] [] HΓ"); first 4 last.
       { autosubst. }
-      { auto with language. }
+      { auto with tmc_lang. }
       { eapply tmc_dps_subst; eauto; autosubst. }
-      { auto with language. }
+      { auto with tmc_lang. }
       iIntros "%vₛ1 % (%vₜ1 & -> & Hlₜ1 & #Hv1)".
       sim_constr_detₛ as lₛ "Hlₛ0" "Hlₛ1" "Hlₛ2".
       iDestruct (sim_heap_bij_tie_eq_2 with "Hlₛ0 Hlₜ0 [//]") as "Hl0".
@@ -276,7 +276,7 @@ Section sim.
     - iDestruct "Hprotocol" as "(%func & %vₛ & %vₜ & %Hfuncₛ & (-> & ->) & #Hv & HΨ)".
       simpl in Hfuncₛ. apply lookup_lookup_total_dom in Hfuncₛ. set (eₛ := _ !!! _) in Hfuncₛ.
       edestruct tmc.(tmc_dirs) as (eₜ & Hdir & Hfuncₜ); first done.
-      iExists eₛ.[#vₛ/], eₜ.[#vₜ/]. iSplit; first auto with language.
+      iExists eₛ.[#vₛ/], eₜ.[#vₜ/]. iSplit; first auto with tmc_lang.
       erewrite (subst_program_closed' ids inhabitant); last done; last done.
       erewrite (subst_program_closed' ids inhabitant); last done; last done.
       iDestruct (tmc_dir_specification $! tmc_dir_post with "[//] [] [//] []") as "Hsim"; eauto.
@@ -289,7 +289,7 @@ Section sim.
     - iDestruct "Hprotocol" as "(%func & %func_dps & %vₛ & %l1 & %l2 & %dst & %idx & %vₜ & (%Hfuncₛ & %Hξ) & (-> & ->) & Hl11 & Hl12 & Hl21 & Hl22 & Hdst & #Hv & HΨ)".
       simpl in Hfuncₛ. apply lookup_lookup_total_dom in Hfuncₛ. set (eₛ := _ !!! _) in Hfuncₛ.
       edestruct tmc.(tmc_dpss) as (eₜ & Hdps & Hfunc_dpsₜ); [done.. |].
-      iExists eₛ.[#vₛ/], _. iSplit; first auto with language.
+      iExists eₛ.[#vₛ/], _. iSplit; first auto with tmc_lang.
       do 4 sim_loadₜ. sim_pures.
       eapply (tmc_dps_subst _ (ids 0 .: #dst .: #idx .: ren (+1))) in Hdps; [| autosubst..].
       erewrite (subst_program_closed' _ (ren (+1))) in Hdps; last done; last done. asimpl in Hdps.
@@ -315,7 +315,7 @@ Section tmc_sound.
   Notation Σ := sim_Σ.
   Notation M := (iResUR Σ).
 
-  #[local] Instance tmc_sim_programs : SimPrograms ectx_language ectx_language :=
+  #[local] Instance tmc_sim_programs : SimPrograms tmc_ectx_lang tmc_ectx_lang :=
     Build_SimPrograms progₛ progₜ.
 
   #[local] Instance tmc_sim_GpreS :

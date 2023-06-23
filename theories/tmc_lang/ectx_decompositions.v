@@ -2,7 +2,7 @@ From simuliris Require Import
   prelude.
 From simuliris.common Require Import
   tactics.
-From simuliris.language Require Export
+From simuliris.tmc_lang Require Export
   language.
 
 Fixpoint ectx_decompositions e :=

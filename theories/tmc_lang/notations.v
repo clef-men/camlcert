@@ -1,6 +1,6 @@
 From simuliris Require Import
   prelude.
-From simuliris.language Require Export
+From simuliris.tmc_lang Require Export
   syntax.
 
 Coercion index_to_Z idx : Z :=
