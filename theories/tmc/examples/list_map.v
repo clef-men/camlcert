@@ -47,7 +47,7 @@ Definition list_mapₜ : program := {[
         let: ![𝟙] $2 in
         let: $0 $1 in
         let: CONS $0 #() in
-        $8 <-[$9]- $0 ;;
+        $6 <-[$7]- $0 ;;
         let: ($2, $4) in
         "list_map_dps" (($1, 𝟚), $0)
     end
@@ -72,9 +72,8 @@ Proof.
     eexists. split; last done. repeat econstructor.
   - intros * (<- & <-)%lookup_singleton_Some (_ & <-)%lookup_singleton_Some.
     eexists. split; last done.
-    do 6 constructor; [repeat constructor.. |].
-    eapply tmc_dps_constr_1; first repeat constructor.
-    + asimpl. eapply tmc_dps_call; repeat constructor.
+    repeat constructor. eapply tmc_dps_constr_1; first constructor.
+    + eapply tmc_dps_call; repeat constructor.
     + done.
 Qed.
 
