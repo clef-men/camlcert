@@ -54,10 +54,10 @@ Definition list_mapₜ : program := {[
   )%E
 ]}.
 
-Lemma list_map_well_formed :
-  program_well_formed list_mapₛ.
+Lemma list_map_valid :
+  program_valid list_mapₛ.
 Proof.
-  apply map_Forall_singleton. naive_solver lia.
+  split; apply map_Forall_singleton; naive_solver lia.
 Qed.
 
 Lemma list_map_tmc :
@@ -81,5 +81,5 @@ Qed.
 Lemma list_map_sound :
   program_refinement list_mapₛ list_mapₜ.
 Proof.
-  apply tmc_sound, list_map_tmc. apply list_map_well_formed.
+  apply tmc_sound, list_map_tmc. apply list_map_valid.
 Qed.

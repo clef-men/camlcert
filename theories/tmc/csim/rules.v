@@ -68,7 +68,7 @@ Section sim_GS.
     SIM v ⩾ v [[ X ]] [[ Φ ]].
   Proof.
     iIntros "%Hwf HΦ". csimv_start.
-    sim_post. iApply "HΦ". invert_well_formed.
+    sim_post. iApply "HΦ". expr_simplifier.
   Qed.
 
   Lemma csimv_var x Φ :

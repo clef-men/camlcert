@@ -69,31 +69,30 @@ Create HintDb language.
     decompose_elem_of_list; simplify
 ) : language.
 
-Ltac invert_well_formed :=
+Ltac expr_simplifier :=
   repeat_on_hyps ltac:(fun H =>
     match type of H with
     | val_well_formed _ ?v =>
         solve [by destruct v]
-    | expr_well_formed _ _ _ =>
-        invert H; simplify
-    | expr_well_formed' _ _ =>
-        let lvl := fresh "lvl" in
-        destruct H as (lvl & H)
+    | expr_well_formed _ _ =>
+        simpl in H; destruct_and? H
+    | expr_closed _ _ =>
+        simpl in H; destruct_and? H
     end
   );
   try done.
 #[global] Hint Extern 0 => (
-  solve [invert_well_formed]
+  solve [expr_simplifier]
 ) : language.
 #[global] Hint Extern 1 (
-  expr_well_formed _ _ _
+  expr_well_formed _ _
 ) => (
-  progress invert_well_formed
+  progress expr_simplifier
 ) : language.
 #[global] Hint Extern 1 (
-  expr_well_formed' _ _
+  expr_closed _ _
 ) => (
-  invert_well_formed; eexists
+  progress expr_simplifier
 ) : language.
 
 Ltac invert_head_step :=

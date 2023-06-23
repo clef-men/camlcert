@@ -75,13 +75,13 @@ Section sim.
     ⌜vₜ = ()%V⌝ ∗ (dst +ₗ idx) ↦ₜ vₜ' ∗ vₛ ≈ vₜ'.
 
   Definition tmc_dir_spec' eₛ eₜ :=
-    expr_well_formed' sim_progₛ eₛ →
+    expr_well_formed sim_progₛ eₛ →
     [[[ True ]]] eₛ ⩾ eₜ [[ tmc_protocol ]] [[[ tmc_dir_post ]]].
   Definition tmc_dir_spec eₛ eₜ :=
     tmc_dir tmc.(tmc_ξ) eₛ eₜ →
     tmc_dir_spec' eₛ eₜ.
   Definition tmc_dps_spec' dst idx eₛ eₜ :=
-    expr_well_formed' sim_progₛ eₛ →
+    expr_well_formed sim_progₛ eₛ →
     [[[ (dst +ₗ idx) ↦ₜ () ]]] eₛ ⩾ eₜ [[ tmc_protocol ]] [[[ tmc_dps_post dst idx ]]].
   Definition tmc_dps_spec dst idx eₛ eₜ :=
     tmc_dps tmc.(tmc_ξ) dst idx eₛ eₜ →
@@ -266,21 +266,20 @@ Section sim.
   Qed.
 
   Lemma tmc_simv_close eₛ eₜ Φ :
-    program_well_formed sim_progₛ →
+    program_valid sim_progₛ →
     SIM eₛ ≳ eₜ [[ tmc_protocol ]] [[ Φ ]] -∗
     SIM eₛ ≳ eₜ [[ Φ ]].
   Proof.
-    intros Hprogₛ.
-    eapply program_well_formed_tmc in Hprogₛ as Hprogₜ; last done.
+    intros (Hprogₛ_wf & Hprogₛ_closed).
+    eapply program_closed_tmc in Hprogₛ_closed as Hprogₜ_closed; last done.
     iApply simv_close. clear eₛ eₜ. iIntros "!> %Ψ %eₛ %eₜ [Hprotocol | Hprotocol]".
     - iDestruct "Hprotocol" as "(%func & %vₛ & %vₜ & %Hfuncₛ & (-> & ->) & #Hv & HΨ)".
       simpl in Hfuncₛ. apply lookup_lookup_total_dom in Hfuncₛ.
       edestruct tmc.(tmc_dirs) as (eₜ & Hdir & Hfuncₜ); first done.
       iApply sim_inner_pure_head_step; [auto with language.. |].
-      erewrite (subst_program_well_formed' ids inhabitant); last done; last done.
-      erewrite (subst_program_well_formed' ids inhabitant); last done; last done.
+      erewrite (subst_program_closed' ids inhabitant); last done; last done.
+      erewrite (subst_program_closed' ids inhabitant); last done; last done.
       iDestruct (tmc_dir_specification $! tmc_dir_post with "[//] [] [//] []") as "Hsim"; eauto.
-      + exists 1. eauto.
       + iApply (bisubst_cons_well_formed with "Hv").
         iApply bisubst_inhabitant_well_formed.
       + rewrite definition.simv_unseal /definition.simv_def.
@@ -293,25 +292,24 @@ Section sim.
       iApply sim_inner_pure_head_step; [auto with language.. |].
       do 4 sim_loadₜ. sim_pures.
       eapply (tmc_dps_subst _ (ids 0 .: #dst .: #idx .: ren (+1))) in Hdps; [| autosubst..].
-      erewrite (subst_program_well_formed' _ (ren (+1))) in Hdps; last done; last done. asimpl in Hdps.
+      erewrite (subst_program_closed' _ (ren (+1))) in Hdps; last done; last done. asimpl in Hdps.
       assert (eₜ.[#vₜ, #dst, #idx, #l2, #l1/] = eₜ.[ids 0 .: #dst .: #idx .: ren (+1)].[#vₜ, #l2, #l1/]) as -> by autosubst.
-      erewrite (subst_program_well_formed' ids inhabitant); last done; last done.
-      erewrite (subst_expr_well_formed_1' (#l2 .: #l1 .: ids) inhabitant); last first.
-      { eapply expr_well_formed_tmc_dps; try naive_solver. admit. }
+      erewrite (subst_program_closed' ids inhabitant); last done; last done.
+      erewrite (subst_expr_closed_1' (#l2 .: #l1 .: ids) inhabitant); last first.
+      { eapply expr_closed_tmc_dps; naive_solver. }
       iDestruct (tmc_dps_specification $! (tmc_dps_post dst idx) with "Hdst [] [//] []") as "Hsim"; eauto.
-      + exists 1. eauto.
       + iApply (bisubst_cons_well_formed with "Hv").
         iApply bisubst_inhabitant_well_formed.
       + rewrite definition.simv_unseal /definition.simv_def.
         rewrite -bisubst_consₛ -bisubst_consₜ.
         sim_mono "Hsim". iIntros "% % (%vₛ' & % & (-> & ->) & %vₜ' & -> & Hdst & #Hv')".
         iApply ("HΨ" with "Hdst Hv'").
-  Admitted.
+  Qed.
 End sim.
 
 Section tmc_sound.
   Context {progₛ progₜ : program}.
-  Context (Hwf : program_well_formed progₛ).
+  Context (Hwf : program_valid progₛ).
   Context (tmc : tmc progₛ progₜ).
 
   Notation Σ := sim_Σ.
