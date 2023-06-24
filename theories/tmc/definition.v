@@ -144,13 +144,6 @@ Record tmc {progₛ progₜ} := {
 
   tmc_ξ_dom :
     dom tmc_ξ ⊆ dom progₛ ;
-  tmc_ξ_fresh :
-    dom progₛ ## map_img tmc_ξ ;
-  tmc_ξ_inj func1 func2 func_dps :
-    tmc_ξ !! func1 = Some func_dps →
-    tmc_ξ !! func2 = Some func_dps →
-    func1 = func2 ;
-
   tmc_dom :
     dom progₜ = dom progₛ ∪ map_img tmc_ξ ;
   tmc_dirs func eₛ :
