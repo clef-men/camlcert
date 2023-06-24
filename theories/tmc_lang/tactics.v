@@ -106,10 +106,15 @@ Ltac invert_head_step :=
   ).
 
 #[local] Ltac solve_strongly_head_stuck :=
-  intros ?; split;
+  split;
   [ intros ?** ?** ?; invert_head_step; done
   | auto with tmc_lang
   ].
+#[global] Instance strongly_head_stuck_var prog x :
+  IsStronglyHeadStuck prog (Var x).
+Proof.
+  solve_strongly_head_stuck.
+Qed.
 #[global] Instance strongly_head_stuck_call prog v1 v2 :
   (if v1 is Func _ then False else True) →
   IsStronglyHeadStuck prog (Call (Val v1) (Val v2)).
