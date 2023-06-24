@@ -39,7 +39,8 @@ Notation "# v" := (Val v%Z%V%stdpp)
   format "# v"
 ).
 
-Notation Fail := (#() #())%E.
+Notation "'Fail'" := (#() #())%E
+: expr_scope.
 
 Notation "$ x" := (Var x%nat)
 ( at level 5,

@@ -36,7 +36,7 @@ Fixpoint expr_well_formed prog e :=
       expr_well_formed prog e0 ∧
       expr_well_formed prog e1 ∧
       expr_well_formed prog e2
-  | Constr constr e1 e2 =>
+  | Constr _ e1 e2 =>
       expr_well_formed prog e1 ∧
       expr_well_formed prog e2
   | ConstrDet _ _ _ =>
@@ -71,7 +71,7 @@ Fixpoint expr_closed lvl e :=
       expr_closed lvl e0 ∧
       expr_closed lvl e1 ∧
       expr_closed lvl e2
-  | Constr constr e1 e2 =>
+  | Constr _ e1 e2 =>
       expr_closed lvl e1 ∧
       expr_closed lvl e2
   | ConstrDet _ _ _ =>
