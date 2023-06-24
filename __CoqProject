@@ -43,6 +43,11 @@ theories/tmc_lang/tactics.v
 theories/tmc_lang/subexpr.v
 theories/tmc_lang/refinement.v
 
+theories/tmc_human_lang/syntax.v
+theories/tmc_human_lang/notations.v
+theories/tmc_human_lang/well_formed.v
+theories/tmc_human_lang/compilation.v
+
 theories/tmc/sim/definition.v
 theories/tmc/sim/notations.v
 theories/tmc/sim/basic_rules.v
