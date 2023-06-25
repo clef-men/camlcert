@@ -62,7 +62,7 @@ Section sim.
           do 2 (iSplit; first done); iIntros "%vₛ' %vₜ' Hdst #Hv'";
           iExists vₛ', ()%V; iSplit; first done;
           iApply ("HΦ" with "Hdst Hv'")
-        | iIntros "% % (%vₛ' & %vₜ' & (-> & ->) & HΦ) !>";
+        | iIntros "% % (%vₛ' & %vₜ' & (-> & ->) & HΦ)";
           sim_post
         ]
       ).
@@ -149,7 +149,7 @@ Section sim.
       { iLeft. iExists func, vₛ, vₜ. iFrame "#∗". do 2 (iSplitR; first done).
         iIntros "!> %vₛ' %vₜ' #Hv'". iExists vₛ', vₜ'. auto.
       }
-      iIntros "!> % % (%vₛ' & %vₜ' & (-> & ->) & HΨ) !>".
+      iIntros "!> % % (%vₛ' & %vₜ' & (-> & ->) & HΨ)".
       sim_post. iApply ("HΦ" with "HΨ").
     - iApply csimv_unop; [iApply IHdirₛ; auto with tmc_lang | auto].
     - iApply csimv_binop; [iApply IHdirₛ; auto with tmc_lang.. | auto].
@@ -341,7 +341,7 @@ Section tmc_sound.
       + iPureIntro. simpl. eapply elem_of_dom_2. done.
       + iApply val_similar_bi_similar; done.
       + iIntros "%vₛ' %vₜ' #Hv'". iExists vₛ', vₜ'. auto with iFrame.
-    - clear dependent vₛ eₛ vₜ. iIntros "%eₛ %eₜ (%vₛ & %vₜ & (-> & ->) & #Hv) !>".
+    - clear dependent vₛ eₛ vₜ. iIntros "%eₛ %eₜ (%vₛ & %vₜ & (-> & ->) & #Hv)".
       sim_post.
   Qed.
 End tmc_sound.

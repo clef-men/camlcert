@@ -1760,14 +1760,17 @@ Section sim_state.
             X Ψ eₛ eₜ ∗
             sim_state_interp σₛ σₜ ∗
               ∀ eₛ eₜ,
-              Ψ eₛ eₜ ++∗
+              Ψ eₛ eₜ -∗
               SIM eₛ ≳ eₜ [[ X ]] {{ Φ }}
         ) -∗
         SIM eₛ ≳ eₜ [[ X ]] {{ Φ }}.
       Proof.
         rewrite sim_fixpoint. iIntros "Hsim".
         iApply (sim_inner_apply_protocol Ψ ∅ _ ∅); [solve_proper | rewrite fill_empty //.. |].
-        setoid_rewrite fill_empty. done.
+        iIntros "%σₛ %σₜ Hsi".
+        iMod ("Hsim" with "Hsi") as "($ & $ & Hsim)".
+        clear eₛ eₜ. iIntros "!> %eₛ %eₜ HΨ !>".
+        rewrite !fill_empty. iApply ("Hsim" with "HΨ").
       Qed.
     End sim.
 
@@ -2104,7 +2107,7 @@ Section sim_state.
             X Ψ eₛ eₜ ∗
             sim_state_interp σₛ σₜ ∗
               ∀ eₛ eₜ,
-              Ψ eₛ eₜ ++∗
+              Ψ eₛ eₜ -∗
               SIM eₛ ≳ eₜ [[ X ]] [[ Φ ]]
         ) -∗
         SIM eₛ ≳ eₜ [[ X ]] [[ Φ ]].
