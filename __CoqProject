@@ -12,6 +12,7 @@ theories/common/autosubst.v
 theories/common/relation.v
 theories/common/induction.v
 theories/common/fin_maps.v
+theories/common/loc.v
 
 theories/base_logic/satisfiable.v
 theories/base_logic/lib/cupd/definition.v
@@ -32,7 +33,6 @@ theories/program_logic/sim/rules.v
 theories/program_logic/sim/proofmode.v
 theories/program_logic/sim/adequacy.v
 
-theories/tmc_lang/loc.v
 theories/tmc_lang/syntax.v
 theories/tmc_lang/notations.v
 theories/tmc_lang/semantics.v

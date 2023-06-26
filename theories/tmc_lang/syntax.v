@@ -8,9 +8,8 @@ From simuliris Require Import
   prelude.
 From simuliris.common Require Export
   autosubst
+  loc
   typeclasses.
-From simuliris.tmc_lang Require Export
-  loc.
 
 Notation function := string
 ( only parsing
