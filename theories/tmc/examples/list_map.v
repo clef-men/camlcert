@@ -9,7 +9,7 @@ From simuliris.tmc_human_lang Require Import
 From simuliris.tmc Require Import
   soundness.
 
-Definition list_mapₛ : human_program := {[
+Definition list_map : human_program := {[
   "list_map" := (BNamed "arg", (
     let: "fn" := ![𝟙] "arg" in
     let: "xs" := ![𝟚] "arg" in
@@ -23,7 +23,7 @@ Definition list_mapₛ : human_program := {[
   )%HE)
 ]}.
 
-Definition list_mapₜ : human_program := {[
+Definition list_map_tmc : human_program := {[
   "list_map" := (BNamed "arg", (
     let: "fn" := ![𝟙] "arg" in
     let: "xs" := ![𝟚] "arg" in
@@ -59,12 +59,12 @@ Definition list_mapₜ : human_program := {[
   )%HE)
 ]}.
 
-Lemma list_map_sound :
+Lemma list_map_tmc_sound :
   program_refinement
-    (human_program_compile list_mapₛ)
-    (human_program_compile list_mapₜ).
+    (human_program_compile list_map)
+    (human_program_compile list_map_tmc).
 Proof.
-  rewrite /list_mapₛ /list_mapₜ. apply tmc_sound.
+  rewrite /list_map /list_map_tmc. apply tmc_sound.
   - split.
     + apply human_program_compile_well_formed.
       rewrite /human_program_well_formed map_Forall_singleton //.
