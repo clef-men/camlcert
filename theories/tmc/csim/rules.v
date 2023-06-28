@@ -1,6 +1,6 @@
 From simuliris Require Import
   prelude.
-From simuliris.tmc_lang Require Export
+From simuliris.lambda_lang Require Export
   well_formed.
 From simuliris.tmc Require Export
   sim.derived_rules
@@ -10,14 +10,14 @@ From simuliris.tmc Require Import
   csim.notations.
 
 Section sim_GS.
-  Context `{sim_programs : !SimPrograms tmc_ectx_lang tmc_ectx_lang}.
+  Context `{sim_programs : !SimPrograms lambda_ectx_lang lambda_ectx_lang}.
   Context `{sim_GS : !SimGS Σ}.
   Context (X : sim_protocol Σ).
-  Implicit Types func : function.
-  Implicit Types constr : constructor.
-  Implicit Types v vₛ vₜ : val.
-  Implicit Types e eₛ eₜ : expr.
-  Implicit Types Φ : val → val → iProp Σ.
+  Implicit Types func : lambda_function.
+  Implicit Types constr : lambda_constructor.
+  Implicit Types v vₛ vₜ : lambda_val.
+  Implicit Types e eₛ eₜ : lambda_expr.
+  Implicit Types Φ : lambda_val → lambda_val → iProp Σ.
 
   Notation csimv := (csimv X).
 
@@ -63,12 +63,12 @@ Section sim_GS.
   Qed.
 
   Lemma csimv_val v Φ :
-    val_well_formed sim_progₛ v →
+    lambda_val_well_formed sim_progₛ v →
     (∀ vₛ vₜ, vₛ ≈ vₜ -∗ Φ vₛ vₜ) -∗
     SIM v ⩾ v [[ X ]] [[ Φ ]].
   Proof.
     iIntros "%Hwf HΦ". csimv_start.
-    sim_post. iApply "HΦ". expr_simplifier.
+    sim_post. iApply "HΦ". lambda_expr_simplifier.
   Qed.
 
   Lemma csimv_var x Φ :
@@ -110,7 +110,7 @@ Section sim_GS.
   Lemma csimv_unop op eₛ eₜ Φ :
     SIM eₛ ⩾ eₜ [[ X ]] [[ (≈) ]] -∗
     (∀ vₛ vₜ, vₛ ≈ vₜ -∗ Φ vₛ vₜ) -∗
-    SIM Unop op eₛ ⩾ Unop op eₜ [[ X ]] [[ Φ ]].
+    SIM LambdaUnop op eₛ ⩾ LambdaUnop op eₜ [[ X ]] [[ Φ ]].
   Proof.
     iIntros "Hcsim HΦ". csimv_start.
     sim_apply (simv_unop with "(Hcsim [//] HΓ)").
@@ -120,7 +120,7 @@ Section sim_GS.
     SIM eₛ1 ⩾ eₜ1 [[ X ]] [[ (≈) ]] -∗
     SIM eₛ2 ⩾ eₜ2 [[ X ]] [[ (≈) ]] -∗
     (∀ vₛ vₜ, vₛ ≈ vₜ -∗ Φ vₛ vₜ) -∗
-    SIM Binop op eₛ1 eₛ2 ⩾ Binop op eₜ1 eₜ2 [[ X ]] [[ Φ ]].
+    SIM LambdaBinop op eₛ1 eₛ2 ⩾ LambdaBinop op eₜ1 eₜ2 [[ X ]] [[ Φ ]].
   Proof.
     iIntros "Hcsim1 Hcsim2 HΦ". csimv_start.
     sim_apply (simv_binop with "(Hcsim1 [//] HΓ) (Hcsim2 [//] HΓ)").
@@ -131,7 +131,7 @@ Section sim_GS.
     ( SIM eₛ1 ⩾ eₜ1 [[ X ]] [[ Φ ]] ∧
       SIM eₛ2 ⩾ eₜ2 [[ X ]] [[ Φ ]]
     ) -∗
-    SIM If eₛ0 eₛ1 eₛ2 ⩾ If eₜ0 eₜ1 eₜ2 [[ X ]] [[ Φ ]].
+    SIM LambdaIf eₛ0 eₛ1 eₛ2 ⩾ LambdaIf eₜ0 eₜ1 eₜ2 [[ X ]] [[ Φ ]].
   Proof.
     iIntros "Hcsim0 Hcsim12". csimv_start.
     sim_apply (simv_if with "(Hcsim0 [//] HΓ)").
@@ -195,7 +195,7 @@ Section sim_GS.
     SIM eₛ1 ⩾ eₜ1 [[ X ]] [[ (≈) ]] -∗
     SIM eₛ2 ⩾ eₜ2 [[ X ]] [[ (≈) ]] -∗
     SIM eₛ3 ⩾ eₜ3 [[ X ]] [[ (≈) ]] -∗
-    Φ ()%V ()%V -∗
+    Φ ()%lambda_val ()%lambda_val -∗
     SIM eₛ1 <-[eₛ2]- eₛ3 ⩾ eₜ1 <-[eₜ2]- eₜ3 [[ X ]] [[ Φ ]].
   Proof.
     iIntros "Hcsim1 Hcsim2 Hcsim3 HΦ". csimv_start.

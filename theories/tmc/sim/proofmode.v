@@ -14,14 +14,14 @@ From simuliris.tmc Require Import
   sim.notations.
 
 Section sim_GS.
-  Context `{sim_programs : !SimPrograms tmc_ectx_lang tmc_ectx_lang}.
+  Context `{sim_programs : !SimPrograms lambda_ectx_lang lambda_ectx_lang}.
   Context `{sim_GS : !SimGS Σ}.
-  Implicit Types constr : constructor.
+  Implicit Types constr : lambda_constructor.
   Implicit Types l lₜ lₛ : loc.
-  Implicit Types idx idxₜ idxₛ : index.
-  Implicit Types v vₜ vₛ : val.
-  Implicit Types e eₜ eₛ : expr.
-  Implicit Types K Kₜ Kₛ : ectx.
+  Implicit Types idx idxₜ idxₛ : lambda_index.
+  Implicit Types v vₜ vₛ : lambda_val.
+  Implicit Types e eₜ eₛ : lambda_expr.
+  Implicit Types K Kₜ Kₛ : lambda_ectx.
 
   Lemma tac_sim_heap_bij_insert id1 p1 id2 lₛ lₜ P Δ :
     (∀ Q, AddModal (|++> Q) Q P) →
@@ -45,7 +45,7 @@ Section sim_GS.
   Context (X : sim_protocol Σ).
 
   Section sim.
-    Implicit Types Φ : expr → expr → iProp Σ.
+    Implicit Types Φ : lambda_expr → lambda_expr → iProp Σ.
 
     Lemma tac_sim_constr_detₛ id0 id1 id2 K constr v1 v2 e Φ Δ :
       ( ∀ l,
@@ -99,7 +99,7 @@ Section sim_GS.
       envs_entails Δ (vₛ1 ≈ vₜ1) →
       envs_entails Δ (vₛ2 ≈ vₜ2) →
       ( ∀ lₛ lₜ,
-        match envs_app true (Esnoc Enil id (Loc lₛ ≈ Loc lₜ)) Δ with
+        match envs_app true (Esnoc Enil id (LambdaLoc lₛ ≈ LambdaLoc lₜ)) Δ with
         | None =>
             False
         | Some Δ' =>
@@ -168,8 +168,8 @@ Section sim_GS.
         iApply ("Hsim" with "[$]").
     Qed.
     Lemma tac_sim_load id Kₛ lₛ idxₛ Kₜ lₜ idxₜ Φ Δ :
-      envs_entails Δ (Loc lₛ ≈ Loc lₜ) →
-      envs_entails Δ (Index idxₛ ≈ Index idxₜ) →
+      envs_entails Δ (LambdaLoc lₛ ≈ LambdaLoc lₜ) →
+      envs_entails Δ (LambdaIndex idxₛ ≈ LambdaIndex idxₜ) →
       ( ∀ vₛ vₜ,
         match envs_app true (Esnoc Enil id (vₛ ≈ vₜ)) Δ with
         | None =>
@@ -240,7 +240,7 @@ Section sim_GS.
   End sim.
 
   Section simv.
-    Implicit Types Φ : val → val → iProp Σ.
+    Implicit Types Φ : lambda_val → lambda_val → iProp Σ.
 
     Lemma tac_simv_constr_detₛ id0 id1 id2 K constr v1 v2 e Φ Δ :
       ( ∀ l,
@@ -286,7 +286,7 @@ Section sim_GS.
       envs_entails Δ (vₛ1 ≈ vₜ1) →
       envs_entails Δ (vₛ2 ≈ vₜ2) →
       ( ∀ lₛ lₜ,
-        match envs_app true (Esnoc Enil id (Loc lₛ ≈ Loc lₜ)) Δ with
+        match envs_app true (Esnoc Enil id (LambdaLoc lₛ ≈ LambdaLoc lₜ)) Δ with
         | None =>
             False
         | Some Δ' =>
@@ -339,8 +339,8 @@ Section sim_GS.
       apply tac_sim_loadₜ.
     Qed.
     Lemma tac_simv_load id Kₛ lₛ idxₛ Kₜ lₜ idxₜ Φ Δ :
-      envs_entails Δ (Loc lₛ ≈ Loc lₜ) →
-      envs_entails Δ (Index idxₛ ≈ Index idxₜ) →
+      envs_entails Δ (LambdaLoc lₛ ≈ LambdaLoc lₜ) →
+      envs_entails Δ (LambdaIndex idxₛ ≈ LambdaIndex idxₜ) →
       ( ∀ vₛ vₜ,
         match envs_app true (Esnoc Enil id (vₛ ≈ vₜ)) Δ with
         | None =>
@@ -398,35 +398,35 @@ End sim_GS.
   let rec go K e :=
     let go k e := go (k :: K) e in
     match e with
-    | Let ?e1 ?e2 =>
-        go (EctxiLet e2) e1
-    | Call ?e1 (Val ?v2) =>
-        go (EctxiCall2 v2) e1
-    | Call ?e1 ?e2 =>
-        go (EctxiCall1 e1) e2
-    | Unop ?op ?e =>
-        go (EctxiUnop op) e
-    | Binop ?op ?e1 (Val ?v2) =>
-        go (EctxiBinop2 op v2) e1
-    | Binop ?op ?e1 ?e2 =>
-        go (EctxiBinop1 op e1) e2
-    | If ?e0 ?e1 ?e2 =>
-        go (EctxiIf e1 e2) e0
-    | Load ?e1 (Val ?v2) =>
-        go (EctxiLoad2 v2) e1
-    | Load ?e1 ?e2 =>
-        go (EctxiLoad1 e1) e2
-    | Store ?e1 (Val ?v2) (Val ?v3) =>
-        go (EctxiStore3 v2 v3) e1
-    | Store ?e1 ?e2 (Val ?v3) =>
-        go (EctxiStore2 e1 v3) e2
-    | Store ?e1 ?e2 ?e3 =>
-        go (EctxiStore1 e1 e2) e3
+    | LambdaLet ?e1 ?e2 =>
+        go (LambdaEctxiLet e2) e1
+    | LambdaCall ?e1 (LambdaVal ?v2) =>
+        go (LambdaEctxiCall2 v2) e1
+    | LambdaCall ?e1 ?e2 =>
+        go (LambdaEctxiCall1 e1) e2
+    | LambdaUnop ?op ?e =>
+        go (LambdaEctxiUnop op) e
+    | LambdaBinop ?op ?e1 (LambdaVal ?v2) =>
+        go (LambdaEctxiBinop2 op v2) e1
+    | LambdaBinop ?op ?e1 ?e2 =>
+        go (LambdaEctxiBinop1 op e1) e2
+    | LambdaIf ?e0 ?e1 ?e2 =>
+        go (LambdaEctxiIf e1 e2) e0
+    | LambdaLoad ?e1 (LambdaVal ?v2) =>
+        go (LambdaEctxiLoad2 v2) e1
+    | LambdaLoad ?e1 ?e2 =>
+        go (LambdaEctxiLoad1 e1) e2
+    | LambdaStore ?e1 (LambdaVal ?v2) (LambdaVal ?v3) =>
+        go (LambdaEctxiStore3 v2 v3) e1
+    | LambdaStore ?e1 ?e2 (LambdaVal ?v3) =>
+        go (LambdaEctxiStore2 e1 v3) e2
+    | LambdaStore ?e1 ?e2 ?e3 =>
+        go (LambdaEctxiStore1 e1 e2) e3
     | _ =>
         tac K e
     end
   in
-  go (∅ : ectx) e.
+  go (∅ : lambda_ectx) e.
 #[local] Tactic Notation "expr_decompose" "[" open_constr(eₛ) open_constr(eₜ) "]" tactic3(tac) :=
   expr_decompose eₛ ltac:(fun Kₛ eₛ' =>
     expr_decompose eₜ ltac:(fun Kₜ eₜ' =>
@@ -558,7 +558,7 @@ Tactic Notation "sim_heap_bij_insert" :=
 
 Tactic Notation "sim_constr_detₛ" "as" simple_intropattern(l) constr(Hl0) constr(Hl1) constr(Hl2) :=
   sim_pures;
-  let e_foc := open_constr:(ConstrDet _ (Val _) (Val _)) in
+  let e_foc := open_constr:(LambdaConstrDet _ (LambdaVal _) (LambdaVal _)) in
   sim_focalizeₛ e_foc
     ltac:(fun K =>
       on_sim_or_simv
@@ -587,7 +587,7 @@ Tactic Notation "sim_constr_detₛ" :=
   sim_constr_detₛ as l.
 Tactic Notation "sim_constr_detₜ" "as" simple_intropattern(l) constr(Hl0) constr(Hl1) constr(Hl2) :=
   sim_pures;
-  let e_foc := open_constr:(ConstrDet _ (Val _) (Val _)) in
+  let e_foc := open_constr:(LambdaConstrDet _ (LambdaVal _) (LambdaVal _)) in
   sim_focalizeₜ e_foc
     ltac:(fun K =>
       on_sim_or_simv
@@ -616,8 +616,8 @@ Tactic Notation "sim_constr_detₜ" :=
   sim_constr_detₜ as l.
 Tactic Notation "sim_constr_det" "as" simple_intropattern(lₛ) simple_intropattern(lₜ) constr(Hl) :=
   sim_pures;
-  let e_focₛ := open_constr:(ConstrDet _ (Val _) (Val _)) in
-  let e_focₜ := open_constr:(ConstrDet _ (Val _) (Val _)) in
+  let e_focₛ := open_constr:(LambdaConstrDet _ (LambdaVal _) (LambdaVal _)) in
+  let e_focₜ := open_constr:(LambdaConstrDet _ (LambdaVal _) (LambdaVal _)) in
   sim_focalize e_focₛ e_focₜ
     ltac:(fun Kₛ Kₜ =>
       on_sim_or_simv
@@ -652,7 +652,7 @@ Tactic Notation "sim_constr_det" :=
 
 Ltac sim_constrₛ1 :=
   sim_pures;
-  let e_foc := open_constr:(Constr _ _ _) in
+  let e_foc := open_constr:(LambdaConstr _ _ _) in
   sim_focalizeₛ e_foc
     ltac:(fun K =>
       on_sim_or_simv
@@ -665,7 +665,7 @@ Ltac sim_constrₛ1 :=
   sim_finish.
 Ltac sim_constrₛ2 :=
   sim_pures;
-  let e_foc := open_constr:(Constr _ _ _) in
+  let e_foc := open_constr:(LambdaConstr _ _ _) in
   sim_focalizeₛ e_foc
     ltac:(fun K =>
       on_sim_or_simv
@@ -678,7 +678,7 @@ Ltac sim_constrₛ2 :=
   sim_finish.
 Ltac sim_constrₜ :=
   sim_pures;
-  let e_foc := open_constr:(Constr _ _ _) in
+  let e_foc := open_constr:(LambdaConstr _ _ _) in
   sim_focalizeₜ e_foc
     ltac:(fun K =>
       on_sim_or_simv
@@ -692,7 +692,7 @@ Ltac sim_constrₜ :=
 
 Tactic Notation "sim_loadₛ" :=
   sim_pures;
-  let e_foc := open_constr:(Load (Val (Loc _)) (Val (Index _))) in
+  let e_foc := open_constr:(LambdaLoad (LambdaVal (LambdaLoc _)) (LambdaVal (LambdaIndex _))) in
   sim_focalizeₛ e_foc
     ltac:(fun K =>
       on_sim_or_simv
@@ -709,7 +709,7 @@ Tactic Notation "sim_loadₛ" :=
   ].
 Tactic Notation "sim_loadₜ" :=
   sim_pures;
-  let e_foc := open_constr:(Load (Val (Loc _)) (Val (Index _))) in
+  let e_foc := open_constr:(LambdaLoad (LambdaVal (LambdaLoc _)) (LambdaVal (LambdaIndex _))) in
   sim_focalizeₜ e_foc
     ltac:(fun K =>
     on_sim_or_simv
@@ -726,8 +726,8 @@ Tactic Notation "sim_loadₜ" :=
   ].
 Tactic Notation "sim_load" "as" simple_intropattern(vₛ) simple_intropattern(vₜ) constr(Hv) :=
   sim_pures;
-  let e_focₛ := open_constr:(Load (Val (Loc _)) (Val (Index _))) in
-  let e_focₜ := open_constr:(Load (Val (Loc _)) (Val (Index _))) in
+  let e_focₛ := open_constr:(LambdaLoad (LambdaVal (LambdaLoc _)) (LambdaVal (LambdaIndex _))) in
+  let e_focₜ := open_constr:(LambdaLoad (LambdaVal (LambdaLoc _)) (LambdaVal (LambdaIndex _))) in
   sim_focalize e_focₛ e_focₜ
     ltac:(fun Kₛ Kₜ =>
       on_sim_or_simv
@@ -762,7 +762,7 @@ Tactic Notation "sim_load" :=
 
 Ltac sim_storeₛ :=
   sim_pures;
-  let e_foc := open_constr:(Store (Val (Loc _)) (Val (Index _)) (Val _)) in
+  let e_foc := open_constr:(LambdaStore (LambdaVal (LambdaLoc _)) (LambdaVal (LambdaIndex _)) (LambdaVal _)) in
   sim_focalizeₛ e_foc
     ltac:(fun K =>
       on_sim_or_simv
@@ -779,7 +779,7 @@ Ltac sim_storeₛ :=
   ].
 Ltac sim_storeₜ :=
   sim_pures;
-  let e_foc := open_constr:(Store (Val (Loc _)) (Val (Index _)) (Val _)) in
+  let e_foc := open_constr:(LambdaStore (LambdaVal (LambdaLoc _)) (LambdaVal (LambdaIndex _)) (LambdaVal _)) in
   sim_focalizeₜ e_foc
     ltac:(fun K =>
       on_sim_or_simv
@@ -796,8 +796,8 @@ Ltac sim_storeₜ :=
   ].
 Ltac sim_store :=
   sim_pures;
-  let e_focₜ := open_constr:(Store (Val (Loc _)) (Val (Index _)) (Val _)) in
-  let e_focₛ := open_constr:(Store (Val (Loc _)) (Val (Index _)) (Val _)) in
+  let e_focₜ := open_constr:(LambdaStore (LambdaVal (LambdaLoc _)) (LambdaVal (LambdaIndex _)) (LambdaVal _)) in
+  let e_focₛ := open_constr:(LambdaStore (LambdaVal (LambdaLoc _)) (LambdaVal (LambdaIndex _)) (LambdaVal _)) in
   sim_focalize e_focₜ e_focₛ
     ltac:(fun Kₛ Kₜ =>
       on_sim_or_simv

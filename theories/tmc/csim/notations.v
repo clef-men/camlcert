@@ -5,12 +5,12 @@ From simuliris.tmc Require Export
 From simuliris.tmc Require Export
   csim.definition.
 
-Notation "'SIM' eₛ ⩾ eₜ [[ X ] ] [[ Φ ] ]" := (csimv X Φ%I eₛ%E eₜ%E)
+Notation "'SIM' eₛ ⩾ eₜ [[ X ] ] [[ Φ ] ]" := (csimv X Φ%I eₛ%lambda_expr eₜ%lambda_expr)
 ( at level 20,
   eₛ, eₜ, X, Φ at level 200,
   format "'[hv' SIM  '/  ' '[' eₛ ']'  '/' ⩾  '[' eₜ ']'  '/' [[  '/  ' '[' X ']'  '/' ] ]  [[  '/  ' '[' Φ ']'  '/' ] ] ']'"
 ) : bi_scope.
-Notation "'SIM' eₛ ⩾ eₜ [[ Φ ] ]" := (csimv ⊥ Φ%I eₛ%E eₜ%E)%I
+Notation "'SIM' eₛ ⩾ eₜ [[ Φ ] ]" := (csimv ⊥ Φ%I eₛ%lambda_expr eₜ%lambda_expr)%I
 ( at level 20,
   eₛ, eₜ, Φ at level 200,
   format "'[hv' SIM  '/  ' '[' eₛ ']'  '/' ⩾  '[' eₜ ']'  '/' [[  '/  ' '[' Φ ']'  '/' ] ] ']'"

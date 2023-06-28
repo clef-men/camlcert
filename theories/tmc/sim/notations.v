@@ -1,11 +1,11 @@
 From simuliris Require Import
   prelude.
-From simuliris.tmc_lang Require Export
+From simuliris.lambda_lang Require Export
   notations.
 From simuliris.tmc Require Export
   sim.definition.
 
-Notation "l ↦ₛ{ dq } v" := (mapstoₛ (locₛ := loc) (valₛ := val) l dq v%V)
+Notation "l ↦ₛ{ dq } v" := (mapstoₛ (locₛ := loc) (valₛ := lambda_val) l dq v%lambda_val)
 ( at level 20,
   format "l  ↦ₛ{ dq }  v"
 ) : bi_scope.
@@ -22,7 +22,7 @@ Notation "l ↦ₛ v" := (l ↦ₛ{#1} v)%I
   format "l  ↦ₛ  v"
 ) : bi_scope.
 
-Notation "l ↦ₜ{ dq } v" := (mapstoₜ (locₜ := loc) (valₜ := val) l dq v%V)
+Notation "l ↦ₜ{ dq } v" := (mapstoₜ (locₜ := loc) (valₜ := lambda_val) l dq v%lambda_val)
 ( at level 20,
   format "l  ↦ₜ{ dq }  v"
 ) : bi_scope.
@@ -39,7 +39,7 @@ Notation "l ↦ₜ v" := (l ↦ₜ{#1} v)%I
   format "l  ↦ₜ  v"
 ) : bi_scope.
 
-Notation "'SIM' eₛ ≳ eₜ [[ X ] ] {{ Φ } }" := (sim X Φ%I eₛ%E eₜ%E)
+Notation "'SIM' eₛ ≳ eₜ [[ X ] ] {{ Φ } }" := (sim X Φ%I eₛ%lambda_expr eₜ%lambda_expr)
 ( at level 20,
   eₛ, eₜ, X, Φ at level 200,
   format "'[hv' SIM  '/  ' '[' eₛ ']'  '/' ≳  '[' eₜ ']'  '/' [[  '/  ' '[' X ']'  '/' ] ]  {{  '/  ' '[' Φ ']'  '/' } } ']'"
@@ -49,7 +49,7 @@ Notation "'SIM' eₛ ≳ eₜ {{ Φ } }" := (SIM eₛ ≳ eₜ [[ ⊥ ]] {{ Φ }
   eₛ, eₜ, Φ at level 200,
   format "'[hv' SIM  '/  ' '[' eₛ ']'  '/' ≳  '[' eₜ ']'  '/' {{  '/  ' '[' Φ ']'  '/' } } ']'"
 ) : bi_scope.
-Notation "'SIM' eₛ ≳ eₜ [[ X ] ] [[ Φ ] ]" := (simv X Φ%I eₛ%E eₜ%E)
+Notation "'SIM' eₛ ≳ eₜ [[ X ] ] [[ Φ ] ]" := (simv X Φ%I eₛ%lambda_expr eₜ%lambda_expr)
 ( at level 20,
   eₛ, eₜ, X, Φ at level 200,
   format "'[hv' SIM  '/  ' '[' eₛ ']'  '/' ≳  '[' eₜ ']'  '/' [[  '/  ' '[' X ']'  '/' ] ]  [[  '/  ' '[' Φ ']'  '/' ] ] ']'"

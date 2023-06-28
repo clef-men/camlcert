@@ -6,7 +6,7 @@ From simuliris.tmc Require Import
   sim.notations.
 
 Section sim_GS.
-  Context `{sim_programs : !SimPrograms tmc_ectx_lang tmc_ectx_lang}.
+  Context `{sim_programs : !SimPrograms lambda_ectx_lang lambda_ectx_lang}.
   Context `{sim_GS : !SimGS Σ}.
   Context (X : sim_protocol Σ).
 
@@ -15,5 +15,5 @@ Section sim_GS.
     ⌜eₛ' = eₛ.[Γ.ₛ#] ∧ eₜ' = eₜ.[Γ.ₜ#]⌝ -∗
     bisubst_well_formed Γ -∗
     SIM eₛ' ≳ eₜ' [[ X ]] [[ Φ ]].
-  #[global] Arguments csimv _%I (_ _)%E : assert.
+  #[global] Arguments csimv _%I (_ _)%lambda_expr : assert.
 End sim_GS.

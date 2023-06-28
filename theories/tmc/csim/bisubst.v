@@ -8,10 +8,10 @@ From simuliris Require Import
   prelude.
 From simuliris.tmc Require Export
   sim.definition.
-From simuliris.tmc_lang Require Import
+From simuliris.lambda_lang Require Import
   notations.
 
-Definition bisubst := var → val * val.
+Definition bisubst := var → lambda_val * lambda_val.
 
 Notation "Γ .ₛ" := (fst ∘ Γ)
 ( at level 5,
@@ -21,19 +21,19 @@ Notation "Γ .ₜ" := (snd ∘ Γ)
 ( at level 5,
   format "Γ .ₜ"
 ).
-Notation "Γ .ₛ#" := (of_val ∘ Γ.ₛ)
+Notation "Γ .ₛ#" := (lambda_of_val ∘ Γ.ₛ)
 ( at level 5,
   format "Γ .ₛ#"
 ).
-Notation "Γ .ₜ#" := (of_val ∘ Γ.ₜ)
+Notation "Γ .ₜ#" := (lambda_of_val ∘ Γ.ₜ)
 ( at level 5,
   format "Γ .ₜ#"
 ).
 
 Section sim_GS.
-  Context `{sim_programs : !SimPrograms tmc_ectx_lang tmc_ectx_lang}.
+  Context `{sim_programs : !SimPrograms lambda_ectx_lang lambda_ectx_lang}.
   Context `{sim_GS : !SimGS Σ}.
-  Implicit Types v vₛ vₜ : val.
+  Implicit Types v vₛ vₜ : lambda_val.
   Implicit Types Γ : bisubst.
 
   Lemma bisubst_consₛ vₛ vₜ Γ :
@@ -59,7 +59,7 @@ Section sim_GS.
   Qed.
 
   #[global] Instance bisubst_inhabited : Inhabited bisubst :=
-    populate (λ _, ((), ())%V).
+    populate (λ _, ((), ())%lambda_val).
   Lemma bisubst_inhabitant_well_formed :
     ⊢ bisubst_well_formed inhabitant.
   Proof.

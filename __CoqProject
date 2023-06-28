@@ -12,6 +12,7 @@ theories/common/autosubst.v
 theories/common/relation.v
 theories/common/induction.v
 theories/common/fin_maps.v
+theories/common/three.v
 theories/common/loc.v
 
 theories/base_logic/satisfiable.v
@@ -33,20 +34,20 @@ theories/program_logic/sim/rules.v
 theories/program_logic/sim/proofmode.v
 theories/program_logic/sim/adequacy.v
 
-theories/tmc_lang/syntax.v
-theories/tmc_lang/notations.v
-theories/tmc_lang/semantics.v
-theories/tmc_lang/language.v
-theories/tmc_lang/well_formed.v
-theories/tmc_lang/ectx_decompositions.v
-theories/tmc_lang/tactics.v
-theories/tmc_lang/subexpr.v
-theories/tmc_lang/refinement.v
+theories/lambda_lang/syntax.v
+theories/lambda_lang/notations.v
+theories/lambda_lang/semantics.v
+theories/lambda_lang/language.v
+theories/lambda_lang/well_formed.v
+theories/lambda_lang/ectx_decompositions.v
+theories/lambda_lang/tactics.v
+theories/lambda_lang/subexpr.v
+theories/lambda_lang/refinement.v
 
-theories/tmc_human_lang/syntax.v
-theories/tmc_human_lang/notations.v
-theories/tmc_human_lang/well_formed.v
-theories/tmc_human_lang/compilation.v
+theories/lambda_human_lang/syntax.v
+theories/lambda_human_lang/notations.v
+theories/lambda_human_lang/well_formed.v
+theories/lambda_human_lang/compilation.v
 
 theories/tmc/sim/definition.v
 theories/tmc/sim/notations.v

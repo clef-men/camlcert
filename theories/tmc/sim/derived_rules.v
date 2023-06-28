@@ -7,15 +7,15 @@ From simuliris.tmc Require Import
   sim.notations.
 
 Section sim_GS.
-  Context `{sim_programs : !SimPrograms tmc_ectx_lang tmc_ectx_lang}.
+  Context `{sim_programs : !SimPrograms lambda_ectx_lang lambda_ectx_lang}.
   Context `{sim_GS : !SimGS Σ}.
   Context (X : sim_protocol Σ).
-  Implicit Types func : function.
-  Implicit Types constr : constructor.
+  Implicit Types func : lambda_function.
+  Implicit Types constr : lambda_constructor.
   Implicit Types l lₛ lₜ : loc.
-  Implicit Types v vₛ vₜ : val.
-  Implicit Types e eₛ eₜ : expr.
-  Implicit Types Φ : val → val → iProp Σ.
+  Implicit Types v vₛ vₜ : lambda_val.
+  Implicit Types e eₛ eₜ : lambda_expr.
+  Implicit Types Φ : lambda_val → lambda_val → iProp Σ.
 
   Lemma simv_let eₛ1 eₛ2 eₜ1 eₜ2 Φ :
     SIM eₛ1 ≳ eₜ1 [[ X ]] [[ (≈) ]] -∗
@@ -50,7 +50,7 @@ Section sim_GS.
   Lemma simv_unop op eₛ eₜ Φ :
     SIM eₛ ≳ eₜ [[ X ]] [[ (≈) ]] -∗
     (∀ vₛ vₜ, vₛ ≈ vₜ -∗ Φ vₛ vₜ) -∗
-    SIM Unop op eₛ ≳ Unop op eₜ [[ X ]] [[ Φ ]].
+    SIM LambdaUnop op eₛ ≳ LambdaUnop op eₜ [[ X ]] [[ Φ ]].
   Proof.
     iIntros "Hsim HΦ".
     sim_mono "Hsim". iIntros "%vₛ %vₜ #Hv".
@@ -64,7 +64,7 @@ Section sim_GS.
     SIM eₛ1 ≳ eₜ1 [[ X ]] [[ (≈) ]] -∗
     SIM eₛ2 ≳ eₜ2 [[ X ]] [[ (≈) ]] -∗
     (∀ vₛ vₜ, vₛ ≈ vₜ -∗ Φ vₛ vₜ) -∗
-    SIM Binop op eₛ1 eₛ2 ≳ Binop op eₜ1 eₜ2 [[ X ]] [[ Φ ]].
+    SIM LambdaBinop op eₛ1 eₛ2 ≳ LambdaBinop op eₜ1 eₜ2 [[ X ]] [[ Φ ]].
   Proof.
     iIntros "Hsim1 Hsim2 HΦ".
     sim_mono "Hsim2". iIntros "%vₛ2 %vₜ2 #Hv2".
@@ -81,7 +81,7 @@ Section sim_GS.
     ( SIM eₛ1 ≳ eₜ1 [[ X ]] [[ Φ ]] ∧
       SIM eₛ2 ≳ eₜ2 [[ X ]] [[ Φ ]]
     ) -∗
-    SIM If eₛ0 eₛ1 eₛ2 ≳ If eₜ0 eₜ1 eₜ2 [[ X ]] [[ Φ ]].
+    SIM LambdaIf eₛ0 eₛ1 eₛ2 ≳ LambdaIf eₜ0 eₜ1 eₜ2 [[ X ]] [[ Φ ]].
   Proof.
     iIntros "Hsim0 Hsim12".
     sim_mono "Hsim0". iIntros "%vₛ0 %vₜ0 #Hv0".
@@ -96,7 +96,7 @@ Section sim_GS.
   Lemma simv_constr constr eₛ1 eₛ2 eₜ1 eₜ2 Φ :
     SIM eₛ1 ≳ eₜ1 [[ X ]] [[ (≈) ]] -∗
     SIM eₛ2 ≳ eₜ2 [[ X ]] [[ (≈) ]] -∗
-    (∀ lₛ lₜ, Loc lₛ ≈ Loc lₜ -∗ Φ lₛ lₜ) -∗
+    (∀ lₛ lₜ, LambdaLoc lₛ ≈ LambdaLoc lₜ -∗ Φ lₛ lₜ) -∗
     SIM &constr eₛ1 eₛ2 ≳ &constr eₜ1 eₜ2 [[ X ]] [[ Φ ]].
   Proof.
     iIntros "Hsim1 Hsim2 HΦ".
@@ -163,7 +163,7 @@ Section sim_GS.
     SIM eₛ1 ≳ eₜ1 [[ X ]] [[ (≈) ]] -∗
     SIM eₛ2 ≳ eₜ2 [[ X ]] [[ (≈) ]] -∗
     SIM eₛ3 ≳ eₜ3 [[ X ]] [[ (≈) ]] -∗
-    Φ ()%V ()%V -∗
+    Φ ()%lambda_val ()%lambda_val -∗
     SIM eₛ1 <-[eₛ2]- eₛ3 ≳ eₜ1 <-[eₜ2]- eₜ3 [[ X ]] [[ Φ ]].
   Proof.
     iIntros "Hsim1 Hsim2 Hsim3 HΦ".
