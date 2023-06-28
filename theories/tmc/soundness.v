@@ -13,7 +13,7 @@ From simuliris.tmc Require Import
   csim.rules
   csim.notations.
 
-Section sim.
+Section sim_GS.
   Context `{sim_programs : !SimPrograms tmc_ectx_lang tmc_ectx_lang}.
   Context `{sim_GS : !SimGS Σ}.
   Context (tmc : tmc sim_progₛ sim_progₜ).
@@ -305,7 +305,7 @@ Section sim.
         sim_mono "Hsim". iIntros "% % (%vₛ' & % & (-> & ->) & %vₜ' & -> & Hdst & #Hv')".
         iApply ("HΨ" with "Hdst Hv'").
   Qed.
-End sim.
+End sim_GS.
 
 Section tmc_sound.
   Context {progₛ progₜ : program}.

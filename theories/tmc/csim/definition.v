@@ -5,7 +5,7 @@ From simuliris.tmc Require Export
 From simuliris.tmc Require Import
   sim.notations.
 
-Section sim.
+Section sim_GS.
   Context `{sim_programs : !SimPrograms tmc_ectx_lang tmc_ectx_lang}.
   Context `{sim_GS : !SimGS Σ}.
   Context (X : sim_protocol Σ).

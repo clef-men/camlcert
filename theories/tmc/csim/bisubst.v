@@ -30,7 +30,7 @@ Notation "Γ .ₜ#" := (of_val ∘ Γ.ₜ)
   format "Γ .ₜ#"
 ).
 
-Section sim.
+Section sim_GS.
   Context `{sim_programs : !SimPrograms tmc_ectx_lang tmc_ectx_lang}.
   Context `{sim_GS : !SimGS Σ}.
   Implicit Types v vₛ vₜ : val.
@@ -65,4 +65,4 @@ Section sim.
   Proof.
     auto.
   Qed.
-End sim.
+End sim_GS.
