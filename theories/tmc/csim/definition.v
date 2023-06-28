@@ -15,5 +15,5 @@ Section sim.
     ⌜eₛ' = eₛ.[Γ.ₛ#] ∧ eₜ' = eₜ.[Γ.ₜ#]⌝ -∗
     bisubst_well_formed Γ -∗
     SIM eₛ' ≳ eₜ' [[ X ]] [[ Φ ]].
-  #[global] Arguments csimv _%I _%E _%E : assert.
-End sim.
+  #[global] Arguments csimv _%I (_ _)%E : assert.
+End sim_GS.
