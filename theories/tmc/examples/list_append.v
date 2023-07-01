@@ -65,8 +65,7 @@ Proof.
   - split.
     + apply lambda_human_program_compile_well_formed.
       rewrite /lambda_human_program_well_formed map_Forall_singleton //.
-    + rewrite /lambda_human_program_compile map_fmap_singleton /=.
-      rewrite /lambda_program_closed map_Forall_singleton. naive_solver lia.
+    + apply lambda_human_program_compile_closed.
   - rewrite /lambda_human_program_compile map_fmap_singleton fmap_insert map_fmap_singleton /=.
     exists {["list_append" := "list_append_dps"]}; try set_solver.
     + intros * (<- & <-)%lookup_singleton_Some.

@@ -87,7 +87,7 @@ Lemma lambda_human_val_compile_well_formed prog v :
 Proof.
   intros Hprog Hv. destruct v; try done. rewrite /= dom_fmap_L //.
 Qed.
-Lemma lambda_human_expr_compile_well_formed prog e bdgs :
+Lemma lambda_human_expr_compile_well_formed prog bdgs e :
   lambda_human_program_well_formed prog →
   lambda_human_expr_well_formed prog e →
   lambda_expr_well_formed (lambda_human_program_compile prog) (lambda_human_expr_compile bdgs e).
@@ -100,8 +100,38 @@ Lemma lambda_human_program_compile_well_formed prog :
   lambda_human_program_well_formed prog →
   lambda_program_well_formed (lambda_human_program_compile prog).
 Proof.
-  intros Hprog. apply map_Forall_lookup.
-  intros func e ((x & he) & <- & Hfunc)%lookup_fmap_Some.
+  intros Hprog. apply map_Forall_lookup. intros func ? ((x & e) & <- & Hfunc)%lookup_fmap_Some.
   apply lambda_human_expr_compile_well_formed; first done.
   rewrite /lambda_human_program_well_formed map_Forall_lookup in Hprog. naive_solver.
+Qed.
+
+Lemma lambda_human_bindings_lookup_aux_Some i bdgs x j :
+  lambda_human_bindings_lookup_aux i bdgs x = Some j →
+  i ≤ j < i + length bdgs.
+Proof.
+  revert i. induction bdgs as [| bdg bdgs]; simpl; intros i Hlookup; first done.
+  case_bool_decide.
+  - naive_solver lia.
+  - apply IHbdgs in Hlookup. lia.
+Qed.
+Lemma lambda_human_bindings_lookup_Some bdgs x i :
+  lambda_human_bindings_lookup bdgs x = Some i →
+  i < length bdgs.
+Proof.
+  apply lambda_human_bindings_lookup_aux_Some.
+Qed.
+
+Lemma lambda_human_expr_compile_closed lvl bdgs e :
+  length bdgs = lvl →
+  lambda_expr_closed lvl (lambda_human_expr_compile bdgs e).
+Proof.
+  revert lvl bdgs. induction e; simpl; intros lvl bdgs Hlength; try naive_solver.
+  destruct (lambda_human_bindings_lookup _ _) eqn:Hlookup; last done.
+  rewrite -Hlength. eapply lambda_human_bindings_lookup_Some. done.
+Qed.
+Lemma lambda_human_program_compile_closed prog :
+  lambda_program_closed (lambda_human_program_compile prog).
+Proof.
+  apply map_Forall_lookup. intros func ? ((x & e) & <- & Hfunc)%lookup_fmap_Some.
+  apply lambda_human_expr_compile_closed. done.
 Qed.
