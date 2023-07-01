@@ -2120,61 +2120,30 @@ Section sim_state.
   Section protocol.
     Context X.
 
-    (* Lemma sim_close eₛ eₜ Φ : *)
-    (*   □ ( *)
-    (*     ∀ Ψ eₛ eₜ, *)
-    (*     X Ψ eₛ eₜ -∗ *)
-    (*     sim_inner ⊥ (λ _, sim X Ψ) (λ _ _, False) eₛ eₜ *)
-    (*   ) -∗ *)
-    (*   SIM eₛ ≳ eₜ [[ X ]] {{ Φ }} -∗ *)
-    (*   SIM eₛ ≳ eₜ {{ Φ }}. *)
-    (* Proof. *)
-    (*   iIntros "#H". *)
-    (*   iApply (sim_coind with "[]"); first solve_proper. clear Φ eₛ eₜ. iIntros "!> %Φ %eₛ %eₜ". *)
-    (*   rewrite sim_fixpoint. iApply (sim_inner_ind with "[]"); [solve_proper.. |]. clear Φ eₛ eₜ. iIntros "!> %Φ %eₛ %eₜ Hsim". *)
-    (*   setoid_rewrite sim_inner_fixpoint at 2; last solve_proper. *)
-    (*   iIntros "%σₛ %σₜ Hsi". *)
-    (*   iMod ("Hsim" with "Hsi") as "[Hsim | [Hsim | [Hsim | Hsim]]]"; auto. *)
-    (*   iDestruct "Hsim" as "(%Kₛ & %eₛ' & %Kₜ & %eₜ' & %Ψ & (-> & ->) & HX & Hsi & Hsim)". *)
-    (*   iDestruct ("H" with "HX") as "HX". iClear "H". *)
-
-    (*   iEval (rewrite sim_inner_fixpoint) in "HX". *)
-    (*   iMod ("HX" with "Hsi") as "[HX | [HX | [HX | HX]]]". *)
-    (*   - iDestruct "HX" as "(_ & [])". *)
-    (*   - iDestruct "HX" as "(%eₛ'' & %σₛ'' & %Hstepsₛ & Hsi & HX)". *)
-    (*     iRight. iLeft. iExists (Kₛ @@ eₛ''), σₛ''. iFrame. iSplitR. *)
-    (*     { iPureIntro. apply language_ctx_tc_step; [apply _ | done]. } *)
-    (*     iApply (sim_inner_bind' with "HX [Hsim] []"). *)
-    (*     + iIntros "%eₛ %eₜ Hsim'". *)
-    (*       iApply (sim_bind' with "Hsim'"). clear eₛ eₜ. iIntros "%eₛ %eₜ HΨ". *)
-    (*       iApply cupd_sim. iApply ("Hsim" with "HΨ"). *)
-    (*     + iIntros "%eₛ %eₜ []". *)
-    (*   - iDestruct "HX" as "(%Hreducibleᵣ & HX)". *)
-    (*     do 2 iRight. iLeft. iSplitR. *)
-    (*     { iPureIntro. apply language_ctx_reducible; [apply _ | done]. } *)
-
-    (*   iRevert (σₛ σₜ) "Hsi". iRevert "Hsim". *)
-    (*   match goal with |- _ _ ?Q => *)
-    (*     match eval pattern eₛ', eₜ' in Q with *)
-    (*     | ?J' _ _ => pose J := J' *)
-    (*     end *)
-    (*   end. *)
-    (*   set I : sim_protocol PROP Λₛ Λₜ := λ Φ eₛ' eₜ', ( *)
-    (*     (∀ eₛ eₜ, Φ eₛ eₜ -∗ False) -∗ *)
-    (*     J eₛ' eₜ' *)
-    (*   )%I. *)
-    (*   iAssert (I (λ _ _, False)%I eₛ' eₜ') with "[HX]" as "H"; last (iApply "H"; auto). *)
-    (*   iApply (sim_inner_strong_ind with "[] HX"); first solve_proper. iIntros "!> %Ψ %eₛ %eₜ HX HFalse Hsim %σₛ %σₜ Hsi". *)
-    (*   iMod ("HX" with "Hsi") as "[HX | [HX | [HX | HX]]]". *)
-    (*   - iDestruct "HX" as "(Hsi & HΨ)". *)
-    (*     iDestruct ("HFalse" with "HΨ") as %[]. *)
-    (*   - iDestruct "HX" as "(%eₛ'' & %σₛ'' & %Hstepsₛ & Hsi & HX)". *)
-    (*     iRight. iLeft. iExists (Kₛ @@ eₛ''), σₛ''. iFrame. iSplitR. *)
-    (*     { iPureIntro. apply language_ctx_tc_step; [apply _ | done]. } *)
-    (*     iApply (sim_inner_decompose with "HX [Hsim] []"); clear Hstepsₛ eₛ' eₛ'' eₜ'. *)
-    (*     + iIntros "%eₛ' %eₜ' Hsim'". *)
-    (*     + *)
-    (* Qed. *)
+    Lemma sim_close eₛ eₜ Φ :
+      □ (
+        ∀ Ψ eₛ eₜ,
+        X Ψ eₛ eₜ -∗
+        sim_inner ⊥ (λ _, sim X Ψ) (λ _ _, False) eₛ eₜ
+      ) -∗
+      SIM eₛ ≳ eₜ [[ X ]] {{ Φ }} -∗
+      SIM eₛ ≳ eₜ {{ Φ }}.
+    Proof.
+      iIntros "#H".
+      iApply (sim_coind with "[]"); first solve_proper. clear Φ eₛ eₜ. iIntros "!> %Φ %eₛ %eₜ".
+      rewrite sim_fixpoint. iApply (sim_inner_ind with "[]"); first solve_proper.
+      { solve_proper_prepare. apply sim_inner_ne; done || solve_proper. }
+      clear Φ eₛ eₜ. iIntros "!> %Φ %eₛ %eₜ Hsim".
+      setoid_rewrite sim_inner_fixpoint at 2; last solve_proper.
+      iIntros "%σₛ %σₜ Hsi".
+      iMod ("Hsim" with "Hsi") as "[Hsim | [Hsim | [Hsim | Hsim]]]"; auto.
+      iDestruct "Hsim" as "(%Kₛ & %eₛ' & %Kₜ & %eₜ' & %Ψ & (-> & ->) & HX & Hsi & Hsim)".
+      iDestruct ("H" with "HX") as "HΨ". iClear "H".
+      iRevert (σₛ σₜ) "Hsi". setoid_rewrite <- sim_inner_fixpoint; last solve_proper.
+      iApply (sim_inner_bind' with "HΨ [Hsim]"); [solve_proper | iIntros "%eₛ %eₜ HΨ" | iIntros "%eₛ %eₜ []"].
+      iApply (sim_bind' with "HΨ"). clear eₛ eₜ. iIntros "%eₛ %eₜ HΨ".
+      iApply cupd_sim. iApply ("Hsim" with "HΨ").
+    Qed.
     Lemma sim_close_steps eₛ eₜ Φ :
       □ (
         ∀ Ψ eₛ σₛ eₜ σₜ,
@@ -2192,24 +2161,10 @@ Section sim_state.
       SIM eₛ ≳ eₜ {{ Φ }}.
     Proof.
       iIntros "#H".
-      iApply (sim_coind with "[]"); first solve_proper. clear Φ eₛ eₜ. iIntros "!> %Φ %eₛ %eₜ".
-      rewrite sim_fixpoint. iApply (sim_inner_ind with "[]"); first solve_proper.
-      { solve_proper_prepare. apply sim_inner_ne; done || solve_proper. }
-      clear Φ eₛ eₜ. iIntros "!> %Φ %eₛ %eₜ Hsim".
-      setoid_rewrite sim_inner_fixpoint; last solve_proper.
-      iIntros "%σₛ %σₜ Hsi".
-      iMod ("Hsim" with "Hsi") as "[Hsim | [Hsim | [Hsim | Hsim]]]"; auto.
-      iDestruct "Hsim" as "(%Kₛ & %eₛ' & %Kₜ & %eₜ' & %Ψ & (-> & ->) & HX & Hsi & Hsim2)".
-      iMod ("H" with "HX Hsi") as "(%Hreducibleₜ & Hsim1)". iClear "H".
-      do 2 iRight. iLeft. iSplitR.
-      { iPureIntro. apply reducible_fill_reducible. done. }
-      iIntros "!> %eₜ''' %σₜ'' %Hstepₜ".
-      apply reducible_fill_prim_step in Hstepₜ as (eₜ'' & -> & Hstepₜ); last done.
-      iMod ("Hsim1" with "[//]") as "(%eₛ'' & %σₛ'' & %Hstepsₛ & Hsi & Hsim1)".
-      iRight. iExists (Kₛ @@ eₛ''), σₛ''. iFrame. iSplitR.
-      { iPureIntro. apply language_ctx_tc_step; [apply _ | done]. }
-      iApply (sim_bind' with "Hsim1"). iIntros "!> %eₛ %eₜ HΨ".
-      iApply cupd_sim. iApply ("Hsim2" with "HΨ").
+      iApply sim_close.
+      setoid_rewrite <- sim_inner_steps; last solve_proper.
+      clear eₛ eₜ. iIntros "!> %Ψ %eₛ %eₜ HX %σₛ %σₜ".
+      iApply ("H" with "HX").
     Qed.
     Lemma sim_close_step eₛ eₜ Φ :
       □ (
@@ -2327,6 +2282,17 @@ Section sim_state.
       iExists eₛ', eₜ'. iFrame. auto using tc_once.
     Qed.
 
+    Lemma simv_close eₛ eₜ Φ :
+      □ (
+        ∀ Ψ eₛ eₜ,
+        X Ψ eₛ eₜ -∗
+        sim_inner ⊥ (λ _, sim X Ψ) (λ _ _, False) eₛ eₜ
+      ) -∗
+      SIM eₛ ≳ eₜ [[ X ]] [[ Φ ]] -∗
+      SIM eₛ ≳ eₜ [[ Φ ]].
+    Proof.
+      rewrite !definition.simv_unseal. apply sim_close.
+    Qed.
     Lemma simv_close_steps eₛ eₜ Φ :
       □ (
         ∀ Ψ eₛ σₛ eₜ σₜ,
