@@ -21,7 +21,7 @@ Qed.
 Implicit Types b : bool.
 Implicit Types l : loc.
 Implicit Types func : lambda_function.
-Implicit Types constr : lambda_constructor.
+Implicit Types tag : lambda_tag.
 Implicit Types idx : lambda_index.
 Implicit Types v w : lambda_val.
 Implicit Types e : lambda_expr.
@@ -109,23 +109,23 @@ Inductive lambda_head_step prog : lambda_expr → lambda_state → lambda_expr �
       lambda_head_step prog
         (if: b then e1 else e2) σ
         (if b then e1 else e2) σ
-  | lambda_head_step_constr_1 constr e1 e2 e' σ :
-      e' = (let: e1 in let: e2.[ren (+1)] in &&constr $1 $0)%lambda_expr →
+  | lambda_head_step_constr_1 tag e1 e2 e' σ :
+      e' = (let: e1 in let: e2.[ren (+1)] in &&tag $1 $0)%lambda_expr →
       lambda_head_step prog
-        (&constr e1 e2) σ
+        (&tag e1 e2) σ
         e' σ
-  | lambda_head_step_constr_2 constr e1 e2 e' σ :
-      e' = (let: e2 in let: e1.[ren (+1)] in &&constr $0 $1)%lambda_expr →
+  | lambda_head_step_constr_2 tag e1 e2 e' σ :
+      e' = (let: e2 in let: e1.[ren (+1)] in &&tag $0 $1)%lambda_expr →
       lambda_head_step prog
-        (&constr e1 e2) σ
+        (&tag e1 e2) σ
         e' σ
-  | lambda_head_step_constr_det constr v1 v2 σ l :
+  | lambda_head_step_constr_det tag v1 v2 σ l :
       σ !! (l +ₗ 0) = None →
       σ !! (l +ₗ 1) = None →
       σ !! (l +ₗ 2) = None →
       lambda_head_step prog
-        (&&constr v1 v2) σ
-        l (<[l +ₗ 2 := v2]> (<[l +ₗ 1 := v1]> (<[l +ₗ 0 := LambdaInt (Z.of_nat constr)]> σ)))
+        (&&tag v1 v2) σ
+        l (<[l +ₗ 2 := v2]> (<[l +ₗ 1 := v1]> (<[l +ₗ 0 := LambdaTag tag]> σ)))
   | lambda_head_step_load l l' idx v σ :
       σ !! (l +ₗ idx) = Some v →
       lambda_head_step prog
@@ -137,11 +137,11 @@ Inductive lambda_head_step prog : lambda_expr → lambda_state → lambda_expr �
         (l <-[idx]- w) σ
         #() (<[l +ₗ idx := w]> σ).
 
-Lemma lambda_head_step_constr_det' prog constr v1 v2 σ σ' :
+Lemma lambda_head_step_constr_det' prog tag v1 v2 σ σ' :
   let l := loc_fresh (dom σ) in
-  σ' = <[l +ₗ 2 := v2]> (<[l +ₗ 1 := v1]> (<[l +ₗ 0 := LambdaInt (Z.of_nat constr)]> σ)) →
+  σ' = <[l +ₗ 2 := v2]> (<[l +ₗ 1 := v1]> (<[l +ₗ 0 := LambdaTag tag]> σ)) →
   lambda_head_step prog
-    (&&constr v1 v2) σ
+    (&&tag v1 v2) σ
     l σ'.
 Proof.
   intros l ->.

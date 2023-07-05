@@ -51,6 +51,8 @@ Section sim_programs.
           True
       | LambdaIndex idx1, LambdaIndex idx2 =>
           ⌜idx1 = idx2⌝
+      | LambdaTag tagₛ, LambdaTag tagₜ =>
+          ⌜tagₛ = tagₜ⌝
       | LambdaInt nₛ, LambdaInt nₜ =>
           ⌜nₛ = nₜ⌝
       | LambdaBool bₛ, LambdaBool bₜ =>

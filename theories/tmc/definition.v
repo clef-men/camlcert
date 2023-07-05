@@ -52,30 +52,30 @@ Inductive tmc_dir ξ : lambda_expr → lambda_expr → Prop :=
       tmc_dir ξ
         (if: eₛ0 then eₛ1 else eₛ2)
         (if: eₜ0 then eₜ1 else eₜ2)
-  | tmc_dir_constr constr eₛ1 eₛ2 eₜ1 eₜ2 :
+  | tmc_dir_constr tag eₛ1 eₛ2 eₜ1 eₜ2 :
       tmc_dir ξ eₛ1 eₜ1 →
       tmc_dir ξ eₛ2 eₜ2 →
       tmc_dir ξ
-        (&constr eₛ1 eₛ2)
-        (&constr eₜ1 eₜ2)
-  | tmc_dir_constr_dps_1 constr eₛ1 eₛ2 eₜ1 eₜ2 :
+        (&tag eₛ1 eₛ2)
+        (&tag eₜ1 eₜ2)
+  | tmc_dir_constr_dps_1 tag eₛ1 eₛ2 eₜ1 eₜ2 :
       tmc_dir ξ eₛ1 eₜ1 →
       tmc_dps ξ $0 𝟚 eₛ2.[ren (+1)] eₜ2 →
       tmc_dir ξ
-        (&constr eₛ1 eₛ2)
-        (let: &constr eₜ1 #() in eₜ2 ;; $0)
-  | tmc_dir_constr_dps_2 constr eₛ1 eₛ2 eₜ1 eₜ2 :
+        (&tag eₛ1 eₛ2)
+        (let: &tag eₜ1 #() in eₜ2 ;; $0)
+  | tmc_dir_constr_dps_2 tag eₛ1 eₛ2 eₜ1 eₜ2 :
       tmc_dir ξ eₛ2 eₜ2 →
       tmc_dps ξ $0 𝟙 eₛ1.[ren (+1)] eₜ1 →
       tmc_dir ξ
-        (&constr eₛ1 eₛ2)
-        (let: &constr #() eₜ2 in eₜ1 ;; $0)
-  | tmc_dir_constr_det constr eₛ1 eₛ2 eₜ1 eₜ2 :
+        (&tag eₛ1 eₛ2)
+        (let: &tag #() eₜ2 in eₜ1 ;; $0)
+  | tmc_dir_constr_det tag eₛ1 eₛ2 eₜ1 eₜ2 :
       tmc_dir ξ eₛ1 eₜ1 →
       tmc_dir ξ eₛ2 eₜ2 →
       tmc_dir ξ
-        (&&constr eₛ1 eₛ2)
-        (&&constr eₜ1 eₜ2)
+        (&&tag eₛ1 eₛ2)
+        (&&tag eₜ1 eₜ2)
   | tmc_dir_load eₛ1 eₛ2 eₜ1 eₜ2 :
       tmc_dir ξ eₛ1 eₜ1 →
       tmc_dir ξ eₛ2 eₜ2 →
@@ -115,19 +115,19 @@ with tmc_dps ξ : lambda_expr → lambda_expr → lambda_expr → lambda_expr �
       tmc_dps ξ dst idx
         (if: eₛ0 then eₛ1 else eₛ2)
         (if: eₜ0 then eₜ1 else eₜ2)
-  | tmc_dps_constr_1 dst idx constr eₛ1 eₛ2 eₜ1 eₜ2 eₜ :
+  | tmc_dps_constr_1 dst idx tag eₛ1 eₛ2 eₜ1 eₜ2 eₜ :
       tmc_dir ξ eₛ1 eₜ1 →
       tmc_dps ξ $0 𝟚 eₛ2.[ren (+1)] eₜ2 →
-      eₜ = (let: &constr eₜ1 #() in dst.[ren (+1)] <-[idx.[ren (+1)]]- $0 ;; eₜ2)%lambda_expr →
+      eₜ = (let: &tag eₜ1 #() in dst.[ren (+1)] <-[idx.[ren (+1)]]- $0 ;; eₜ2)%lambda_expr →
       tmc_dps ξ dst idx
-        (&constr eₛ1 eₛ2)
+        (&tag eₛ1 eₛ2)
         eₜ
-  | tmc_dps_constr_2 dst idx constr eₛ1 eₛ2 eₜ1 eₜ2 eₜ :
+  | tmc_dps_constr_2 dst idx tag eₛ1 eₛ2 eₜ1 eₜ2 eₜ :
       tmc_dir ξ eₛ2 eₜ2 →
       tmc_dps ξ $0 𝟙 eₛ1.[ren (+1)] eₜ1 →
-      eₜ = (let: &constr #() eₜ2 in dst.[ren (+1)] <-[idx.[ren (+1)]]- $0 ;; eₜ1)%lambda_expr →
+      eₜ = (let: &tag #() eₜ2 in dst.[ren (+1)] <-[idx.[ren (+1)]]- $0 ;; eₜ1)%lambda_expr →
       tmc_dps ξ dst idx
-        (&constr eₛ1 eₛ2)
+        (&tag eₛ1 eₛ2)
         eₜ.
 
 Scheme tmc_dir_dps_ind := Minimality for tmc_dir Sort Prop

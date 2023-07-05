@@ -11,6 +11,7 @@ Notation lambda_human_name := string (only parsing).
 Inductive lambda_human_val :=
   | LambdaHumanUnit
   | LambdaHumanIndex (idx : lambda_index)
+  | LambdaHumanTag (tag : lambda_tag)
   | LambdaHumanInt (n : Z)
   | LambdaHumanBool (b : bool)
   | LambdaHumanFunc (func : lambda_function).
@@ -28,12 +29,14 @@ Proof.
         inl ()
     | LambdaHumanIndex idx =>
         inr $ inl idx
+    | LambdaHumanTag tag =>
+        inr $ inr $ inl tag
     | LambdaHumanInt n =>
-        inr $ inr $ inl n
+        inr $ inr $ inr $ inl n
     | LambdaHumanBool b =>
-        inr $ inr $ inr $ inl b
+        inr $ inr $ inr $ inr $ inl b
     | LambdaHumanFunc func =>
-        inr $ inr $ inr $ inr func
+        inr $ inr $ inr $ inr $ inr func
     end.
   pose decode v :=
     match v with
@@ -41,11 +44,13 @@ Proof.
         LambdaHumanUnit
     | inr (inl idx) =>
         LambdaHumanIndex idx
-    | inr (inr (inl n)) =>
+    | inr (inr (inl tag)) =>
+        LambdaHumanTag tag
+    | inr (inr (inr (inl n))) =>
         LambdaHumanInt n
-    | inr (inr (inr (inl b))) =>
+    | inr (inr (inr (inr (inl b)))) =>
         LambdaHumanBool b
-    | inr (inr (inr (inr func))) =>
+    | inr (inr (inr (inr (inr func)))) =>
         LambdaHumanFunc func
     end.
   apply (inj_countable' encode decode). intros []; done.
@@ -59,7 +64,7 @@ Inductive lambda_human_expr :=
   | LambdaHumanUnop (op : lambda_unop) (e : lambda_human_expr)
   | LambdaHumanBinop (op : lambda_binop) (e1 e2 : lambda_human_expr)
   | LambdaHumanIf (e0 e1 e2 : lambda_human_expr)
-  | LambdaHumanConstr (constr : lambda_constructor) (e1 e2 : lambda_human_expr)
+  | LambdaHumanConstr (tag : lambda_tag) (e1 e2 : lambda_human_expr)
   | LambdaHumanLoad (e1 e2 : lambda_human_expr)
   | LambdaHumanStore (e1 e2 e3 : lambda_human_expr).
 
@@ -86,8 +91,8 @@ Proof.
         GenNode 3 [GenLeaf (inr $ inr $ inr $ inl op); encode e1; encode e2]
     | LambdaHumanIf e0 e1 e2 =>
         GenNode 4 [encode e0; encode e1; encode e2]
-    | LambdaHumanConstr constr e1 e2 =>
-        GenNode 5 [GenLeaf (inr $ inr $ inr $ inr constr); encode e1; encode e2]
+    | LambdaHumanConstr tag e1 e2 =>
+        GenNode 5 [GenLeaf (inr $ inr $ inr $ inr tag); encode e1; encode e2]
     | LambdaHumanLoad e1 e2 =>
         GenNode 6 [encode e1; encode e2]
     | LambdaHumanStore e1 e2 e3 =>
@@ -109,8 +114,8 @@ Proof.
         LambdaHumanBinop op (decode e1) (decode e2)
     | GenNode 4 [e0; e1; e2] =>
         LambdaHumanIf (decode e0) (decode e1) (decode e2)
-    | GenNode 5 [GenLeaf (inr (inr (inr (inr constr)))); e1; e2] =>
-        LambdaHumanConstr constr (decode e1) (decode e2)
+    | GenNode 5 [GenLeaf (inr (inr (inr (inr tag)))); e1; e2] =>
+        LambdaHumanConstr tag (decode e1) (decode e2)
     | GenNode 6 [e1; e2] =>
         LambdaHumanLoad (decode e1) (decode e2)
     | GenNode 7 [e1; e2; e3] =>

@@ -11,6 +11,7 @@ Coercion lambda_index_to_Z (idx : lambda_index) : Z :=
   end.
 
 Coercion LambdaIndex : lambda_index >-> lambda_val.
+Coercion LambdaTag : lambda_tag >-> lambda_val.
 Coercion LambdaInt : Z >-> lambda_val.
 Coercion LambdaBool : bool >-> lambda_val.
 Coercion LambdaLoc : loc >-> lambda_val.
@@ -93,13 +94,13 @@ Notation "e1 || e2" := (if: e1 then #true else e2)%lambda_expr
 ( only parsing
 ) : lambda_expr_scope.
 
-Notation "& constr" := (LambdaConstr constr)
+Notation "& tag" := (LambdaConstr tag)
 ( at level 5,
-  format "& constr"
+  format "& tag"
 ) : lambda_expr_scope.
-Notation "&& constr" := (LambdaConstrDet constr)
+Notation "&& tag" := (LambdaConstrDet tag)
 ( at level 5,
-  format "&& constr"
+  format "&& tag"
 ) : lambda_expr_scope.
 
 Notation "![ e2 ] e1" := (LambdaLoad e1%lambda_expr e2%lambda_expr)
@@ -118,23 +119,21 @@ Notation "e1 <-[ e2 ]- e3" := (LambdaStore e1%lambda_expr e2%lambda_expr e3%lamb
   format "e1  <-[ e2 ]-  e3"
 ) : lambda_expr_scope.
 
-Definition CONSTR_PAIR := 0.
-Notation "( e1 , e2 , .. , en )" := (&CONSTR_PAIR .. (&CONSTR_PAIR e1 e2) .. en)%lambda_expr
+Definition lambda_tag_pair : lambda_tag := 0.
+Notation "( e1 , e2 , .. , en )" := (&lambda_tag_pair .. (&lambda_tag_pair e1 e2) .. en)%lambda_expr
 : lambda_expr_scope.
 
-Definition CONSTR_NIL := 0.
-Definition CONSTR_CONS := 1.
-Notation NIL := (&CONSTR_NIL #() #())%lambda_expr (only parsing).
-Notation CONS := (&CONSTR_CONS)%lambda_expr (only parsing).
-Notation HEAD e := (![𝟙] e)%lambda_expr (only parsing).
-Notation TAIL e := (![𝟚] e)%lambda_expr (only parsing).
+Definition lambda_tag_nil : lambda_tag := 0.
+Definition lambda_tag_cons : lambda_tag := 1.
+Notation NIL := (&lambda_tag_nil #() #())%lambda_expr (only parsing).
+Notation CONS := (&lambda_tag_cons)%lambda_expr (only parsing).
 Notation "'match:' e0 'with' 'NIL' => e1 | 'CONS' => e2 'end'" := (
   let: e0 in
-  if: !$0 = #(Z.of_nat CONSTR_NIL) then (
+  if: !$0 = lambda_tag_nil then (
     e1.[ren (+1)]
   ) else (
-    let: TAIL $0 in
-    let: HEAD $1 in
+    let: ![𝟚] $0 in
+    let: ![𝟙] $1 in
     e2.[$0 .: $1 .: ren (+3)]
   )
 )%lambda_expr (

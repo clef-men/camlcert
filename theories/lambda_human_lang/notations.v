@@ -6,6 +6,7 @@ From simuliris.lambda_human_lang Require Export
   syntax.
 
 Coercion LambdaHumanIndex : lambda_index >-> lambda_human_val.
+Coercion LambdaHumanTag : lambda_tag >-> lambda_human_val.
 Coercion LambdaHumanInt : Z >-> lambda_human_val.
 Coercion LambdaHumanBool : bool >-> lambda_human_val.
 
@@ -84,9 +85,9 @@ Notation "e1 || e2" := (if: e1 then #ₕtrue else e2)%lambda_human_expr
 ( only parsing
 ) : lambda_human_expr_scope.
 
-Notation "& constr" := (LambdaHumanConstr constr)
+Notation "& tag" := (LambdaHumanConstr tag)
 ( at level 5,
-  format "& constr"
+  format "& tag"
 ) : lambda_human_expr_scope.
 
 Notation "![ e2 ] e1" := (LambdaHumanLoad e1%lambda_human_expr e2%lambda_human_expr)
@@ -105,20 +106,18 @@ Notation "e1 <-[ e2 ]- e3" := (LambdaHumanStore e1%lambda_human_expr e2%lambda_h
   format "e1  <-[ e2 ]-  e3"
 ) : lambda_human_expr_scope.
 
-Notation "( e1 , e2 , .. , en )" := (&CONSTR_PAIR .. (&CONSTR_PAIR e1 e2) .. en)%lambda_human_expr
+Notation "( e1 , e2 , .. , en )" := (&lambda_tag_pair .. (&lambda_tag_pair e1 e2) .. en)%lambda_human_expr
 : lambda_human_expr_scope.
 
-Notation NILₕ := (&CONSTR_NIL #ₕ() #ₕ())%lambda_human_expr (only parsing).
-Notation CONSₕ := (&CONSTR_CONS)%lambda_human_expr (only parsing).
-Notation HEADₕ e := (![𝟙] e)%lambda_human_expr (only parsing).
-Notation TAILₕ e := (![𝟚] e)%lambda_human_expr (only parsing).
+Notation NILₕ := (&lambda_tag_nil #ₕ() #ₕ())%lambda_human_expr (only parsing).
+Notation CONSₕ := (&lambda_tag_cons)%lambda_human_expr (only parsing).
 Notation "'match:' e0 'with' 'NIL' => e1 | 'CONS' x , y => e2 'end'" := (
   let: "__match" := e0 in
-  if: !"__match" = #ₕ(Z.of_nat CONSTR_NIL) then (
+  if: !"__match" = lambda_tag_nil then (
     e1
   ) else (
-    let: y := TAILₕ "__match" in
-    let: x := HEADₕ "__match" in
+    let: y := ![𝟚] "__match" in
+    let: x := ![𝟙] "__match" in
     e2
   )
 )%lambda_human_expr (

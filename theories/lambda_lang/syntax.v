@@ -12,15 +12,16 @@ From simuliris.common Require Export
   loc
   typeclasses.
 
-Notation lambda_function := string (only parsing).
-
-Definition lambda_constructor := nat.
-
 Notation lambda_index := three (only parsing).
+
+Definition lambda_tag := nat.
+
+Notation lambda_function := string (only parsing).
 
 Inductive lambda_val :=
   | LambdaUnit
   | LambdaIndex (idx : lambda_index)
+  | LambdaTag (tag : lambda_tag)
   | LambdaInt (n : Z)
   | LambdaBool (b : bool)
   | LambdaLoc (l : loc)
@@ -39,14 +40,16 @@ Proof.
         inl ()
     | LambdaIndex idx =>
         inr $ inl idx
+    | LambdaTag tag =>
+        inr $ inr $ inl tag
     | LambdaInt n =>
-        inr $ inr $ inl n
+        inr $ inr $ inr $ inl n
     | LambdaBool b =>
-        inr $ inr $ inr $ inl b
+        inr $ inr $ inr $ inr $ inl b
     | LambdaLoc l =>
-        inr $ inr $ inr $ inr $ inl l
+        inr $ inr $ inr $ inr $ inr $ inl l
     | LambdaFunc func =>
-        inr $ inr $ inr $ inr $ inr func
+        inr $ inr $ inr $ inr $ inr $ inr func
     end.
   pose decode v :=
     match v with
@@ -54,13 +57,15 @@ Proof.
         LambdaUnit
     | inr (inl idx) =>
         LambdaIndex idx
-    | inr (inr (inl n)) =>
+    | inr (inr (inl tag)) =>
+        LambdaTag tag
+    | inr (inr (inr (inl n))) =>
         LambdaInt n
-    | inr (inr (inr (inl b))) =>
+    | inr (inr (inr (inr (inl b)))) =>
         LambdaBool b
-    | inr (inr (inr (inr (inl l)))) =>
+    | inr (inr (inr (inr (inr (inl l))))) =>
         LambdaLoc l
-    | inr (inr (inr (inr (inr func)))) =>
+    | inr (inr (inr (inr (inr (inr func))))) =>
         LambdaFunc func
     end.
   apply (inj_countable' encode decode). intros []; done.
@@ -73,6 +78,8 @@ Qed.
         True
     | LambdaIndex idx1, LambdaIndex idx2 =>
         idx1 = idx2
+    | LambdaTag tag1, LambdaTag tag2 =>
+        tag1 = tag2
     | LambdaInt i1, LambdaInt i2 =>
         i1 = i2
     | LambdaBool b1, LambdaBool b2 =>
@@ -86,7 +93,8 @@ Qed.
     end.
 
 Inductive lambda_unop :=
-  | LambdaOpNeg | LambdaOpUminus.
+  | LambdaOpNeg
+  | LambdaOpUminus.
 
 #[global] Instance lambda_unop_eq_dec : EqDecision lambda_unop :=
   ltac:(solve_decision).
@@ -148,8 +156,8 @@ Inductive lambda_expr :=
   | LambdaUnop (op : lambda_unop) (e : lambda_expr)
   | LambdaBinop (op : lambda_binop) (e1 e2 : lambda_expr)
   | LambdaIf (e0 e1 e2 : lambda_expr)
-  | LambdaConstr (constr : lambda_constructor) (e1 e2 : lambda_expr)
-  | LambdaConstrDet (constr : lambda_constructor) (e1 e2 : lambda_expr)
+  | LambdaConstr (tag : lambda_tag) (e1 e2 : lambda_expr)
+  | LambdaConstrDet (tag : lambda_tag) (e1 e2 : lambda_expr)
   | LambdaLoad (e1 e2 : lambda_expr)
   | LambdaStore (e1 e2 e3 : lambda_expr).
 
@@ -176,10 +184,10 @@ Proof.
         GenNode 3 [GenLeaf (inr $ inr $ inr $ inl op); encode e1; encode e2]
     | LambdaIf e0 e1 e2 =>
         GenNode 4 [encode e0; encode e1; encode e2]
-    | LambdaConstr constr e1 e2 =>
-        GenNode 5 [GenLeaf (inr $ inr $ inr $ inr constr); encode e1; encode e2]
-    | LambdaConstrDet constr e1 e2 =>
-        GenNode 6 [GenLeaf (inr $ inr $ inr $ inr constr); encode e1; encode e2]
+    | LambdaConstr tag e1 e2 =>
+        GenNode 5 [GenLeaf (inr $ inr $ inr $ inr tag); encode e1; encode e2]
+    | LambdaConstrDet tag e1 e2 =>
+        GenNode 6 [GenLeaf (inr $ inr $ inr $ inr tag); encode e1; encode e2]
     | LambdaLoad e1 e2 =>
         GenNode 7 [encode e1; encode e2]
     | LambdaStore e1 e2 e3 =>
@@ -201,10 +209,10 @@ Proof.
         LambdaBinop op (decode e1) (decode e2)
     | GenNode 4 [e0; e1; e2] =>
         LambdaIf (decode e0) (decode e1) (decode e2)
-    | GenNode 5 [GenLeaf (inr (inr (inr (inr constr)))); e1; e2] =>
-        LambdaConstr constr (decode e1) (decode e2)
-    | GenNode 6 [GenLeaf (inr (inr (inr (inr constr)))); e1; e2] =>
-        LambdaConstrDet constr (decode e1) (decode e2)
+    | GenNode 5 [GenLeaf (inr (inr (inr (inr tag)))); e1; e2] =>
+        LambdaConstr tag (decode e1) (decode e2)
+    | GenNode 6 [GenLeaf (inr (inr (inr (inr tag)))); e1; e2] =>
+        LambdaConstrDet tag (decode e1) (decode e2)
     | GenNode 7 [e1; e2] =>
         LambdaLoad (decode e1) (decode e2)
     | GenNode 8 [e1; e2; e3] =>

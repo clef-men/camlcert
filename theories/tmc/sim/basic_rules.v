@@ -16,7 +16,7 @@ From simuliris.tmc Require Import
 Section sim_GS.
   Context `{sim_programs : !SimPrograms lambda_ectx_lang lambda_ectx_lang}.
   Context `{sim_GS : !SimGS Σ}.
-  Implicit Types constr : lambda_constructor.
+  Implicit Types tag : lambda_tag.
   Implicit Types idx idxₛ idxₜ : lambda_index.
   Implicit Types l lₛ lₜ : loc.
   Implicit Types e eₛ eₜ : lambda_expr.
@@ -180,19 +180,19 @@ Section sim_GS.
 
   Context (X : sim_protocol Σ).
 
-  Lemma sim_constr_detₛ constr v1 v2 e Φ :
+  Lemma sim_constr_detₛ tag v1 v2 e Φ :
     ( ∀ l,
-      (l +ₗ 0) ↦ₛ constr -∗
+      (l +ₗ 0) ↦ₛ tag -∗
       (l +ₗ 1) ↦ₛ v1 -∗
       (l +ₗ 2) ↦ₛ v2 -∗
       SIM l ≳ e [[ X ]] {{ Φ }}
     ) -∗
-    SIM &&constr v1 v2 ≳ e [[ X ]] {{ Φ }}.
+    SIM &&tag v1 v2 ≳ e [[ X ]] {{ Φ }}.
   Proof.
     iIntros "Hsim".
     iApply sim_head_stepₛ. iIntros "%σₛ %σₜ Hsi".
     set l := loc_fresh (dom σₛ).
-    set (σₛ' := {[l +ₗ 2 := v2 ; l +ₗ 1 := v1 ; l +ₗ 0 := LambdaInt (Z.of_nat constr)]} : lambda_state).
+    set (σₛ' := {[l +ₗ 2 := v2 ; l +ₗ 1 := v1 ; l +ₗ 0 := LambdaTag tag]} : lambda_state).
     iMod (sim_state_interp_alloc_bigₛ σₛ' with "Hsi") as "(Hsi & Hmapstos & _)".
     { rewrite !map_disjoint_insert_l -!not_elem_of_dom. split_and!;
       [ apply loc_fresh_fresh; done..
@@ -210,20 +210,20 @@ Section sim_GS.
     }
     iApply ("Hsim" with "Hl0 Hl1 Hl2").
   Qed.
-  Lemma sim_constr_detₜ e constr v1 v2 Φ :
+  Lemma sim_constr_detₜ e tag v1 v2 Φ :
     ( ∀ l,
-      (l +ₗ 0) ↦ₜ constr -∗
+      (l +ₗ 0) ↦ₜ tag -∗
       (l +ₗ 1) ↦ₜ v1 -∗
       (l +ₗ 2) ↦ₜ v2 -∗
       SIM e ≳ l [[ X ]] {{ Φ }}
     ) -∗
-    SIM e ≳ &&constr v1 v2 [[ X ]] {{ Φ }}.
+    SIM e ≳ &&tag v1 v2 [[ X ]] {{ Φ }}.
   Proof.
     iIntros "Hsim".
     iApply sim_head_stepₜ. iIntros "%σₛ %σₜ Hsi".
     iSplitR; first auto with lambda_lang. iIntros "!> %eₜ' %σₜ'' %Hstepₜ".
     invert_lambda_head_step.
-    set (σₜ' := {[l +ₗ 2 := v2 ; l +ₗ 1 := v1 ; l +ₗ 0 := LambdaInt (Z.of_nat constr)]} : lambda_state).
+    set (σₜ' := {[l +ₗ 2 := v2 ; l +ₗ 1 := v1 ; l +ₗ 0 := LambdaTag tag]} : lambda_state).
     iMod (sim_state_interp_alloc_bigₜ σₜ' with "Hsi") as "(Hsi & Hmapstos & _)".
     { rewrite !map_disjoint_insert_l . naive_solver apply map_disjoint_empty_l. }
     iDestruct (big_sepM_insert with "Hmapstos") as "(Hl2 & Hmapstos)".
@@ -234,21 +234,21 @@ Section sim_GS.
     rewrite -!insert_union_l left_id. iFrame.
     iApply ("Hsim" with "Hl0 Hl1 Hl2").
   Qed.
-  Lemma sim_constr_det constr vₛ1 vₛ2 vₜ1 vₜ2 Φ :
+  Lemma sim_constr_det tag vₛ1 vₛ2 vₜ1 vₜ2 Φ :
     vₛ1 ≈ vₜ1 -∗
     vₛ2 ≈ vₜ2 -∗
     ( ∀ lₛ lₜ,
       LambdaLoc lₛ ≈ LambdaLoc lₜ ++∗
       Φ #lₛ #lₜ
     ) -∗
-    SIM &&constr vₛ1 vₛ2 ≳ &&constr vₜ1 vₜ2 [[ X ]] {{ Φ }}.
+    SIM &&tag vₛ1 vₛ2 ≳ &&tag vₜ1 vₜ2 [[ X ]] {{ Φ }}.
   Proof.
     iIntros "Hv1 Hv2 HΦ".
     iApply sim_constr_detₛ. iIntros "%lₛ Hlₛ0 Hlₛ1 Hlₛ2".
     iApply sim_constr_detₜ. iIntros "%lₜ Hlₜ0 Hlₜ1 Hlₜ2".
     iApply cupd_sim.
     iMod (sim_state_interp_heap_bij_insert with "[Hlₛ0 Hlₜ0]") as "Hl0".
-    { iExists constr, constr. auto with iFrame. }
+    { iExists tag, tag. auto with iFrame. }
     iMod (sim_state_interp_heap_bij_insert with "[Hlₛ1 Hlₜ1 Hv1]") as "Hl1".
     { iExists vₛ1, vₜ1. auto with iFrame. }
     iMod (sim_state_interp_heap_bij_insert with "[Hlₛ2 Hlₜ2 Hv2]") as "Hl2".
@@ -257,27 +257,27 @@ Section sim_GS.
     iApply (sim_post with "HΦ"); done.
   Qed.
 
-  Lemma sim_constrₛ1 constr e1 e2 e Φ :
-    SIM let: e1 in let: e2.[ren (+1)] in &&constr $1 $0 ≳ e [[ X ]] {{ Φ }} -∗
-    SIM &constr e1 e2 ≳ e [[ X ]] {{ Φ }}.
+  Lemma sim_constrₛ1 tag e1 e2 e Φ :
+    SIM let: e1 in let: e2.[ren (+1)] in &&tag $1 $0 ≳ e [[ X ]] {{ Φ }} -∗
+    SIM &tag e1 e2 ≳ e [[ X ]] {{ Φ }}.
   Proof.
     iIntros "Hsim".
     iApply sim_head_stepₛ. iIntros "%σₛ %σₜ Hsi !>".
     iExists _, σₛ. iFrame. auto with lambda_lang.
   Qed.
-  Lemma sim_constrₛ2 constr e1 e2 e Φ :
-    SIM let: e2 in let: e1.[ren (+1)] in &&constr $0 $1 ≳ e [[ X ]] {{ Φ }} -∗
-    SIM &constr e1 e2 ≳ e [[ X ]] {{ Φ }}.
+  Lemma sim_constrₛ2 tag e1 e2 e Φ :
+    SIM let: e2 in let: e1.[ren (+1)] in &&tag $0 $1 ≳ e [[ X ]] {{ Φ }} -∗
+    SIM &tag e1 e2 ≳ e [[ X ]] {{ Φ }}.
   Proof.
     iIntros "Hsim".
     iApply sim_head_stepₛ. iIntros "%σₛ %σₜ Hsi !>".
     iExists _, σₛ. iFrame. auto with lambda_lang.
   Qed.
-  Lemma sim_constrₜ constr e e1 e2 Φ :
-      SIM e ≳ let: e1 in let: e2.[ren (+1)] in &&constr $1 $0 [[ X ]] {{ Φ }}
-    ∧ SIM e ≳ let: e2 in let: e1.[ren (+1)] in &&constr $0 $1 [[ X ]] {{ Φ }}
+  Lemma sim_constrₜ tag e e1 e2 Φ :
+      SIM e ≳ let: e1 in let: e2.[ren (+1)] in &&tag $1 $0 [[ X ]] {{ Φ }}
+    ∧ SIM e ≳ let: e2 in let: e1.[ren (+1)] in &&tag $0 $1 [[ X ]] {{ Φ }}
     -∗
-    SIM e ≳ &constr e1 e2 [[ X ]] {{ Φ }}.
+    SIM e ≳ &tag e1 e2 [[ X ]] {{ Φ }}.
   Proof.
     iIntros "Hsim".
     iApply sim_head_stepₜ. iIntros "%σₛ %σₜ Hsi !>".

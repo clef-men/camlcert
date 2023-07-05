@@ -27,14 +27,14 @@ Inductive lambda_subexprdir : lambda_expr → lambda_expr → Prop :=
       lambda_subexprdir e1 (LambdaIf e0 e1 e2)
   | lambda_subexprdir_if_2 e0 e1 e2 :
       lambda_subexprdir e2 (LambdaIf e0 e1 e2)
-  | lambda_subexprdir_constr_1 constr e1 e2 :
-      lambda_subexprdir e1 (LambdaConstr constr e1 e2)
-  | lambda_subexprdir_constr_2 constr e1 e2 :
-      lambda_subexprdir e2 (LambdaConstr constr e1 e2)
-  | lambda_subexprdir_constr_det_1 constr e1 e2 :
-      lambda_subexprdir e1 (LambdaConstrDet constr e1 e2)
-  | lambda_subexprdir_constr_det_2 constr e1 e2 :
-      lambda_subexprdir e2 (LambdaConstrDet constr e1 e2)
+  | lambda_subexprdir_constr_1 tag e1 e2 :
+      lambda_subexprdir e1 (LambdaConstr tag e1 e2)
+  | lambda_subexprdir_constr_2 tag e1 e2 :
+      lambda_subexprdir e2 (LambdaConstr tag e1 e2)
+  | lambda_subexprdir_constr_det_1 tag e1 e2 :
+      lambda_subexprdir e1 (LambdaConstrDet tag e1 e2)
+  | lambda_subexprdir_constr_det_2 tag e1 e2 :
+      lambda_subexprdir e2 (LambdaConstrDet tag e1 e2)
   | lambda_subexprdir_load_1 e1 e2 :
       lambda_subexprdir e1 (LambdaLoad e1 e2)
   | lambda_subexprdir_load_2 e1 e2 :
@@ -130,27 +130,27 @@ Lemma lambda_subexpr_if_2 e e0 e1 e2 :
 Proof.
   intros. eapply tc_r; eauto using lambda_subexprdir.
 Qed.
-Lemma lambda_subexpr_constr_1 e constr e1 e2 :
+Lemma lambda_subexpr_constr_1 e tag e1 e2 :
   e ⊏ e1 →
-  e ⊏ (LambdaConstr constr e1 e2).
+  e ⊏ (LambdaConstr tag e1 e2).
 Proof.
   intros. eapply tc_r; eauto using lambda_subexprdir.
 Qed.
-Lemma lambda_subexpr_constr_2 e constr e1 e2 :
+Lemma lambda_subexpr_constr_2 e tag e1 e2 :
   e ⊏ e2 →
-  e ⊏ (LambdaConstr constr e1 e2).
+  e ⊏ (LambdaConstr tag e1 e2).
 Proof.
   intros. eapply tc_r; eauto using lambda_subexprdir.
 Qed.
-Lemma lambda_subexpr_constr_det_1 e constr e1 e2 :
+Lemma lambda_subexpr_constr_det_1 e tag e1 e2 :
   e ⊏ e1 →
-  e ⊏ (LambdaConstrDet constr e1 e2).
+  e ⊏ (LambdaConstrDet tag e1 e2).
 Proof.
   intros. eapply tc_r; eauto using lambda_subexprdir.
 Qed.
-Lemma lambda_subexpr_constr_det_2 e constr e1 e2 :
+Lemma lambda_subexpr_constr_det_2 e tag e1 e2 :
   e ⊏ e2 →
-  e ⊏ (LambdaConstrDet constr e1 e2).
+  e ⊏ (LambdaConstrDet tag e1 e2).
 Proof.
   intros. eapply tc_r; eauto using lambda_subexprdir.
 Qed.

@@ -28,6 +28,8 @@ Definition lambda_human_val_compile v :=
       LambdaUnit
   | LambdaHumanIndex idx =>
       LambdaIndex idx
+  | LambdaHumanTag tag =>
+      LambdaTag tag
   | LambdaHumanInt n =>
       LambdaInt n
   | LambdaHumanBool b =>
@@ -62,8 +64,8 @@ Fixpoint lambda_human_expr_compile bdgs e :=
         (lambda_human_expr_compile bdgs e0)
         (lambda_human_expr_compile bdgs e1)
         (lambda_human_expr_compile bdgs e2)
-  | LambdaHumanConstr constr e1 e2 =>
-      LambdaConstr constr
+  | LambdaHumanConstr tag e1 e2 =>
+      LambdaConstr tag
         (lambda_human_expr_compile bdgs e1)
         (lambda_human_expr_compile bdgs e2)
   | LambdaHumanLoad e1 e2 =>

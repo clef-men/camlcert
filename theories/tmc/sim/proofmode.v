@@ -16,7 +16,7 @@ From simuliris.tmc Require Import
 Section sim_GS.
   Context `{sim_programs : !SimPrograms lambda_ectx_lang lambda_ectx_lang}.
   Context `{sim_GS : !SimGS Σ}.
-  Implicit Types constr : lambda_constructor.
+  Implicit Types tag : lambda_tag.
   Implicit Types l lₜ lₛ : loc.
   Implicit Types idx idxₜ idxₛ : lambda_index.
   Implicit Types v vₜ vₛ : lambda_val.
@@ -47,13 +47,13 @@ Section sim_GS.
   Section sim.
     Implicit Types Φ : lambda_expr → lambda_expr → iProp Σ.
 
-    Lemma tac_sim_constr_detₛ id0 id1 id2 K constr v1 v2 e Φ Δ :
+    Lemma tac_sim_constr_detₛ id0 id1 id2 K tag v1 v2 e Φ Δ :
       ( ∀ l,
         match
           envs_app false (Esnoc (Esnoc (Esnoc Enil
             id2 ((l +ₗ 2) ↦ₛ v2))
             id1 ((l +ₗ 1) ↦ₛ v1))
-            id0 ((l +ₗ 0) ↦ₛ constr)
+            id0 ((l +ₗ 0) ↦ₛ tag)
           ) Δ
         with
         | None =>
@@ -62,7 +62,7 @@ Section sim_GS.
             envs_entails Δ' (SIM K @@ #l ≳ e [[ X ]] {{ Φ }})
         end
       ) →
-      envs_entails Δ (SIM K @@ &&constr v1 v2 ≳ e [[ X ]] {{ Φ }}).
+      envs_entails Δ (SIM K @@ &&tag v1 v2 ≳ e [[ X ]] {{ Φ }}).
     Proof.
       rewrite envs_entails_unseal => Hsim.
       rewrite -sim_bindₛ -sim_constr_detₛ. setoid_rewrite <- sim_bind_invₛ.
@@ -71,13 +71,13 @@ Section sim_GS.
       rewrite envs_app_sound // /= right_id Hsim.
       iIntros "H Hl0 Hl1 Hl2". iApply ("H" with "[$Hl0 $Hl1 $Hl2]").
     Qed.
-    Lemma tac_sim_constr_detₜ id0 id1 id2 e K constr v1 v2 Φ Δ :
+    Lemma tac_sim_constr_detₜ id0 id1 id2 e K tag v1 v2 Φ Δ :
       ( ∀ l,
         match
           envs_app false (Esnoc (Esnoc (Esnoc Enil
             id2 ((l +ₗ 2) ↦ₜ v2))
             id1 ((l +ₗ 1) ↦ₜ v1))
-            id0 ((l +ₗ 0) ↦ₜ constr)
+            id0 ((l +ₗ 0) ↦ₜ tag)
           ) Δ
         with
         | None =>
@@ -86,7 +86,7 @@ Section sim_GS.
             envs_entails Δ' (SIM e ≳ K @@ #l [[ X ]] {{ Φ }})
         end
       ) →
-      envs_entails Δ (SIM e ≳ K @@ &&constr v1 v2 [[ X ]] {{ Φ }}).
+      envs_entails Δ (SIM e ≳ K @@ &&tag v1 v2 [[ X ]] {{ Φ }}).
     Proof.
       rewrite envs_entails_unseal => Hsim.
       rewrite -sim_bindₜ -sim_constr_detₜ.
@@ -95,7 +95,7 @@ Section sim_GS.
       rewrite envs_app_sound // /= right_id Hsim sim_bind_invₜ.
       iIntros "H Hl0 Hl1 Hl2". iApply ("H" with "[$Hl0 $Hl1 $Hl2]").
     Qed.
-    Lemma tac_sim_constr_det id constr Kₛ vₛ1 vₛ2 Kₜ vₜ1 vₜ2 Φ Δ :
+    Lemma tac_sim_constr_det id tag Kₛ vₛ1 vₛ2 Kₜ vₜ1 vₜ2 Φ Δ :
       envs_entails Δ (vₛ1 ≈ vₜ1) →
       envs_entails Δ (vₛ2 ≈ vₜ2) →
       ( ∀ lₛ lₜ,
@@ -106,7 +106,7 @@ Section sim_GS.
             envs_entails Δ' (SIM Kₛ @@ #lₛ ≳ Kₜ @@ #lₜ [[ X ]] {{ Φ }})
         end
       ) →
-      envs_entails Δ (SIM Kₛ @@ &&constr vₛ1 vₛ2 ≳ Kₜ @@ &&constr vₜ1 vₜ2 [[ X ]] {{ Φ }}).
+      envs_entails Δ (SIM Kₛ @@ &&tag vₛ1 vₛ2 ≳ Kₜ @@ &&tag vₜ1 vₜ2 [[ X ]] {{ Φ }}).
     Proof.
       rewrite envs_entails_unseal => Hv1 Hv2 Hsim.
       iIntros "HΔ".
@@ -119,22 +119,22 @@ Section sim_GS.
       iApply (envs_app_sound with "HΔ"); first done. simpl. auto with iFrame.
     Qed.
 
-    Lemma tac_sim_constrₛ1 K constr e1 e2 e Φ Δ :
-      envs_entails Δ (SIM K @@ let: e1 in let: e2.[ren (+1)] in &&constr $1 $0 ≳ e [[ X ]] {{ Φ }}) →
-      envs_entails Δ (SIM K @@ &constr e1 e2 ≳ e [[ X ]] {{ Φ }}).
+    Lemma tac_sim_constrₛ1 K tag e1 e2 e Φ Δ :
+      envs_entails Δ (SIM K @@ let: e1 in let: e2.[ren (+1)] in &&tag $1 $0 ≳ e [[ X ]] {{ Φ }}) →
+      envs_entails Δ (SIM K @@ &tag e1 e2 ≳ e [[ X ]] {{ Φ }}).
     Proof.
       rewrite envs_entails_unseal sim_bind_invₛ sim_constrₛ1 sim_bindₛ //.
     Qed.
-    Lemma tac_sim_constrₛ2 K constr e1 e2 e Φ Δ :
-      envs_entails Δ (SIM K @@ let: e2 in let: e1.[ren (+1)] in &&constr $0 $1 ≳ e [[ X ]] {{ Φ }}) →
-      envs_entails Δ (SIM K @@ &constr e1 e2 ≳ e [[ X ]] {{ Φ }}).
+    Lemma tac_sim_constrₛ2 K tag e1 e2 e Φ Δ :
+      envs_entails Δ (SIM K @@ let: e2 in let: e1.[ren (+1)] in &&tag $0 $1 ≳ e [[ X ]] {{ Φ }}) →
+      envs_entails Δ (SIM K @@ &tag e1 e2 ≳ e [[ X ]] {{ Φ }}).
     Proof.
       rewrite envs_entails_unseal sim_bind_invₛ sim_constrₛ2 sim_bindₛ //.
     Qed.
-    Lemma tac_sim_constrₜ e K constr e1 e2 Φ Δ :
-      envs_entails Δ (SIM e ≳ K @@ let: e1 in let: e2.[ren (+1)] in &&constr $1 $0 [[ X ]] {{ Φ }}) →
-      envs_entails Δ (SIM e ≳ K @@ let: e2 in let: e1.[ren (+1)] in &&constr $0 $1 [[ X ]] {{ Φ }}) →
-      envs_entails Δ (SIM e ≳ K @@ &constr e1 e2 [[ X ]] {{ Φ }}).
+    Lemma tac_sim_constrₜ e K tag e1 e2 Φ Δ :
+      envs_entails Δ (SIM e ≳ K @@ let: e1 in let: e2.[ren (+1)] in &&tag $1 $0 [[ X ]] {{ Φ }}) →
+      envs_entails Δ (SIM e ≳ K @@ let: e2 in let: e1.[ren (+1)] in &&tag $0 $1 [[ X ]] {{ Φ }}) →
+      envs_entails Δ (SIM e ≳ K @@ &tag e1 e2 [[ X ]] {{ Φ }}).
     Proof.
       rewrite envs_entails_unseal => Hsim1 Hsim2.
       rewrite -sim_bindₜ -sim_constrₜ -!sim_bind_invₜ.
@@ -242,13 +242,13 @@ Section sim_GS.
   Section simv.
     Implicit Types Φ : lambda_val → lambda_val → iProp Σ.
 
-    Lemma tac_simv_constr_detₛ id0 id1 id2 K constr v1 v2 e Φ Δ :
+    Lemma tac_simv_constr_detₛ id0 id1 id2 K tag v1 v2 e Φ Δ :
       ( ∀ l,
         match
           envs_app false (Esnoc (Esnoc (Esnoc Enil
             id2 ((l +ₗ 2) ↦ₛ v2))
             id1 ((l +ₗ 1) ↦ₛ v1))
-            id0 ((l +ₗ 0) ↦ₛ constr)
+            id0 ((l +ₗ 0) ↦ₛ tag)
           ) Δ
         with
         | None =>
@@ -257,18 +257,18 @@ Section sim_GS.
             envs_entails Δ' (SIM K @@ #l ≳ e [[ X ]] [[ Φ ]])
         end
       ) →
-      envs_entails Δ (SIM K @@ &&constr v1 v2 ≳ e [[ X ]] [[ Φ ]]).
+      envs_entails Δ (SIM K @@ &&tag v1 v2 ≳ e [[ X ]] [[ Φ ]]).
     Proof.
       rewrite definition.simv_unseal /definition.simv_def.
       apply tac_sim_constr_detₛ.
     Qed.
-    Lemma tac_simv_constr_detₜ id0 id1 id2 e K constr v1 v2 Φ Δ :
+    Lemma tac_simv_constr_detₜ id0 id1 id2 e K tag v1 v2 Φ Δ :
       ( ∀ l,
         match
           envs_app false (Esnoc (Esnoc (Esnoc Enil
             id2 ((l +ₗ 2) ↦ₜ v2))
             id1 ((l +ₗ 1) ↦ₜ v1))
-            id0 ((l +ₗ 0) ↦ₜ constr)
+            id0 ((l +ₗ 0) ↦ₜ tag)
           ) Δ
         with
         | None =>
@@ -277,12 +277,12 @@ Section sim_GS.
             envs_entails Δ' (SIM e ≳ K @@ #l [[ X ]] [[ Φ ]])
         end
       ) →
-      envs_entails Δ (SIM e ≳ K @@ &&constr v1 v2 [[ X ]] [[ Φ ]]).
+      envs_entails Δ (SIM e ≳ K @@ &&tag v1 v2 [[ X ]] [[ Φ ]]).
     Proof.
       rewrite definition.simv_unseal /definition.simv_def.
       apply tac_sim_constr_detₜ.
     Qed.
-    Lemma tac_simv_constr_det id constr Kₛ vₛ1 vₛ2 Kₜ vₜ1 vₜ2 Φ Δ :
+    Lemma tac_simv_constr_det id tag Kₛ vₛ1 vₛ2 Kₜ vₜ1 vₜ2 Φ Δ :
       envs_entails Δ (vₛ1 ≈ vₜ1) →
       envs_entails Δ (vₛ2 ≈ vₜ2) →
       ( ∀ lₛ lₜ,
@@ -293,30 +293,30 @@ Section sim_GS.
             envs_entails Δ' (SIM Kₛ @@ #lₛ ≳ Kₜ @@ #lₜ [[ X ]] [[ Φ ]])
         end
       ) →
-      envs_entails Δ (SIM Kₛ @@ &&constr vₛ1 vₛ2 ≳ Kₜ @@ &&constr vₜ1 vₜ2 [[ X ]] [[ Φ ]]).
+      envs_entails Δ (SIM Kₛ @@ &&tag vₛ1 vₛ2 ≳ Kₜ @@ &&tag vₜ1 vₜ2 [[ X ]] [[ Φ ]]).
     Proof.
       rewrite definition.simv_unseal /definition.simv_def.
       apply tac_sim_constr_det.
     Qed.
 
-    Lemma tac_simv_constrₛ1 K constr e1 e2 e Φ Δ :
-      envs_entails Δ (SIM K @@ let: e1 in let: e2.[ren (+1)] in &&constr $1 $0 ≳ e [[ X ]] [[ Φ ]]) →
-      envs_entails Δ (SIM K @@ &constr e1 e2 ≳ e [[ X ]] [[ Φ ]]).
+    Lemma tac_simv_constrₛ1 K tag e1 e2 e Φ Δ :
+      envs_entails Δ (SIM K @@ let: e1 in let: e2.[ren (+1)] in &&tag $1 $0 ≳ e [[ X ]] [[ Φ ]]) →
+      envs_entails Δ (SIM K @@ &tag e1 e2 ≳ e [[ X ]] [[ Φ ]]).
     Proof.
       rewrite definition.simv_unseal /definition.simv_def.
       apply tac_sim_constrₛ1.
     Qed.
-    Lemma tac_simv_constrₛ2 K constr e1 e2 e Φ Δ :
-      envs_entails Δ (SIM K @@ let: e2 in let: e1.[ren (+1)] in &&constr $0 $1 ≳ e [[ X ]] [[ Φ ]]) →
-      envs_entails Δ (SIM K @@ &constr e1 e2 ≳ e [[ X ]] [[ Φ ]]).
+    Lemma tac_simv_constrₛ2 K tag e1 e2 e Φ Δ :
+      envs_entails Δ (SIM K @@ let: e2 in let: e1.[ren (+1)] in &&tag $0 $1 ≳ e [[ X ]] [[ Φ ]]) →
+      envs_entails Δ (SIM K @@ &tag e1 e2 ≳ e [[ X ]] [[ Φ ]]).
     Proof.
       rewrite definition.simv_unseal /definition.simv_def.
       apply tac_sim_constrₛ2.
     Qed.
-    Lemma tac_simv_constrₜ e K constr e1 e2 Φ Δ :
-      envs_entails Δ (SIM e ≳ K @@ let: e1 in let: e2.[ren (+1)] in &&constr $1 $0 [[ X ]] [[ Φ ]]) →
-      envs_entails Δ (SIM e ≳ K @@ let: e2 in let: e1.[ren (+1)] in &&constr $0 $1 [[ X ]] [[ Φ ]]) →
-      envs_entails Δ (SIM e ≳ K @@ &constr e1 e2 [[ X ]] [[ Φ ]]).
+    Lemma tac_simv_constrₜ e K tag e1 e2 Φ Δ :
+      envs_entails Δ (SIM e ≳ K @@ let: e1 in let: e2.[ren (+1)] in &&tag $1 $0 [[ X ]] [[ Φ ]]) →
+      envs_entails Δ (SIM e ≳ K @@ let: e2 in let: e1.[ren (+1)] in &&tag $0 $1 [[ X ]] [[ Φ ]]) →
+      envs_entails Δ (SIM e ≳ K @@ &tag e1 e2 [[ X ]] [[ Φ ]]).
     Proof.
       rewrite definition.simv_unseal /definition.simv_def.
       apply tac_sim_constrₜ.

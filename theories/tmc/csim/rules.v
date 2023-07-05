@@ -14,7 +14,7 @@ Section sim_GS.
   Context `{sim_GS : !SimGS Σ}.
   Context (X : sim_protocol Σ).
   Implicit Types func : lambda_function.
-  Implicit Types constr : lambda_constructor.
+  Implicit Types tag : lambda_tag.
   Implicit Types v vₛ vₜ : lambda_val.
   Implicit Types e eₛ eₜ : lambda_expr.
   Implicit Types Φ : lambda_val → lambda_val → iProp Σ.
@@ -142,40 +142,40 @@ Section sim_GS.
       iApply ("Hcsim2" with "[//] HΓ").
   Qed.
 
-  Lemma csimv_constr constr eₛ1 eₛ2 eₜ1 eₜ2 Φ :
+  Lemma csimv_constr tag eₛ1 eₛ2 eₜ1 eₜ2 Φ :
     SIM eₛ1 ⩾ eₜ1 [[ X ]] [[ (≈) ]] -∗
     SIM eₛ2 ⩾ eₜ2 [[ X ]] [[ (≈) ]] -∗
     (∀ vₛ vₜ, vₛ ≈ vₜ -∗ Φ vₛ vₜ) -∗
-    SIM &constr eₛ1 eₛ2 ⩾ &constr eₜ1 eₜ2 [[ X ]] [[ Φ ]].
+    SIM &tag eₛ1 eₛ2 ⩾ &tag eₜ1 eₜ2 [[ X ]] [[ Φ ]].
   Proof.
     iIntros "Hcsim1 Hcsim2 HΦ". csimv_start.
     sim_apply (simv_constr with "(Hcsim1 [//] HΓ) (Hcsim2 [//] HΓ)"). iIntros "%lₛ %lₜ #Hl".
     iApply ("HΦ" with "Hl").
   Qed.
-  Lemma csimv_constr_valₜ1 constr eₛ eₜ Φ :
+  Lemma csimv_constr_valₜ1 tag eₛ eₜ Φ :
     SIM eₛ ⩾ eₜ [[ X ]] [[ (≈) ]] -∗
     ( ∀ vₛ lₜ vₜ,
-      (lₜ +ₗ 0) ↦ₜ constr -∗
+      (lₜ +ₗ 0) ↦ₜ tag -∗
       (lₜ +ₗ 1) ↦ₜ vₜ -∗
       (lₜ +ₗ 2) ↦ₜ () -∗
       vₛ ≈ vₜ -∗
       Φ vₛ lₜ
     ) -∗
-    SIM eₛ ⩾ &constr eₜ #() [[ X ]] [[ Φ ]].
+    SIM eₛ ⩾ &tag eₜ #() [[ X ]] [[ Φ ]].
   Proof.
     iIntros "Hcsim HΦ". csimv_start.
     sim_apply (simv_constr_valₜ1 with "(Hcsim [//] HΓ)").
   Qed.
-  Lemma csimv_constr_valₜ2 constr eₛ eₜ Φ :
+  Lemma csimv_constr_valₜ2 tag eₛ eₜ Φ :
     SIM eₛ ⩾ eₜ [[ X ]] [[ (≈) ]] -∗
     ( ∀ vₛ lₜ vₜ,
-      (lₜ +ₗ 0) ↦ₜ constr -∗
+      (lₜ +ₗ 0) ↦ₜ tag -∗
       (lₜ +ₗ 1) ↦ₜ () -∗
       (lₜ +ₗ 2) ↦ₜ vₜ -∗
       vₛ ≈ vₜ -∗
       Φ vₛ lₜ
     ) -∗
-    SIM eₛ ⩾ &constr #() eₜ [[ X ]] [[ Φ ]].
+    SIM eₛ ⩾ &tag #() eₜ [[ X ]] [[ Φ ]].
   Proof.
     iIntros "Hcsim HΦ". csimv_start.
     sim_apply (simv_constr_valₜ2 with "(Hcsim [//] HΓ)").
