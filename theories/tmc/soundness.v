@@ -123,7 +123,7 @@ Section sim_GS.
       | intros Hdir1 _ Hdir2 _ IHdirₛ _
       | intros Hdir _ IHdirₛ _
       | intros Hdir1 _ Hdir2 _ IHdirₛ _
-      | intros Hdir1 _ Hdir2 _ IHdirₛ _
+      | intros _ _ _ _ _ _
       | intros Hdir0 _ Hdir1 _ Hdir2 _ IHdirₛ _
       | intros Hdir1 _ Hdir2 _ IHdirₛ _
       | intros Hdir1 _ Hdps2 _ IHdirₛ IHdpsₛ
