@@ -4,14 +4,14 @@ From simuliris.program_logic Require Import
   sim.adequacy.
 From simuliris.lambda_lang Require Import
   refinement
-  subexpr.
-From simuliris.tmc Require Export
-  definition.
-From simuliris.tmc Require Import
-  properties
+  subexpr
   sim.proofmode
   csim.rules
   csim.notations.
+From simuliris.tmc Require Export
+  definition.
+From simuliris.tmc Require Import
+  properties.
 
 Section sim_GS.
   Context `{sim_programs : !SimPrograms lambda_ectx_lang lambda_ectx_lang}.

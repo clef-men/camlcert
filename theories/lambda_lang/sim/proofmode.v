@@ -8,9 +8,9 @@ From simuliris.common Require Import
   tactics.
 From simuliris.program_logic Require Export
   sim.proofmode.
-From simuliris.tmc Require Export
+From simuliris.lambda_lang Require Export
   sim.basic_rules.
-From simuliris.tmc Require Import
+From simuliris.lambda_lang Require Import
   sim.notations.
 
 Section sim_GS.

@@ -1,8 +1,7 @@
 From simuliris Require Import
   prelude.
 From simuliris.lambda_lang Require Export
-  notations.
-From simuliris.tmc Require Export
+  notations
   sim.definition.
 
 Notation "l ↦ₛ{ dq } v" := (mapstoₛ (locₛ := loc) (valₛ := lambda_val) l dq v%lambda_val)

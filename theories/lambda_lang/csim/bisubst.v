@@ -6,7 +6,7 @@ From iris.proofmode Require Import
 
 From simuliris Require Import
   prelude.
-From simuliris.tmc Require Export
+From simuliris.lambda_lang Require Export
   sim.definition.
 From simuliris.lambda_lang Require Import
   notations.

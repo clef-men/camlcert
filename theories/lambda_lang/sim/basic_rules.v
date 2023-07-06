@@ -5,12 +5,10 @@ From simuliris.base_logic Require Import
 From simuliris.program_logic Require Export
   sim.rules.
 From simuliris.lambda_lang Require Export
-  tactics.
-From simuliris.lambda_lang Require Import
-  well_formed.
-From simuliris.tmc Require Export
+  tactics
   sim.definition.
-From simuliris.tmc Require Import
+From simuliris.lambda_lang Require Import
+  well_formed
   sim.notations.
 
 Section sim_GS.

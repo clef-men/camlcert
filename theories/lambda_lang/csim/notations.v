@@ -1,8 +1,7 @@
 From simuliris Require Import
   prelude.
-From simuliris.tmc Require Export
-  sim.notations.
-From simuliris.tmc Require Export
+From simuliris.lambda_lang Require Export
+  sim.notations
   csim.definition.
 
 Notation "'SIM' eₛ ⩾ eₜ [[ X ] ] [[ Φ ] ]" := (csimv X Φ%I eₛ%lambda_expr eₜ%lambda_expr)

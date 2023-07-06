@@ -43,21 +43,21 @@ theories/lambda_lang/ectx_decompositions.v
 theories/lambda_lang/tactics.v
 theories/lambda_lang/subexpr.v
 theories/lambda_lang/refinement.v
+theories/lambda_lang/sim/definition.v
+theories/lambda_lang/sim/notations.v
+theories/lambda_lang/sim/basic_rules.v
+theories/lambda_lang/sim/proofmode.v
+theories/lambda_lang/sim/derived_rules.v
+theories/lambda_lang/csim/bisubst.v
+theories/lambda_lang/csim/definition.v
+theories/lambda_lang/csim/notations.v
+theories/lambda_lang/csim/rules.v
 
 theories/lambda_human_lang/syntax.v
 theories/lambda_human_lang/notations.v
 theories/lambda_human_lang/well_formed.v
 theories/lambda_human_lang/compilation.v
 
-theories/tmc/sim/definition.v
-theories/tmc/sim/notations.v
-theories/tmc/sim/basic_rules.v
-theories/tmc/sim/proofmode.v
-theories/tmc/sim/derived_rules.v
-theories/tmc/csim/bisubst.v
-theories/tmc/csim/definition.v
-theories/tmc/csim/notations.v
-theories/tmc/csim/rules.v
 theories/tmc/definition.v
 theories/tmc/properties.v
 theories/tmc/soundness.v

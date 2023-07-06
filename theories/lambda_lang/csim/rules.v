@@ -2,10 +2,10 @@ From simuliris Require Import
   prelude.
 From simuliris.lambda_lang Require Export
   well_formed.
-From simuliris.tmc Require Export
+From simuliris.lambda_lang Require Export
   sim.derived_rules
   csim.definition.
-From simuliris.tmc Require Import
+From simuliris.lambda_lang Require Import
   sim.proofmode
   csim.notations.
 
