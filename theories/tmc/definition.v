@@ -45,6 +45,12 @@ Inductive tmc_dir ξ : lambda_expr → lambda_expr → Prop :=
       tmc_dir ξ
         (LambdaBinop op eₛ1 eₛ2)
         (LambdaBinop op eₜ1 eₜ2)
+  | tmc_dir_binop_det op eₛ1 eₛ2 eₜ1 eₜ2 :
+      tmc_dir ξ eₛ1 eₜ1 →
+      tmc_dir ξ eₛ2 eₜ2 →
+      tmc_dir ξ
+        (LambdaBinopDet op eₛ1 eₛ2)
+        (LambdaBinopDet op eₜ1 eₜ2)
   | tmc_dir_if eₛ0 eₛ1 eₛ2 eₜ0 eₜ1 eₜ2 :
       tmc_dir ξ eₛ0 eₜ0 →
       tmc_dir ξ eₛ1 eₜ1 →

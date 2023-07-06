@@ -47,6 +47,50 @@ Section sim_GS.
   Section sim.
     Implicit Types Φ : lambda_expr → lambda_expr → iProp Σ.
 
+    Lemma tac_sim_binopₛ1 K op e1 e2 e Φ Δ :
+      envs_entails Δ (SIM K @@ let: e1 in let: e2.[ren (+1)] in LambdaBinopDet op $1 $0 ≳ e [[ X ]] {{ Φ }}) →
+      envs_entails Δ (SIM K @@ LambdaBinop op e1 e2 ≳ e [[ X ]] {{ Φ }}).
+    Proof.
+      rewrite envs_entails_unseal sim_bind_invₛ sim_binopₛ1 sim_bindₛ //.
+    Qed.
+    Lemma tac_sim_binopₛ2 K op e1 e2 e Φ Δ :
+      envs_entails Δ (SIM K @@ let: e2 in let: e1.[ren (+1)] in LambdaBinopDet op $0 $1 ≳ e [[ X ]] {{ Φ }}) →
+      envs_entails Δ (SIM K @@ LambdaBinop op e1 e2 ≳ e [[ X ]] {{ Φ }}).
+    Proof.
+      rewrite envs_entails_unseal sim_bind_invₛ sim_binopₛ2 sim_bindₛ //.
+    Qed.
+    Lemma tac_sim_binopₜ e K op e1 e2 Φ Δ :
+      envs_entails Δ (SIM e ≳ K @@ let: e1 in let: e2.[ren (+1)] in LambdaBinopDet op $1 $0 [[ X ]] {{ Φ }}) →
+      envs_entails Δ (SIM e ≳ K @@ let: e2 in let: e1.[ren (+1)] in LambdaBinopDet op $0 $1 [[ X ]] {{ Φ }}) →
+      envs_entails Δ (SIM e ≳ K @@ LambdaBinop op e1 e2 [[ X ]] {{ Φ }}).
+    Proof.
+      rewrite envs_entails_unseal => Hsim1 Hsim2.
+      rewrite -sim_bindₜ -sim_binopₜ -!sim_bind_invₜ.
+      apply bi.and_intro; done.
+    Qed.
+
+    Lemma tac_sim_constrₛ1 K tag e1 e2 e Φ Δ :
+      envs_entails Δ (SIM K @@ let: e1 in let: e2.[ren (+1)] in &&tag $1 $0 ≳ e [[ X ]] {{ Φ }}) →
+      envs_entails Δ (SIM K @@ &tag e1 e2 ≳ e [[ X ]] {{ Φ }}).
+    Proof.
+      rewrite envs_entails_unseal sim_bind_invₛ sim_constrₛ1 sim_bindₛ //.
+    Qed.
+    Lemma tac_sim_constrₛ2 K tag e1 e2 e Φ Δ :
+      envs_entails Δ (SIM K @@ let: e2 in let: e1.[ren (+1)] in &&tag $0 $1 ≳ e [[ X ]] {{ Φ }}) →
+      envs_entails Δ (SIM K @@ &tag e1 e2 ≳ e [[ X ]] {{ Φ }}).
+    Proof.
+      rewrite envs_entails_unseal sim_bind_invₛ sim_constrₛ2 sim_bindₛ //.
+    Qed.
+    Lemma tac_sim_constrₜ e K tag e1 e2 Φ Δ :
+      envs_entails Δ (SIM e ≳ K @@ let: e1 in let: e2.[ren (+1)] in &&tag $1 $0 [[ X ]] {{ Φ }}) →
+      envs_entails Δ (SIM e ≳ K @@ let: e2 in let: e1.[ren (+1)] in &&tag $0 $1 [[ X ]] {{ Φ }}) →
+      envs_entails Δ (SIM e ≳ K @@ &tag e1 e2 [[ X ]] {{ Φ }}).
+    Proof.
+      rewrite envs_entails_unseal => Hsim1 Hsim2.
+      rewrite -sim_bindₜ -sim_constrₜ -!sim_bind_invₜ.
+      apply bi.and_intro; done.
+    Qed.
+
     Lemma tac_sim_constr_detₛ id0 id1 id2 K tag v1 v2 e Φ Δ :
       ( ∀ l,
         match
@@ -117,28 +161,6 @@ Section sim_GS.
       specialize (Hsim lₛ lₜ). destruct (envs_app _ _ _) as [Δ' |] eqn:HΔ'; last done.
       iApply Hsim.
       iApply (envs_app_sound with "HΔ"); first done. simpl. auto with iFrame.
-    Qed.
-
-    Lemma tac_sim_constrₛ1 K tag e1 e2 e Φ Δ :
-      envs_entails Δ (SIM K @@ let: e1 in let: e2.[ren (+1)] in &&tag $1 $0 ≳ e [[ X ]] {{ Φ }}) →
-      envs_entails Δ (SIM K @@ &tag e1 e2 ≳ e [[ X ]] {{ Φ }}).
-    Proof.
-      rewrite envs_entails_unseal sim_bind_invₛ sim_constrₛ1 sim_bindₛ //.
-    Qed.
-    Lemma tac_sim_constrₛ2 K tag e1 e2 e Φ Δ :
-      envs_entails Δ (SIM K @@ let: e2 in let: e1.[ren (+1)] in &&tag $0 $1 ≳ e [[ X ]] {{ Φ }}) →
-      envs_entails Δ (SIM K @@ &tag e1 e2 ≳ e [[ X ]] {{ Φ }}).
-    Proof.
-      rewrite envs_entails_unseal sim_bind_invₛ sim_constrₛ2 sim_bindₛ //.
-    Qed.
-    Lemma tac_sim_constrₜ e K tag e1 e2 Φ Δ :
-      envs_entails Δ (SIM e ≳ K @@ let: e1 in let: e2.[ren (+1)] in &&tag $1 $0 [[ X ]] {{ Φ }}) →
-      envs_entails Δ (SIM e ≳ K @@ let: e2 in let: e1.[ren (+1)] in &&tag $0 $1 [[ X ]] {{ Φ }}) →
-      envs_entails Δ (SIM e ≳ K @@ &tag e1 e2 [[ X ]] {{ Φ }}).
-    Proof.
-      rewrite envs_entails_unseal => Hsim1 Hsim2.
-      rewrite -sim_bindₜ -sim_constrₜ -!sim_bind_invₜ.
-      apply bi.and_intro; done.
     Qed.
 
     Lemma tac_sim_loadₛ id p K l idx v e Φ Δ :
@@ -242,6 +264,52 @@ Section sim_GS.
   Section simv.
     Implicit Types Φ : lambda_val → lambda_val → iProp Σ.
 
+    Lemma tac_simv_binopₛ1 K op e1 e2 e Φ Δ :
+      envs_entails Δ (SIM K @@ let: e1 in let: e2.[ren (+1)] in LambdaBinopDet op $1 $0 ≳ e [[ X ]] [[ Φ ]]) →
+      envs_entails Δ (SIM K @@ LambdaBinop op e1 e2 ≳ e [[ X ]] [[ Φ ]]).
+    Proof.
+      rewrite definition.simv_unseal /definition.simv_def.
+      apply tac_sim_binopₛ1.
+    Qed.
+    Lemma tac_simv_binopₛ2 K op e1 e2 e Φ Δ :
+      envs_entails Δ (SIM K @@ let: e2 in let: e1.[ren (+1)] in LambdaBinopDet op $0 $1 ≳ e [[ X ]] [[ Φ ]]) →
+      envs_entails Δ (SIM K @@ LambdaBinop op e1 e2 ≳ e [[ X ]] [[ Φ ]]).
+    Proof.
+      rewrite definition.simv_unseal /definition.simv_def.
+      apply tac_sim_binopₛ2.
+    Qed.
+    Lemma tac_simv_binopₜ e K op e1 e2 Φ Δ :
+      envs_entails Δ (SIM e ≳ K @@ let: e1 in let: e2.[ren (+1)] in LambdaBinopDet op $1 $0 [[ X ]] [[ Φ ]]) →
+      envs_entails Δ (SIM e ≳ K @@ let: e2 in let: e1.[ren (+1)] in LambdaBinopDet op $0 $1 [[ X ]] [[ Φ ]]) →
+      envs_entails Δ (SIM e ≳ K @@ LambdaBinop op e1 e2 [[ X ]] [[ Φ ]]).
+    Proof.
+      rewrite definition.simv_unseal /definition.simv_def.
+      apply tac_sim_binopₜ.
+    Qed.
+
+    Lemma tac_simv_constrₛ1 K tag e1 e2 e Φ Δ :
+      envs_entails Δ (SIM K @@ let: e1 in let: e2.[ren (+1)] in &&tag $1 $0 ≳ e [[ X ]] [[ Φ ]]) →
+      envs_entails Δ (SIM K @@ &tag e1 e2 ≳ e [[ X ]] [[ Φ ]]).
+    Proof.
+      rewrite definition.simv_unseal /definition.simv_def.
+      apply tac_sim_constrₛ1.
+    Qed.
+    Lemma tac_simv_constrₛ2 K tag e1 e2 e Φ Δ :
+      envs_entails Δ (SIM K @@ let: e2 in let: e1.[ren (+1)] in &&tag $0 $1 ≳ e [[ X ]] [[ Φ ]]) →
+      envs_entails Δ (SIM K @@ &tag e1 e2 ≳ e [[ X ]] [[ Φ ]]).
+    Proof.
+      rewrite definition.simv_unseal /definition.simv_def.
+      apply tac_sim_constrₛ2.
+    Qed.
+    Lemma tac_simv_constrₜ e K tag e1 e2 Φ Δ :
+      envs_entails Δ (SIM e ≳ K @@ let: e1 in let: e2.[ren (+1)] in &&tag $1 $0 [[ X ]] [[ Φ ]]) →
+      envs_entails Δ (SIM e ≳ K @@ let: e2 in let: e1.[ren (+1)] in &&tag $0 $1 [[ X ]] [[ Φ ]]) →
+      envs_entails Δ (SIM e ≳ K @@ &tag e1 e2 [[ X ]] [[ Φ ]]).
+    Proof.
+      rewrite definition.simv_unseal /definition.simv_def.
+      apply tac_sim_constrₜ.
+    Qed.
+
     Lemma tac_simv_constr_detₛ id0 id1 id2 K tag v1 v2 e Φ Δ :
       ( ∀ l,
         match
@@ -297,29 +365,6 @@ Section sim_GS.
     Proof.
       rewrite definition.simv_unseal /definition.simv_def.
       apply tac_sim_constr_det.
-    Qed.
-
-    Lemma tac_simv_constrₛ1 K tag e1 e2 e Φ Δ :
-      envs_entails Δ (SIM K @@ let: e1 in let: e2.[ren (+1)] in &&tag $1 $0 ≳ e [[ X ]] [[ Φ ]]) →
-      envs_entails Δ (SIM K @@ &tag e1 e2 ≳ e [[ X ]] [[ Φ ]]).
-    Proof.
-      rewrite definition.simv_unseal /definition.simv_def.
-      apply tac_sim_constrₛ1.
-    Qed.
-    Lemma tac_simv_constrₛ2 K tag e1 e2 e Φ Δ :
-      envs_entails Δ (SIM K @@ let: e2 in let: e1.[ren (+1)] in &&tag $0 $1 ≳ e [[ X ]] [[ Φ ]]) →
-      envs_entails Δ (SIM K @@ &tag e1 e2 ≳ e [[ X ]] [[ Φ ]]).
-    Proof.
-      rewrite definition.simv_unseal /definition.simv_def.
-      apply tac_sim_constrₛ2.
-    Qed.
-    Lemma tac_simv_constrₜ e K tag e1 e2 Φ Δ :
-      envs_entails Δ (SIM e ≳ K @@ let: e1 in let: e2.[ren (+1)] in &&tag $1 $0 [[ X ]] [[ Φ ]]) →
-      envs_entails Δ (SIM e ≳ K @@ let: e2 in let: e1.[ren (+1)] in &&tag $0 $1 [[ X ]] [[ Φ ]]) →
-      envs_entails Δ (SIM e ≳ K @@ &tag e1 e2 [[ X ]] [[ Φ ]]).
-    Proof.
-      rewrite definition.simv_unseal /definition.simv_def.
-      apply tac_sim_constrₜ.
     Qed.
 
     Lemma tac_simv_loadₛ id p K l idx v e Φ Δ :
@@ -406,10 +451,6 @@ End sim_GS.
         go (LambdaEctxiCall1 e1) e2
     | LambdaUnop ?op ?e =>
         go (LambdaEctxiUnop op) e
-    | LambdaBinop ?op ?e1 (LambdaVal ?v2) =>
-        go (LambdaEctxiBinop2 op v2) e1
-    | LambdaBinop ?op ?e1 ?e2 =>
-        go (LambdaEctxiBinop1 op e1) e2
     | LambdaIf ?e0 ?e1 ?e2 =>
         go (LambdaEctxiIf e1 e2) e0
     | LambdaLoad ?e1 (LambdaVal ?v2) =>
@@ -556,6 +597,86 @@ Tactic Notation "sim_heap_bij_insert" :=
   let Htie := open_constr:(_) in
   sim_heap_bij_insert_core Htie Htie.
 
+Ltac sim_binopₛ1 :=
+  sim_pures;
+  let e_foc := open_constr:(LambdaBinop _ _ _) in
+  sim_focalizeₛ e_foc
+    ltac:(fun K =>
+      on_sim_or_simv
+        ltac:(fun _ _ _ _ _ => eapply (tac_sim_binopₛ1 _ K))
+        ltac:(fun _ _ _ _ _ => eapply (tac_simv_binopₛ1 _ K))
+    )
+    ltac:(fun e =>
+      fail "sim_binopₛ1: cannot find" e_foc "in source" e
+    );
+  sim_finish.
+Ltac sim_binopₛ2 :=
+  sim_pures;
+  let e_foc := open_constr:(LambdaBinop _ _ _) in
+  sim_focalizeₛ e_foc
+    ltac:(fun K =>
+      on_sim_or_simv
+        ltac:(fun _ _ _ _ _ => eapply (tac_sim_binopₛ2 _ K))
+        ltac:(fun _ _ _ _ _ => eapply (tac_simv_binopₛ2 _ K))
+    )
+    ltac:(fun e =>
+      fail "sim_binopₛ2: cannot find" e_foc "in source" e
+    );
+  sim_finish.
+Ltac sim_binopₜ :=
+  sim_pures;
+  let e_foc := open_constr:(LambdaBinop _ _ _) in
+  sim_focalizeₜ e_foc
+    ltac:(fun K =>
+      on_sim_or_simv
+        ltac:(fun _ _ _ _ _ => eapply (tac_sim_binopₜ _ _ K))
+        ltac:(fun _ _ _ _ _ => eapply (tac_simv_binopₜ _ _ K))
+    )
+    ltac:(fun e =>
+      fail "sim_binopₜ: cannot find" e_foc "in target" e
+    );
+  sim_finish.
+
+Ltac sim_constrₛ1 :=
+  sim_pures;
+  let e_foc := open_constr:(LambdaConstr _ _ _) in
+  sim_focalizeₛ e_foc
+    ltac:(fun K =>
+      on_sim_or_simv
+        ltac:(fun _ _ _ _ _ => eapply (tac_sim_constrₛ1 _ K))
+        ltac:(fun _ _ _ _ _ => eapply (tac_simv_constrₛ1 _ K))
+    )
+    ltac:(fun e =>
+      fail "sim_constrₛ1: cannot find" e_foc "in source" e
+    );
+  sim_finish.
+Ltac sim_constrₛ2 :=
+  sim_pures;
+  let e_foc := open_constr:(LambdaConstr _ _ _) in
+  sim_focalizeₛ e_foc
+    ltac:(fun K =>
+      on_sim_or_simv
+        ltac:(fun _ _ _ _ _ => eapply (tac_sim_constrₛ2 _ K))
+        ltac:(fun _ _ _ _ _ => eapply (tac_simv_constrₛ2 _ K))
+    )
+    ltac:(fun e =>
+      fail "sim_constrₛ2: cannot find" e_foc "in source" e
+    );
+  sim_finish.
+Ltac sim_constrₜ :=
+  sim_pures;
+  let e_foc := open_constr:(LambdaConstr _ _ _) in
+  sim_focalizeₜ e_foc
+    ltac:(fun K =>
+      on_sim_or_simv
+        ltac:(fun _ _ _ _ _ => eapply (tac_sim_constrₜ _ _ K))
+        ltac:(fun _ _ _ _ _ => eapply (tac_simv_constrₜ _ _ K))
+    )
+    ltac:(fun e =>
+      fail "sim_constrₜ: cannot find" e_foc "in target" e
+    );
+  sim_finish.
+
 Tactic Notation "sim_constr_detₛ" "as" simple_intropattern(l) constr(Hl0) constr(Hl1) constr(Hl2) :=
   sim_pures;
   let e_foc := open_constr:(LambdaConstrDet _ (LambdaVal _) (LambdaVal _)) in
@@ -649,46 +770,6 @@ Tactic Notation "sim_constr_det" "as" simple_intropattern(lₛ) simple_intropatt
   sim_constr_det as lₜ lₛ Hl.
 Tactic Notation "sim_constr_det" :=
   sim_constr_det as ? ?.
-
-Ltac sim_constrₛ1 :=
-  sim_pures;
-  let e_foc := open_constr:(LambdaConstr _ _ _) in
-  sim_focalizeₛ e_foc
-    ltac:(fun K =>
-      on_sim_or_simv
-        ltac:(fun _ _ _ _ _ => eapply (tac_sim_constrₛ1 _ K))
-        ltac:(fun _ _ _ _ _ => eapply (tac_simv_constrₛ1 _ K))
-    )
-    ltac:(fun e =>
-      fail "sim_constrₛ1: cannot find" e_foc "in source" e
-    );
-  sim_finish.
-Ltac sim_constrₛ2 :=
-  sim_pures;
-  let e_foc := open_constr:(LambdaConstr _ _ _) in
-  sim_focalizeₛ e_foc
-    ltac:(fun K =>
-      on_sim_or_simv
-        ltac:(fun _ _ _ _ _ => eapply (tac_sim_constrₛ2 _ K))
-        ltac:(fun _ _ _ _ _ => eapply (tac_simv_constrₛ2 _ K))
-    )
-    ltac:(fun e =>
-      fail "sim_constrₛ2: cannot find" e_foc "in source" e
-    );
-  sim_finish.
-Ltac sim_constrₜ :=
-  sim_pures;
-  let e_foc := open_constr:(LambdaConstr _ _ _) in
-  sim_focalizeₜ e_foc
-    ltac:(fun K =>
-      on_sim_or_simv
-        ltac:(fun _ _ _ _ _ => eapply (tac_sim_constrₜ _ _ K))
-        ltac:(fun _ _ _ _ _ => eapply (tac_simv_constrₜ _ _ K))
-    )
-    ltac:(fun e =>
-      fail "sim_constrₜ: cannot find" e_foc "in target" e
-    );
-  sim_finish.
 
 Tactic Notation "sim_loadₛ" :=
   sim_pures;

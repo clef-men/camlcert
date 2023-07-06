@@ -37,6 +37,7 @@ Definition lambda_unop_eval op v :=
   | _, _ =>
       None
   end.
+#[global] Arguments lambda_unop_eval !_ !_ / : assert.
 
 Definition lambda_binop_eval_int op n1 n2 :=
   match op with
@@ -57,6 +58,8 @@ Definition lambda_binop_eval_int op n1 n2 :=
   | LambdaOpEq =>
       Some (LambdaBool (bool_decide (n1 = n2)%Z))
   end.
+#[global] Arguments lambda_binop_eval_int !_ _ _ / : assert.
+
 Definition lambda_binop_eval_bool op b1 b2 :=
   match op with
   | LambdaOpEq =>
@@ -64,6 +67,8 @@ Definition lambda_binop_eval_bool op b1 b2 :=
   | _ =>
       None
   end.
+#[global] Arguments lambda_binop_eval_bool !_ _ _ / : assert.
+
 Definition lambda_binop_eval_function op func1 func2 :=
   match op with
   | LambdaOpEq =>
@@ -71,6 +76,8 @@ Definition lambda_binop_eval_function op func1 func2 :=
   | _ =>
       None
   end.
+#[global] Arguments lambda_binop_eval_function !_ _ _ / : assert.
+
 Definition lambda_binop_eval op v1 v2 :=
   match v1, v2 with
   | LambdaInt n1, LambdaInt n2 =>
@@ -82,6 +89,7 @@ Definition lambda_binop_eval op v1 v2 :=
   | _, _ =>
       None
   end.
+#[global] Arguments lambda_binop_eval !_ !_ !_ / : assert.
 
 Inductive lambda_head_step prog : lambda_expr → lambda_state → lambda_expr → lambda_state → Prop :=
   | lambda_head_step_let v e e' σ :
@@ -95,15 +103,25 @@ Inductive lambda_head_step prog : lambda_expr → lambda_state → lambda_expr �
       lambda_head_step prog
         (func v) σ
         e' σ
-  | lambda_head_step_lambda_unop op v v' σ :
+  | lambda_head_step_unop op v v' σ :
       lambda_unop_eval op v = Some v' →
       lambda_head_step prog
         (LambdaUnop op v) σ
         v' σ
-  | lambda_head_step_lambda_binop op v1 v2 v' σ :
+  | lambda_head_step_binop_1 op e1 e2 e' σ :
+      e' = (let: e1 in let: e2.[ren (+1)] in LambdaBinopDet op $1 $0)%lambda_expr →
+      lambda_head_step prog
+        (LambdaBinop op e1 e2) σ
+        e' σ
+  | lambda_head_step_binop_2 op e1 e2 e' σ :
+      e' = (let: e2 in let: e1.[ren (+1)] in LambdaBinopDet op $0 $1)%lambda_expr →
+      lambda_head_step prog
+        (LambdaBinop op e1 e2) σ
+        e' σ
+  | lambda_head_step_binop_det op v1 v2 v' σ :
       lambda_binop_eval op v1 v2 = Some v' →
       lambda_head_step prog
-        (LambdaBinop op v1 v2) σ
+        (LambdaBinopDet op v1 v2) σ
         v' σ
   | lambda_head_step_if b e1 e2 σ :
       lambda_head_step prog

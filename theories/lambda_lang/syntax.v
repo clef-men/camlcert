@@ -155,6 +155,7 @@ Inductive lambda_expr :=
   | LambdaCall (e1 e2 : lambda_expr)
   | LambdaUnop (op : lambda_unop) (e : lambda_expr)
   | LambdaBinop (op : lambda_binop) (e1 e2 : lambda_expr)
+  | LambdaBinopDet (op : lambda_binop) (e1 e2 : lambda_expr)
   | LambdaIf (e0 e1 e2 : lambda_expr)
   | LambdaConstr (tag : lambda_tag) (e1 e2 : lambda_expr)
   | LambdaConstrDet (tag : lambda_tag) (e1 e2 : lambda_expr)
@@ -182,16 +183,18 @@ Proof.
         GenNode 2 [GenLeaf (inr $ inr $ inl op); encode e]
     | LambdaBinop op e1 e2 =>
         GenNode 3 [GenLeaf (inr $ inr $ inr $ inl op); encode e1; encode e2]
+    | LambdaBinopDet op e1 e2 =>
+        GenNode 4 [GenLeaf (inr $ inr $ inr $ inl op); encode e1; encode e2]
     | LambdaIf e0 e1 e2 =>
-        GenNode 4 [encode e0; encode e1; encode e2]
+        GenNode 5 [encode e0; encode e1; encode e2]
     | LambdaConstr tag e1 e2 =>
-        GenNode 5 [GenLeaf (inr $ inr $ inr $ inr tag); encode e1; encode e2]
-    | LambdaConstrDet tag e1 e2 =>
         GenNode 6 [GenLeaf (inr $ inr $ inr $ inr tag); encode e1; encode e2]
+    | LambdaConstrDet tag e1 e2 =>
+        GenNode 7 [GenLeaf (inr $ inr $ inr $ inr tag); encode e1; encode e2]
     | LambdaLoad e1 e2 =>
-        GenNode 7 [encode e1; encode e2]
+        GenNode 8 [encode e1; encode e2]
     | LambdaStore e1 e2 e3 =>
-        GenNode 8 [encode e1; encode e2; encode e3]
+        GenNode 9 [encode e1; encode e2; encode e3]
     end.
   pose fix decode e :=
     match e with
@@ -207,15 +210,17 @@ Proof.
         LambdaUnop op (decode e)
     | GenNode 3 [GenLeaf (inr (inr (inr (inl op)))); e1; e2] =>
         LambdaBinop op (decode e1) (decode e2)
-    | GenNode 4 [e0; e1; e2] =>
+    | GenNode 4 [GenLeaf (inr (inr (inr (inl op)))); e1; e2] =>
+        LambdaBinopDet op (decode e1) (decode e2)
+    | GenNode 5 [e0; e1; e2] =>
         LambdaIf (decode e0) (decode e1) (decode e2)
-    | GenNode 5 [GenLeaf (inr (inr (inr (inr tag)))); e1; e2] =>
-        LambdaConstr tag (decode e1) (decode e2)
     | GenNode 6 [GenLeaf (inr (inr (inr (inr tag)))); e1; e2] =>
+        LambdaConstr tag (decode e1) (decode e2)
+    | GenNode 7 [GenLeaf (inr (inr (inr (inr tag)))); e1; e2] =>
         LambdaConstrDet tag (decode e1) (decode e2)
-    | GenNode 7 [e1; e2] =>
+    | GenNode 8 [e1; e2] =>
         LambdaLoad (decode e1) (decode e2)
-    | GenNode 8 [e1; e2; e3] =>
+    | GenNode 9 [e1; e2; e3] =>
         LambdaStore (decode e1) (decode e2) (decode e3)
     | _ =>
         @inhabitant _ lambda_expr_inhabited

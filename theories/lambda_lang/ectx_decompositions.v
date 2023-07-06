@@ -13,6 +13,8 @@ Fixpoint lambda_ectx_decompositions e :=
   match e with
   | LambdaVar _
   | LambdaVal _
+  | LambdaBinop _ _ _
+  | LambdaBinopDet _ _ _
   | LambdaConstr _ _ _
   | LambdaConstrDet _ _ _ =>
       []
@@ -27,13 +29,6 @@ Fixpoint lambda_ectx_decompositions e :=
       end
   | LambdaUnop op e =>
       lambda_ectx_decompositions_with (LambdaEctxiUnop op) e
-  | LambdaBinop op e1 e2 =>
-      lambda_ectx_decompositions_with (LambdaEctxiBinop1 op e1) e2 ++
-      match lambda_to_val e2 with
-      | None => []
-      | Some v2 =>
-          lambda_ectx_decompositions_with (LambdaEctxiBinop2 op v2) e1
-      end
   | LambdaIf e0 e1 e2 =>
       lambda_ectx_decompositions_with (LambdaEctxiIf e1 e2) e0
   | LambdaLoad e1 e2 =>

@@ -67,11 +67,15 @@ Section sim_GS.
     SIM LambdaBinop op eₛ1 eₛ2 ≳ LambdaBinop op eₜ1 eₜ2 [[ X ]] [[ Φ ]].
   Proof.
     iIntros "Hsim1 Hsim2 HΦ".
-    sim_mono "Hsim2". iIntros "%vₛ2 %vₜ2 #Hv2".
-    sim_mono "Hsim1". iIntros "%vₛ1 %vₜ1 #Hv1".
-    destruct vₛ1, vₜ1; try iDestruct "Hv1" as %[];
-    destruct vₛ2, vₜ2; try iDestruct "Hv2" as %[];
-    destruct op; try sim_strongly_stuck;
+    sim_binopₜ;
+      [| iCombine "Hsim1 Hsim2" as "(Hsim2 & Hsim1)"];
+      [sim_binopₛ1 | sim_binopₛ2];
+      sim_mono "Hsim1"; iIntros "%vₛ1 %vₜ1 #Hv1";
+      sim_smart_mono "Hsim2"; iIntros "%vₛ2 %vₜ2 #Hv2";
+      sim_pures;
+      destruct vₛ1, vₜ1; try iDestruct "Hv1" as %[];
+      destruct vₛ2, vₜ2; try iDestruct "Hv2" as %[];
+      destruct op; try sim_strongly_stuck;
       sim_pures;
       iApply "HΦ"; subst; auto.
   Qed.

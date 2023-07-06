@@ -21,6 +21,10 @@ Inductive lambda_subexprdir : lambda_expr → lambda_expr → Prop :=
       lambda_subexprdir e1 (LambdaBinop op e1 e2)
   | lambda_subexprdir_binop_2 op e1 e2 :
       lambda_subexprdir e2 (LambdaBinop op e1 e2)
+  | lambda_subexprdir_binop_det_1 op e1 e2 :
+      lambda_subexprdir e1 (LambdaBinopDet op e1 e2)
+  | lambda_subexprdir_binop_det_2 op e1 e2 :
+      lambda_subexprdir e2 (LambdaBinopDet op e1 e2)
   | lambda_subexprdir_if_0 e0 e1 e2 :
       lambda_subexprdir e0 (LambdaIf e0 e1 e2)
   | lambda_subexprdir_if_1 e0 e1 e2 :
@@ -112,6 +116,18 @@ Lemma lambda_subexpr_binop_2 e op e1 e2 :
 Proof.
   intros. eapply tc_r; eauto using lambda_subexprdir.
 Qed.
+Lemma lambda_subexpr_binop_det_1 e op e1 e2 :
+  e ⊏ e1 →
+  e ⊏ (LambdaBinopDet op e1 e2).
+Proof.
+  intros. eapply tc_r; eauto using lambda_subexprdir.
+Qed.
+Lemma lambda_subexpr_binop_det_2 e op e1 e2 :
+  e ⊏ e2 →
+  e ⊏ (LambdaBinopDet op e1 e2).
+Proof.
+  intros. eapply tc_r; eauto using lambda_subexprdir.
+Qed.
 Lemma lambda_subexpr_if_0 e e0 e1 e2 :
   e ⊏ e0 →
   e ⊏ (LambdaIf e0 e1 e2).
@@ -194,6 +210,8 @@ Qed.
 #[global] Hint Resolve lambda_subexpr_unop | 2 : lambda_lang.
 #[global] Hint Resolve lambda_subexpr_binop_1 | 2 : lambda_lang.
 #[global] Hint Resolve lambda_subexpr_binop_2 | 2 : lambda_lang.
+#[global] Hint Resolve lambda_subexpr_binop_det_1 | 2 : lambda_lang.
+#[global] Hint Resolve lambda_subexpr_binop_det_2 | 2 : lambda_lang.
 #[global] Hint Resolve lambda_subexpr_if_0 | 2 : lambda_lang.
 #[global] Hint Resolve lambda_subexpr_if_1 | 2 : lambda_lang.
 #[global] Hint Resolve lambda_subexpr_if_2 | 2 : lambda_lang.

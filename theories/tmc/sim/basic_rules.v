@@ -180,6 +180,66 @@ Section sim_GS.
 
   Context (X : sim_protocol Σ).
 
+  Lemma sim_binopₛ1 op e1 e2 e Φ :
+    SIM let: e1 in let: e2.[ren (+1)] in LambdaBinopDet op $1 $0 ≳ e [[ X ]] {{ Φ }} -∗
+    SIM LambdaBinop op e1 e2 ≳ e [[ X ]] {{ Φ }}.
+  Proof.
+    iIntros "Hsim".
+    iApply sim_head_stepₛ. iIntros "%σₛ %σₜ Hsi !>".
+    iExists _, σₛ. iFrame. auto with lambda_lang.
+  Qed.
+  Lemma sim_binopₛ2 op e1 e2 e Φ :
+    SIM let: e2 in let: e1.[ren (+1)] in LambdaBinopDet op $0 $1 ≳ e [[ X ]] {{ Φ }} -∗
+    SIM LambdaBinop op e1 e2 ≳ e [[ X ]] {{ Φ }}.
+  Proof.
+    iIntros "Hsim".
+    iApply sim_head_stepₛ. iIntros "%σₛ %σₜ Hsi !>".
+    iExists _, σₛ. iFrame. auto with lambda_lang.
+  Qed.
+  Lemma sim_binopₜ op e e1 e2 Φ :
+      SIM e ≳ let: e1 in let: e2.[ren (+1)] in LambdaBinopDet op $1 $0 [[ X ]] {{ Φ }}
+    ∧ SIM e ≳ let: e2 in let: e1.[ren (+1)] in LambdaBinopDet op $0 $1 [[ X ]] {{ Φ }}
+    -∗
+    SIM e ≳ LambdaBinop op e1 e2 [[ X ]] {{ Φ }}.
+  Proof.
+    iIntros "Hsim".
+    iApply sim_head_stepₜ. iIntros "%σₛ %σₜ Hsi !>".
+    iSplit; first auto with lambda_lang. iIntros "%eₜ' %σₜ' %Hstepₜ".
+    invert_lambda_head_step; iFrame.
+    - iDestruct "Hsim" as "($ & _)". done.
+    - iDestruct "Hsim" as "(_ & $)". done.
+  Qed.
+
+  Lemma sim_constrₛ1 tag e1 e2 e Φ :
+    SIM let: e1 in let: e2.[ren (+1)] in &&tag $1 $0 ≳ e [[ X ]] {{ Φ }} -∗
+    SIM &tag e1 e2 ≳ e [[ X ]] {{ Φ }}.
+  Proof.
+    iIntros "Hsim".
+    iApply sim_head_stepₛ. iIntros "%σₛ %σₜ Hsi !>".
+    iExists _, σₛ. iFrame. auto with lambda_lang.
+  Qed.
+  Lemma sim_constrₛ2 tag e1 e2 e Φ :
+    SIM let: e2 in let: e1.[ren (+1)] in &&tag $0 $1 ≳ e [[ X ]] {{ Φ }} -∗
+    SIM &tag e1 e2 ≳ e [[ X ]] {{ Φ }}.
+  Proof.
+    iIntros "Hsim".
+    iApply sim_head_stepₛ. iIntros "%σₛ %σₜ Hsi !>".
+    iExists _, σₛ. iFrame. auto with lambda_lang.
+  Qed.
+  Lemma sim_constrₜ tag e e1 e2 Φ :
+      SIM e ≳ let: e1 in let: e2.[ren (+1)] in &&tag $1 $0 [[ X ]] {{ Φ }}
+    ∧ SIM e ≳ let: e2 in let: e1.[ren (+1)] in &&tag $0 $1 [[ X ]] {{ Φ }}
+    -∗
+    SIM e ≳ &tag e1 e2 [[ X ]] {{ Φ }}.
+  Proof.
+    iIntros "Hsim".
+    iApply sim_head_stepₜ. iIntros "%σₛ %σₜ Hsi !>".
+    iSplit; first auto with lambda_lang. iIntros "%eₜ' %σₜ' %Hstepₜ".
+    invert_lambda_head_step; iFrame.
+    - iDestruct "Hsim" as "($ & _)". done.
+    - iDestruct "Hsim" as "(_ & $)". done.
+  Qed.
+
   Lemma sim_constr_detₛ tag v1 v2 e Φ :
     ( ∀ l,
       (l +ₗ 0) ↦ₛ tag -∗
@@ -255,36 +315,6 @@ Section sim_GS.
     { iExists vₛ2, vₜ2. auto with iFrame. }
     iMod ("HΦ" with "[$Hl0 $Hl1 $Hl2]") as "HΦ".
     iApply (sim_post with "HΦ"); done.
-  Qed.
-
-  Lemma sim_constrₛ1 tag e1 e2 e Φ :
-    SIM let: e1 in let: e2.[ren (+1)] in &&tag $1 $0 ≳ e [[ X ]] {{ Φ }} -∗
-    SIM &tag e1 e2 ≳ e [[ X ]] {{ Φ }}.
-  Proof.
-    iIntros "Hsim".
-    iApply sim_head_stepₛ. iIntros "%σₛ %σₜ Hsi !>".
-    iExists _, σₛ. iFrame. auto with lambda_lang.
-  Qed.
-  Lemma sim_constrₛ2 tag e1 e2 e Φ :
-    SIM let: e2 in let: e1.[ren (+1)] in &&tag $0 $1 ≳ e [[ X ]] {{ Φ }} -∗
-    SIM &tag e1 e2 ≳ e [[ X ]] {{ Φ }}.
-  Proof.
-    iIntros "Hsim".
-    iApply sim_head_stepₛ. iIntros "%σₛ %σₜ Hsi !>".
-    iExists _, σₛ. iFrame. auto with lambda_lang.
-  Qed.
-  Lemma sim_constrₜ tag e e1 e2 Φ :
-      SIM e ≳ let: e1 in let: e2.[ren (+1)] in &&tag $1 $0 [[ X ]] {{ Φ }}
-    ∧ SIM e ≳ let: e2 in let: e1.[ren (+1)] in &&tag $0 $1 [[ X ]] {{ Φ }}
-    -∗
-    SIM e ≳ &tag e1 e2 [[ X ]] {{ Φ }}.
-  Proof.
-    iIntros "Hsim".
-    iApply sim_head_stepₜ. iIntros "%σₛ %σₜ Hsi !>".
-    iSplit; first auto with lambda_lang. iIntros "%eₜ' %σₜ' %Hstepₜ".
-    invert_lambda_head_step; iFrame.
-    - iDestruct "Hsim" as "($ & _)". done.
-    - iDestruct "Hsim" as "(_ & $)". done.
   Qed.
 
   Lemma sim_loadₛ l idx v e Φ :

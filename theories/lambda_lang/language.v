@@ -29,8 +29,6 @@ Inductive lambda_ectxi :=
   | LambdaEctxiCall1 e1
   | LambdaEctxiCall2 v2
   | LambdaEctxiUnop (op : lambda_unop)
-  | LambdaEctxiBinop1 (op : lambda_binop) e1
-  | LambdaEctxiBinop2 (op : lambda_binop) v2
   | LambdaEctxiIf e1 e2
   | LambdaEctxiLoad1 e1
   | LambdaEctxiLoad2 v2
@@ -50,10 +48,6 @@ Definition lambda_fill_item k e :=
       LambdaCall e (lambda_of_val v2)
   | LambdaEctxiUnop op =>
       LambdaUnop op e
-  | LambdaEctxiBinop1 op e1 =>
-      LambdaBinop op e1 e
-  | LambdaEctxiBinop2 op v2 =>
-      LambdaBinop op e (lambda_of_val v2)
   | LambdaEctxiIf e1 e2 =>
       LambdaIf e e1 e2
   | LambdaEctxiLoad1 e1 =>

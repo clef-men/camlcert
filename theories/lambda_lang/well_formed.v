@@ -32,6 +32,8 @@ Fixpoint lambda_expr_well_formed prog e :=
   | LambdaBinop _ e1 e2 =>
       lambda_expr_well_formed prog e1 ∧
       lambda_expr_well_formed prog e2
+  | LambdaBinopDet _ _ _ =>
+      False
   | LambdaIf e0 e1 e2 =>
       lambda_expr_well_formed prog e0 ∧
       lambda_expr_well_formed prog e1 ∧
@@ -67,6 +69,9 @@ Fixpoint lambda_expr_closed lvl e :=
   | LambdaBinop _ e1 e2 =>
       lambda_expr_closed lvl e1 ∧
       lambda_expr_closed lvl e2
+  | LambdaBinopDet _ e1 e2 =>
+      lambda_expr_closed lvl e1 ∧
+      lambda_expr_closed lvl e2
   | LambdaIf e0 e1 e2 =>
       lambda_expr_closed lvl e0 ∧
       lambda_expr_closed lvl e1 ∧
@@ -74,8 +79,9 @@ Fixpoint lambda_expr_closed lvl e :=
   | LambdaConstr _ e1 e2 =>
       lambda_expr_closed lvl e1 ∧
       lambda_expr_closed lvl e2
-  | LambdaConstrDet _ _ _ =>
-      False
+  | LambdaConstrDet _ e1 e2 =>
+      lambda_expr_closed lvl e1 ∧
+      lambda_expr_closed lvl e2
   | LambdaLoad e1 e2 =>
       lambda_expr_closed lvl e1 ∧
       lambda_expr_closed lvl e2
@@ -105,6 +111,7 @@ Proof.
     | e1 IHe1 e2 IHe2
     | e1 IHe1 e2 IHe2
     | e IHe
+    | e1 IHe1 e2 IHe2
     | e1 IHe1 e2 IHe2
     | e0 IHe0 e1 IHe1 e2 IHe2
     | e1 IHe1 e2 IHe2

@@ -123,6 +123,7 @@ Section sim_GS.
       | intros Hdir1 _ Hdir2 _ IHdirₛ _
       | intros Hdir _ IHdirₛ _
       | intros Hdir1 _ Hdir2 _ IHdirₛ _
+      | intros Hdir1 _ Hdir2 _ IHdirₛ _
       | intros Hdir0 _ Hdir1 _ Hdir2 _ IHdirₛ _
       | intros Hdir1 _ Hdir2 _ IHdirₛ _
       | intros Hdir1 _ Hdps2 _ IHdirₛ IHdpsₛ
@@ -139,7 +140,7 @@ Section sim_GS.
       ];
       iIntros "%Hwf %Φ Hpre HΦ".
     (* tmc_dir *)
-    - iApply csimv_val; auto with lambda_lang.
+    - iApply csimv_val; done.
     - iApply csimv_var. done.
     - iApply csimv_let; iApply IHdirₛ; auto with lambda_lang.
     - iApply csimv_call; [iApply IHdirₛ; auto with lambda_lang.. |].
@@ -153,6 +154,7 @@ Section sim_GS.
       sim_post. iApply ("HΦ" with "HΨ").
     - iApply csimv_unop; [iApply IHdirₛ; auto with lambda_lang | auto].
     - iApply csimv_binop; [iApply IHdirₛ; auto with lambda_lang.. | auto].
+    - done.
     - iApply csimv_if; last iSplit; iApply IHdirₛ; auto with lambda_lang.
     - iApply csimv_constr; [iApply IHdirₛ; auto with lambda_lang.. | auto].
     - iIntros "%Γ % % (-> & ->) #HΓ /=".
@@ -191,7 +193,7 @@ Section sim_GS.
       iDestruct (sim_heap_bij_tie_eq_2 with "Hlₛ2 Hlₜ2 [//]") as "Hl2".
       sim_heap_bij_insert.
       iApply "HΦ". iFrame "#∗". done.
-    - auto with lambda_lang.
+    - done.
     - iApply csimv_load; [iApply IHdirₛ; auto with lambda_lang.. | auto].
     - iApply csimv_store; [iApply IHdirₛ; auto with lambda_lang.. |].
       iApply "HΦ". done.

@@ -128,9 +128,9 @@ Qed.
 Proof.
   solve_strongly_head_stuck.
 Qed.
-#[global] Instance strongly_head_stuck_lambda_binop prog op v1 v2 :
+#[global] Instance strongly_head_stuck_lambda_binop_det prog op v1 v2 :
   lambda_binop_eval op v1 v2 = None →
-  IsStronglyHeadStuck prog (LambdaBinop op (LambdaVal v1) (LambdaVal v2)).
+  IsStronglyHeadStuck prog (LambdaBinopDet op (LambdaVal v1) (LambdaVal v2)).
 Proof.
   solve_strongly_head_stuck.
 Qed.
@@ -164,12 +164,6 @@ Qed.
 Proof.
   solve_strongly_head_stuck.
 Qed.
-#[global] Hint Extern 0 True => exact I
-: typeclass_instances.
-#[global] Hint Extern 0 (lambda_unop_eval _ _ = _) => reflexivity
-: typeclass_instances.
-#[global] Hint Extern 0 (lambda_binop_eval _ _ _ = _) => reflexivity
-: typeclass_instances.
 
 #[local] Ltac solve_pure_head_exec :=
   intros ?; apply nsteps_once; constructor;
@@ -191,8 +185,8 @@ Qed.
 Proof.
   solve_pure_head_exec.
 Qed.
-#[global] Instance pure_exec_lambda_binop prog op v1 v2 w :
-  PureHeadExec prog (lambda_binop_eval op v1 v2 = Some w) 1 (LambdaBinop op (LambdaVal v1) (LambdaVal v2)) (LambdaVal w).
+#[global] Instance pure_exec_lambda_binop_det prog op v1 v2 w :
+  PureHeadExec prog (lambda_binop_eval op v1 v2 = Some w) 1 (LambdaBinopDet op (LambdaVal v1) (LambdaVal v2)) (LambdaVal w).
 Proof.
   solve_pure_head_exec.
 Qed.
@@ -206,3 +200,10 @@ Qed.
 Proof.
   solve_pure_head_exec.
 Qed.
+
+#[global] Hint Extern 0 True => exact I
+: typeclass_instances.
+#[global] Hint Extern 0 (lambda_unop_eval _ _ = _) => reflexivity
+: typeclass_instances.
+#[global] Hint Extern 0 (lambda_binop_eval _ _ _ = _) => reflexivity
+: typeclass_instances.
