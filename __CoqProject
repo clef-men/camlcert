@@ -63,3 +63,6 @@ theories/tmc/properties.v
 theories/tmc/soundness.v
 theories/tmc/examples/list_map.v
 theories/tmc/examples/list_append.v
+
+theories/aps_plus/definition.v
+theories/aps_plus/properties.v
