@@ -1,11 +1,9 @@
 From Coq Require Import
   FunctionalExtensionality.
 
-From iris.proofmode Require Import
-  proofmode.
-
 From simuliris Require Import
-  prelude.
+  prelude
+  proofmode.
 From simuliris.lambda_lang Require Export
   sim.definition.
 From simuliris.lambda_lang Require Import
@@ -55,7 +53,7 @@ Section sim_GS.
     bisubst_well_formed Γ -∗
     bisubst_well_formed ((vₛ, vₜ) .: Γ).
   Proof.
-    iIntros "Hv Hwf" ([]) "//".
+    iIntros "Hv Hwf" ([]); iSmash.
   Qed.
 
   #[global] Instance bisubst_inhabited : Inhabited bisubst :=
@@ -63,6 +61,6 @@ Section sim_GS.
   Lemma bisubst_inhabitant_well_formed :
     ⊢ bisubst_well_formed inhabitant.
   Proof.
-    auto.
+    iSmash.
   Qed.
 End sim_GS.

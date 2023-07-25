@@ -43,29 +43,29 @@ Notation "'SIM' eₛ ≳ eₜ [[ X ] ] {{ Φ } }" := (sim X Φ%I eₛ%lambda_exp
   eₛ, eₜ, X, Φ at level 200,
   format "'[hv' SIM  '/  ' '[' eₛ ']'  '/' ≳  '[' eₜ ']'  '/' [[  '/  ' '[' X ']'  '/' ] ]  {{  '/  ' '[' Φ ']'  '/' } } ']'"
 ) : bi_scope.
-Notation "'SIM' eₛ ≳ eₜ {{ Φ } }" := (SIM eₛ ≳ eₜ [[ ⊥ ]] {{ Φ }})%I
+Notation "'SIM' eₛ ≳ eₜ {{ Φ } }" := (sim ⊥ Φ%I eₛ%lambda_expr eₜ%lambda_expr)%I
 ( at level 20,
   eₛ, eₜ, Φ at level 200,
   format "'[hv' SIM  '/  ' '[' eₛ ']'  '/' ≳  '[' eₜ ']'  '/' {{  '/  ' '[' Φ ']'  '/' } } ']'"
 ) : bi_scope.
-Notation "'SIM' eₛ ≳ eₜ [[ X ] ] [[ Φ ] ]" := (simv X Φ%I eₛ%lambda_expr eₜ%lambda_expr)
+Notation "'SIM' eₛ ≳ eₜ [[ X ] ] {{# Φ } }" := (simv X Φ%I eₛ%lambda_expr eₜ%lambda_expr)
 ( at level 20,
   eₛ, eₜ, X, Φ at level 200,
-  format "'[hv' SIM  '/  ' '[' eₛ ']'  '/' ≳  '[' eₜ ']'  '/' [[  '/  ' '[' X ']'  '/' ] ]  [[  '/  ' '[' Φ ']'  '/' ] ] ']'"
+  format "'[hv' SIM  '/  ' '[' eₛ ']'  '/' ≳  '[' eₜ ']'  '/' [[  '/  ' '[' X ']'  '/' ] ]  {{#  '/  ' '[' Φ ']'  '/' } } ']'"
 ) : bi_scope.
-Notation "'SIM' eₛ ≳ eₜ [[ Φ ] ]" := (SIM eₛ ≳ eₜ [[ ⊥ ]] [[ Φ ]])%I
+Notation "'SIM' eₛ ≳ eₜ {{# Φ } }" := (simv ⊥ Φ%I eₛ%lambda_expr eₜ%lambda_expr)%I
 ( at level 20,
   eₛ, eₜ, Φ at level 200,
-  format "'[hv' SIM  '/  ' '[' eₛ ']'  '/' ≳  '[' eₜ ']'  '/' [[  '/  ' '[' Φ ']'  '/' ] ] ']'"
+  format "'[hv' SIM  '/  ' '[' eₛ ']'  '/' ≳  '[' eₜ ']'  '/' {{#  '/  ' '[' Φ ']'  '/' } } ']'"
 ) : bi_scope.
 
 Notation "'SIM' eₛ ≳ eₜ [[ X ] ] {{ Φ } }" := (⊢ SIM eₛ ≳ eₜ [[ X ]] {{ Φ }})
 : stdpp_scope.
 Notation "'SIM' eₛ ≳ eₜ {{ Φ } }" := (⊢ SIM eₛ ≳ eₜ {{ Φ }})
 : stdpp_scope.
-Notation "'SIM' eₛ ≳ eₜ [[ X ] ] [[ Φ ] ]" := (⊢ SIM eₛ ≳ eₜ [[ X ]] [[ Φ ]])
+Notation "'SIM' eₛ ≳ eₜ [[ X ] ] {{# Φ } }" := (⊢ SIM eₛ ≳ eₜ [[ X ]] {{# Φ }})
 : stdpp_scope.
-Notation "'SIM' eₛ ≳ eₜ [[ Φ ] ]" := (⊢ SIM eₛ ≳ eₜ [[ Φ ]])
+Notation "'SIM' eₛ ≳ eₜ {{# Φ } }" := (⊢ SIM eₛ ≳ eₜ {{# Φ }})
 : stdpp_scope.
 
 Notation "{{{ P } } } eₛ ≳ eₜ [[ X ] ] {{{ Φ } } }" := (
@@ -90,27 +90,27 @@ Notation "{{{ P } } } eₛ ≳ eₜ {{{ Φ } } }" := (
   at level 20,
   format "'[hv' {{{  '/  ' '[' P ']'  '/' } } }  '/  ' '[' eₛ ']'  '/' ≳  '[' eₜ ']'  '/' {{{  '/  ' '[' Φ ']'  '/' } } } ']'"
 ) : bi_scope.
-Notation "[[[ P ] ] ] eₛ ≳ eₜ [[ X ] ] [[[ Φ ] ] ]" := (
+Notation "{{{ P } } } eₛ ≳ eₜ [[ X ] ] {{{# Φ } } }" := (
   □ (
     ∀ Ψ,
     P%I -∗
-    (∀ eₛ eₜ, Φ eₛ eₜ -∗ Ψ eₛ eₜ) -∗
-    SIM eₛ ≳ eₜ [[ X ]] [[ Ψ ]]
+    (∀ vₛ vₜ, Φ vₛ vₜ -∗ Ψ vₛ vₜ) -∗
+    SIM eₛ ≳ eₜ [[ X ]] {{# Ψ }}
   )
 )%I (
   at level 20,
-  format "'[hv' [[[  '/  ' '[' P ']'  '/' ] ] ]  '/  ' '[' eₛ ']'  '/' ≳  '[' eₜ ']'  '/' [[  '/  ' '[' X ']'  '/' ] ]  [[[  '/  ' '[' Φ ']'  '/' ] ] ] ']'"
+  format "'[hv' {{{  '/  ' '[' P ']'  '/' } } }  '/  ' '[' eₛ ']'  '/' ≳  '[' eₜ ']'  '/' [[  '/  ' '[' X ']'  '/' ] ]  {{{#  '/  ' '[' Φ ']'  '/' } } } ']'"
 ) : bi_scope.
-Notation "[[[ P ] ] ] eₛ ≳ eₜ [[[ Φ ] ] ]" := (
+Notation "{{{ P } } } eₛ ≳ eₜ {{{# Φ } } }" := (
   □ (
     ∀ Ψ,
     P%I -∗
-    (∀ eₛ eₜ, Φ eₛ eₜ -∗ Ψ eₛ eₜ) -∗
-    SIM eₛ ≳ eₜ [[ Ψ ]]
+    (∀ vₛ vₜ, Φ vₛ vₜ -∗ Ψ vₛ vₜ) -∗
+    SIM eₛ ≳ eₜ {{# Ψ }}
   )
 )%I (
   at level 20,
-  format "'[hv' [[[  '/  ' '[' P ']'  '/' ] ] ]  '/  ' '[' eₛ ']'  '/' ≳  '[' eₜ ']'  '/' [[[  '/  ' '[' Φ ']'  '/' ] ] ] ']'"
+  format "'[hv' {{{  '/  ' '[' P ']'  '/' } } }  '/  ' '[' eₛ ']'  '/' ≳  '[' eₜ ']'  '/' {{{#  '/  ' '[' Φ ']'  '/' } } } ']'"
 ) : bi_scope.
 
 Notation "{{{ P } } } eₛ ≳ eₜ [[ X ] ] {{{ Φ } } }" := (
@@ -125,15 +125,15 @@ Notation "{{{ P } } } eₛ ≳ eₜ {{{ Φ } } }" := (
     (∀ eₛ eₜ, Φ eₛ eₜ -∗ Ψ eₛ eₜ) -∗
     SIM eₛ ≳ eₜ {{ Ψ }}
 ) : stdpp_scope.
-Notation "[[[ P ] ] ] eₛ ≳ eₜ [[ X ] ] [[[ Φ ] ] ]" := (
+Notation "{{{ P } } } eₛ ≳ eₜ [[ X ] ] {{{# Φ } } }" := (
   ⊢ ∀ Ψ,
     P%I -∗
-    (∀ eₛ eₜ, Φ eₛ eₜ -∗ Ψ eₛ eₜ) -∗
-    SIM eₛ ≳ eₜ [[ X ]] [[ Ψ ]]
+    (∀ vₛ vₜ, Φ vₛ vₜ -∗ Ψ vₛ vₜ) -∗
+    SIM eₛ ≳ eₜ [[ X ]] {{# Ψ }}
 ) : stdpp_scope.
-Notation "[[[ P ] ] ] eₛ ≳ eₜ [[[ Φ ] ] ]" := (
+Notation "{{{ P } } } eₛ ≳ eₜ {{{# Φ } } }" := (
   ⊢ ∀ Ψ,
     P%I -∗
-    (∀ eₛ eₜ, Φ eₛ eₜ -∗ Ψ eₛ eₜ) -∗
-    SIM eₛ ≳ eₜ [[ Ψ ]]
+    (∀ vₛ vₜ, Φ vₛ vₜ -∗ Ψ vₛ vₜ) -∗
+    SIM eₛ ≳ eₜ {{# Ψ }}
 ) : stdpp_scope.

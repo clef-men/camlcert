@@ -118,9 +118,9 @@ Section ectx_language.
       σ2 = σ1 ∧ e2' = e2 ;
   }.
 
-  Class IsStronglyHeadStuck prog e :=
-    is_strongly_head_stuck : strongly_head_stuck prog e.
-  Class PureHeadExec prog (ϕ : Prop) n e1 e2 :=
+  Class IsStronglyHeadStuck prog (ϕ : Prop) e :=
+    is_strongly_head_stuck : ϕ → strongly_head_stuck prog e.
+  Class PureHeadExec prog n (ϕ : Prop) e1 e2 :=
     pure_head_exec_pure_head_steps : ϕ → nsteps (pure_head_step prog) n e1 e2.
 
   Lemma head_step_not_val prog e1 σ1 e2 σ2 :
@@ -300,11 +300,12 @@ Section ectx_language.
     intros (? & ? & ?). esplit; last done.
     eauto using strongly_head_irreducible_strongly_irreducible.
   Qed.
-  #[global] Instance is_strongly_head_stuck_is_strongly_stuck prog e :
-    IsStronglyHeadStuck prog e →
-    IsStronglyStuck prog e.
+  #[global] Instance is_strongly_head_stuck_is_strongly_stuck prog ϕ e :
+    IsStronglyHeadStuck prog ϕ e →
+    IsStronglyStuck prog ϕ e.
   Proof.
-    apply strongly_head_stuck_strongly_stuck.
+    intros Hstrongly_head_stuck Hϕ.
+    apply strongly_head_stuck_strongly_stuck, is_strongly_head_stuck. done.
   Qed.
 
   #[global] Instance fill_language_ctx K :
@@ -334,40 +335,40 @@ Section ectx_language.
 
   Lemma pure_head_steps_pure_head_exec prog n e1 e2 :
     nsteps (pure_head_step prog) n e1 e2 →
-    PureHeadExec prog True n e1 e2.
+    PureHeadExec prog n True e1 e2.
   Proof.
     intros ? ?. done.
   Qed.
   Lemma pure_head_step_pure_head_exec prog e1 e2 :
     pure_head_step prog e1 e2 →
-    PureHeadExec prog True 1 e1 e2.
+    PureHeadExec prog 1 True e1 e2.
   Proof.
     intros. eapply pure_head_steps_pure_head_exec, nsteps_once. done.
   Qed.
   Lemma pure_head_exec_pure_head_step prog ϕ e1 e2 :
-    PureHeadExec prog ϕ 1 e1 e2 →
+    PureHeadExec prog 1 ϕ e1 e2 →
     ϕ →
     pure_head_step prog e1 e2.
   Proof.
     intros. apply nsteps_once_inv, pure_head_exec_pure_head_steps. done.
   Qed.
-  Lemma pure_exec_fill_pure_exec prog K ϕ n e1 e2 :
-    PureExec prog ϕ n e1 e2 →
-    PureExec prog ϕ n (K @@ e1) (K @@ e2).
+  Lemma pure_exec_fill_pure_exec prog K n ϕ e1 e2 :
+    PureExec prog n ϕ e1 e2 →
+    PureExec prog n ϕ (K @@ e1) (K @@ e2).
   Proof.
     apply language_ctx_pure_exec, _.
   Qed.
-  Lemma pure_head_exec_fill_pure_exec prog K ϕ n e1 e2 :
-    PureHeadExec prog ϕ n e1 e2 →
-    PureExec prog ϕ n (K @@ e1) (K @@ e2).
+  Lemma pure_head_exec_fill_pure_exec prog K n ϕ e1 e2 :
+    PureHeadExec prog n ϕ e1 e2 →
+    PureExec prog n ϕ (K @@ e1) (K @@ e2).
   Proof.
     intros ? ?.
     eapply nsteps_congruence;
     eauto using pure_head_exec_pure_head_steps, pure_head_step_fill_pure_step.
   Qed.
-  #[global] Instance pure_head_exec_pure_exec prog ϕ n e1 e2 :
-    PureHeadExec prog ϕ n e1 e2 →
-    PureExec prog ϕ n e1 e2.
+  #[global] Instance pure_head_exec_pure_exec prog n ϕ e1 e2 :
+    PureHeadExec prog n ϕ e1 e2 →
+    PureExec prog n ϕ e1 e2.
   Proof.
     intros. rewrite -(fill_empty e1) -(fill_empty e2).
     eauto using pure_head_exec_fill_pure_exec.

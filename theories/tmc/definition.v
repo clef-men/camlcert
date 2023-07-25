@@ -1,7 +1,5 @@
 From simuliris Require Import
   prelude.
-From simuliris.common Require Export
-  fin_maps.
 From simuliris.lambda_lang Require Export
   syntax.
 From simuliris.lambda_lang Require Import

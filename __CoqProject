@@ -11,9 +11,11 @@ theories/common/typeclasses.v
 theories/common/autosubst.v
 theories/common/relation.v
 theories/common/induction.v
-theories/common/fin_maps.v
 theories/common/three.v
 theories/common/loc.v
+theories/common/tactic_flag.v
+
+theories/proofmode.v
 
 theories/base_logic/satisfiable.v
 theories/base_logic/lib/cupd/definition.v

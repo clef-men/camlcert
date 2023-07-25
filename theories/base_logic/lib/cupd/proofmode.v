@@ -1,10 +1,13 @@
 From iris.proofmode Require Import
   class_instances_updates.
-From iris.proofmode Require Export
-  proofmode.
+
+From diaframe Require Import
+  util_instances.
 
 From simuliris Require Import
   prelude.
+From simuliris Require Export
+  proofmode.
 From simuliris.base_logic Require Export
   lib.cupd.rules.
 
@@ -125,5 +128,77 @@ Section bi_cupd.
   | 2.
   Proof.
     rewrite /Frame => <-. rewrite cupd_frame_l //.
+  Qed.
+
+  #[global] Instance cupd_strong_modality :
+    ModalityStrongMono (PROP := PROP) cupd.
+  Proof.
+    split.
+    - move=> P Q -> //.
+    - move=> P Q. rewrite cupd_frame_r //.
+  Qed.
+
+  #[global] Instance cupd_compat3 :
+    ModalityCompat3 (PROP := PROP) cupd cupd cupd
+  | 20.
+  Proof.
+    rewrite /ModalityCompat3 => P. apply cupd_trans.
+  Qed.
+
+  #[global] Instance cupd_bupd_compat3 :
+    ModalityCompat3 (PROP := PROP) cupd cupd bupd
+  | 100.
+  Proof.
+    iIntros "%P >>H //".
+  Qed.
+
+  #[global] Instance cupd_bupd_compat3' :
+    ModalityCompat3 (PROP := PROP) cupd bupd cupd
+  | 120.
+  Proof.
+    iIntros "%P >>H //".
+  Qed.
+
+  #[global] Instance cupd_weaker_than_id :
+    ModWeaker (PROP := PROP) id cupd
+  | 0.
+  Proof.
+    move=> P. apply cupd_intro.
+  Qed.
+
+  #[global] Instance split_mod_cupd :
+    SplitLeftModality3 (PROP := PROP) cupd cupd cupd
+  | 20.
+  Proof.
+    split; apply _.
+  Qed.
+
+  #[global] Instance collect_modal_cupd P :
+    Collect1Modal (|++> P) cupd P
+  | 50.
+  Proof.
+    apply: collect_one_modal_modal.
+  Qed.
+
+  #[global] Instance modal_compose_cupd_cupd :
+    CombinedModalitySafe (cupd (PROP := PROP)) cupd cupd.
+  Proof.
+    move=> P. iSmash.
+  Qed.
+
+  #[global] Instance combined_bupd_cupd :
+    CombinedModalitySafe (bupd (PROP := PROP)) cupd cupd
+  | 45.
+  Proof.
+    move => P. iSmash.
+  Qed.
+
+  #[global] Instance combined_cupd_bupd :
+    CombinedModalitySafe (cupd (PROP := PROP)) bupd cupd
+  | 45.
+  Proof.
+    move => P. eapply (anti_symm _).
+    - iIntros ">$ //".
+    - iIntros ">>$ //".
   Qed.
 End bi_cupd.

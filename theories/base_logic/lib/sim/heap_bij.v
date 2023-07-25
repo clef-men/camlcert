@@ -2,11 +2,10 @@ From iris.base_logic Require Export
   lib.iprop.
 From iris.base_logic Require Import
   lib.gset_bij.
-From iris.proofmode Require Import
-  proofmode.
 
 From simuliris Require Import
-  prelude.
+  prelude
+  proofmode.
 From simuliris.common Require Export
   typeclasses.
 From simuliris.base_logic Require Export
@@ -118,11 +117,11 @@ Section sim_heap_bij_GS.
       done.
     Qed.
     Lemma sim_heap_bij_tie_eq_1 lₛ lₜ :
-      lₛ ⋈ lₜ -∗
+      lₛ ⋈ lₜ ⊢
         ∃ vₛ vₜ,
         lₛ ↦ₛ vₛ ∗ lₜ ↦ₜ vₜ ∗ vₛ ≈ vₜ.
     Proof.
-      rewrite sim_heap_bij_tie_eq //.
+      rewrite sim_heap_bij_tie_eq. auto.
     Qed.
     Lemma sim_heap_bij_tie_eq_2 lₛ vₛ lₜ vₜ :
       lₛ ↦ₛ vₛ -∗

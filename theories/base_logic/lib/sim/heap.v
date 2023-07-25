@@ -5,11 +5,10 @@ From iris.bi Require Import
   lib.fractional.
 From iris.base_logic Require Import
   lib.gen_heap.
-From iris.proofmode Require Import
-  proofmode.
 
 From simuliris Require Import
-  prelude.
+  prelude
+  proofmode.
 
 Class SimHeapGpreS Σ locₛ valₛ locₜ valₜ `{Countable locₛ, Countable locₜ} := {
   sim_heap_GpreS_heapₛ_GpreS : gen_heapGpreS locₛ valₛ Σ ;

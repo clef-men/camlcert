@@ -5,11 +5,10 @@ From iris.bi Require Import
   fixpoint.
 From iris.base_logic Require Import
   bi.
-From iris.proofmode Require Import
-  proofmode.
 
 From simuliris Require Import
-  prelude.
+  prelude
+  proofmode.
 From simuliris.common Require Import
   tactics.
 From simuliris.base_logic Require Import
@@ -63,8 +62,7 @@ Section bi.
       idiverges_body N1 e σ -∗
       idiverges_body N2 e σ.
     Proof.
-      iIntros "HN >(%e' & %σ' & %Hstep & HN1) !>".
-      iExists e', σ'. iSplit; first done. iApply ("HN" with "HN1").
+      iIntros "HN >(%e' & %σ' & %Hstep & HN1)". iSmash.
     Qed.
   End idiverges_body.
 
@@ -101,13 +99,13 @@ Section bi.
       idiverges e σ -∗
       idiverges_body idiverges e σ.
     Proof.
-      rewrite idiverges_fixpoint //.
+      rewrite idiverges_fixpoint. auto.
     Qed.
     Lemma idiverges_fold e σ :
       idiverges_body idiverges e σ -∗
       idiverges e σ.
     Proof.
-      rewrite idiverges_fixpoint //.
+      rewrite idiverges_fixpoint. auto.
     Qed.
 
     Lemma idiverges_strong_coind I e σ :
@@ -123,9 +121,8 @@ Section bi.
     Proof.
       assert (BiMonoPred (λ (N : _ → _) x, uncurry I x ∨ idiverges_body' N x)%I) as Hmono.
       { clear dependent e σ. split.
-        - iIntros "%N1 %N2 %HN1 %HN2 #HN" ((e, σ)) "[HI | HN1]"; first auto.
-          iRight. iApply (idiverges_body_mono with "[] HN1"). iIntros "%e' %σ'".
-          iApply "HN".
+        - iIntros "%N1 %N2 %HN1 %HN2 #HN" ((e, σ)) "[HI | HN1]"; first iSmash.
+          iRight. iApply (idiverges_body_mono with "[] HN1"). iSmash.
         - intros N HN n (e1, σ1) (e2, σ2) (He%leibniz_equiv & Hσ%leibniz_equiv).
           solve_proper.
       }
@@ -137,8 +134,7 @@ Section bi.
       { rewrite -idiverges_unseal idiverges_fixpoint.
         iApply (idiverges_body_mono with "[] Hidiv"). iIntros "%e' %σ' Hidiv".
         rewrite idiverges_unseal /idiverges_def /curry /Datatypes.curry /=.
-        iApply (greatest_fixpoint_strong_mono with "[] Hidiv"). clear dependent e σ. iIntros "!> %N" ((e, σ)) "Hidiv".
-        auto.
+        iApply (greatest_fixpoint_strong_mono with "[] Hidiv"). clear dependent e σ. iIntros "!> %N" ((e, σ)) "Hidiv". auto.
       }
       iModIntro.
       match goal with |- _ _ ?P =>
@@ -151,7 +147,7 @@ Section bi.
         setoid_rewrite greatest_fixpoint_unfold; auto.
       - iExists e', σ'. iSplit; first auto using step_prim_step.
         setoid_rewrite greatest_fixpoint_unfold; last done.
-        iRight. iApply (IH with "HI"); done.
+        iRight. iApply (IH with "HI"); iSmash+.
     Qed.
     Lemma idiverges_coind I e σ :
       □ (
@@ -166,8 +162,7 @@ Section bi.
     Proof.
       iIntros "#Hind HI".
       iApply (idiverges_strong_coind with "[] HI"). clear e σ. iIntros "!> %e %σ HI".
-      iMod ("Hind" with "HI") as "(%e' & %σ' & %Hsteps & HI)".
-      auto with iFrame.
+      iMod ("Hind" with "HI") as "(%e' & %σ' & %Hsteps & HI)". iSmash.
     Qed.
 
     Lemma bupd_idiverges e σ :

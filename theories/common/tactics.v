@@ -101,5 +101,5 @@ Tactic Notation "invert" ident(H) "-" ident(x1) ident(x2) ident(x3) ident(x4) id
 Tactic Notation "invert" ident(H) "-" ident(x1) ident(x2) ident(x3) ident(x4) ident(x5) ident(x6) ident(x7) ident(x8) :=
   invert H - x1 x2 x3 x4 x5 x6 x7 x8 as [].
 
-Tactic Notation "solve_proper" "+" :=
+Tactic Notation "solve_proper+" :=
   solve_proper_core ltac:(fun _ => f_equiv || solve_proper_prepare).

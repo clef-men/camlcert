@@ -53,12 +53,12 @@ Create HintDb lambda_lang.
 #[global] Hint Extern 0 (
   strongly_stuck _ _
 ) => (
-  eapply @is_strongly_stuck; [apply _]
+  eapply @is_strongly_stuck; [apply _ |]
 ) : lambda_lang.
 #[global] Hint Extern 0 (
   strongly_head_stuck _ _
 ) => (
-  eapply @is_strongly_head_stuck; [apply _]
+  eapply @is_strongly_head_stuck; [apply _ |]
 ) : lambda_lang.
 
 #[global] Hint Extern 1 (
@@ -112,55 +112,51 @@ Ltac invert_lambda_head_step :=
   | auto with lambda_lang
   ].
 #[global] Instance strongly_head_stuck_lambda_var prog x :
-  IsStronglyHeadStuck prog (LambdaVar x).
+  IsStronglyHeadStuck prog
+    True
+    (LambdaVar x).
 Proof.
   solve_strongly_head_stuck.
 Qed.
 #[global] Instance strongly_head_stuck_lambda_call prog v1 v2 :
-  (if v1 is LambdaFunc _ then False else True) →
-  IsStronglyHeadStuck prog (LambdaCall (LambdaVal v1) (LambdaVal v2)).
+  IsStronglyHeadStuck prog
+    (if v1 is LambdaFunc _ then False else True)
+    (LambdaCall (LambdaVal v1) (LambdaVal v2)).
 Proof.
   solve_strongly_head_stuck.
 Qed.
 #[global] Instance strongly_head_stuck_lambda_unop prog op v :
-  lambda_unop_eval op v = None →
-  IsStronglyHeadStuck prog (LambdaUnop op (LambdaVal v)).
+  IsStronglyHeadStuck prog
+    (lambda_unop_eval op v = None)
+    (LambdaUnop op (LambdaVal v)).
 Proof.
   solve_strongly_head_stuck.
 Qed.
 #[global] Instance strongly_head_stuck_lambda_binop_det prog op v1 v2 :
-  lambda_binop_eval op v1 v2 = None →
-  IsStronglyHeadStuck prog (LambdaBinopDet op (LambdaVal v1) (LambdaVal v2)).
+  IsStronglyHeadStuck prog
+    (lambda_binop_eval op v1 v2 = None)
+    (LambdaBinopDet op (LambdaVal v1) (LambdaVal v2)).
 Proof.
   solve_strongly_head_stuck.
 Qed.
 #[global] Instance strongly_head_stuck_lambda_if prog v0 e1 e2 :
-  (if v0 is LambdaBool _ then False else True) →
-  IsStronglyHeadStuck prog (LambdaIf (LambdaVal v0) e1 e2).
+  IsStronglyHeadStuck prog
+    (if v0 is LambdaBool _ then False else True)
+    (LambdaIf (LambdaVal v0) e1 e2).
 Proof.
   solve_strongly_head_stuck.
 Qed.
 #[global] Instance strongly_head_stuck_lambda_load_1 prog v1 v2 :
-  (if v1 is LambdaLoc _ then False else True) →
-  IsStronglyHeadStuck prog (LambdaLoad (LambdaVal v1) (LambdaVal v2)).
-Proof.
-  solve_strongly_head_stuck.
-Qed.
-#[global] Instance strongly_head_stuck_lambda_load_2 prog v1 v2 :
-  (if v2 is LambdaIndex _ then False else True) →
-  IsStronglyHeadStuck prog (LambdaLoad (LambdaVal v1) (LambdaVal v2)).
+  IsStronglyHeadStuck prog
+    (if (v1, v2) is (LambdaLoc _, LambdaIndex _) then False else True)
+    (LambdaLoad (LambdaVal v1) (LambdaVal v2)).
 Proof.
   solve_strongly_head_stuck.
 Qed.
 #[global] Instance strongly_head_stuck_lambda_store_1 prog v1 v2 v3 :
-  (if v1 is LambdaLoc _ then False else True) →
-  IsStronglyHeadStuck prog (LambdaStore (LambdaVal v1) (LambdaVal v2) (LambdaVal v3)).
-Proof.
-  solve_strongly_head_stuck.
-Qed.
-#[global] Instance strongly_head_stuck_lambda_store_2 prog v1 v2 v3 :
-  (if v2 is LambdaIndex _ then False else True) →
-  IsStronglyHeadStuck prog (LambdaStore (LambdaVal v1) (LambdaVal v2) (LambdaVal v3)).
+  IsStronglyHeadStuck prog
+    (if (v1, v2) is (LambdaLoc _, LambdaIndex _) then False else True)
+    (LambdaStore (LambdaVal v1) (LambdaVal v2) (LambdaVal v3)).
 Proof.
   solve_strongly_head_stuck.
 Qed.
@@ -171,39 +167,50 @@ Qed.
   | intros; invert_lambda_head_step; auto
   ].
 #[global] Instance pure_exec_lambda_let prog v e :
-  PureHeadExec prog True 1 (LambdaLet (LambdaVal v) e) e.[LambdaVal v/].
+  PureHeadExec prog 1
+    True
+    (LambdaLet (LambdaVal v) e)
+    e.[LambdaVal v/].
 Proof.
   solve_pure_head_exec.
 Qed.
 #[global] Instance pure_exec_lambda_call prog func v e :
-  PureHeadExec prog (prog !! func = Some e) 1 (LambdaCall (LambdaVal (LambdaFunc func)) (LambdaVal v)) e.[LambdaVal v/].
+  PureHeadExec prog 1
+    (prog !! func = Some e)
+    (LambdaCall (LambdaVal (LambdaFunc func)) (LambdaVal v))
+    e.[LambdaVal v/].
 Proof.
   solve_pure_head_exec.
 Qed.
 #[global] Instance pure_exec_lambda_unop prog op v w :
-  PureHeadExec prog (lambda_unop_eval op v = Some w) 1 (LambdaUnop op (LambdaVal v)) (LambdaVal w).
+  PureHeadExec prog 1
+    (lambda_unop_eval op v = Some w)
+    (LambdaUnop op (LambdaVal v))
+    (LambdaVal w).
 Proof.
   solve_pure_head_exec.
 Qed.
 #[global] Instance pure_exec_lambda_binop_det prog op v1 v2 w :
-  PureHeadExec prog (lambda_binop_eval op v1 v2 = Some w) 1 (LambdaBinopDet op (LambdaVal v1) (LambdaVal v2)) (LambdaVal w).
+  PureHeadExec prog 1
+    (lambda_binop_eval op v1 v2 = Some w)
+    (LambdaBinopDet op (LambdaVal v1) (LambdaVal v2))
+    (LambdaVal w).
 Proof.
   solve_pure_head_exec.
 Qed.
 #[global] Instance pure_exec_lambda_if_true prog e1 e2 :
-  PureHeadExec prog True 1 (LambdaIf (LambdaVal (LambdaBool true)) e1 e2) e1.
+  PureHeadExec prog 1
+    True
+    (LambdaIf (LambdaVal (LambdaBool true)) e1 e2)
+    e1.
 Proof.
   solve_pure_head_exec.
 Qed.
 #[global] Instance pure_exec_lambda_if_false prog e1 e2 :
-  PureHeadExec prog True 1 (LambdaIf (LambdaVal (LambdaBool false)) e1 e2) e2.
+  PureHeadExec prog 1
+    True
+    (LambdaIf (LambdaVal (LambdaBool false)) e1 e2)
+    e2.
 Proof.
   solve_pure_head_exec.
 Qed.
-
-#[global] Hint Extern 0 True => exact I
-: typeclass_instances.
-#[global] Hint Extern 0 (lambda_unop_eval _ _ = _) => reflexivity
-: typeclass_instances.
-#[global] Hint Extern 0 (lambda_binop_eval _ _ _ = _) => reflexivity
-: typeclass_instances.

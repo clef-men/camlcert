@@ -12,7 +12,7 @@ From simuliris.common Require Import
 From simuliris.program_logic Require Import
   refinement
   idiverges
-  sim.rules
+  sim.proofmode
   sim.notations.
 
 Section sim.
@@ -27,7 +27,7 @@ Section sim.
         ∃ (_ : BiSimilar PROP (val Λₛ) (val Λₜ)),
         □ (∀ vₛ vₜ, vₛ ≈ vₜ -∗ ⌜vₛ ≈ vₜ⌝) ∗
         sim_state_interp σₛ σₜ ∗
-        SIM eₛ ≳ eₜ {{ sim_post_val (≈) }}
+        SIM eₛ ≳ eₜ {{# (≈) }}
     ) →
     let bₜ := behaviour_converges e_finalₜ in
     has_behaviour sim_progₜ eₜ σₜ bₜ →
@@ -43,7 +43,7 @@ Section sim.
     iInduction n as [n] "IH" using nat_strong_ind forall (eₛ σₛ eₜ σₜ Hstepsₜ).
     set I : sim_protocol_O PROP Λₛ Λₜ := λ Φ eₛ _eₜ, (
       ∀ σₛ,
-      (∀ eₛ eₜ, Φ eₛ eₜ -∗ sim_post_val (≈) eₛ eₜ) -∗
+      (∀ eₛ eₜ, Φ eₛ eₜ -∗ sim_post_vals (≈) eₛ eₜ) -∗
       ⌜_eₜ = eₜ⌝ -∗
       sim_state_interp σₛ σₜ -∗
       ⌜ ∃ e_finalₛ,
@@ -52,9 +52,9 @@ Section sim.
         behaviour_refinement bₛ bₜ
       ⌝
     )%I.
-    iAssert (I (sim_post_val (≈)%I) eₛ eₜ) with "[Hsim]" as "HI"; last first.
-    { iApply ("HI" with "[] [//] Hsi"). auto. }
-    rewrite sim_fixpoint. iApply (sim_inner_strong_ind with "[] Hsim"); [solve_proper.. |].
+    iAssert (I (sim_post_vals (≈)%I) eₛ eₜ) with "[Hsim]" as "HI"; last first.
+    { iApply ("HI" with "[] [//] Hsi"). iSmash. }
+    rewrite /simv sim_fixpoint. iApply (sim_inner_strong_ind with "[] Hsim"); [solve_proper.. |].
     clear eₛ σₛ. iIntros "!> %Φ %eₛ % Hsim % Hsimilar -> Hsi".
     iMod ("Hsim" with "Hsi") as "[Hsim | [Hsim | [Hsim | Hsim]]]".
     - iDestruct "Hsim" as "(_ & [Hsim | Hsim])".
@@ -68,7 +68,8 @@ Section sim.
             - exists eₜ', σₜ'. apply step_prim_step. done.
           }
           apply behaviour_refinement_stuck; [apply Hstuckₛ | apply Hstuckₜ].
-      + iDestruct ("Hsimilar" with "Hsim") as "(%vₛ & %vₜ & (-> & ->) & Hv)".
+      + rewrite sim_post_vals_unseal.
+        iDestruct ("Hsimilar" with "Hsim") as "(%vₛ & %vₜ & (-> & ->) & Hv)".
         iDestruct ("val_bi_similar_similar" with "Hv") as %Hv.
         iPureIntro. exists (of_val vₛ). split.
         * econstructor. split; [apply rtc_refl | by eapply val_irreducible].
@@ -107,7 +108,7 @@ Section sim.
         ∃ (_ : BiSimilar PROP (val Λₛ) (val Λₜ)),
         □ (∀ vₛ vₜ, vₛ ≈ vₜ -∗ ⌜vₛ ≈ vₜ⌝) ∗
         sim_state_interp σₛ σₜ ∗
-        SIM eₛ ≳ eₜ {{ sim_post_val (≈) }}
+        SIM eₛ ≳ eₜ {{# (≈) }}
     ) →
     has_behaviour sim_progₜ eₜ σₜ behaviour_diverges  →
     has_behaviour sim_progₛ eₛ σₛ behaviour_diverges.
@@ -120,22 +121,21 @@ Section sim.
       ∃ eₜ σₜ,
       ⌜diverges sim_progₜ eₜ σₜ⌝ ∗
       sim_state_interp σₛ σₜ ∗
-      SIM eₛ ≳ eₜ {{ sim_post_val (≈) }}
+      SIM eₛ ≳ eₜ {{ sim_post_vals (≈) }}
     )%I.
-    iAssert (I eₛ σₛ -∗ idiverges sim_progₛ eₛ σₛ)%I as "HI"; last first.
-    { iApply "HI". iExists eₜ, σₜ. auto with iFrame. }
+    iAssert (I eₛ σₛ -∗ idiverges sim_progₛ eₛ σₛ)%I as "HI"; last iSmash.
     iApply idiverges_coind. clear dependent eₛ σₛ eₜ σₜ. iIntros "!> %eₛ %σₛ (%eₜ & %σₜ & %Hdivergesₜ & Hsi & Hsim)".
     set J : sim_protocol_O PROP Λₛ Λₜ := λ Φ eₛ eₜ, (
       ∀ σₛ σₜ,
       ⌜diverges sim_progₜ eₜ σₜ⌝ -∗
-      (∀ eₛ eₜ, Φ eₛ eₜ -∗ sim_post_val (≈) eₛ eₜ) -∗
+      (∀ eₛ eₜ, Φ eₛ eₜ -∗ sim_post_vals (≈) eₛ eₜ) -∗
       sim_state_interp σₛ σₜ ==∗
         ∃ eₛ' σₛ',
         ⌜tc (step sim_progₛ) (eₛ, σₛ) (eₛ', σₛ')⌝ ∗
         I eₛ' σₛ'
     )%I.
-    iAssert (SIM eₛ ≳ eₜ {{ sim_post_val (≈) }} -∗ J (sim_post_val (≈)) eₛ eₜ)%I as "HJ"; last first.
-    { iApply ("HJ" with "Hsim [//] [] Hsi"). auto. }
+    iAssert (SIM eₛ ≳ eₜ {{ sim_post_vals (≈) }} -∗ J (sim_post_vals (≈)) eₛ eₜ)%I as "HJ"; last first.
+    { iApply ("HJ" with "Hsim [//] [] Hsi"). iSmash. }
     rewrite sim_fixpoint. iApply (sim_inner_strong_ind with "[]"); [solve_proper.. |].
     clear dependent eₛ σₛ eₜ σₜ. iIntros "!> %Φ %eₛ %eₜ Hsim %σₛ %σₜ %Hdivergesₜ Hsimilar Hsi".
     iMod ("Hsim" with "Hsi") as "[Hsim | [Hsim | [Hsim | Hsim]]]".
@@ -144,22 +144,21 @@ Section sim.
       { iDestruct "Hsim" as "[Hsim | Hsim]".
         - iDestruct "Hsim" as "(%Hstuckₛ & %Hstuckₜ)".
           iPureIntro. apply stuck_irreducible, strongly_stuck_stuck. done.
-        - iDestruct ("Hsimilar" with "Hsim") as "(%vₛ & %vₜ & (-> & ->) & _)".
+        - rewrite sim_post_vals_unseal.
+          iDestruct ("Hsimilar" with "Hsim") as "(%vₛ & %vₜ & (-> & ->) & _)".
           iPureIntro. eapply val_irreducible. done.
       }
       apply diverges_reducible. done.
     - iDestruct "Hsim" as "(%eₛ' & %σₛ' & %Hstepsₜ & Hsi & (_ & Hsim))".
       rewrite -sim_fixpoint.
-      iDestruct (sim_mono with "Hsimilar Hsim") as "Hsim".
-      iExists eₛ', σₛ'. iSplitR; first done. iExists eₜ, σₜ. auto with iFrame.
+      iDestruct (sim_mono with "Hsimilar Hsim") as "Hsim". iSmash.
     - iDestruct "Hsim" as "(%Hreducibleₜ & Hsim)".
       punfold Hdivergesₜ. invert Hdivergesₜ as [? ? eₜ' σₜ' Hstepₜ [Hdivergesₜ' | []]].
       iMod ("Hsim" with "[//]") as "[Hsim | Hsim]".
       + iDestruct "Hsim" as "(Hsi & (HJ & _))".
         iApply ("HJ" with "[//] Hsimilar Hsi").
       + iDestruct "Hsim" as "(%eₛ' & %σₛ' & %Hstepsₛ & Hsi & Hsim)".
-        iDestruct (sim_mono with "Hsimilar Hsim") as "Hsim".
-        iExists eₛ', σₛ'. iSplitR; first done. iExists eₜ', σₜ'. auto with iFrame.
+        iDestruct (sim_mono with "Hsimilar Hsim") as "Hsim". iSmash.
     - iDestruct "Hsim" as "(%Kₛ & %eₛ' & %Kₜ & %eₜ' & %Ψ & (-> & ->) & [] & Hsi & Hsim)".
   Qed.
 
@@ -169,7 +168,7 @@ Section sim.
         ∃ (_ : BiSimilar PROP (val Λₛ) (val Λₜ)),
         □ (∀ vₛ vₜ, vₛ ≈ vₜ -∗ ⌜vₛ ≈ vₜ⌝) ∗
         sim_state_interp σₛ σₜ ∗
-        SIM eₛ ≳ eₜ {{ sim_post_val (≈) }}
+        SIM eₛ ≳ eₜ {{# (≈) }}
     ) →
     config_refinement sim_progₛ sim_progₜ eₛ σₛ eₜ σₜ.
   Proof.
@@ -185,39 +184,10 @@ Section sim.
         ∃ (_ : BiSimilar PROP (val Λₛ) (val Λₜ)),
         □ (∀ vₛ vₜ, vₛ ≈ vₜ -∗ ⌜vₛ ≈ vₜ⌝) ∗
         sim_state_interp ∅ ∅ ∗
-        SIM eₛ ≳ eₜ {{ sim_post_val (≈) }}
+        SIM eₛ ≳ eₜ {{# (≈) }}
     ) →
     expr_refinement sim_progₛ sim_progₜ eₛ eₜ.
   Proof.
     apply sim_adequacy.
-  Qed.
-
-  Lemma simv_adequacy σₛ eₛ σₜ eₜ :
-    ( ⊢ |==>
-        ∃ sim_state : SimState PROP Λₛ Λₜ,
-        ∃ (_ : BiSimilar PROP (val Λₛ) (val Λₜ)),
-        □ (∀ vₛ vₜ, vₛ ≈ vₜ -∗ ⌜vₛ ≈ vₜ⌝) ∗
-        sim_state_interp σₛ σₜ ∗
-        SIM eₛ ≳ eₜ [[ (≈) ]]
-    ) →
-    config_refinement sim_progₛ sim_progₜ eₛ σₛ eₜ σₜ.
-  Proof.
-    intros Hsim.
-    apply sim_adequacy.
-    iMod Hsim as "(%sim_state & % & #val_bi_similar_similar & Hsi & Hsim)".
-    rewrite definition.simv_unseal /definition.simv_def.
-    auto with iFrame.
-  Qed.
-  Lemma simv_adequacy' `{!Empty (state Λₛ)} `{!Empty (state Λₜ)} eₛ eₜ :
-    ( ⊢ |==>
-        ∃ sim_state : SimState PROP Λₛ Λₜ,
-        ∃ (_ : BiSimilar PROP (val Λₛ) (val Λₜ)),
-        □ (∀ vₛ vₜ, vₛ ≈ vₜ -∗ ⌜vₛ ≈ vₜ⌝) ∗
-        sim_state_interp ∅ ∅ ∗
-        SIM eₛ ≳ eₜ [[ (≈) ]]
-    ) →
-    expr_refinement sim_progₛ sim_progₜ eₛ eₜ.
-  Proof.
-    apply simv_adequacy.
   Qed.
 End sim.

@@ -125,9 +125,9 @@ Section language.
       σ2 = σ1 ∧ e2' = e2 ;
   }.
 
-  Class IsStronglyStuck prog e :=
-    is_strongly_stuck : strongly_stuck prog e.
-  Class PureExec prog (ϕ : Prop) n e1 e2 :=
+  Class IsStronglyStuck prog (ϕ : Prop) e :=
+    is_strongly_stuck : ϕ → strongly_stuck prog e.
+  Class PureExec prog n (ϕ : Prop) e1 e2 :=
     pure_exec_pure_steps : ϕ → nsteps (pure_step prog) n e1 e2.
 
   Lemma to_of_val e v :
@@ -249,18 +249,18 @@ Section language.
 
   Lemma pure_steps_pure_exec prog n e1 e2 :
     nsteps (pure_step prog) n e1 e2 →
-    PureExec prog True n e1 e2.
+    PureExec prog n True e1 e2.
   Proof.
     intros ? ?. done.
   Qed.
   Lemma pure_step_pure_exec prog e1 e2 :
     pure_step prog e1 e2 →
-    PureExec prog True 1 e1 e2.
+    PureExec prog 1 True e1 e2.
   Proof.
     intros. eapply pure_steps_pure_exec, nsteps_once. done.
   Qed.
   Lemma pure_exec_pure_step prog ϕ e1 e2 :
-    PureExec prog ϕ 1 e1 e2 →
+    PureExec prog 1 ϕ e1 e2 →
     ϕ →
     pure_step prog e1 e2.
   Proof.
@@ -363,9 +363,9 @@ Section language.
       - intros * Hstep. eapply language_ctx_prim_step_inv in Hstep; first naive_solver.
         unshelve eauto using reducible_not_val; eauto.
     Qed.
-    Lemma language_ctx_pure_exec prog ϕ n e1 e2 :
-      PureExec prog ϕ n e1 e2 →
-      PureExec prog ϕ n (K e1) (K e2).
+    Lemma language_ctx_pure_exec prog n ϕ e1 e2 :
+      PureExec prog n ϕ e1 e2 →
+      PureExec prog n ϕ (K e1) (K e2).
     Proof.
       intros ? ?. eapply nsteps_congruence; eauto using language_ctx_pure_step.
     Qed.

@@ -4,6 +4,8 @@ From iris.bi Require Import
 From simuliris Require Import
   prelude.
 From simuliris.base_logic Require Export
+  lib.cupd.rules.
+From simuliris.base_logic Require Import
   lib.cupd.proofmode.
 From simuliris.program_logic Require Export
   sim.protocol.
@@ -23,51 +25,66 @@ Section sim_cupd.
   Context `{!BiBUpd PROP, !BiAffine PROP}.
   Context `{sim_state : !SimState PROP Λₛ Λₜ}.
 
-  #[local] Definition sim_cupd : CUpd PROP := (
+  #[local] Instance sim_cupd_instance : CUpd PROP := (
     λ P,
       ∀ σₛ σₜ,
       sim_state_interp σₛ σₜ ==∗
       sim_state_interp σₛ σₜ ∗ P
   )%I.
   #[global] Program Instance sim_bi_cupd : BiCUpd PROP :=
-    Build_BiCUpd sim_cupd _.
+    Build_BiCUpd _.
   Next Obligation.
-    split; rewrite /cupd /sim_cupd.
+    split; rewrite /cupd /sim_cupd_instance.
     - solve_proper.
-    - auto with iFrame.
+    - iSmash.
     - iIntros "%P %Q %HPQ HP * Hsi".
       iMod ("HP" with "Hsi") as "(Hsi & HP)".
       iFrame. iApply (HPQ with "HP").
     - iIntros "%P HP * Hsi".
-      do 2 iMod ("HP" with "Hsi") as "(Hsi & HP)".
-      iFrame. done.
+      do 2 iMod ("HP" with "Hsi") as "(Hsi & HP)". iSmash.
     - iIntros "%P %R (HP & HR) * Hsi".
-      iMod ("HP" with "Hsi") as "(Hsi & HP)".
-      iFrame. done.
-    - iIntros "%P HP * Hsi". iFrame.
+      iMod ("HP" with "Hsi") as "(Hsi & HP)". iSmash.
+    - iSmash.
   Qed.
 
   Lemma sim_cupd_eq P :
     (|++> P) ⊣⊢
-    ∀ σₛ σₜ,
-    sim_state_interp σₛ σₜ ==∗
-    sim_state_interp σₛ σₜ ∗
-    P.
+      ∀ σₛ σₜ,
+      sim_state_interp σₛ σₜ ==∗
+      sim_state_interp σₛ σₜ ∗ P.
   Proof.
-    done.
+    iSmash+.
   Qed.
 
   (* FIXME: we should not need this *)
   #[global] Instance sim_cupd_ne :
-    NonExpansive (sim_cupd).
+    NonExpansive (sim_cupd_instance).
   Proof.
     apply (@cupd_ne _ _ sim_bi_cupd).
   Qed.
 End sim_cupd.
 
-#[global] Opaque sim_cupd.
+#[global] Opaque sim_cupd_instance.
 
-Section sim.
+Section sim_post_vals.
+  Context {Λₛ Λₜ : ectx_language}.
+  Context `{!BiBUpd PROP, !BiAffine PROP}.
+
+  Definition sim_post_vals' (Φ : val_O Λₛ -d> val_O Λₜ -d> PROP) eₛ eₜ : PROP :=
+    ∃ vₛ vₜ,
+    ⌜eₛ = of_val vₛ ∧ eₜ = of_val vₜ⌝ ∗
+    Φ vₛ vₜ.
+  #[local] Definition sim_post_vals_aux :
+    seal (@sim_post_vals'). Proof. by eexists. Qed.
+  Definition sim_post_vals :=
+    sim_post_vals_aux.(unseal).
+  Definition sim_post_vals_unseal : @sim_post_vals = @sim_post_vals' :=
+    sim_post_vals_aux.(seal_eq).
+  #[global] Arguments sim_post_vals' _%I _ _ : assert.
+  #[global] Arguments sim_post_vals _%I _ _ : assert.
+End sim_post_vals.
+
+Section sim_state.
   Context `{sim_programs : !SimPrograms Λₛ Λₜ}.
   Context `{!BiBUpd PROP, !BiAffine PROP}.
   Context `{sim_state : !SimState PROP Λₛ Λₜ}.
@@ -144,17 +161,13 @@ Section sim.
     sim_aux.(seal_eq).
   #[global] Arguments sim _%I _ _ : assert.
 
-  Definition sim_post_val (Φ : val_O Λₛ -d> val_O Λₜ -d> PROP) eₛ eₜ : PROP :=
-    ∃ vₛ vₜ,
-    ⌜eₛ = of_val vₛ ∧ eₜ = of_val vₜ⌝ ∗
-    Φ vₛ vₜ.
-  #[local] Definition simv_def Φ :=
-    sim (sim_post_val Φ).
-  #[local] Definition simv_aux :
-    seal (@simv_def). Proof. by eexists. Qed.
-  Definition simv :=
-    simv_aux.(unseal).
-  #[local] Definition simv_unseal : @simv = @simv_def :=
-    simv_aux.(seal_eq).
+  Definition simv Φ :=
+    sim (sim_post_vals Φ).
   #[global] Arguments simv _%I _ _ : assert.
-End sim.
+
+  Lemma simv_unseal Φ :
+    simv Φ = sim (sim_post_vals' Φ).
+  Proof.
+    rewrite /simv sim_post_vals_unseal //.
+  Qed.
+End sim_state.
