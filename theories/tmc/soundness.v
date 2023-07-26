@@ -30,7 +30,9 @@ Section sim_GS.
     ⌜func ∈ dom sim_progₛ⌝ ∗
     ⌜eₛ = func vₛ ∧ eₜ = func vₜ⌝ ∗
     vₛ ≈ vₜ ∗
-    (∀ vₛ' vₜ', vₛ' ≈ vₜ' -∗ Ψ vₛ' vₜ').
+      ∀ vₛ' vₜ',
+      vₛ' ≈ vₜ' -∗
+      Ψ vₛ' vₜ'.
   Definition tmc_protocol_dps Ψ eₛ eₜ : iProp Σ :=
     ∃ func func_dps vₛ l1 l2 dst idx vₜ,
     ⌜func ∈ dom sim_progₛ ∧ tmc.(tmc_ξ) !! func = Some func_dps⌝ ∗
@@ -39,7 +41,10 @@ Section sim_GS.
     (l2 +ₗ 1) ↦ₜ dst ∗ (l2 +ₗ 2) ↦ₜ idx ∗
     (dst +ₗ idx) ↦ₜ () ∗
     vₛ ≈ vₜ ∗
-    (∀ vₛ' vₜ', (dst +ₗ idx) ↦ₜ vₜ' -∗ vₛ' ≈ vₜ' -∗ Ψ vₛ' #()).
+      ∀ vₛ' vₜ',
+      (dst +ₗ idx) ↦ₜ vₜ' -∗
+      vₛ' ≈ vₜ' -∗
+      Ψ vₛ' #().
   Definition tmc_protocol Ψ eₛ eₜ : iProp Σ :=
     tmc_protocol_dir Ψ eₛ eₜ ∨
     tmc_protocol_dps Ψ eₛ eₜ.
@@ -49,7 +54,11 @@ Section sim_GS.
     tmc.(tmc_ξ) !! func = Some func_dps →
     (dst +ₗ idx) ↦ₜ () -∗
     vₛ ≈ vₜ -∗
-    (∀ vₛ' vₜ', (dst +ₗ idx) ↦ₜ vₜ' -∗ vₛ' ≈ vₜ' -∗ Φ vₛ' ()%lambda_val) -∗
+    ( ∀ vₛ' vₜ',
+      (dst +ₗ idx) ↦ₜ vₜ' -∗
+      vₛ' ≈ vₜ' -∗
+      Φ vₛ' ()%lambda_val
+    ) -∗
     SIM func vₛ ≳ func_dps (dst, idx, vₜ) [[ tmc_protocol ]] {{# Φ }}.
   Proof.
     rewrite simv_unseal.
@@ -141,21 +150,29 @@ Section sim_GS.
     (* tmc_dir *)
     - iApply csimv_val; [done | iSmash].
     - iApply csimv_var. iSmash.
-    - iApply csim_let; iApply IHdirₛ; auto with lambda_lang.
-    - iApply csim_call; [iApply IHdirₛ; auto with lambda_lang.. |].
+    - iApply csim_let;
+        iApply IHdirₛ; auto with lambda_lang.
+    - iApply csim_call;
+        [iApply IHdirₛ; auto with lambda_lang.. |].
       iIntros "%func %vₛ %vₜ %Hfunc #Hv".
       pose (Ψ := sim_post_vals' tmc_dir_post).
       iApply (sim_apply_protocol _ Ψ). iIntros "%σₛ %σₜ $". iSplitR.
       { rewrite /Ψ /sim_post_vals'. iSmash. }
-      iIntros "!> % % (%vₛ' & %vₜ' & (-> & ->) & HΨ)". sim_post.
-    - iApply csimv_unop; [iApply IHdirₛ; auto with lambda_lang | iSmash].
-    - iApply csimv_binop; [iApply IHdirₛ; auto with lambda_lang.. | iSmash].
+      iIntros "!> % % (%vₛ' & %vₜ' & (-> & ->) & HΨ)".
+      sim_post.
+    - iApply csimv_unop; last iSmash.
+      iApply IHdirₛ; auto with lambda_lang.
+    - iApply csimv_binop; last iSmash;
+        iApply IHdirₛ; auto with lambda_lang.
     - iSmash.
-    - iApply csim_if; last iSplit; iApply IHdirₛ; auto with lambda_lang.
-    - iApply csimv_constr; [iApply IHdirₛ; auto with lambda_lang.. | iSmash].
+    - iApply csim_if; last iSplit;
+        iApply IHdirₛ; auto with lambda_lang.
+    - iApply csimv_constr; last iSmash;
+        iApply IHdirₛ; auto with lambda_lang.
     - iIntros "%Γ % % (-> & ->) #HΓ /=".
       sim_constrₛ1.
-      sim_apply simv_constr_valₜ1; first (iApply (IHdirₛ eₛ1); auto with lambda_lang).
+      sim_apply simv_constr_valₜ1.
+      { sim_apply IHdirₛ; auto with lambda_lang. }
       iIntros "%vₛ1 %lₜ %vₜ1 Hlₜ0 Hlₜ1 Hlₜ2 #Hv1".
       sim_apply (IHdpsₛ lₜ 𝟚 eₛ2 eₜ2.[#lₜ/] with "Hlₜ2 [Hlₜ0 Hlₜ1 HΦ]"); first 4 last.
       { autosubst. }
@@ -173,7 +190,8 @@ Section sim_GS.
       iSmash.
     - iIntros "%Γ % % (-> & ->) #HΓ /=".
       sim_constrₛ2.
-      sim_apply simv_constr_valₜ2; first (iApply (IHdirₛ eₛ2); auto with lambda_lang).
+      sim_apply simv_constr_valₜ2.
+      { sim_apply IHdirₛ; auto with lambda_lang. }
       iIntros "%vₛ2 %lₜ %vₜ2 Hlₜ0 Hlₜ1 Hlₜ2 #Hv2".
       sim_apply (IHdpsₛ lₜ 𝟙 eₛ1 eₜ1.[#lₜ/] with "Hlₜ1 [Hlₜ0 Hlₜ2 HΦ]"); first 4 last.
       { autosubst. }
@@ -190,22 +208,24 @@ Section sim_GS.
       sim_heap_bij_insert.
       iSmash.
     - iSmash.
-    - iApply csimv_load; [iApply IHdirₛ; auto with lambda_lang.. | iSmash].
-    - iApply csimv_store; [iApply IHdirₛ; auto with lambda_lang.. | iSmash].
+    - iApply csimv_load; last iSmash;
+       iApply IHdirₛ; auto with lambda_lang.
+    - iApply csimv_store; last iSmash;
+        iApply IHdirₛ; auto with lambda_lang.
     (* tmc_dps *)
-    - iIntros "%Γ % % (-> & ->) #HΓ".
+    - iIntros "%Γ % % (-> & ->) #HΓ /=".
       sim_apply (IHdir with "[//] [Hpre HΦ]"); [done.. |]. iIntros "%vₛ %vₜ #Hv".
       sim_storeₜ.
     - iApply csim_let.
       { iApply (IHdirₛ with "[//] []"); auto with lambda_lang. }
       iApply (IHdpsₛ with "Hpre [HΦ]"); [auto with lambda_lang.. |]. iSmash.
-    - iIntros "%Γ % % (-> & ->) #HΓ".
+    - iIntros "%Γ % % (-> & ->) #HΓ /=".
       sim_apply (IHdirₛ with "[//] [Hpre HΦ] [//] HΓ"); [auto with lambda_lang.. |]. iIntros "%vₛ %vₜ #Hv".
       sim_apply (tmc_protocol_dps' with "Hpre Hv"); auto with lambda_lang.
     - iApply csim_if.
       { iApply (IHdirₛ with "[//] []"); auto with lambda_lang. }
       iSplit; iApply (IHdpsₛ with "Hpre [HΦ]"); [auto with lambda_lang.. | iSmash].
-    - iIntros "%Γ % % (-> & ->) #HΓ".
+    - iIntros "%Γ % % (-> & ->) #HΓ /=".
       sim_constrₛ1.
       sim_apply simv_constr_valₜ1.
       { sim_apply (IHdirₛ with "[//] [] [//] HΓ"); auto with lambda_lang. }
@@ -225,7 +245,7 @@ Section sim_GS.
       iDestruct (sim_heap_bij_tie_eq_2 with "Hlₛ2 Hlₜ2 [//]") as "Hl2".
       sim_heap_bij_insert.
       iSmash.
-    - iIntros "%Γ % % (-> & ->) #HΓ".
+    - iIntros "%Γ % % (-> & ->) #HΓ /=".
       sim_constrₛ2.
       sim_apply simv_constr_valₜ2.
       { sim_apply (IHdirₛ with "[//] [] [//] HΓ"); auto with lambda_lang. }
