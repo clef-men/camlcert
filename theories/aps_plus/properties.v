@@ -90,12 +90,16 @@ Section aps_plus.
       simpl. split_and!; [eauto using lambda_expr_closed_lift1.. | lia].
     - intros * Hdir1 IH1 Haps2 IH2 -> lvl Hacc (Hwf1 & Hwf2).
       simpl. split_and!; try naive_solver lia.
-      apply IH2; first naive_solver lia.
-      apply lambda_expr_closed_lift1. done.
+      apply IH2.
+      + split; first naive_solver lia.
+        apply lambda_expr_closed_lift1. done.
+      + apply lambda_expr_closed_lift1. done.
     - intros * Hdir2 IH2 Haps1 IH1 -> lvl Hacc (Hwf1 & Hwf2).
       simpl. split_and!; try naive_solver lia.
-      apply IH1; first naive_solver lia.
-      apply lambda_expr_closed_lift1. done.
+      apply IH1.
+      + split; first naive_solver lia.
+        apply lambda_expr_closed_lift1. done.
+      + apply lambda_expr_closed_lift1. done.
   Qed.
   Lemma lambda_expr_closed_aps_plus_dir lvl eₛ eₜ :
     aps_plus_dir ξ eₛ eₜ →

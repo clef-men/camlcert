@@ -114,15 +114,15 @@ with aps_plus_aps ξ : lambda_expr → lambda_expr → lambda_expr → Prop :=
         eₜ'
   | aps_plus_aps_plus_1 acc eₛ1 eₛ2 eₜ1 eₜ2 eₜ :
       aps_plus_dir ξ eₛ1 eₜ1 →
-      aps_plus_aps ξ $0 eₛ2.[ren (+1)] eₜ2 →
-      eₜ = (let: eₜ1 + acc in eₜ2)%lambda_expr →
+      aps_plus_aps ξ ($0 + acc.[ren (+1)]) eₛ2.[ren (+1)] eₜ2 →
+      eₜ = (let: eₜ1 in eₜ2)%lambda_expr →
       aps_plus_aps ξ acc
         (eₛ1 + eₛ2)
         eₜ
   | aps_plus_aps_plus_2 acc eₛ1 eₛ2 eₜ1 eₜ2 eₜ :
       aps_plus_dir ξ eₛ2 eₜ2 →
-      aps_plus_aps ξ $0 eₛ1.[ren (+1)] eₜ1 →
-      eₜ = (let: eₜ2 + acc in eₜ1)%lambda_expr →
+      aps_plus_aps ξ ($0 + acc.[ren (+1)]) eₛ1.[ren (+1)] eₜ1 →
+      eₜ = (let: eₜ2 in eₜ1)%lambda_expr →
       aps_plus_aps ξ acc
         (eₛ1 + eₛ2)
         eₜ
