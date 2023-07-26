@@ -8,14 +8,14 @@ From simuliris.lambda_lang Require Import
 Section sim_GS.
   Context `{sim_programs : !SimPrograms lambda_ectx_lang lambda_ectx_lang}.
   Context `{sim_GS : !SimGS Σ}.
-  Context (X : sim_protocol Σ).
+  Context (Χ : sim_protocol Σ).
   Implicit Types Γ : bisubst.
 
   Definition csim Φ eₛ eₜ : iProp Σ :=
     ∀ Γ eₛ' eₜ',
     ⌜eₛ' = eₛ.[Γ.ₛ#] ∧ eₜ' = eₜ.[Γ.ₜ#]⌝ -∗
     bisubst_well_formed Γ -∗
-    SIM eₛ' ≳ eₜ' [[ X ]] {{ Φ }}.
+    SIM eₛ' ≳ eₜ' [[ Χ ]] {{ Φ }}.
   #[global] Arguments csim _%I (_ _)%lambda_expr : assert.
 
   Definition csimv Φ eₛ eₜ : iProp Σ :=

@@ -43,24 +43,24 @@ Section sim_GS.
     rewrite sim_state_interp_heap_bij_insert add_modal //.
   Qed.
 
-  Context (X : sim_protocol Σ).
+  Context (Χ : sim_protocol Σ).
 
   Lemma tac_sim_binopₛ1 Δ Φ K op e1 e2 e :
-    envs_entails Δ (SIM K @@ let: e1 in let: e2.[ren (+1)] in LambdaBinopDet op $1 $0 ≳ e [[ X ]] {{ Φ }}) →
-    envs_entails Δ (SIM K @@ LambdaBinop op e1 e2 ≳ e [[ X ]] {{ Φ }}).
+    envs_entails Δ (SIM K @@ let: e1 in let: e2.[ren (+1)] in LambdaBinopDet op $1 $0 ≳ e [[ Χ ]] {{ Φ }}) →
+    envs_entails Δ (SIM K @@ LambdaBinop op e1 e2 ≳ e [[ Χ ]] {{ Φ }}).
   Proof.
     rewrite sim_bind_invₛ sim_binopₛ1 sim_bindₛ //.
   Qed.
   Lemma tac_sim_binopₛ2 Δ Φ K op e1 e2 e :
-    envs_entails Δ (SIM K @@ let: e2 in let: e1.[ren (+1)] in LambdaBinopDet op $0 $1 ≳ e [[ X ]] {{ Φ }}) →
-    envs_entails Δ (SIM K @@ LambdaBinop op e1 e2 ≳ e [[ X ]] {{ Φ }}).
+    envs_entails Δ (SIM K @@ let: e2 in let: e1.[ren (+1)] in LambdaBinopDet op $0 $1 ≳ e [[ Χ ]] {{ Φ }}) →
+    envs_entails Δ (SIM K @@ LambdaBinop op e1 e2 ≳ e [[ Χ ]] {{ Φ }}).
   Proof.
     rewrite sim_bind_invₛ sim_binopₛ2 sim_bindₛ //.
   Qed.
   Lemma tac_sim_binopₜ Δ Φ e K op e1 e2 :
-    envs_entails Δ (SIM e ≳ K @@ let: e1 in let: e2.[ren (+1)] in LambdaBinopDet op $1 $0 [[ X ]] {{ Φ }}) →
-    envs_entails Δ (SIM e ≳ K @@ let: e2 in let: e1.[ren (+1)] in LambdaBinopDet op $0 $1 [[ X ]] {{ Φ }}) →
-    envs_entails Δ (SIM e ≳ K @@ LambdaBinop op e1 e2 [[ X ]] {{ Φ }}).
+    envs_entails Δ (SIM e ≳ K @@ let: e1 in let: e2.[ren (+1)] in LambdaBinopDet op $1 $0 [[ Χ ]] {{ Φ }}) →
+    envs_entails Δ (SIM e ≳ K @@ let: e2 in let: e1.[ren (+1)] in LambdaBinopDet op $0 $1 [[ Χ ]] {{ Φ }}) →
+    envs_entails Δ (SIM e ≳ K @@ LambdaBinop op e1 e2 [[ Χ ]] {{ Φ }}).
   Proof.
     rewrite envs_entails_unseal => Hsim1 Hsim2.
     rewrite -sim_bindₜ -sim_binopₜ -!sim_bind_invₜ.
@@ -68,21 +68,21 @@ Section sim_GS.
   Qed.
 
   Lemma tac_sim_constrₛ1 Δ Φ K tag e1 e2 e :
-    envs_entails Δ (SIM K @@ let: e1 in let: e2.[ren (+1)] in &&tag $1 $0 ≳ e [[ X ]] {{ Φ }}) →
-    envs_entails Δ (SIM K @@ &tag e1 e2 ≳ e [[ X ]] {{ Φ }}).
+    envs_entails Δ (SIM K @@ let: e1 in let: e2.[ren (+1)] in &&tag $1 $0 ≳ e [[ Χ ]] {{ Φ }}) →
+    envs_entails Δ (SIM K @@ &tag e1 e2 ≳ e [[ Χ ]] {{ Φ }}).
   Proof.
     rewrite envs_entails_unseal sim_bind_invₛ sim_constrₛ1 sim_bindₛ //.
   Qed.
   Lemma tac_sim_constrₛ2 Δ Φ K tag e1 e2 e :
-    envs_entails Δ (SIM K @@ let: e2 in let: e1.[ren (+1)] in &&tag $0 $1 ≳ e [[ X ]] {{ Φ }}) →
-    envs_entails Δ (SIM K @@ &tag e1 e2 ≳ e [[ X ]] {{ Φ }}).
+    envs_entails Δ (SIM K @@ let: e2 in let: e1.[ren (+1)] in &&tag $0 $1 ≳ e [[ Χ ]] {{ Φ }}) →
+    envs_entails Δ (SIM K @@ &tag e1 e2 ≳ e [[ Χ ]] {{ Φ }}).
   Proof.
     rewrite envs_entails_unseal sim_bind_invₛ sim_constrₛ2 sim_bindₛ //.
   Qed.
   Lemma tac_sim_constrₜ Δ Φ e K tag e1 e2 :
-    envs_entails Δ (SIM e ≳ K @@ let: e1 in let: e2.[ren (+1)] in &&tag $1 $0 [[ X ]] {{ Φ }}) →
-    envs_entails Δ (SIM e ≳ K @@ let: e2 in let: e1.[ren (+1)] in &&tag $0 $1 [[ X ]] {{ Φ }}) →
-    envs_entails Δ (SIM e ≳ K @@ &tag e1 e2 [[ X ]] {{ Φ }}).
+    envs_entails Δ (SIM e ≳ K @@ let: e1 in let: e2.[ren (+1)] in &&tag $1 $0 [[ Χ ]] {{ Φ }}) →
+    envs_entails Δ (SIM e ≳ K @@ let: e2 in let: e1.[ren (+1)] in &&tag $0 $1 [[ Χ ]] {{ Φ }}) →
+    envs_entails Δ (SIM e ≳ K @@ &tag e1 e2 [[ Χ ]] {{ Φ }}).
   Proof.
     rewrite envs_entails_unseal => Hsim1 Hsim2.
     rewrite -sim_bindₜ -sim_constrₜ -!sim_bind_invₜ.
@@ -101,10 +101,10 @@ Section sim_GS.
       | None =>
           False
       | Some Δ' =>
-          envs_entails Δ' (SIM K @@ #l ≳ e [[ X ]] {{ Φ }})
+          envs_entails Δ' (SIM K @@ #l ≳ e [[ Χ ]] {{ Φ }})
       end
     ) →
-    envs_entails Δ (SIM K @@ &&tag v1 v2 ≳ e [[ X ]] {{ Φ }}).
+    envs_entails Δ (SIM K @@ &&tag v1 v2 ≳ e [[ Χ ]] {{ Φ }}).
   Proof.
     rewrite envs_entails_unseal => Hsim.
     rewrite -sim_bindₛ -sim_constr_detₛ. setoid_rewrite <- sim_bind_invₛ.
@@ -125,10 +125,10 @@ Section sim_GS.
       | None =>
           False
       | Some Δ' =>
-          envs_entails Δ' (SIM e ≳ K @@ #l [[ X ]] {{ Φ }})
+          envs_entails Δ' (SIM e ≳ K @@ #l [[ Χ ]] {{ Φ }})
       end
     ) →
-    envs_entails Δ (SIM e ≳ K @@ &&tag v1 v2 [[ X ]] {{ Φ }}).
+    envs_entails Δ (SIM e ≳ K @@ &&tag v1 v2 [[ Χ ]] {{ Φ }}).
   Proof.
     rewrite envs_entails_unseal => Hsim.
     rewrite -sim_bindₜ -sim_constr_detₜ.
@@ -145,10 +145,10 @@ Section sim_GS.
       | None =>
           False
       | Some Δ' =>
-          envs_entails Δ' (SIM Kₛ @@ #lₛ ≳ Kₜ @@ #lₜ [[ X ]] {{ Φ }})
+          envs_entails Δ' (SIM Kₛ @@ #lₛ ≳ Kₜ @@ #lₜ [[ Χ ]] {{ Φ }})
       end
     ) →
-    envs_entails Δ (SIM Kₛ @@ &&tag vₛ1 vₛ2 ≳ Kₜ @@ &&tag vₜ1 vₜ2 [[ X ]] {{ Φ }}).
+    envs_entails Δ (SIM Kₛ @@ &&tag vₛ1 vₛ2 ≳ Kₜ @@ &&tag vₜ1 vₜ2 [[ Χ ]] {{ Φ }}).
   Proof.
     rewrite envs_entails_unseal => Hv1 Hv2 Hsim.
     iIntros "HΔ".
@@ -163,8 +163,8 @@ Section sim_GS.
 
   Lemma tac_sim_loadₛ Δ Φ id p K l idx v e :
     envs_lookup id Δ = Some (p, (l +ₗ idx) ↦ₛ v)%I →
-    envs_entails Δ (SIM K @@ #v ≳ e [[ X ]] {{ Φ }}) →
-    envs_entails Δ (SIM K @@ ![idx] l ≳ e [[ X ]] {{ Φ }}).
+    envs_entails Δ (SIM K @@ #v ≳ e [[ Χ ]] {{ Φ }}) →
+    envs_entails Δ (SIM K @@ ![idx] l ≳ e [[ Χ ]] {{ Φ }}).
   Proof.
     rewrite envs_entails_unseal => Hlookup Hsim.
     rewrite envs_lookup_split // -sim_bindₛ Hsim.
@@ -175,8 +175,8 @@ Section sim_GS.
   Qed.
   Lemma tac_sim_loadₜ Δ Φ id p e K l idx v :
     envs_lookup id Δ = Some (p, (l +ₗ idx) ↦ₜ v)%I →
-    envs_entails Δ (SIM e ≳ K @@ #v [[ X ]] {{ Φ }}) →
-    envs_entails Δ (SIM e ≳ K @@ ![idx] l [[ X ]] {{ Φ }}).
+    envs_entails Δ (SIM e ≳ K @@ #v [[ Χ ]] {{ Φ }}) →
+    envs_entails Δ (SIM e ≳ K @@ ![idx] l [[ Χ ]] {{ Φ }}).
   Proof.
     rewrite envs_entails_unseal => Hlookup Hsim.
     rewrite envs_lookup_split // -sim_bindₜ Hsim.
@@ -193,10 +193,10 @@ Section sim_GS.
       | None =>
           False
       | Some Δ' =>
-          envs_entails Δ' (SIM Kₛ @@ #vₛ ≳ Kₜ @@ #vₜ [[ X ]] {{ Φ }})
+          envs_entails Δ' (SIM Kₛ @@ #vₛ ≳ Kₜ @@ #vₜ [[ Χ ]] {{ Φ }})
       end
     ) →
-    envs_entails Δ (SIM Kₛ @@ ![idxₛ] lₛ ≳ Kₜ @@ ![idxₜ] lₜ [[ X ]] {{ Φ }}).
+    envs_entails Δ (SIM Kₛ @@ ![idxₛ] lₛ ≳ Kₜ @@ ![idxₜ] lₜ [[ Χ ]] {{ Φ }}).
   Proof.
     rewrite envs_entails_unseal => Hl Hidx Hsim.
     iIntros "HΔ".
@@ -215,9 +215,9 @@ Section sim_GS.
     | None =>
         False
     | Some Δ' =>
-        envs_entails Δ' (SIM K @@ #() ≳ e [[ X ]] {{ Φ }})
+        envs_entails Δ' (SIM K @@ #() ≳ e [[ Χ ]] {{ Φ }})
     end →
-    envs_entails Δ (SIM K @@ #l <-[idx]- v ≳ e [[ X ]] {{ Φ }}).
+    envs_entails Δ (SIM K @@ #l <-[idx]- v ≳ e [[ Χ ]] {{ Φ }}).
   Proof.
     rewrite envs_entails_unseal => Hlookup Hsim.
     destruct (envs_replace _ _ _ _) as [Δ' |] eqn:HΔ'; last done.
@@ -232,9 +232,9 @@ Section sim_GS.
     | None =>
         False
     | Some Δ' =>
-        envs_entails Δ' (SIM e ≳ K @@ #() [[ X ]] {{ Φ }})
+        envs_entails Δ' (SIM e ≳ K @@ #() [[ Χ ]] {{ Φ }})
     end →
-    envs_entails Δ (SIM e ≳ K @@ #l <-[idx]- v [[ X ]] {{ Φ }}).
+    envs_entails Δ (SIM e ≳ K @@ #l <-[idx]- v [[ Χ ]] {{ Φ }}).
   Proof.
     rewrite envs_entails_unseal => Hlookup Hsim.
     destruct (envs_replace _ _ _ _) as [Δ' |] eqn:HΔ'; last done.
@@ -247,8 +247,8 @@ Section sim_GS.
     envs_entails Δ (vₛ1 ≈ vₜ1) →
     envs_entails Δ (vₛ2 ≈ vₜ2) →
     envs_entails Δ (vₛ3 ≈ vₜ3) →
-    envs_entails Δ (SIM Kₛ @@ #() ≳ Kₜ @@ #() [[ X ]] {{ Φ }}) →
-    envs_entails Δ (SIM Kₛ @@ vₛ1 <-[vₛ2]- vₛ3 ≳ Kₜ @@ vₜ1 <-[vₜ2]- vₜ3 [[ X ]] {{ Φ }}).
+    envs_entails Δ (SIM Kₛ @@ #() ≳ Kₜ @@ #() [[ Χ ]] {{ Φ }}) →
+    envs_entails Δ (SIM Kₛ @@ vₛ1 <-[vₛ2]- vₛ3 ≳ Kₜ @@ vₜ1 <-[vₜ2]- vₜ3 [[ Χ ]] {{ Φ }}).
   Proof.
     rewrite envs_entails_unseal => Hv1 Hv2 Hv3 Hsim.
     iIntros "HΔ".

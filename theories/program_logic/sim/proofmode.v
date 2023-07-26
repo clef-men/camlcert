@@ -17,14 +17,14 @@ Section sim_state.
   Context `{sim_programs : !SimPrograms Λₛ Λₜ}.
   Context `{!BiBUpd PROP, !BiAffine PROP}.
   Context `{sim_state : !SimState PROP Λₛ Λₜ}.
-  Context (X : sim_protocol PROP Λₛ Λₜ).
+  Context (Χ : sim_protocol PROP Λₛ Λₜ).
 
   Section sim.
     #[global] Instance frame_sim p R Φ1 Φ2 eₛ eₜ :
       (∀ eₛ eₜ, Frame p R (Φ1 eₛ eₜ) (Φ2 eₛ eₜ)) →
       Frame p R
-        (SIM eₛ ≳ eₜ [[ X ]] {{ Φ1 }})
-        (SIM eₛ ≳ eₜ [[ X ]] {{ Φ2 }}).
+        (SIM eₛ ≳ eₜ [[ Χ ]] {{ Φ1 }})
+        (SIM eₛ ≳ eₜ [[ Χ ]] {{ Φ2 }}).
     Proof.
       rewrite /Frame sim_frame_l sim_mono'.
       iIntros "%HΦ HΦ2".
@@ -34,29 +34,29 @@ Section sim_state.
 
     #[global] Instance elim_modal_cupd_sim p P Φ eₛ eₜ :
       ElimModal True p false (|++> P) P
-        (SIM eₛ ≳ eₜ [[ X ]] {{ Φ }})
-        (SIM eₛ ≳ eₜ [[ X ]] {{ Φ }}).
+        (SIM eₛ ≳ eₜ [[ Χ ]] {{ Φ }})
+        (SIM eₛ ≳ eₜ [[ Χ ]] {{ Φ }}).
     Proof.
       rewrite /ElimModal bi.intuitionistically_if_elim.
       setoid_rewrite <- cupd_sim at 2. iSmash.
     Qed.
     #[global] Instance elim_modal_bupd_sim p P Φ eₛ eₜ :
       ElimModal True p false (|==> P) P
-        (SIM eₛ ≳ eₜ [[ X ]] {{ Φ }})
-        (SIM eₛ ≳ eₜ [[ X ]] {{ Φ }}).
+        (SIM eₛ ≳ eₜ [[ Χ ]] {{ Φ }})
+        (SIM eₛ ≳ eₜ [[ Χ ]] {{ Φ }}).
     Proof.
       rewrite /ElimModal bi.intuitionistically_if_elim.
       setoid_rewrite <- bupd_sim at 2. iSmash.
     Qed.
 
     #[global] Instance add_modal_cupd_sim P Φ eₛ eₜ :
-      AddModal (|++> P) P (SIM eₛ ≳ eₜ [[ X ]] {{ Φ }}).
+      AddModal (|++> P) P (SIM eₛ ≳ eₜ [[ Χ ]] {{ Φ }}).
     Proof.
       rewrite /AddModal.
       setoid_rewrite <- cupd_sim at 2. iSmash.
     Qed.
     #[global] Instance add_modal_bupd_sim P Φ eₛ eₜ :
-      AddModal (|==> P) P (SIM eₛ ≳ eₜ [[ X ]] {{ Φ }}).
+      AddModal (|==> P) P (SIM eₛ ≳ eₜ [[ Χ ]] {{ Φ }}).
     Proof.
       rewrite /AddModal.
       setoid_rewrite <- bupd_sim at 2. iSmash.
@@ -65,8 +65,8 @@ Section sim_state.
     Lemma tac_sim_eval Δ Φ eₛ eₛ' eₜ eₜ' :
       (∀ (eₛ'' := eₛ'), eₛ = eₛ'') →
       (∀ (eₜ'' := eₜ'), eₜ = eₜ'') →
-      envs_entails Δ (SIM eₛ' ≳ eₜ' [[ X ]] {{ Φ }}) →
-      envs_entails Δ (SIM eₛ ≳ eₜ [[ X ]] {{ Φ }}).
+      envs_entails Δ (SIM eₛ' ≳ eₜ' [[ Χ ]] {{ Φ }}) →
+      envs_entails Δ (SIM eₛ ≳ eₜ [[ Χ ]] {{ Φ }}).
     Proof.
       move=> -> -> //.
     Qed.
@@ -76,40 +76,40 @@ Section sim_state.
       ϕₛ →
       IsStronglyStuck sim_progₜ ϕₜ eₜ →
       ϕₜ →
-      envs_entails Δ (SIM eₛ ≳ eₜ [[ X ]] {{ Φ }}).
+      envs_entails Δ (SIM eₛ ≳ eₜ [[ Χ ]] {{ Φ }}).
     Proof.
       intros. rewrite -sim_strongly_stuck //; apply is_strongly_stuck; done.
     Qed.
 
     Lemma tac_sim_post Δ Φ eₛ eₜ :
       envs_entails Δ (Φ eₛ eₜ) →
-      envs_entails Δ (SIM eₛ ≳ eₜ [[ X ]] {{ Φ }}).
+      envs_entails Δ (SIM eₛ ≳ eₜ [[ Χ ]] {{ Φ }}).
     Proof.
       rewrite -sim_post //.
     Qed.
 
     Lemma tac_cupd_sim Δ Φ eₛ eₜ :
-      envs_entails Δ (|++> SIM eₛ ≳ eₜ [[ X ]] {{ Φ }}) →
-      envs_entails Δ (SIM eₛ ≳ eₜ [[ X ]] {{ Φ }}).
+      envs_entails Δ (|++> SIM eₛ ≳ eₜ [[ Χ ]] {{ Φ }}) →
+      envs_entails Δ (SIM eₛ ≳ eₜ [[ Χ ]] {{ Φ }}).
     Proof.
       rewrite cupd_sim //.
     Qed.
     Lemma tac_bupd_sim Δ Φ eₛ eₜ :
-      envs_entails Δ (|==> SIM eₛ ≳ eₜ [[ X ]] {{ Φ }}) →
-      envs_entails Δ (SIM eₛ ≳ eₜ [[ X ]] {{ Φ }}).
+      envs_entails Δ (|==> SIM eₛ ≳ eₜ [[ Χ ]] {{ Φ }}) →
+      envs_entails Δ (SIM eₛ ≳ eₜ [[ Χ ]] {{ Φ }}).
     Proof.
       rewrite bupd_sim //.
     Qed.
 
     Lemma tac_sim_cupd Δ Φ eₛ eₜ :
-      envs_entails Δ (SIM eₛ ≳ eₜ [[ X ]] {{ λ eₛ eₜ, |++> Φ eₛ eₜ }}) →
-      envs_entails Δ (SIM eₛ ≳ eₜ [[ X ]] {{ Φ }}).
+      envs_entails Δ (SIM eₛ ≳ eₜ [[ Χ ]] {{ λ eₛ eₜ, |++> Φ eₛ eₜ }}) →
+      envs_entails Δ (SIM eₛ ≳ eₜ [[ Χ ]] {{ Φ }}).
     Proof.
       rewrite sim_cupd //.
     Qed.
     Lemma tac_sim_bupd Δ Φ eₛ eₜ :
-      envs_entails Δ (SIM eₛ ≳ eₜ [[ X ]] {{ λ eₛ eₜ, |==> Φ eₛ eₜ }}) →
-      envs_entails Δ (SIM eₛ ≳ eₜ [[ X ]] {{ Φ }}).
+      envs_entails Δ (SIM eₛ ≳ eₜ [[ Χ ]] {{ λ eₛ eₜ, |==> Φ eₛ eₜ }}) →
+      envs_entails Δ (SIM eₛ ≳ eₜ [[ Χ ]] {{ Φ }}).
     Proof.
       rewrite sim_bupd //.
     Qed.
@@ -118,12 +118,12 @@ Section sim_state.
       fₛ = (λ eₛ, Kₛ @@ eₛ) →
       fₜ = (λ eₜ, Kₜ @@ eₜ) →
       envs_entails Δ (
-        SIM eₛ ≳ eₜ [[ X ]] {{ λ eₛ' eₜ',
-          SIM fₛ eₛ' ≳ fₜ eₜ' [[ X ]] {{ Φ }}
+        SIM eₛ ≳ eₜ [[ Χ ]] {{ λ eₛ' eₜ',
+          SIM fₛ eₛ' ≳ fₜ eₜ' [[ Χ ]] {{ Φ }}
         }}
       ) →
       envs_entails Δ (
-        SIM Kₛ @@ eₛ ≳ Kₜ @@ eₜ [[ X ]] {{ Φ }}
+        SIM Kₛ @@ eₛ ≳ Kₜ @@ eₜ [[ Χ ]] {{ Φ }}
       ).
     Proof.
       rewrite -sim_bind => -> -> //.
@@ -131,12 +131,12 @@ Section sim_state.
     Lemma tac_sim_bindₛ Δ Φ K f eₛ eₜ :
       f = (λ eₛ, K @@ eₛ) →
       envs_entails Δ (
-        SIM eₛ ≳ eₜ [[ X ]] {{ λ eₛ' eₜ',
-          SIM f eₛ' ≳ eₜ' [[ X ]] {{ Φ }}
+        SIM eₛ ≳ eₜ [[ Χ ]] {{ λ eₛ' eₜ',
+          SIM f eₛ' ≳ eₜ' [[ Χ ]] {{ Φ }}
         }}
       ) →
       envs_entails Δ (
-        SIM K @@ eₛ ≳ eₜ [[ X ]] {{ Φ }}
+        SIM K @@ eₛ ≳ eₜ [[ Χ ]] {{ Φ }}
       ).
     Proof.
       rewrite -sim_bindₛ => -> //.
@@ -144,12 +144,12 @@ Section sim_state.
     Lemma tac_sim_bindₜ Δ Φ eₛ K f eₜ :
       f = (λ eₜ, K @@ eₜ) →
       envs_entails Δ (
-        SIM eₛ ≳ eₜ [[ X ]] {{ λ eₛ' eₜ',
-          SIM eₛ' ≳ f eₜ' [[ X ]] {{ Φ }}
+        SIM eₛ ≳ eₜ [[ Χ ]] {{ λ eₛ' eₜ',
+          SIM eₛ' ≳ f eₜ' [[ Χ ]] {{ Φ }}
         }}
       ) →
       envs_entails Δ (
-        SIM eₛ ≳ K @@ eₜ [[ X ]] {{ Φ }}
+        SIM eₛ ≳ K @@ eₜ [[ Χ ]] {{ Φ }}
       ).
     Proof.
       rewrite -sim_bindₜ => -> //.
@@ -158,8 +158,8 @@ Section sim_state.
     Lemma tac_sim_pure_execₛ Δ Φ n ϕ K eₛ1 eₛ2 eₜ :
       PureExec sim_progₛ n ϕ eₛ1 eₛ2 →
       ϕ →
-      envs_entails Δ (SIM K @@ eₛ2 ≳ eₜ [[ X ]] {{ Φ }}) →
-      envs_entails Δ (SIM K @@ eₛ1 ≳ eₜ [[ X ]] {{ Φ }}).
+      envs_entails Δ (SIM K @@ eₛ2 ≳ eₜ [[ Χ ]] {{ Φ }}) →
+      envs_entails Δ (SIM K @@ eₛ1 ≳ eₜ [[ Χ ]] {{ Φ }}).
     Proof.
       pose proof @pure_exec_fill_pure_exec.
       intros. rewrite -sim_pure_stepsₛ //.
@@ -168,8 +168,8 @@ Section sim_state.
     Lemma tac_sim_pure_execₜ Δ Φ n ϕ eₛ K eₜ1 eₜ2 :
       PureExec sim_progₜ n ϕ eₜ1 eₜ2 →
       ϕ →
-      envs_entails Δ (SIM eₛ ≳ K @@ eₜ2 [[ X ]] {{ Φ }}) →
-      envs_entails Δ (SIM eₛ ≳ K @@ eₜ1 [[ X ]] {{ Φ }}).
+      envs_entails Δ (SIM eₛ ≳ K @@ eₜ2 [[ Χ ]] {{ Φ }}) →
+      envs_entails Δ (SIM eₛ ≳ K @@ eₜ1 [[ Χ ]] {{ Φ }}).
     Proof.
       pose proof @pure_exec_fill_pure_exec.
       intros. rewrite -sim_pure_stepsₜ //.
@@ -181,8 +181,8 @@ Section sim_state.
     #[global] Instance frame_simv p R Φ1 Φ2 eₛ eₜ :
       (∀ eₛ eₜ, Frame p R (Φ1 eₛ eₜ) (Φ2 eₛ eₜ)) →
       Frame p R
-        (SIM eₛ ≳ eₜ [[ X ]] {{# Φ1 }})
-        (SIM eₛ ≳ eₜ [[ X ]] {{# Φ2 }}).
+        (SIM eₛ ≳ eₜ [[ Χ ]] {{# Φ1 }})
+        (SIM eₛ ≳ eₜ [[ Χ ]] {{# Φ2 }}).
     Proof.
       rewrite /Frame simv_frame_l simv_mono'.
       iIntros "%HΦ HΦ2".
@@ -194,20 +194,20 @@ Section sim_state.
       eₛ = of_val vₛ →
       eₜ = of_val vₜ →
       envs_entails Δ (Φ vₛ vₜ) →
-      envs_entails Δ (SIM eₛ ≳ eₜ [[ X ]] {{# Φ }}).
+      envs_entails Δ (SIM eₛ ≳ eₜ [[ Χ ]] {{# Φ }}).
     Proof.
       intros. rewrite -simv_post //.
     Qed.
 
     Lemma tac_simv_cupd Δ Φ eₛ eₜ :
-      envs_entails Δ (SIM eₛ ≳ eₜ [[ X ]] {{# λ eₛ eₜ, |++> Φ eₛ eₜ }}) →
-      envs_entails Δ (SIM eₛ ≳ eₜ [[ X ]] {{# Φ }}).
+      envs_entails Δ (SIM eₛ ≳ eₜ [[ Χ ]] {{# λ eₛ eₜ, |++> Φ eₛ eₜ }}) →
+      envs_entails Δ (SIM eₛ ≳ eₜ [[ Χ ]] {{# Φ }}).
     Proof.
       rewrite simv_cupd //.
     Qed.
     Lemma tac_simv_bupd Δ Φ eₛ eₜ :
-      envs_entails Δ (SIM eₛ ≳ eₜ [[ X ]] {{# λ eₛ eₜ, |==> Φ eₛ eₜ }}) →
-      envs_entails Δ (SIM eₛ ≳ eₜ [[ X ]] {{# Φ }}).
+      envs_entails Δ (SIM eₛ ≳ eₜ [[ Χ ]] {{# λ eₛ eₜ, |==> Φ eₛ eₜ }}) →
+      envs_entails Δ (SIM eₛ ≳ eₜ [[ Χ ]] {{# Φ }}).
     Proof.
       rewrite simv_bupd //.
     Qed.
@@ -216,12 +216,12 @@ Section sim_state.
       fₛ = (λ eₛ, Kₛ @@ eₛ) →
       fₜ = (λ eₜ, Kₜ @@ eₜ) →
       envs_entails Δ (
-        SIM eₛ ≳ eₜ [[ X ]] {{# λ vₛ vₜ,
-          SIM fₛ (of_val vₛ) ≳ fₜ (of_val vₜ) [[ X ]] {{# Φ }}
+        SIM eₛ ≳ eₜ [[ Χ ]] {{# λ vₛ vₜ,
+          SIM fₛ (of_val vₛ) ≳ fₜ (of_val vₜ) [[ Χ ]] {{# Φ }}
         }}
       ) →
       envs_entails Δ (
-        SIM Kₛ @@ eₛ ≳ Kₜ @@ eₜ [[ X ]] {{# Φ }}
+        SIM Kₛ @@ eₛ ≳ Kₜ @@ eₜ [[ Χ ]] {{# Φ }}
       ).
     Proof.
       rewrite -simv_bind => -> -> //.
@@ -229,12 +229,12 @@ Section sim_state.
     Lemma tac_simv_bindₛ Δ Φ K f eₛ eₜ :
       f = (λ eₛ, K @@ eₛ) →
       envs_entails Δ (
-        SIM eₛ ≳ eₜ [[ X ]] {{# λ vₛ vₜ,
-          SIM f (of_val vₛ) ≳ of_val vₜ [[ X ]] {{# Φ }}
+        SIM eₛ ≳ eₜ [[ Χ ]] {{# λ vₛ vₜ,
+          SIM f (of_val vₛ) ≳ of_val vₜ [[ Χ ]] {{# Φ }}
         }}
       ) →
       envs_entails Δ (
-        SIM K @@ eₛ ≳ eₜ [[ X ]] {{# Φ }}
+        SIM K @@ eₛ ≳ eₜ [[ Χ ]] {{# Φ }}
       ).
     Proof.
       rewrite -simv_bindₛ => -> //.
@@ -242,12 +242,12 @@ Section sim_state.
     Lemma tac_simv_bindₜ Δ Φ eₛ K f eₜ :
       f = (λ eₜ, K @@ eₜ) →
       envs_entails Δ (
-        SIM eₛ ≳ eₜ [[ X ]] {{# λ vₛ vₜ,
-          SIM of_val vₛ ≳ f (of_val vₜ) [[ X ]] {{# Φ }}
+        SIM eₛ ≳ eₜ [[ Χ ]] {{# λ vₛ vₜ,
+          SIM of_val vₛ ≳ f (of_val vₜ) [[ Χ ]] {{# Φ }}
         }}
       ) →
       envs_entails Δ (
-        SIM eₛ ≳ K @@ eₜ [[ X ]] {{# Φ }}
+        SIM eₛ ≳ K @@ eₜ [[ Χ ]] {{# Φ }}
       ).
     Proof.
       rewrite -simv_bindₜ => -> //.
@@ -266,14 +266,14 @@ Tactic Notation "match_sim_or_simv" tactic3(tac_sim) tactic3(tac_simv) tactic3(t
   iStartProof;
   lazymatch goal with
   | |- envs_entails ?Δ ?Q =>
-      let X := open_constr:(_) in
+      let Χ := open_constr:(_) in
       let Φ := open_constr:(_) in
       let eₛ := open_constr:(_) in
       let eₜ := open_constr:(_) in
-      tryif unify Q (simv X Φ eₛ eₜ) then (
-        tac_simv Δ X Φ eₛ eₜ
-      ) else tryif unify Q (sim X Φ eₛ eₜ) then (
-        tac_sim Δ X Φ eₛ eₜ
+      tryif unify Q (simv Χ Φ eₛ eₜ) then (
+        tac_simv Δ Χ Φ eₛ eₜ
+      ) else tryif unify Q (sim Χ Φ eₛ eₜ) then (
+        tac_sim Δ Χ Φ eₛ eₜ
       ) else (
         tac_fail ()
       )
@@ -329,13 +329,13 @@ Ltac sim_simplₜ :=
 
 Ltac sim_simpl_post :=
   on_sim_or_simv
-    ltac:(fun Δ X Φ eₛ eₜ =>
+    ltac:(fun Δ Χ Φ eₛ eₜ =>
       let Φ := eval cbn in Φ in
-      change (envs_entails Δ (sim X Φ eₛ eₜ))
+      change (envs_entails Δ (sim Χ Φ eₛ eₜ))
     )
-    ltac:(fun Δ X Φ eₛ eₜ =>
+    ltac:(fun Δ Χ Φ eₛ eₜ =>
       let Φ := eval cbn in Φ in
-      change (envs_entails Δ (simv X Φ eₛ eₜ))
+      change (envs_entails Δ (simv Χ Φ eₛ eₜ))
     ).
 
 Ltac sim_strongly_stuck :=

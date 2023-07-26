@@ -20,12 +20,12 @@ Section bi.
   Definition sim_protocol_O :=
     (expr_relation_O → expr_relation_O).
 
-  #[global] Instance sim_protocol_ne (X : sim_protocol_O) n :
-    NonExpansive X →
-    Proper ((≡{n}≡) ==> (≡{n}≡) ==> (≡{n}≡) ==> (≡{n}≡)) X.
+  #[global] Instance sim_protocol_ne (Χ : sim_protocol_O) n :
+    NonExpansive Χ →
+    Proper ((≡{n}≡) ==> (≡{n}≡) ==> (≡{n}≡) ==> (≡{n}≡)) Χ.
   Proof.
-    intros HX Φ1 Φ2 HΦ eₛ1 eₛ2 ->%leibniz_equiv eₜ1 eₜ2 ->%leibniz_equiv.
-    apply HX. done.
+    intros HΧ Φ1 Φ2 HΦ eₛ1 eₛ2 ->%leibniz_equiv eₜ1 eₜ2 ->%leibniz_equiv.
+    apply HΧ. done.
   Qed.
 
   #[global] Instance sim_protocol_bottom : Bottom sim_protocol := (
@@ -33,11 +33,11 @@ Section bi.
       False
   )%I.
   #[global] Instance sim_protocol_meet : Meet sim_protocol := (
-    λ X1 X2 Φ eₛ eₜ,
-      X1 Φ eₛ eₜ ∨ X2 Φ eₛ eₜ
+    λ Χ1 Χ2 Φ eₛ eₜ,
+      Χ1 Φ eₛ eₜ ∨ Χ2 Φ eₛ eₜ
   )%I.
   #[global] Instance sim_protocol_join : Join sim_protocol := (
-    λ X1 X2 Φ eₛ eₜ,
-      X1 Φ eₛ eₜ ∧ X2 Φ eₛ eₜ
+    λ Χ1 Χ2 Φ eₛ eₜ,
+      Χ1 Φ eₛ eₜ ∧ Χ2 Φ eₛ eₜ
   )%I.
 End bi.

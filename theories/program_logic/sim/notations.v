@@ -3,20 +3,20 @@ From simuliris Require Import
 From simuliris.program_logic Require Export
   sim.definition.
 
-Notation "'SIM' eₛ ≳ eₜ [[ X ] ] {{ Φ } }" := (sim X Φ%I eₛ eₜ)
+Notation "'SIM' eₛ ≳ eₜ [[ Χ ] ] {{ Φ } }" := (sim Χ Φ%I eₛ eₜ)
 ( at level 20,
-  eₛ, eₜ, X, Φ at level 200,
-  format "'[hv' SIM  '/  ' '[' eₛ ']'  '/' ≳  '[' eₜ ']'  '/' [[  '/  ' '[' X ']'  '/' ] ]  {{  '/  ' '[' Φ ']'  '/' } } ']'"
+  eₛ, eₜ, Χ, Φ at level 200,
+  format "'[hv' SIM  '/  ' '[' eₛ ']'  '/' ≳  '[' eₜ ']'  '/' [[  '/  ' '[' Χ ']'  '/' ] ]  {{  '/  ' '[' Φ ']'  '/' } } ']'"
 ) : bi_scope.
 Notation "'SIM' eₛ ≳ eₜ {{ Φ } }" := (sim ⊥ Φ%I eₛ eₜ)
 ( at level 20,
   eₛ, eₜ, Φ at level 200,
   format "'[hv' SIM  '/  ' '[' eₛ ']'  '/' ≳  '[' eₜ ']'  '/' {{  '/  ' '[' Φ ']'  '/' } } ']'"
 ) : bi_scope.
-Notation "'SIM' eₛ ≳ eₜ [[ X ] ] {{# Φ } }" := (simv X Φ%I eₛ eₜ)
+Notation "'SIM' eₛ ≳ eₜ [[ Χ ] ] {{# Φ } }" := (simv Χ Φ%I eₛ eₜ)
 ( at level 20,
-  eₛ, eₜ, X, Φ at level 200,
-  format "'[hv' SIM  '/  ' '[' eₛ ']'  '/' ≳  '[' eₜ ']'  '/' [[  '/  ' '[' X ']'  '/' ] ]  {{#  '/  ' '[' Φ ']'  '/' } } ']'"
+  eₛ, eₜ, Χ, Φ at level 200,
+  format "'[hv' SIM  '/  ' '[' eₛ ']'  '/' ≳  '[' eₜ ']'  '/' [[  '/  ' '[' Χ ']'  '/' ] ]  {{#  '/  ' '[' Φ ']'  '/' } } ']'"
 ) : bi_scope.
 Notation "'SIM' eₛ ≳ eₜ {{# Φ } }" := (simv ⊥ Φ%I eₛ eₜ)
 ( at level 20,
@@ -24,11 +24,11 @@ Notation "'SIM' eₛ ≳ eₜ {{# Φ } }" := (simv ⊥ Φ%I eₛ eₜ)
   format "'[hv' SIM  '/  ' '[' eₛ ']'  '/' ≳  '[' eₜ ']'  '/' {{#  '/  ' '[' Φ ']'  '/' } } ']'"
 ) : bi_scope.
 
-Notation "'SIM' eₛ ≳ eₜ [[ X ] ] {{ Φ } }" := (⊢ SIM eₛ ≳ eₜ [[ X ]] {{ Φ }})
+Notation "'SIM' eₛ ≳ eₜ [[ Χ ] ] {{ Φ } }" := (⊢ SIM eₛ ≳ eₜ [[ Χ ]] {{ Φ }})
 : stdpp_scope.
 Notation "'SIM' eₛ ≳ eₜ {{ Φ } }" := (⊢ SIM eₛ ≳ eₜ {{ Φ }})
 : stdpp_scope.
-Notation "'SIM' eₛ ≳ eₜ [[ X ] ] {{# Φ } }" := (⊢ SIM eₛ ≳ eₜ [[ X ]] {{# Φ }})
+Notation "'SIM' eₛ ≳ eₜ [[ Χ ] ] {{# Φ } }" := (⊢ SIM eₛ ≳ eₜ [[ Χ ]] {{# Φ }})
 : stdpp_scope.
 Notation "'SIM' eₛ ≳ eₜ {{# Φ } }" := (⊢ SIM eₛ ≳ eₜ {{# Φ }})
 : stdpp_scope.

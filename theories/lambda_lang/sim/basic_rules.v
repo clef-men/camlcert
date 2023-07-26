@@ -176,32 +176,32 @@ Section sim_GS.
     iFrame. iApply "Hbij". iExists vₛ, vₜ. iSmash.
   Qed.
 
-  Context (X : sim_protocol Σ).
+  Context (Χ : sim_protocol Σ).
 
   Section sim.
     Implicit Types Φ : lambda_expr → lambda_expr → iProp Σ.
 
     Lemma sim_binopₛ1 Φ op e1 e2 e :
-      SIM let: e1 in let: e2.[ren (+1)] in LambdaBinopDet op $1 $0 ≳ e [[ X ]] {{ Φ }} ⊢
-      SIM LambdaBinop op e1 e2 ≳ e [[ X ]] {{ Φ }}.
+      SIM let: e1 in let: e2.[ren (+1)] in LambdaBinopDet op $1 $0 ≳ e [[ Χ ]] {{ Φ }} ⊢
+      SIM LambdaBinop op e1 e2 ≳ e [[ Χ ]] {{ Φ }}.
     Proof.
       iIntros "Hsim".
       iApply sim_head_stepₛ. iIntros "%σₛ %σₜ Hsi !>".
       iExists _, σₛ. iFrame. auto with lambda_lang.
     Qed.
     Lemma sim_binopₛ2 Φ op e1 e2 e :
-      SIM let: e2 in let: e1.[ren (+1)] in LambdaBinopDet op $0 $1 ≳ e [[ X ]] {{ Φ }} ⊢
-      SIM LambdaBinop op e1 e2 ≳ e [[ X ]] {{ Φ }}.
+      SIM let: e2 in let: e1.[ren (+1)] in LambdaBinopDet op $0 $1 ≳ e [[ Χ ]] {{ Φ }} ⊢
+      SIM LambdaBinop op e1 e2 ≳ e [[ Χ ]] {{ Φ }}.
     Proof.
       iIntros "Hsim".
       iApply sim_head_stepₛ. iIntros "%σₛ %σₜ Hsi !>".
       iExists _, σₛ. iFrame. auto with lambda_lang.
     Qed.
     Lemma sim_binopₜ Φ op e e1 e2 :
-        SIM e ≳ let: e1 in let: e2.[ren (+1)] in LambdaBinopDet op $1 $0 [[ X ]] {{ Φ }}
-      ∧ SIM e ≳ let: e2 in let: e1.[ren (+1)] in LambdaBinopDet op $0 $1 [[ X ]] {{ Φ }}
+        SIM e ≳ let: e1 in let: e2.[ren (+1)] in LambdaBinopDet op $1 $0 [[ Χ ]] {{ Φ }}
+      ∧ SIM e ≳ let: e2 in let: e1.[ren (+1)] in LambdaBinopDet op $0 $1 [[ Χ ]] {{ Φ }}
       ⊢
-      SIM e ≳ LambdaBinop op e1 e2 [[ X ]] {{ Φ }}.
+      SIM e ≳ LambdaBinop op e1 e2 [[ Χ ]] {{ Φ }}.
     Proof.
       iIntros "Hsim".
       iApply sim_head_stepₜ. iIntros "%σₛ %σₜ Hsi !>".
@@ -218,7 +218,7 @@ Section sim_GS.
         vₛ ≈ vₜ -∗
         Φ vₛ vₜ
       ) -∗
-      SIM LambdaBinopDet LambdaOpPlus vₛ1 vₛ2 ≳ LambdaBinopDet LambdaOpPlus vₜ1 vₜ2 [[ X ]] {{ Φ }}.
+      SIM LambdaBinopDet LambdaOpPlus vₛ1 vₛ2 ≳ LambdaBinopDet LambdaOpPlus vₜ1 vₜ2 [[ Χ ]] {{ Φ }}.
     Proof.
       iIntros "#Hv1 #Hv2 HΦ".
       destruct vₛ1, vₜ1; try iDestruct "Hv1" as %[]; try sim_strongly_stuck;
@@ -228,26 +228,26 @@ Section sim_GS.
     Qed.
 
     Lemma sim_constrₛ1 Φ tag e1 e2 e :
-      SIM let: e1 in let: e2.[ren (+1)] in &&tag $1 $0 ≳ e [[ X ]] {{ Φ }} ⊢
-      SIM &tag e1 e2 ≳ e [[ X ]] {{ Φ }}.
+      SIM let: e1 in let: e2.[ren (+1)] in &&tag $1 $0 ≳ e [[ Χ ]] {{ Φ }} ⊢
+      SIM &tag e1 e2 ≳ e [[ Χ ]] {{ Φ }}.
     Proof.
       iIntros "Hsim".
       iApply sim_head_stepₛ. iIntros "%σₛ %σₜ Hsi !>".
       iExists _, σₛ. iFrame. auto with lambda_lang.
     Qed.
     Lemma sim_constrₛ2 Φ tag e1 e2 e :
-      SIM let: e2 in let: e1.[ren (+1)] in &&tag $0 $1 ≳ e [[ X ]] {{ Φ }} ⊢
-      SIM &tag e1 e2 ≳ e [[ X ]] {{ Φ }}.
+      SIM let: e2 in let: e1.[ren (+1)] in &&tag $0 $1 ≳ e [[ Χ ]] {{ Φ }} ⊢
+      SIM &tag e1 e2 ≳ e [[ Χ ]] {{ Φ }}.
     Proof.
       iIntros "Hsim".
       iApply sim_head_stepₛ. iIntros "%σₛ %σₜ Hsi !>".
       iExists _, σₛ. iFrame. auto with lambda_lang.
     Qed.
     Lemma sim_constrₜ Φ tag e e1 e2 :
-        SIM e ≳ let: e1 in let: e2.[ren (+1)] in &&tag $1 $0 [[ X ]] {{ Φ }}
-      ∧ SIM e ≳ let: e2 in let: e1.[ren (+1)] in &&tag $0 $1 [[ X ]] {{ Φ }}
+        SIM e ≳ let: e1 in let: e2.[ren (+1)] in &&tag $1 $0 [[ Χ ]] {{ Φ }}
+      ∧ SIM e ≳ let: e2 in let: e1.[ren (+1)] in &&tag $0 $1 [[ Χ ]] {{ Φ }}
       ⊢
-      SIM e ≳ &tag e1 e2 [[ X ]] {{ Φ }}.
+      SIM e ≳ &tag e1 e2 [[ Χ ]] {{ Φ }}.
     Proof.
       iIntros "Hsim".
       iApply sim_head_stepₜ. iIntros "%σₛ %σₜ Hsi !>".
@@ -262,9 +262,9 @@ Section sim_GS.
         (l +ₗ 0) ↦ₛ tag -∗
         (l +ₗ 1) ↦ₛ v1 -∗
         (l +ₗ 2) ↦ₛ v2 -∗
-        SIM l ≳ e [[ X ]] {{ Φ }}
+        SIM l ≳ e [[ Χ ]] {{ Φ }}
       ) ⊢
-      SIM &&tag v1 v2 ≳ e [[ X ]] {{ Φ }}.
+      SIM &&tag v1 v2 ≳ e [[ Χ ]] {{ Φ }}.
     Proof.
       iIntros "Hsim".
       iApply sim_head_stepₛ. iIntros "%σₛ %σₜ Hsi".
@@ -290,9 +290,9 @@ Section sim_GS.
         (l +ₗ 0) ↦ₜ tag -∗
         (l +ₗ 1) ↦ₜ v1 -∗
         (l +ₗ 2) ↦ₜ v2 -∗
-        SIM e ≳ l [[ X ]] {{ Φ }}
+        SIM e ≳ l [[ Χ ]] {{ Φ }}
       ) ⊢
-      SIM e ≳ &&tag v1 v2 [[ X ]] {{ Φ }}.
+      SIM e ≳ &&tag v1 v2 [[ Χ ]] {{ Φ }}.
     Proof.
       iIntros "Hsim".
       iApply sim_head_stepₜ. iIntros "%σₛ %σₜ Hsi".
@@ -315,7 +315,7 @@ Section sim_GS.
         LambdaLoc lₛ ≈ LambdaLoc lₜ ++∗
         Φ #lₛ #lₜ
       ) -∗
-      SIM &&tag vₛ1 vₛ2 ≳ &&tag vₜ1 vₜ2 [[ X ]] {{ Φ }}.
+      SIM &&tag vₛ1 vₛ2 ≳ &&tag vₜ1 vₜ2 [[ Χ ]] {{ Φ }}.
     Proof.
       iIntros "Hv1 Hv2 HΦ".
       iApply sim_constr_detₛ. iIntros "%lₛ Hlₛ0 Hlₛ1 Hlₛ2".
@@ -333,9 +333,9 @@ Section sim_GS.
     Lemma sim_loadₛ Φ l idx v e :
       (l +ₗ idx) ↦ₛ v -∗
       ( (l +ₗ idx) ↦ₛ v -∗
-        SIM v ≳ e [[ X ]] {{ Φ }}
+        SIM v ≳ e [[ Χ ]] {{ Φ }}
       ) -∗
-      SIM ![idx] l ≳ e [[ X ]] {{ Φ }}.
+      SIM ![idx] l ≳ e [[ Χ ]] {{ Φ }}.
     Proof.
       iIntros "Hl Hsim".
       iApply sim_head_stepₛ. iIntros "%σₛ %σₜ Hsi !>".
@@ -345,9 +345,9 @@ Section sim_GS.
     Lemma sim_loadₜ Φ e l idx v :
       (l +ₗ idx) ↦ₜ v -∗
       ( (l +ₗ idx) ↦ₜ v -∗
-        SIM e ≳ v [[ X ]] {{ Φ }}
+        SIM e ≳ v [[ Χ ]] {{ Φ }}
       ) -∗
-      SIM e ≳ ![idx] l [[ X ]] {{ Φ }}.
+      SIM e ≳ ![idx] l [[ Χ ]] {{ Φ }}.
     Proof.
       iIntros "Hl Hsim".
       iApply sim_head_stepₜ. iIntros "%σₛ %σₜ Hsi !>".
@@ -362,7 +362,7 @@ Section sim_GS.
         vₛ ≈ vₜ -∗
         Φ vₛ vₜ
       ) -∗
-      SIM ![idxₛ] lₛ ≳ ![idxₜ] lₜ [[ X ]] {{ Φ }}.
+      SIM ![idxₛ] lₛ ≳ ![idxₜ] lₜ [[ Χ ]] {{ Φ }}.
     Proof.
       iIntros "(Hl0 & Hl1 & Hl2) <- Hsim".
       iApply sim_head_step. iIntros "%σₛ %σₜ Hsi !>".
@@ -378,9 +378,9 @@ Section sim_GS.
     Lemma sim_storeₛ Φ l idx v w e :
       (l +ₗ idx) ↦ₛ w -∗
       ( (l +ₗ idx) ↦ₛ v -∗
-        SIM #() ≳ e [[ X ]] {{ Φ }}
+        SIM #() ≳ e [[ Χ ]] {{ Φ }}
       ) -∗
-      SIM l <-[idx]- v ≳ e [[ X ]] {{ Φ }}.
+      SIM l <-[idx]- v ≳ e [[ Χ ]] {{ Φ }}.
     Proof.
       iIntros "Hl Hsim".
       iApply sim_head_stepₛ. iIntros "%σₛ %σₜ Hsi".
@@ -391,9 +391,9 @@ Section sim_GS.
     Lemma sim_storeₜ Φ e l idx v w :
       (l +ₗ idx) ↦ₜ w -∗
       ( (l +ₗ idx) ↦ₜ v -∗
-        SIM e ≳ #() [[ X ]] {{ Φ }}
+        SIM e ≳ #() [[ Χ ]] {{ Φ }}
       ) -∗
-      SIM e ≳ l <-[idx]- v [[ X ]] {{ Φ }}.
+      SIM e ≳ l <-[idx]- v [[ Χ ]] {{ Φ }}.
     Proof.
       iIntros "Hl Hsim".
       iApply sim_head_stepₜ. iIntros "%σₛ %σₜ Hsi".
@@ -408,7 +408,7 @@ Section sim_GS.
       vₛ2 ≈ vₜ2 -∗
       vₛ3 ≈ vₜ3 -∗
       Φ #() #() -∗
-      SIM vₛ1 <-[vₛ2]- vₛ3 ≳ vₜ1 <-[vₜ2]- vₜ3 [[ X ]] {{ Φ }}.
+      SIM vₛ1 <-[vₛ2]- vₛ3 ≳ vₜ1 <-[vₜ2]- vₜ3 [[ Χ ]] {{ Φ }}.
     Proof.
       iIntros "Hv1 Hv2 Hv3 HΦ".
       destruct vₛ1, vₜ1; try iDestruct "Hv1" as %[]; try sim_strongly_stuck.
@@ -438,7 +438,7 @@ Section sim_GS.
         vₛ ≈ vₜ -∗
         Φ vₛ vₜ
       ) -∗
-      SIM LambdaBinopDet LambdaOpPlus vₛ1 vₛ2 ≳ LambdaBinopDet LambdaOpPlus vₜ1 vₜ2 [[ X ]] {{# Φ }}.
+      SIM LambdaBinopDet LambdaOpPlus vₛ1 vₛ2 ≳ LambdaBinopDet LambdaOpPlus vₜ1 vₜ2 [[ Χ ]] {{# Φ }}.
     Proof.
       iIntros "#Hv1 #Hv2 HΦ".
       iApply (sim_binop_det with "Hv1 Hv2").
@@ -452,7 +452,7 @@ Section sim_GS.
         LambdaLoc lₛ ≈ LambdaLoc lₜ ++∗
         Φ lₛ lₜ
       ) -∗
-      SIM &&tag vₛ1 vₛ2 ≳ &&tag vₜ1 vₜ2 [[ X ]] {{# Φ }}.
+      SIM &&tag vₛ1 vₛ2 ≳ &&tag vₜ1 vₜ2 [[ Χ ]] {{# Φ }}.
     Proof.
       iIntros "#Hv1 #Hv2 HΦ".
       iApply (sim_constr_det with "Hv1 Hv2").
@@ -466,7 +466,7 @@ Section sim_GS.
         vₛ ≈ vₜ -∗
         Φ vₛ vₜ
       ) -∗
-      SIM ![idxₛ] lₛ ≳ ![idxₜ] lₜ [[ X ]] {{# Φ }}.
+      SIM ![idxₛ] lₛ ≳ ![idxₜ] lₜ [[ Χ ]] {{# Φ }}.
     Proof.
       iIntros "#Hl #Hidx HΦ".
       iApply (sim_load with "Hl Hidx").
@@ -478,7 +478,7 @@ Section sim_GS.
       vₛ2 ≈ vₜ2 -∗
       vₛ3 ≈ vₜ3 -∗
       Φ ()%lambda_val ()%lambda_val -∗
-      SIM vₛ1 <-[vₛ2]- vₛ3 ≳ vₜ1 <-[vₜ2]- vₜ3 [[ X ]] {{# Φ }}.
+      SIM vₛ1 <-[vₛ2]- vₛ3 ≳ vₜ1 <-[vₜ2]- vₜ3 [[ Χ ]] {{# Φ }}.
     Proof.
       iIntros "#Hv1 #Hv2 #Hv3 HΦ".
       iApply (sim_store with "Hv1 Hv2 Hv3").

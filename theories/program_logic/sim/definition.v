@@ -88,7 +88,7 @@ Section sim_state.
   Context `{sim_programs : !SimPrograms Λₛ Λₜ}.
   Context `{!BiBUpd PROP, !BiAffine PROP}.
   Context `{sim_state : !SimState PROP Λₛ Λₜ}.
-  Context (X : sim_protocol PROP Λₛ Λₜ).
+  Context (Χ : sim_protocol PROP Λₛ Λₜ).
 
   Notation expr_relation :=
     (expr Λₛ → expr Λₜ → PROP).
@@ -124,7 +124,7 @@ Section sim_state.
       ) ∨ (
         ∃ Kₛ eₛ' Kₜ eₜ' Ψ,
         ⌜eₛ = Kₛ @@ eₛ' ∧ eₜ = Kₜ @@ eₜ'⌝ ∗
-        X Ψ eₛ' eₜ' ∗
+        Χ Ψ eₛ' eₜ' ∗
         sim_state_interp σₛ σₜ ∗
           ∀ eₛ eₜ,
           Ψ eₛ eₜ ++∗
