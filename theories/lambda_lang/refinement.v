@@ -4,7 +4,7 @@ From simuliris.program_logic Require Export
   refinement.
 From simuliris.lambda_lang Require Export
   language
-  well_formed.
+  metatheory.
 From simuliris.lambda_lang Require Import
   notations.
 

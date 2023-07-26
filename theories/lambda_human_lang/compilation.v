@@ -1,11 +1,11 @@
 From simuliris Require Import
   prelude.
 From simuliris.lambda_lang Require Export
-  well_formed.
+  metatheory.
 From simuliris.lambda_lang Require Import
   notations.
 From simuliris.lambda_human_lang Require Export
-  well_formed.
+  metatheory.
 
 Definition lambda_human_bindings := list binder.
 Implicit Types bdgs : lambda_human_bindings.

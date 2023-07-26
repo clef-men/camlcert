@@ -11,7 +11,7 @@ From simuliris.lambda_lang Require Import
 From simuliris.tmc Require Export
   definition.
 From simuliris.tmc Require Import
-  properties.
+  metatheory.
 
 Section sim_GS.
   Context `{sim_programs : !SimPrograms lambda_ectx_lang lambda_ectx_lang}.

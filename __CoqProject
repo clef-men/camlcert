@@ -40,7 +40,7 @@ theories/lambda_lang/syntax.v
 theories/lambda_lang/notations.v
 theories/lambda_lang/semantics.v
 theories/lambda_lang/language.v
-theories/lambda_lang/well_formed.v
+theories/lambda_lang/metatheory.v
 theories/lambda_lang/ectx_decompositions.v
 theories/lambda_lang/tactics.v
 theories/lambda_lang/subexpr.v
@@ -57,16 +57,16 @@ theories/lambda_lang/rsim/rules.v
 
 theories/lambda_human_lang/syntax.v
 theories/lambda_human_lang/notations.v
-theories/lambda_human_lang/well_formed.v
+theories/lambda_human_lang/metatheory.v
 theories/lambda_human_lang/compilation.v
 
 theories/tmc/definition.v
-theories/tmc/properties.v
+theories/tmc/metatheory.v
 theories/tmc/soundness.v
 theories/tmc/examples/list_append.v
 theories/tmc/examples/list_map.v
 
 theories/aps_plus/definition.v
-theories/aps_plus/properties.v
+theories/aps_plus/metatheory.v
 theories/aps_plus/examples/list_length.v
 theories/aps_plus/examples/list_sum.v

@@ -3,7 +3,7 @@ From simuliris Require Import
 From simuliris.common Require Import
   tactics.
 From simuliris.lambda_lang Require Export
-  well_formed.
+  metatheory.
 From simuliris.lambda_lang Require Import
   notations.
 From simuliris.tmc Require Export

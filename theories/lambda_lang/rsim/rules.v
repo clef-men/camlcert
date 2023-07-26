@@ -1,8 +1,7 @@
 From simuliris Require Import
   prelude.
 From simuliris.lambda_lang Require Export
-  well_formed.
-From simuliris.lambda_lang Require Export
+  metatheory
   sim.derived_rules
   rsim.definition.
 From simuliris.lambda_lang Require Import

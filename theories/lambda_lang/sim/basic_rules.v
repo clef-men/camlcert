@@ -8,7 +8,7 @@ From simuliris.lambda_lang Require Export
   tactics
   sim.definition.
 From simuliris.lambda_lang Require Import
-  well_formed
+  metatheory
   sim.notations.
 
 Section sim_GS.

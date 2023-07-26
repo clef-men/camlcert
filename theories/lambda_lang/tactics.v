@@ -6,7 +6,7 @@ From simuliris.lambda_lang Require Export
   language.
 From simuliris.lambda_lang Require Import
   ectx_decompositions
-  well_formed.
+  metatheory.
 
 Create HintDb lambda_lang.
 
