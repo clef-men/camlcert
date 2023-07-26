@@ -50,10 +50,10 @@ theories/lambda_lang/sim/notations.v
 theories/lambda_lang/sim/basic_rules.v
 theories/lambda_lang/sim/proofmode.v
 theories/lambda_lang/sim/derived_rules.v
-theories/lambda_lang/csim/bisubst.v
-theories/lambda_lang/csim/definition.v
-theories/lambda_lang/csim/notations.v
-theories/lambda_lang/csim/rules.v
+theories/lambda_lang/rsim/bisubst.v
+theories/lambda_lang/rsim/definition.v
+theories/lambda_lang/rsim/notations.v
+theories/lambda_lang/rsim/rules.v
 
 theories/lambda_human_lang/syntax.v
 theories/lambda_human_lang/notations.v

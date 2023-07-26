@@ -6,8 +6,8 @@ From simuliris.lambda_lang Require Import
   refinement
   subexpr
   sim.proofmode
-  csim.rules
-  csim.notations.
+  rsim.rules
+  rsim.notations.
 From simuliris.tmc Require Export
   definition.
 From simuliris.tmc Require Import
@@ -148,11 +148,11 @@ Section sim_GS.
       ];
       iIntros "%Hwf %Φ Hpre HΦ".
     (* tmc_dir *)
-    - iApply csimv_val; [done | iSmash].
-    - iApply csimv_var. iSmash.
-    - iApply csim_let;
+    - iApply rsimv_val; [done | iSmash].
+    - iApply rsimv_var. iSmash.
+    - iApply rsim_let;
         iApply IHdirₛ; auto with lambda_lang.
-    - iApply csim_call;
+    - iApply rsim_call;
         [iApply IHdirₛ; auto with lambda_lang.. |].
       iIntros "%func %vₛ %vₜ %Hfunc #Hv".
       pose (Ψ := sim_post_vals' tmc_dir_post).
@@ -160,14 +160,14 @@ Section sim_GS.
       { rewrite /Ψ /sim_post_vals'. iSmash. }
       iIntros "!> % % (%vₛ' & %vₜ' & (-> & ->) & HΨ)".
       sim_post.
-    - iApply csimv_unop; last iSmash.
+    - iApply rsimv_unop; last iSmash.
       iApply IHdirₛ; auto with lambda_lang.
-    - iApply csimv_binop; last iSmash;
+    - iApply rsimv_binop; last iSmash;
         iApply IHdirₛ; auto with lambda_lang.
     - iSmash.
-    - iApply csim_if; last iSplit;
+    - iApply rsim_if; last iSplit;
         iApply IHdirₛ; auto with lambda_lang.
-    - iApply csimv_constr; last iSmash;
+    - iApply rsimv_constr; last iSmash;
         iApply IHdirₛ; auto with lambda_lang.
     - iIntros "%Γ % % (-> & ->) #HΓ /=".
       sim_constrₛ1.
@@ -208,21 +208,21 @@ Section sim_GS.
       sim_heap_bij_insert.
       iSmash.
     - iSmash.
-    - iApply csimv_load; last iSmash;
+    - iApply rsimv_load; last iSmash;
        iApply IHdirₛ; auto with lambda_lang.
-    - iApply csimv_store; last iSmash;
+    - iApply rsimv_store; last iSmash;
         iApply IHdirₛ; auto with lambda_lang.
     (* tmc_dps *)
     - iIntros "%Γ % % (-> & ->) #HΓ /=".
       sim_apply (IHdir with "[//] [Hpre HΦ]"); [done.. |]. iIntros "%vₛ %vₜ #Hv".
       sim_storeₜ.
-    - iApply csim_let.
+    - iApply rsim_let.
       { iApply (IHdirₛ with "[//] []"); auto with lambda_lang. }
       iApply (IHdpsₛ with "Hpre [HΦ]"); [auto with lambda_lang.. |]. iSmash.
     - iIntros "%Γ % % (-> & ->) #HΓ /=".
       sim_apply (IHdirₛ with "[//] [Hpre HΦ] [//] HΓ"); [auto with lambda_lang.. |]. iIntros "%vₛ %vₜ #Hv".
       sim_apply (tmc_protocol_dps' with "Hpre Hv"); auto with lambda_lang.
-    - iApply csim_if.
+    - iApply rsim_if.
       { iApply (IHdirₛ with "[//] []"); auto with lambda_lang. }
       iSplit; iApply (IHdpsₛ with "Hpre [HΦ]"); [auto with lambda_lang.. | iSmash].
     - iIntros "%Γ % % (-> & ->) #HΓ /=".
