@@ -61,10 +61,10 @@ Section sim.
       + iDestruct "Hsim" as "(%Hstuckₛ & %Hstuckₜ)".
         iPureIntro. exists eₛ. split.
         * econstructor. split; first apply rtc_refl.
-          apply stuck_irreducible, strongly_stuck_stuck. done.
+          apply stuck_irreducible. done.
         * invert Hstepsₜ as [| n' ? (eₜ', σₜ') ? Hstepₜ _]; last first.
           { eelim irreducible_not_reducible_1.
-            - apply stuck_irreducible, strongly_stuck_stuck, Hstuckₜ.
+            - apply stuck_irreducible, Hstuckₜ.
             - exists eₜ', σₜ'. apply step_prim_step. done.
           }
           apply behaviour_refinement_stuck; [apply Hstuckₛ | apply Hstuckₜ].
@@ -143,7 +143,7 @@ Section sim.
       iAssert ⌜irreducible sim_progₜ eₜ σₜ⌝%I as %[]%irreducible_not_reducible.
       { iDestruct "Hsim" as "[Hsim | Hsim]".
         - iDestruct "Hsim" as "(%Hstuckₛ & %Hstuckₜ)".
-          iPureIntro. apply stuck_irreducible, strongly_stuck_stuck. done.
+          iPureIntro. apply stuck_irreducible. done.
         - rewrite sim_post_vals_unseal.
           iDestruct ("Hsimilar" with "Hsim") as "(%vₛ & %vₜ & (-> & ->) & _)".
           iPureIntro. eapply val_irreducible. done.

@@ -103,7 +103,7 @@ Section sim_state.
       ∀ σₛ σₜ,
       sim_state_interp σₛ σₜ ==∗ (
         sim_state_interp σₛ σₜ ∗
-        (⌜strongly_stuck sim_progₛ eₛ ∧ strongly_stuck sim_progₜ eₜ⌝ ∨ Φ eₛ eₜ)
+        (⌜stuck sim_progₛ eₛ σₛ ∧ stuck sim_progₜ eₜ σₜ⌝ ∨ Φ eₛ eₜ)
       ) ∨ (
         ∃ eₛ' σₛ',
         ⌜tc (step sim_progₛ) (eₛ, σₛ) (eₛ', σₛ')⌝ ∗

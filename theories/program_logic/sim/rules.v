@@ -158,7 +158,8 @@ Section sim_state.
         strongly_stuck sim_progₜ eₜ →
         ⊢ sim_body N M Φ eₛ eₜ.
       Proof.
-        iSmash.
+        iIntros "%Hstrongly_stuckₛ %Hstrong_stuckₜ %σₛ %σₜ Hsi !>".
+        iLeft. iFrame. auto using strongly_stuck_stuck.
       Qed.
       Lemma sim_body_strongly_head_stuck N M Φ eₛ eₜ :
         strongly_head_stuck sim_progₛ eₛ →
@@ -920,9 +921,8 @@ Section sim_state.
         iMod ("Hsim1" with "Hsi") as "[Hsim1 | [Hsim1 | [Hsim1 | Hsim1]]]".
         - iDestruct "Hsim1" as "(Hsi & [(%Hstuckₛ & %Hstuckₜ) | HΦ1])".
           + iLeft. iFrame. iLeft.
-            iPureIntro. split; (apply language_ctx_strongly_stuck; [apply _ | done]).
-          +
-          iRevert (σₛ σₜ) "Hsi". iApply sim_inner_fixpoint. iApply ("Hsim2" with "HΦ1").
+            iPureIntro. split; (apply language_ctx_stuck; [apply _ | done]).
+          + iRevert (σₛ σₜ) "Hsi". iApply sim_inner_fixpoint. iApply ("Hsim2" with "HΦ1").
         - iDestruct "Hsim1" as "(%eₛ' & %σₛ' & %Hstepsₛ & Hsi & HI)".
           iRight. iLeft. iExists (Kₛ @@ eₛ'), σₛ'. iFrame. iSplitR.
           { iPureIntro. apply language_ctx_tc_step; [apply _ | done]. }
