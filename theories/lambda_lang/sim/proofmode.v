@@ -431,7 +431,7 @@ Tactic Notation "sim_heap_bij_insert" :=
   sim_heap_bij_insert_core Htie Htie.
 
 Ltac sim_binopₛ1 :=
-  sim_pures;
+  sim_puresₛ;
   let e_foc := open_constr:(LambdaBinop _ _ _) in
   sim_focalizeₛ e_foc
     ltac:(fun K =>
@@ -444,7 +444,7 @@ Ltac sim_binopₛ1 :=
     );
   sim_finisher.
 Ltac sim_binopₛ2 :=
-  sim_pures;
+  sim_puresₛ;
   let e_foc := open_constr:(LambdaBinop _ _ _) in
   sim_focalizeₛ e_foc
     ltac:(fun K =>
@@ -457,7 +457,7 @@ Ltac sim_binopₛ2 :=
     );
   sim_finisher.
 Ltac sim_binopₜ :=
-  sim_pures;
+  sim_puresₜ;
   let e_foc := open_constr:(LambdaBinop _ _ _) in
   sim_focalizeₜ e_foc
     ltac:(fun K =>
@@ -471,7 +471,7 @@ Ltac sim_binopₜ :=
   sim_finisher.
 
 Ltac sim_constrₛ1 :=
-  sim_pures;
+  sim_puresₛ;
   let e_foc := open_constr:(LambdaConstr _ _ _) in
   sim_focalizeₛ e_foc
     ltac:(fun K =>
@@ -484,7 +484,7 @@ Ltac sim_constrₛ1 :=
     );
   sim_finisher.
 Ltac sim_constrₛ2 :=
-  sim_pures;
+  sim_puresₛ;
   let e_foc := open_constr:(LambdaConstr _ _ _) in
   sim_focalizeₛ e_foc
     ltac:(fun K =>
@@ -497,7 +497,7 @@ Ltac sim_constrₛ2 :=
     );
   sim_finisher.
 Ltac sim_constrₜ :=
-  sim_pures;
+  sim_puresₜ;
   let e_foc := open_constr:(LambdaConstr _ _ _) in
   sim_focalizeₜ e_foc
     ltac:(fun K =>
@@ -511,7 +511,7 @@ Ltac sim_constrₜ :=
   sim_finisher.
 
 Tactic Notation "sim_constr_detₛ" "as" simple_intropattern(l) constr(Hl0) constr(Hl1) constr(Hl2) :=
-  sim_pures;
+  sim_puresₛ;
   let e_foc := open_constr:(LambdaConstrDet _ (LambdaVal _) (LambdaVal _)) in
   sim_focalizeₛ e_foc
     ltac:(fun K =>
@@ -540,7 +540,7 @@ Tactic Notation "sim_constr_detₛ" :=
   let l := fresh "lₛ" in
   sim_constr_detₛ as l.
 Tactic Notation "sim_constr_detₜ" "as" simple_intropattern(l) constr(Hl0) constr(Hl1) constr(Hl2) :=
-  sim_pures;
+  sim_puresₜ;
   let e_foc := open_constr:(LambdaConstrDet _ (LambdaVal _) (LambdaVal _)) in
   sim_focalizeₜ e_foc
     ltac:(fun K =>
@@ -605,7 +605,7 @@ Tactic Notation "sim_constr_det" :=
   sim_constr_det as ? ?.
 
 Tactic Notation "sim_loadₛ" :=
-  sim_pures;
+  sim_puresₛ;
   let e_foc := open_constr:(LambdaLoad (LambdaVal (LambdaLoc _)) (LambdaVal (LambdaIndex _))) in
   sim_focalizeₛ e_foc
     ltac:(fun K =>
@@ -622,7 +622,7 @@ Tactic Notation "sim_loadₛ" :=
   | sim_finisher
   ].
 Tactic Notation "sim_loadₜ" :=
-  sim_pures;
+  sim_puresₜ;
   let e_foc := open_constr:(LambdaLoad (LambdaVal (LambdaLoc _)) (LambdaVal (LambdaIndex _))) in
   sim_focalizeₜ e_foc
     ltac:(fun K =>
@@ -675,7 +675,7 @@ Tactic Notation "sim_load" :=
   sim_load as ? ?.
 
 Ltac sim_storeₛ :=
-  sim_pures;
+  sim_puresₛ;
   let e_foc := open_constr:(LambdaStore (LambdaVal (LambdaLoc _)) (LambdaVal (LambdaIndex _)) (LambdaVal _)) in
   sim_focalizeₛ e_foc
     ltac:(fun K =>
@@ -692,7 +692,7 @@ Ltac sim_storeₛ :=
   | pm_reduce; sim_finisher
   ].
 Ltac sim_storeₜ :=
-  sim_pures;
+  sim_puresₜ;
   let e_foc := open_constr:(LambdaStore (LambdaVal (LambdaLoc _)) (LambdaVal (LambdaIndex _)) (LambdaVal _)) in
   sim_focalizeₜ e_foc
     ltac:(fun K =>

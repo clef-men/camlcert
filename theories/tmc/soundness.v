@@ -187,7 +187,7 @@ Section sim_GS.
       sim_heap_bij_insert.
       iDestruct (sim_heap_bij_tie_eq_2 with "Hlₛ2 Hlₜ2 [//]") as "Hl2".
       sim_heap_bij_insert.
-      iSmash.
+      sim_pures.
     - iIntros "%Γ % % (-> & ->) #HΓ /=".
       sim_constrₛ2.
       sim_apply simv_constr_valₜ2.
@@ -206,7 +206,7 @@ Section sim_GS.
       sim_heap_bij_insert.
       iDestruct (sim_heap_bij_tie_eq_2 with "Hlₛ2 Hlₜ2 [//]") as "Hl2".
       sim_heap_bij_insert.
-      iSmash.
+      sim_pures.
     - iSmash.
     - iApply rsimv_load; last iSmash;
        iApply IHdirₛ; auto with lambda_lang.
