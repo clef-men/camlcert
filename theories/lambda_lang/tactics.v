@@ -77,7 +77,7 @@ Ltac lambda_expr_simplifier :=
         solve [by destruct v]
     | lambda_expr_well_formed _ _ =>
         simpl in H; destruct_and? H
-    | lambda_expr_closed _ _ =>
+    | lambda_expr_scope _ _ =>
         simpl in H; destruct_and? H
     end
   );
@@ -91,7 +91,7 @@ Ltac lambda_expr_simplifier :=
   progress lambda_expr_simplifier
 ) : lambda_lang.
 #[global] Hint Extern 1 (
-  lambda_expr_closed _ _
+  lambda_expr_scope _ _
 ) => (
   progress lambda_expr_simplifier
 ) : lambda_lang.

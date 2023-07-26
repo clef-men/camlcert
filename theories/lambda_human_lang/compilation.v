@@ -123,17 +123,17 @@ Proof.
   apply lambda_human_bindings_lookup_aux_Some.
 Qed.
 
-Lemma lambda_human_expr_compile_closed lvl bdgs e :
-  length bdgs = lvl →
-  lambda_expr_closed lvl (lambda_human_expr_compile bdgs e).
+Lemma lambda_human_expr_compile_scope scope bdgs e :
+  length bdgs = scope →
+  lambda_expr_scope scope (lambda_human_expr_compile bdgs e).
 Proof.
-  revert lvl bdgs. induction e; simpl; intros lvl bdgs Hlength; try naive_solver.
+  revert scope bdgs. induction e; simpl; intros scope bdgs Hlength; try naive_solver.
   destruct (lambda_human_bindings_lookup _ _) eqn:Hlookup; last done.
   rewrite -Hlength. eapply lambda_human_bindings_lookup_Some. done.
 Qed.
-Lemma lambda_human_program_compile_closed prog :
-  lambda_program_closed (lambda_human_program_compile prog).
+Lemma lambda_human_program_compile_scope prog :
+  lambda_program_scope (lambda_human_program_compile prog).
 Proof.
   apply map_Forall_lookup. intros func ? ((x & e) & <- & Hfunc)%lookup_fmap_Some.
-  apply lambda_human_expr_compile_closed. done.
+  apply lambda_human_expr_compile_scope. done.
 Qed.

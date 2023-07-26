@@ -72,7 +72,7 @@ Qed.
 (*   - split. *)
 (*     + apply lambda_human_program_compile_well_formed. *)
 (*       rewrite /lambda_human_program_well_formed map_Forall_singleton //. *)
-(*     + apply lambda_human_program_compile_closed. *)
+(*     + apply lambda_human_program_compile_scope. *)
 (*   - rewrite /lambda_human_program_compile map_fmap_singleton fmap_insert map_fmap_singleton /=. *)
 (*     exists {["list_sum" := "list_sum_aps"]}; try set_solver. *)
 (*     + intros * (<- & <-)%lookup_singleton_Some. *)
