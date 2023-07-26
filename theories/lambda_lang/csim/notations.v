@@ -19,7 +19,7 @@ Notation "'SIM' eₛ ⩾ eₜ [[ X ] ] {{# Φ } }" := (csimv X Φ%I eₛ%lambda_
   eₛ, eₜ, X, Φ at level 200,
   format "'[hv' SIM  '/  ' '[' eₛ ']'  '/' ⩾  '[' eₜ ']'  '/' [[  '/  ' '[' X ']'  '/' ] ]  {{#  '/  ' '[' Φ ']'  '/' } } ']'"
 ) : bi_scope.
-Notation "'SIM' eₛ ⩾ eₜ {{# Φ } }" := (csim ⊥ Φ%I eₛ%lambda_expr eₜ%lambda_expr)%I
+Notation "'SIM' eₛ ⩾ eₜ {{# Φ } }" := (csimv ⊥ Φ%I eₛ%lambda_expr eₜ%lambda_expr)%I
 ( at level 20,
   eₛ, eₜ, Φ at level 200,
   format "'[hv' SIM  '/  ' '[' eₛ ']'  '/' ⩾  '[' eₜ ']'  '/' {{#  '/  ' '[' Φ ']'  '/' } } ']'"
