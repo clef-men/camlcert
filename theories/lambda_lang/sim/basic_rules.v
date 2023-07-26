@@ -211,6 +211,22 @@ Section sim_GS.
       - iDestruct "Hsim" as "(_ & $)". iSmash.
     Qed.
 
+    Lemma sim_binop_det Φ vₛ1 vₛ2 vₜ1 vₜ2 :
+      vₛ1 ≈ vₜ1 -∗
+      vₛ2 ≈ vₜ2 -∗
+      ( ∀ vₛ vₜ,
+        vₛ ≈ vₜ -∗
+        Φ vₛ vₜ
+      ) -∗
+      SIM LambdaBinopDet LambdaOpPlus vₛ1 vₛ2 ≳ LambdaBinopDet LambdaOpPlus vₜ1 vₜ2 [[ X ]] {{ Φ }}.
+    Proof.
+      iIntros "#Hv1 #Hv2 HΦ".
+      destruct vₛ1, vₜ1; try iDestruct "Hv1" as %[]; try sim_strongly_stuck;
+      destruct vₛ2, vₜ2; try iDestruct "Hv2" as %[]; try sim_strongly_stuck.
+      iApply sim_pure_step; [auto with lambda_lang.. |].
+      sim_post.
+    Qed.
+
     Lemma sim_constrₛ1 Φ tag e1 e2 e :
       SIM let: e1 in let: e2.[ren (+1)] in &&tag $1 $0 ≳ e [[ X ]] {{ Φ }} ⊢
       SIM &tag e1 e2 ≳ e [[ X ]] {{ Φ }}.
@@ -415,6 +431,20 @@ Section sim_GS.
   Section simv.
     Implicit Types Φ : lambda_val → lambda_val → iProp Σ.
 
+    Lemma simv_binop_det Φ vₛ1 vₛ2 vₜ1 vₜ2 :
+      vₛ1 ≈ vₜ1 -∗
+      vₛ2 ≈ vₜ2 -∗
+      ( ∀ vₛ vₜ,
+        vₛ ≈ vₜ -∗
+        Φ vₛ vₜ
+      ) -∗
+      SIM LambdaBinopDet LambdaOpPlus vₛ1 vₛ2 ≳ LambdaBinopDet LambdaOpPlus vₜ1 vₜ2 [[ X ]] {{# Φ }}.
+    Proof.
+      iIntros "#Hv1 #Hv2 HΦ".
+      iApply (sim_binop_det with "Hv1 Hv2").
+      rewrite sim_post_vals_unseal /sim_post_vals'. iSmash.
+    Qed.
+
     Lemma simv_constr_det Φ tag vₛ1 vₛ2 vₜ1 vₜ2 :
       vₛ1 ≈ vₜ1 -∗
       vₛ2 ≈ vₜ2 -∗
@@ -424,10 +454,9 @@ Section sim_GS.
       ) -∗
       SIM &&tag vₛ1 vₛ2 ≳ &&tag vₜ1 vₜ2 [[ X ]] {{# Φ }}.
     Proof.
-      rewrite simv_unseal.
       iIntros "#Hv1 #Hv2 HΦ".
-      iApply (sim_constr_det with "Hv1 Hv2"). iIntros "%lₛ %lₜ #Hl".
-      iMod ("HΦ" with "Hl") as "HΦ". iSmash.
+      iApply (sim_constr_det with "Hv1 Hv2").
+      rewrite sim_post_vals_unseal /sim_post_vals'. iSmash.
     Qed.
 
     Lemma simv_load Φ lₛ idxₛ lₜ idxₜ :
@@ -439,9 +468,9 @@ Section sim_GS.
       ) -∗
       SIM ![idxₛ] lₛ ≳ ![idxₜ] lₜ [[ X ]] {{# Φ }}.
     Proof.
-      rewrite simv_unseal.
       iIntros "#Hl #Hidx HΦ".
-      iApply (sim_load with "Hl Hidx"). iIntros "%vₛ %vₜ #Hv". iSmash.
+      iApply (sim_load with "Hl Hidx").
+      rewrite sim_post_vals_unseal /sim_post_vals'. iSmash.
     Qed.
 
     Lemma simv_store Φ vₛ1 vₛ2 vₛ3 vₜ1 vₜ2 vₜ3 :
@@ -451,9 +480,9 @@ Section sim_GS.
       Φ ()%lambda_val ()%lambda_val -∗
       SIM vₛ1 <-[vₛ2]- vₛ3 ≳ vₜ1 <-[vₜ2]- vₜ3 [[ X ]] {{# Φ }}.
     Proof.
-      rewrite simv_unseal.
       iIntros "#Hv1 #Hv2 #Hv3 HΦ".
-      iApply (sim_store with "Hv1 Hv2 Hv3"). iSmash.
+      iApply (sim_store with "Hv1 Hv2 Hv3").
+      rewrite sim_post_vals_unseal /sim_post_vals'. iSmash.
     Qed.
   End simv.
 End sim_GS.
