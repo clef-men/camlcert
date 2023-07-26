@@ -1,17 +1,17 @@
 From simuliris Require Import
   prelude.
-From simuliris.lambda_lang Require Export
+From simuliris.data_lang Require Export
   syntax.
-From simuliris.lambda_lang Require Import
+From simuliris.data_lang Require Import
   notations.
 
-Implicit Types func func_dps : lambda_function.
-Implicit Types v vₛ vₜ : lambda_val.
-Implicit Types e eₛ eₜ : lambda_expr.
-Implicit Types prog progₛ progₜ : lambda_program.
-Implicit Types ξ : gmap lambda_function lambda_function.
+Implicit Types func func_dps : data_function.
+Implicit Types v vₛ vₜ : data_val.
+Implicit Types e eₛ eₜ : data_expr.
+Implicit Types prog progₛ progₜ : data_program.
+Implicit Types ξ : gmap data_function data_function.
 
-Inductive tmc_dir ξ : lambda_expr → lambda_expr → Prop :=
+Inductive tmc_dir ξ : data_expr → data_expr → Prop :=
   | tmc_dir_val v :
       tmc_dir ξ
         #v
@@ -35,20 +35,20 @@ Inductive tmc_dir ξ : lambda_expr → lambda_expr → Prop :=
   | tmc_dir_unop op eₛ eₜ :
       tmc_dir ξ eₛ eₜ →
       tmc_dir ξ
-        (LambdaUnop op eₛ)
-        (LambdaUnop op eₜ)
+        (DataUnop op eₛ)
+        (DataUnop op eₜ)
   | tmc_dir_binop op eₛ1 eₛ2 eₜ1 eₜ2 :
       tmc_dir ξ eₛ1 eₜ1 →
       tmc_dir ξ eₛ2 eₜ2 →
       tmc_dir ξ
-        (LambdaBinop op eₛ1 eₛ2)
-        (LambdaBinop op eₜ1 eₜ2)
+        (DataBinop op eₛ1 eₛ2)
+        (DataBinop op eₜ1 eₜ2)
   | tmc_dir_binop_det op eₛ1 eₛ2 eₜ1 eₜ2 :
       tmc_dir ξ eₛ1 eₜ1 →
       tmc_dir ξ eₛ2 eₜ2 →
       tmc_dir ξ
-        (LambdaBinopDet op eₛ1 eₛ2)
-        (LambdaBinopDet op eₜ1 eₜ2)
+        (DataBinopDet op eₛ1 eₛ2)
+        (DataBinopDet op eₜ1 eₜ2)
   | tmc_dir_if eₛ0 eₛ1 eₛ2 eₜ0 eₜ1 eₜ2 :
       tmc_dir ξ eₛ0 eₜ0 →
       tmc_dir ξ eₛ1 eₜ1 →
@@ -93,7 +93,7 @@ Inductive tmc_dir ξ : lambda_expr → lambda_expr → Prop :=
       tmc_dir ξ
         (eₛ1 <-[eₛ2]- eₛ3)
         (eₜ1 <-[eₜ2]- eₜ3)
-with tmc_dps ξ : lambda_expr → lambda_expr → lambda_expr → lambda_expr → Prop :=
+with tmc_dps ξ : data_expr → data_expr → data_expr → data_expr → Prop :=
   | tmc_dps_base dst idx eₛ eₜ :
       tmc_dir ξ eₛ eₜ →
       tmc_dps ξ dst idx
@@ -108,7 +108,7 @@ with tmc_dps ξ : lambda_expr → lambda_expr → lambda_expr → lambda_expr �
   | tmc_dps_call dst idx func func_dps eₛ eₜ eₜ' :
       ξ !! func = Some func_dps →
       tmc_dir ξ eₛ eₜ →
-      eₜ' = (let: eₜ in func_dps (dst.[ren (+1)], idx.[ren (+1)], $0))%lambda_expr →
+      eₜ' = (let: eₜ in func_dps (dst.[ren (+1)], idx.[ren (+1)], $0))%data_expr →
       tmc_dps ξ dst idx
         (func eₛ)
         eₜ'
@@ -122,14 +122,14 @@ with tmc_dps ξ : lambda_expr → lambda_expr → lambda_expr → lambda_expr �
   | tmc_dps_constr_1 dst idx tag eₛ1 eₛ2 eₜ1 eₜ2 eₜ :
       tmc_dir ξ eₛ1 eₜ1 →
       tmc_dps ξ $0 𝟚 eₛ2.[ren (+1)] eₜ2 →
-      eₜ = (let: &tag eₜ1 #() in dst.[ren (+1)] <-[idx.[ren (+1)]]- $0 ;; eₜ2)%lambda_expr →
+      eₜ = (let: &tag eₜ1 #() in dst.[ren (+1)] <-[idx.[ren (+1)]]- $0 ;; eₜ2)%data_expr →
       tmc_dps ξ dst idx
         (&tag eₛ1 eₛ2)
         eₜ
   | tmc_dps_constr_2 dst idx tag eₛ1 eₛ2 eₜ1 eₜ2 eₜ :
       tmc_dir ξ eₛ2 eₜ2 →
       tmc_dps ξ $0 𝟙 eₛ1.[ren (+1)] eₜ1 →
-      eₜ = (let: &tag #() eₜ2 in dst.[ren (+1)] <-[idx.[ren (+1)]]- $0 ;; eₜ1)%lambda_expr →
+      eₜ = (let: &tag #() eₜ2 in dst.[ren (+1)] <-[idx.[ren (+1)]]- $0 ;; eₜ1)%data_expr →
       tmc_dps ξ dst idx
         (&tag eₛ1 eₛ2)
         eₜ.
@@ -144,7 +144,7 @@ Create HintDb tmc.
 #[export] Hint Constructors tmc_dps : tmc.
 
 Record tmc {progₛ progₜ} := {
-  tmc_ξ : gmap lambda_function lambda_function ;
+  tmc_ξ : gmap data_function data_function ;
 
   tmc_ξ_dom :
     dom tmc_ξ ⊆ dom progₛ ;
@@ -166,6 +166,6 @@ Record tmc {progₛ progₜ} := {
         let: ![𝟙] $1 in
         let: ![𝟚] $3 in
         eₜ
-      )%lambda_expr ;
+      )%data_expr ;
 }.
 #[global] Arguments tmc : clear implicits.

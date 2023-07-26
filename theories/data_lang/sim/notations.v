@@ -1,10 +1,10 @@
 From simuliris Require Import
   prelude.
-From simuliris.lambda_lang Require Export
+From simuliris.data_lang Require Export
   notations
   sim.definition.
 
-Notation "l ↦ₛ{ dq } v" := (mapstoₛ (locₛ := loc) (valₛ := lambda_val) l dq v%lambda_val)
+Notation "l ↦ₛ{ dq } v" := (mapstoₛ (locₛ := loc) (valₛ := data_val) l dq v%data_val)
 ( at level 20,
   format "l  ↦ₛ{ dq }  v"
 ) : bi_scope.
@@ -21,7 +21,7 @@ Notation "l ↦ₛ v" := (l ↦ₛ{#1} v)%I
   format "l  ↦ₛ  v"
 ) : bi_scope.
 
-Notation "l ↦ₜ{ dq } v" := (mapstoₜ (locₜ := loc) (valₜ := lambda_val) l dq v%lambda_val)
+Notation "l ↦ₜ{ dq } v" := (mapstoₜ (locₜ := loc) (valₜ := data_val) l dq v%data_val)
 ( at level 20,
   format "l  ↦ₜ{ dq }  v"
 ) : bi_scope.
@@ -38,22 +38,22 @@ Notation "l ↦ₜ v" := (l ↦ₜ{#1} v)%I
   format "l  ↦ₜ  v"
 ) : bi_scope.
 
-Notation "'SIM' eₛ ≳ eₜ [[ Χ ] ] {{ Φ } }" := (sim Χ Φ%I eₛ%lambda_expr eₜ%lambda_expr)
+Notation "'SIM' eₛ ≳ eₜ [[ Χ ] ] {{ Φ } }" := (sim Χ Φ%I eₛ%data_expr eₜ%data_expr)
 ( at level 20,
   eₛ, eₜ, Χ, Φ at level 200,
   format "'[hv' SIM  '/  ' '[' eₛ ']'  '/' ≳  '[' eₜ ']'  '/' [[  '/  ' '[' Χ ']'  '/' ] ]  {{  '/  ' '[' Φ ']'  '/' } } ']'"
 ) : bi_scope.
-Notation "'SIM' eₛ ≳ eₜ {{ Φ } }" := (sim ⊥ Φ%I eₛ%lambda_expr eₜ%lambda_expr)%I
+Notation "'SIM' eₛ ≳ eₜ {{ Φ } }" := (sim ⊥ Φ%I eₛ%data_expr eₜ%data_expr)%I
 ( at level 20,
   eₛ, eₜ, Φ at level 200,
   format "'[hv' SIM  '/  ' '[' eₛ ']'  '/' ≳  '[' eₜ ']'  '/' {{  '/  ' '[' Φ ']'  '/' } } ']'"
 ) : bi_scope.
-Notation "'SIM' eₛ ≳ eₜ [[ Χ ] ] {{# Φ } }" := (simv Χ Φ%I eₛ%lambda_expr eₜ%lambda_expr)
+Notation "'SIM' eₛ ≳ eₜ [[ Χ ] ] {{# Φ } }" := (simv Χ Φ%I eₛ%data_expr eₜ%data_expr)
 ( at level 20,
   eₛ, eₜ, Χ, Φ at level 200,
   format "'[hv' SIM  '/  ' '[' eₛ ']'  '/' ≳  '[' eₜ ']'  '/' [[  '/  ' '[' Χ ']'  '/' ] ]  {{#  '/  ' '[' Φ ']'  '/' } } ']'"
 ) : bi_scope.
-Notation "'SIM' eₛ ≳ eₜ {{# Φ } }" := (simv ⊥ Φ%I eₛ%lambda_expr eₜ%lambda_expr)%I
+Notation "'SIM' eₛ ≳ eₜ {{# Φ } }" := (simv ⊥ Φ%I eₛ%data_expr eₜ%data_expr)%I
 ( at level 20,
   eₛ, eₜ, Φ at level 200,
   format "'[hv' SIM  '/  ' '[' eₛ ']'  '/' ≳  '[' eₜ ']'  '/' {{#  '/  ' '[' Φ ']'  '/' } } ']'"

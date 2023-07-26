@@ -4,12 +4,12 @@ From Coq Require Import
 From simuliris Require Import
   prelude
   proofmode.
-From simuliris.lambda_lang Require Export
+From simuliris.data_lang Require Export
   sim.definition.
-From simuliris.lambda_lang Require Import
+From simuliris.data_lang Require Import
   notations.
 
-Definition bisubst := var → lambda_val * lambda_val.
+Definition bisubst := var → data_val * data_val.
 
 Notation "Γ .ₛ" := (fst ∘ Γ)
 ( at level 5,
@@ -19,19 +19,19 @@ Notation "Γ .ₜ" := (snd ∘ Γ)
 ( at level 5,
   format "Γ .ₜ"
 ).
-Notation "Γ .ₛ#" := (lambda_of_val ∘ Γ.ₛ)
+Notation "Γ .ₛ#" := (data_of_val ∘ Γ.ₛ)
 ( at level 5,
   format "Γ .ₛ#"
 ).
-Notation "Γ .ₜ#" := (lambda_of_val ∘ Γ.ₜ)
+Notation "Γ .ₜ#" := (data_of_val ∘ Γ.ₜ)
 ( at level 5,
   format "Γ .ₜ#"
 ).
 
 Section sim_GS.
-  Context `{sim_programs : !SimPrograms lambda_ectx_lang lambda_ectx_lang}.
+  Context `{sim_programs : !SimPrograms data_ectx_lang data_ectx_lang}.
   Context `{sim_GS : !SimGS Σ}.
-  Implicit Types v vₛ vₜ : lambda_val.
+  Implicit Types v vₛ vₜ : data_val.
   Implicit Types Γ : bisubst.
 
   Lemma bisubst_consₛ vₛ vₜ Γ :
@@ -57,7 +57,7 @@ Section sim_GS.
   Qed.
 
   #[global] Instance bisubst_inhabited : Inhabited bisubst :=
-    populate (λ _, ((), ())%lambda_val).
+    populate (λ _, ((), ())%data_val).
   Lemma bisubst_inhabitant_well_formed :
     ⊢ bisubst_well_formed inhabitant.
   Proof.

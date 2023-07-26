@@ -1,17 +1,17 @@
 From simuliris Require Import
   prelude.
-From simuliris.lambda_lang Require Export
+From simuliris.data_lang Require Export
   syntax.
-From simuliris.lambda_lang Require Import
+From simuliris.data_lang Require Import
   notations.
 
-Implicit Types func func_aps : lambda_function.
-Implicit Types v vₛ vₜ : lambda_val.
-Implicit Types e eₛ eₜ : lambda_expr.
-Implicit Types prog progₛ progₜ : lambda_program.
-Implicit Types ξ : gmap lambda_function lambda_function.
+Implicit Types func func_aps : data_function.
+Implicit Types v vₛ vₜ : data_val.
+Implicit Types e eₛ eₜ : data_expr.
+Implicit Types prog progₛ progₜ : data_program.
+Implicit Types ξ : gmap data_function data_function.
 
-Inductive aps_plus_dir ξ : lambda_expr → lambda_expr → Prop :=
+Inductive aps_plus_dir ξ : data_expr → data_expr → Prop :=
   | aps_plus_dir_val v :
       aps_plus_dir ξ
         #v
@@ -35,14 +35,14 @@ Inductive aps_plus_dir ξ : lambda_expr → lambda_expr → Prop :=
   | aps_plus_dir_unop op eₛ eₜ :
       aps_plus_dir ξ eₛ eₜ →
       aps_plus_dir ξ
-        (LambdaUnop op eₛ)
-        (LambdaUnop op eₜ)
+        (DataUnop op eₛ)
+        (DataUnop op eₜ)
   | aps_plus_dir_binop op eₛ1 eₛ2 eₜ1 eₜ2 :
       aps_plus_dir ξ eₛ1 eₜ1 →
       aps_plus_dir ξ eₛ2 eₜ2 →
       aps_plus_dir ξ
-        (LambdaBinop op eₛ1 eₛ2)
-        (LambdaBinop op eₜ1 eₜ2)
+        (DataBinop op eₛ1 eₛ2)
+        (DataBinop op eₜ1 eₜ2)
   | aps_plus_dir_plus_1 eₛ1 eₛ2 eₜ1 eₜ2 :
       aps_plus_dir ξ eₛ1 eₜ1 →
       aps_plus_aps ξ $0 eₛ2.[ren (+1)] eₜ2 →
@@ -59,8 +59,8 @@ Inductive aps_plus_dir ξ : lambda_expr → lambda_expr → Prop :=
       aps_plus_dir ξ eₛ1 eₜ1 →
       aps_plus_dir ξ eₛ2 eₜ2 →
       aps_plus_dir ξ
-        (LambdaBinopDet op eₛ1 eₛ2)
-        (LambdaBinopDet op eₜ1 eₜ2)
+        (DataBinopDet op eₛ1 eₛ2)
+        (DataBinopDet op eₜ1 eₜ2)
   | aps_plus_dir_if eₛ0 eₛ1 eₛ2 eₜ0 eₜ1 eₜ2 :
       aps_plus_dir ξ eₛ0 eₜ0 →
       aps_plus_dir ξ eₛ1 eₜ1 →
@@ -93,7 +93,7 @@ Inductive aps_plus_dir ξ : lambda_expr → lambda_expr → Prop :=
       aps_plus_dir ξ
         (eₛ1 <-[eₛ2]- eₛ3)
         (eₜ1 <-[eₜ2]- eₜ3)
-with aps_plus_aps ξ : lambda_expr → lambda_expr → lambda_expr → Prop :=
+with aps_plus_aps ξ : data_expr → data_expr → data_expr → Prop :=
   | aps_plus_aps_base acc eₛ eₜ :
       aps_plus_dir ξ eₛ eₜ →
       aps_plus_aps ξ acc
@@ -108,21 +108,21 @@ with aps_plus_aps ξ : lambda_expr → lambda_expr → lambda_expr → Prop :=
   | aps_plus_aps_call acc func func_aps eₛ eₜ eₜ' :
       ξ !! func = Some func_aps →
       aps_plus_dir ξ eₛ eₜ →
-      eₜ' = (let: eₜ in func_aps (acc.[ren (+1)], $0))%lambda_expr →
+      eₜ' = (let: eₜ in func_aps (acc.[ren (+1)], $0))%data_expr →
       aps_plus_aps ξ acc
         (func eₛ)
         eₜ'
   | aps_plus_aps_plus_1 acc eₛ1 eₛ2 eₜ1 eₜ2 eₜ :
       aps_plus_dir ξ eₛ1 eₜ1 →
       aps_plus_aps ξ ($0 + acc.[ren (+1)]) eₛ2.[ren (+1)] eₜ2 →
-      eₜ = (let: eₜ1 in eₜ2)%lambda_expr →
+      eₜ = (let: eₜ1 in eₜ2)%data_expr →
       aps_plus_aps ξ acc
         (eₛ1 + eₛ2)
         eₜ
   | aps_plus_aps_plus_2 acc eₛ1 eₛ2 eₜ1 eₜ2 eₜ :
       aps_plus_dir ξ eₛ2 eₜ2 →
       aps_plus_aps ξ ($0 + acc.[ren (+1)]) eₛ1.[ren (+1)] eₜ1 →
-      eₜ = (let: eₜ2 in eₜ1)%lambda_expr →
+      eₜ = (let: eₜ2 in eₜ1)%data_expr →
       aps_plus_aps ξ acc
         (eₛ1 + eₛ2)
         eₜ
@@ -144,7 +144,7 @@ Create HintDb aps_plus.
 #[export] Hint Constructors aps_plus_aps : aps_plus.
 
 Record aps_plus {progₛ progₜ} := {
-  aps_plus_ξ : gmap lambda_function lambda_function ;
+  aps_plus_ξ : gmap data_function data_function ;
 
   aps_plus_ξ_dom :
     dom aps_plus_ξ ⊆ dom progₛ ;
@@ -160,6 +160,6 @@ Record aps_plus {progₛ progₜ} := {
     aps_plus_ξ !! func = Some func_aps →
       ∃ eₜ,
       aps_plus_aps aps_plus_ξ $1 eₛ eₜ ∧
-      progₜ !! func_aps = Some (let: ![𝟙] $0 in let: ![𝟚] $1 in eₜ)%lambda_expr ;
+      progₜ !! func_aps = Some (let: ![𝟙] $0 in let: ![𝟚] $1 in eₜ)%data_expr ;
 }.
 #[global] Arguments aps_plus : clear implicits.

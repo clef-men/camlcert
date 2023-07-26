@@ -4,37 +4,37 @@ From simuliris.program_logic Require Export
   sim.rules.
 From simuliris.program_logic Require Import
   sim.proofmode.
-From simuliris.lambda_lang Require Export
+From simuliris.data_lang Require Export
   tactics
   sim.definition.
-From simuliris.lambda_lang Require Import
+From simuliris.data_lang Require Import
   metatheory
   sim.notations.
 
 Section sim_GS.
-  Context `{sim_programs : !SimPrograms lambda_ectx_lang lambda_ectx_lang}.
+  Context `{sim_programs : !SimPrograms data_ectx_lang data_ectx_lang}.
   Context `{sim_GS : !SimGS Σ}.
-  Implicit Types tag : lambda_tag.
-  Implicit Types idx idxₛ idxₜ : lambda_index.
+  Implicit Types tag : data_tag.
+  Implicit Types idx idxₛ idxₜ : data_index.
   Implicit Types l lₛ lₜ : loc.
-  Implicit Types e eₛ eₜ : lambda_expr.
-  Implicit Types v vₛ vₜ w : lambda_val.
+  Implicit Types e eₛ eₜ : data_expr.
+  Implicit Types v vₛ vₜ w : data_val.
 
-  #[global] Instance lambda_val_bi_similar_persistent vₛ vₜ :
+  #[global] Instance data_val_bi_similar_persistent vₛ vₜ :
     Persistent (vₛ ≈ vₜ).
   Proof.
     destruct vₛ, vₜ; apply _.
   Qed.
 
-  Lemma lambda_val_similar_bi_similar vₛ vₜ :
-    lambda_val_well_formed sim_progₛ vₛ →
+  Lemma data_val_similar_bi_similar vₛ vₜ :
+    data_val_well_formed sim_progₛ vₛ →
     vₛ ≈ vₜ →
     ⊢ vₛ ≈ vₜ.
   Proof.
     intros Hwf Hv.
     destruct vₛ, vₜ; inversion Hwf; inversion Hv; iSmash.
   Qed.
-  Lemma lambda_val_bi_similar_similar vₛ vₜ :
+  Lemma data_val_bi_similar_similar vₛ vₜ :
     vₛ ≈ vₜ ⊢
     ⌜vₛ ≈ vₜ⌝.
   Proof.
@@ -179,34 +179,34 @@ Section sim_GS.
   Context (Χ : sim_protocol Σ).
 
   Section sim.
-    Implicit Types Φ : lambda_expr → lambda_expr → iProp Σ.
+    Implicit Types Φ : data_expr → data_expr → iProp Σ.
 
     Lemma sim_binopₛ1 Φ op e1 e2 e :
-      SIM let: e1 in let: e2.[ren (+1)] in LambdaBinopDet op $1 $0 ≳ e [[ Χ ]] {{ Φ }} ⊢
-      SIM LambdaBinop op e1 e2 ≳ e [[ Χ ]] {{ Φ }}.
+      SIM let: e1 in let: e2.[ren (+1)] in DataBinopDet op $1 $0 ≳ e [[ Χ ]] {{ Φ }} ⊢
+      SIM DataBinop op e1 e2 ≳ e [[ Χ ]] {{ Φ }}.
     Proof.
       iIntros "Hsim".
       iApply sim_head_stepₛ. iIntros "%σₛ %σₜ Hsi !>".
-      iExists _, σₛ. iFrame. auto with lambda_lang.
+      iExists _, σₛ. iFrame. auto with data_lang.
     Qed.
     Lemma sim_binopₛ2 Φ op e1 e2 e :
-      SIM let: e2 in let: e1.[ren (+1)] in LambdaBinopDet op $0 $1 ≳ e [[ Χ ]] {{ Φ }} ⊢
-      SIM LambdaBinop op e1 e2 ≳ e [[ Χ ]] {{ Φ }}.
+      SIM let: e2 in let: e1.[ren (+1)] in DataBinopDet op $0 $1 ≳ e [[ Χ ]] {{ Φ }} ⊢
+      SIM DataBinop op e1 e2 ≳ e [[ Χ ]] {{ Φ }}.
     Proof.
       iIntros "Hsim".
       iApply sim_head_stepₛ. iIntros "%σₛ %σₜ Hsi !>".
-      iExists _, σₛ. iFrame. auto with lambda_lang.
+      iExists _, σₛ. iFrame. auto with data_lang.
     Qed.
     Lemma sim_binopₜ Φ op e e1 e2 :
-        SIM e ≳ let: e1 in let: e2.[ren (+1)] in LambdaBinopDet op $1 $0 [[ Χ ]] {{ Φ }}
-      ∧ SIM e ≳ let: e2 in let: e1.[ren (+1)] in LambdaBinopDet op $0 $1 [[ Χ ]] {{ Φ }}
+        SIM e ≳ let: e1 in let: e2.[ren (+1)] in DataBinopDet op $1 $0 [[ Χ ]] {{ Φ }}
+      ∧ SIM e ≳ let: e2 in let: e1.[ren (+1)] in DataBinopDet op $0 $1 [[ Χ ]] {{ Φ }}
       ⊢
-      SIM e ≳ LambdaBinop op e1 e2 [[ Χ ]] {{ Φ }}.
+      SIM e ≳ DataBinop op e1 e2 [[ Χ ]] {{ Φ }}.
     Proof.
       iIntros "Hsim".
       iApply sim_head_stepₜ. iIntros "%σₛ %σₜ Hsi !>".
-      iSplit; first auto with lambda_lang. iIntros "%eₜ' %σₜ' %Hstepₜ".
-      invert_lambda_head_step; iFrame.
+      iSplit; first auto with data_lang. iIntros "%eₜ' %σₜ' %Hstepₜ".
+      invert_data_head_step; iFrame.
       - iDestruct "Hsim" as "($ & _)". iSmash.
       - iDestruct "Hsim" as "(_ & $)". iSmash.
     Qed.
@@ -218,12 +218,12 @@ Section sim_GS.
         vₛ ≈ vₜ -∗
         Φ vₛ vₜ
       ) -∗
-      SIM LambdaBinopDet LambdaOpPlus vₛ1 vₛ2 ≳ LambdaBinopDet LambdaOpPlus vₜ1 vₜ2 [[ Χ ]] {{ Φ }}.
+      SIM DataBinopDet DataOpPlus vₛ1 vₛ2 ≳ DataBinopDet DataOpPlus vₜ1 vₜ2 [[ Χ ]] {{ Φ }}.
     Proof.
       iIntros "#Hv1 #Hv2 HΦ".
       destruct vₛ1, vₜ1; try iDestruct "Hv1" as %[]; try sim_strongly_stuck;
       destruct vₛ2, vₜ2; try iDestruct "Hv2" as %[]; try sim_strongly_stuck.
-      iApply sim_pure_step; [auto with lambda_lang.. |].
+      iApply sim_pure_step; [auto with data_lang.. |].
       sim_post.
     Qed.
 
@@ -233,7 +233,7 @@ Section sim_GS.
     Proof.
       iIntros "Hsim".
       iApply sim_head_stepₛ. iIntros "%σₛ %σₜ Hsi !>".
-      iExists _, σₛ. iFrame. auto with lambda_lang.
+      iExists _, σₛ. iFrame. auto with data_lang.
     Qed.
     Lemma sim_constrₛ2 Φ tag e1 e2 e :
       SIM let: e2 in let: e1.[ren (+1)] in &&tag $0 $1 ≳ e [[ Χ ]] {{ Φ }} ⊢
@@ -241,7 +241,7 @@ Section sim_GS.
     Proof.
       iIntros "Hsim".
       iApply sim_head_stepₛ. iIntros "%σₛ %σₜ Hsi !>".
-      iExists _, σₛ. iFrame. auto with lambda_lang.
+      iExists _, σₛ. iFrame. auto with data_lang.
     Qed.
     Lemma sim_constrₜ Φ tag e e1 e2 :
         SIM e ≳ let: e1 in let: e2.[ren (+1)] in &&tag $1 $0 [[ Χ ]] {{ Φ }}
@@ -251,8 +251,8 @@ Section sim_GS.
     Proof.
       iIntros "Hsim".
       iApply sim_head_stepₜ. iIntros "%σₛ %σₜ Hsi !>".
-      iSplit; first auto with lambda_lang. iIntros "%eₜ' %σₜ' %Hstepₜ".
-      invert_lambda_head_step; iFrame.
+      iSplit; first auto with data_lang. iIntros "%eₜ' %σₜ' %Hstepₜ".
+      invert_data_head_step; iFrame.
       - iDestruct "Hsim" as "($ & _)". iSmash.
       - iDestruct "Hsim" as "(_ & $)". iSmash.
     Qed.
@@ -269,7 +269,7 @@ Section sim_GS.
       iIntros "Hsim".
       iApply sim_head_stepₛ. iIntros "%σₛ %σₜ Hsi".
       set l := loc_fresh (dom σₛ).
-      set (σₛ' := {[l +ₗ 2 := v2 ; l +ₗ 1 := v1 ; l +ₗ 0 := LambdaTag tag]} : lambda_state).
+      set (σₛ' := {[l +ₗ 2 := v2 ; l +ₗ 1 := v1 ; l +ₗ 0 := DataTag tag]} : data_state).
       iMod (sim_state_interp_alloc_bigₛ σₛ' with "Hsi") as "(Hsi & Hmapstos & _)".
       { rewrite !map_disjoint_insert_l -!not_elem_of_dom. split_and!;
         [ apply loc_fresh_fresh; done..
@@ -282,7 +282,7 @@ Section sim_GS.
       { rewrite lookup_insert_ne; last by intros ?%(inj _). done. }
       rewrite big_sepM_singleton.
       iExists #l, (σₛ' ∪ σₛ). iFrame. iSplitR; last iSmash.
-      iPureIntro. apply lambda_head_step_constr_det'.
+      iPureIntro. apply data_head_step_constr_det'.
       rewrite -!insert_union_l left_id //.
     Qed.
     Lemma sim_constr_detₜ Φ e tag v1 v2 :
@@ -296,9 +296,9 @@ Section sim_GS.
     Proof.
       iIntros "Hsim".
       iApply sim_head_stepₜ. iIntros "%σₛ %σₜ Hsi".
-      iSplitR; first auto with lambda_lang. iIntros "!> %eₜ' %σₜ'' %Hstepₜ".
-      invert_lambda_head_step.
-      set (σₜ' := {[l +ₗ 2 := v2 ; l +ₗ 1 := v1 ; l +ₗ 0 := LambdaTag tag]} : lambda_state).
+      iSplitR; first auto with data_lang. iIntros "!> %eₜ' %σₜ'' %Hstepₜ".
+      invert_data_head_step.
+      set (σₜ' := {[l +ₗ 2 := v2 ; l +ₗ 1 := v1 ; l +ₗ 0 := DataTag tag]} : data_state).
       iMod (sim_state_interp_alloc_bigₜ σₜ' with "Hsi") as "(Hsi & Hmapstos & _)".
       { rewrite !map_disjoint_insert_l . naive_solver apply map_disjoint_empty_l. }
       iDestruct (big_sepM_insert with "Hmapstos") as "(Hl2 & Hmapstos)".
@@ -312,7 +312,7 @@ Section sim_GS.
       vₛ1 ≈ vₜ1 -∗
       vₛ2 ≈ vₜ2 -∗
       ( ∀ lₛ lₜ,
-        LambdaLoc lₛ ≈ LambdaLoc lₜ ++∗
+        DataLoc lₛ ≈ DataLoc lₜ ++∗
         Φ #lₛ #lₜ
       ) -∗
       SIM &&tag vₛ1 vₛ2 ≳ &&tag vₜ1 vₜ2 [[ Χ ]] {{ Φ }}.
@@ -340,7 +340,7 @@ Section sim_GS.
       iIntros "Hl Hsim".
       iApply sim_head_stepₛ. iIntros "%σₛ %σₜ Hsi !>".
       iDestruct (sim_state_interp_validₛ with "Hsi Hl") as %?.
-      iExists #v, σₛ. iSplit; first auto with lambda_lang. iFrame. iSmash.
+      iExists #v, σₛ. iSplit; first auto with data_lang. iFrame. iSmash.
     Qed.
     Lemma sim_loadₜ Φ e l idx v :
       (l +ₗ idx) ↦ₜ v -∗
@@ -352,12 +352,12 @@ Section sim_GS.
       iIntros "Hl Hsim".
       iApply sim_head_stepₜ. iIntros "%σₛ %σₜ Hsi !>".
       iDestruct (sim_state_interp_validₜ with "Hsi Hl") as %?.
-      iSplit; first auto with lambda_lang. iIntros "%eₜ' %σₜ' %Hstepₜ !>".
-      invert_lambda_head_step. iFrame. iSmash.
+      iSplit; first auto with data_lang. iIntros "%eₜ' %σₜ' %Hstepₜ !>".
+      invert_data_head_step. iFrame. iSmash.
     Qed.
     Lemma sim_load Φ lₛ idxₛ lₜ idxₜ :
-      LambdaLoc lₛ ≈ LambdaLoc lₜ -∗
-      LambdaIndex idxₛ ≈ LambdaIndex idxₜ -∗
+      DataLoc lₛ ≈ DataLoc lₜ -∗
+      DataIndex idxₛ ≈ DataIndex idxₜ -∗
       ( ∀ vₛ vₜ,
         vₛ ≈ vₜ -∗
         Φ vₛ vₜ
@@ -370,9 +370,9 @@ Section sim_GS.
       1: iDestruct (sim_state_interp_heap_bij_valid with "Hsi Hl0") as "#(%vₛ0 & %vₜ0 & (% & %) & Hv0)".
       2: iDestruct (sim_state_interp_heap_bij_valid with "Hsi Hl1") as "#(%vₛ1 & %vₜ1 & (% & %) & Hv1)".
       3: iDestruct (sim_state_interp_heap_bij_valid with "Hsi Hl2") as "#(%vₛ2 & %vₜ2 & (% & %) & Hv2)".
-      all: iSplit; first auto with lambda_lang; iIntros "%eₜ' %σₜ' %Hstepₜ !>".
-      all: invert_lambda_head_step.
-      all: iExists _, σₛ; iFrame; iSplit; [auto with lambda_lang | sim_post].
+      all: iSplit; first auto with data_lang; iIntros "%eₜ' %σₜ' %Hstepₜ !>".
+      all: invert_data_head_step.
+      all: iExists _, σₛ; iFrame; iSplit; [auto with data_lang | sim_post].
     Qed.
 
     Lemma sim_storeₛ Φ l idx v w e :
@@ -386,7 +386,7 @@ Section sim_GS.
       iApply sim_head_stepₛ. iIntros "%σₛ %σₜ Hsi".
       iDestruct (sim_state_interp_validₛ with "Hsi Hl") as %?.
       iMod (sim_state_interp_updateₛ v with "Hsi Hl") as "(Hsi & Hl)".
-      iExists #(), (<[l +ₗ idx := v]> σₛ). iFrame. iSplitR; [auto with lambda_lang | iSmash].
+      iExists #(), (<[l +ₗ idx := v]> σₛ). iFrame. iSplitR; [auto with data_lang | iSmash].
     Qed.
     Lemma sim_storeₜ Φ e l idx v w :
       (l +ₗ idx) ↦ₜ w -∗
@@ -398,8 +398,8 @@ Section sim_GS.
       iIntros "Hl Hsim".
       iApply sim_head_stepₜ. iIntros "%σₛ %σₜ Hsi".
       iDestruct (sim_state_interp_validₜ with "Hsi Hl") as %?.
-      iSplitR; first auto with lambda_lang. iIntros "!> %eₜ' %σₜ' %Hstepₜ".
-      invert_lambda_head_step.
+      iSplitR; first auto with data_lang. iIntros "!> %eₜ' %σₜ' %Hstepₜ".
+      invert_data_head_step.
       iMod (sim_state_interp_updateₜ v with "Hsi Hl") as "(Hsi & Hl)".
       iFrame. iSmash.
     Qed.
@@ -419,17 +419,17 @@ Section sim_GS.
       1: iDestruct (sim_state_interp_heap_bij_valid with "Hsi Hl0") as "#(%wₛ0 & %wₜ0 & (% & %) & Hw0)".
       2: iDestruct (sim_state_interp_heap_bij_valid with "Hsi Hl1") as "#(%wₛ1 & %wₜ1 & (% & %) & Hw1)".
       3: iDestruct (sim_state_interp_heap_bij_valid with "Hsi Hl2") as "#(%wₛ2 & %wₜ2 & (% & %) & Hw2)".
-      all: iSplit; first auto with lambda_lang; iIntros "%eₜ' %σₜ' %Hstepₜ".
-      all: invert_lambda_head_step.
+      all: iSplit; first auto with data_lang; iIntros "%eₜ' %σₜ' %Hstepₜ".
+      all: invert_data_head_step.
       1: iMod (sim_state_interp_heap_bij_update with "Hsi Hl0 Hv3").
       2: iMod (sim_state_interp_heap_bij_update with "Hsi Hl1 Hv3").
       3: iMod (sim_state_interp_heap_bij_update with "Hsi Hl2 Hv3").
-      all: iModIntro; iExists #(), _; iFrame; iSplitR; [auto with lambda_lang | sim_post].
+      all: iModIntro; iExists #(), _; iFrame; iSplitR; [auto with data_lang | sim_post].
     Qed.
   End sim.
 
   Section simv.
-    Implicit Types Φ : lambda_val → lambda_val → iProp Σ.
+    Implicit Types Φ : data_val → data_val → iProp Σ.
 
     Lemma simv_binop_det Φ vₛ1 vₛ2 vₜ1 vₜ2 :
       vₛ1 ≈ vₜ1 -∗
@@ -438,7 +438,7 @@ Section sim_GS.
         vₛ ≈ vₜ -∗
         Φ vₛ vₜ
       ) -∗
-      SIM LambdaBinopDet LambdaOpPlus vₛ1 vₛ2 ≳ LambdaBinopDet LambdaOpPlus vₜ1 vₜ2 [[ Χ ]] {{# Φ }}.
+      SIM DataBinopDet DataOpPlus vₛ1 vₛ2 ≳ DataBinopDet DataOpPlus vₜ1 vₜ2 [[ Χ ]] {{# Φ }}.
     Proof.
       iIntros "#Hv1 #Hv2 HΦ".
       iApply (sim_binop_det with "Hv1 Hv2").
@@ -449,7 +449,7 @@ Section sim_GS.
       vₛ1 ≈ vₜ1 -∗
       vₛ2 ≈ vₜ2 -∗
       ( ∀ lₛ lₜ,
-        LambdaLoc lₛ ≈ LambdaLoc lₜ ++∗
+        DataLoc lₛ ≈ DataLoc lₜ ++∗
         Φ lₛ lₜ
       ) -∗
       SIM &&tag vₛ1 vₛ2 ≳ &&tag vₜ1 vₜ2 [[ Χ ]] {{# Φ }}.
@@ -460,8 +460,8 @@ Section sim_GS.
     Qed.
 
     Lemma simv_load Φ lₛ idxₛ lₜ idxₜ :
-      LambdaLoc lₛ ≈ LambdaLoc lₜ -∗
-      LambdaIndex idxₛ ≈ LambdaIndex idxₜ -∗
+      DataLoc lₛ ≈ DataLoc lₜ -∗
+      DataIndex idxₛ ≈ DataIndex idxₜ -∗
       ( ∀ vₛ vₜ,
         vₛ ≈ vₜ -∗
         Φ vₛ vₜ
@@ -477,7 +477,7 @@ Section sim_GS.
       vₛ1 ≈ vₜ1 -∗
       vₛ2 ≈ vₜ2 -∗
       vₛ3 ≈ vₜ3 -∗
-      Φ ()%lambda_val ()%lambda_val -∗
+      Φ ()%data_val ()%data_val -∗
       SIM vₛ1 <-[vₛ2]- vₛ3 ≳ vₜ1 <-[vₜ2]- vₜ3 [[ Χ ]] {{# Φ }}.
     Proof.
       iIntros "#Hv1 #Hv2 #Hv3 HΦ".

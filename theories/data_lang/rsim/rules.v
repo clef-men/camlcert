@@ -1,27 +1,27 @@
 From simuliris Require Import
   prelude.
-From simuliris.lambda_lang Require Export
+From simuliris.data_lang Require Export
   metatheory
   sim.derived_rules
   rsim.definition.
-From simuliris.lambda_lang Require Import
+From simuliris.data_lang Require Import
   sim.proofmode
   rsim.notations.
 
 Section sim_GS.
-  Context `{sim_programs : !SimPrograms lambda_ectx_lang lambda_ectx_lang}.
+  Context `{sim_programs : !SimPrograms data_ectx_lang data_ectx_lang}.
   Context `{sim_GS : !SimGS Σ}.
   Context (Χ : sim_protocol Σ).
-  Implicit Types func : lambda_function.
-  Implicit Types tag : lambda_tag.
-  Implicit Types v vₛ vₜ : lambda_val.
-  Implicit Types e eₛ eₜ : lambda_expr.
+  Implicit Types func : data_function.
+  Implicit Types tag : data_tag.
+  Implicit Types v vₛ vₜ : data_val.
+  Implicit Types e eₛ eₜ : data_expr.
 
   #[local] Ltac rsim_intro :=
     iIntros "%Γ % % (-> & ->) #HΓ"; sim_simpl.
 
   Section rsim.
-    Implicit Types Φ : lambda_expr → lambda_expr → iProp Σ.
+    Implicit Types Φ : data_expr → data_expr → iProp Σ.
 
     Lemma rsim_mono Φ1 Φ2 eₛ eₜ :
       (∀ eₛ eₜ, Φ1 eₛ eₜ -∗ Φ2 eₛ eₜ) -∗
@@ -63,7 +63,7 @@ Section sim_GS.
     Qed.
 
     Lemma rsim_val Φ v :
-      lambda_val_well_formed sim_progₛ v →
+      data_val_well_formed sim_progₛ v →
       ( ∀ vₛ vₜ,
         vₛ ≈ vₜ -∗
         Φ vₛ vₜ
@@ -71,7 +71,7 @@ Section sim_GS.
       SIM v ⩾ v [[ Χ ]] {{ Φ }}.
     Proof.
       iIntros "%Hwf HΦ". rsim_intro.
-      sim_post. iApply "HΦ". lambda_expr_simplifier.
+      sim_post. iApply "HΦ". data_expr_simplifier.
     Qed.
 
     Lemma rsim_var Φ x :
@@ -119,7 +119,7 @@ Section sim_GS.
         vₛ ≈ vₜ -∗
         Φ vₛ vₜ
       ) -∗
-      SIM LambdaUnop op eₛ ⩾ LambdaUnop op eₜ [[ Χ ]] {{ Φ }}.
+      SIM DataUnop op eₛ ⩾ DataUnop op eₜ [[ Χ ]] {{ Φ }}.
     Proof.
       iIntros "Hrsim HΦ". rsim_intro.
       sim_apply (sim_unop with "(Hrsim [//] HΓ)").
@@ -132,7 +132,7 @@ Section sim_GS.
         vₛ ≈ vₜ -∗
         Φ vₛ vₜ
       ) -∗
-      SIM LambdaBinop op eₛ1 eₛ2 ⩾ LambdaBinop op eₜ1 eₜ2 [[ Χ ]] {{ Φ }}.
+      SIM DataBinop op eₛ1 eₛ2 ⩾ DataBinop op eₜ1 eₜ2 [[ Χ ]] {{ Φ }}.
     Proof.
       iIntros "Hrsim1 Hrsim2 HΦ". rsim_intro.
       sim_apply (sim_binop with "(Hrsim1 [//] HΓ) (Hrsim2 [//] HΓ)").
@@ -143,7 +143,7 @@ Section sim_GS.
       ( SIM eₛ1 ⩾ eₜ1 [[ Χ ]] {{ Φ }} ∧
         SIM eₛ2 ⩾ eₜ2 [[ Χ ]] {{ Φ }}
       ) -∗
-      SIM LambdaIf eₛ0 eₛ1 eₛ2 ⩾ LambdaIf eₜ0 eₜ1 eₜ2 [[ Χ ]] {{ Φ }}.
+      SIM DataIf eₛ0 eₛ1 eₛ2 ⩾ DataIf eₜ0 eₜ1 eₜ2 [[ Χ ]] {{ Φ }}.
     Proof.
       iIntros "Hrsim0 Hrsim12". rsim_intro.
       sim_apply (sim_if with "(Hrsim0 [//] HΓ)").
@@ -219,7 +219,7 @@ Section sim_GS.
   End rsim.
 
   Section rsimv.
-    Implicit Types Φ : lambda_val → lambda_val → iProp Σ.
+    Implicit Types Φ : data_val → data_val → iProp Σ.
 
     Lemma rsimv_mono Φ1 Φ2 eₛ eₜ :
       (∀ vₛ vₜ, Φ1 vₛ vₜ -∗ Φ2 vₛ vₜ) -∗
@@ -246,7 +246,7 @@ Section sim_GS.
     Qed.
 
     Lemma rsimv_val Φ v :
-      lambda_val_well_formed sim_progₛ v →
+      data_val_well_formed sim_progₛ v →
       ( ∀ vₛ vₜ,
         vₛ ≈ vₜ -∗
         Φ vₛ vₜ
@@ -276,7 +276,7 @@ Section sim_GS.
         vₛ ≈ vₜ -∗
         Φ vₛ vₜ
       ) -∗
-      SIM LambdaUnop op eₛ ⩾ LambdaUnop op eₜ [[ Χ ]] {{# Φ }}.
+      SIM DataUnop op eₛ ⩾ DataUnop op eₜ [[ Χ ]] {{# Φ }}.
     Proof.
       iIntros "Hsim HΦ".
       iApply (rsim_unop with "Hsim").
@@ -290,7 +290,7 @@ Section sim_GS.
         vₛ ≈ vₜ -∗
         Φ vₛ vₜ
       ) -∗
-      SIM LambdaBinop op eₛ1 eₛ2 ⩾ LambdaBinop op eₜ1 eₜ2 [[ Χ ]] {{# Φ }}.
+      SIM DataBinop op eₛ1 eₛ2 ⩾ DataBinop op eₜ1 eₜ2 [[ Χ ]] {{# Φ }}.
     Proof.
       iIntros "Hsim1 Hsim2 HΦ".
       iApply (rsim_binop with "Hsim1 Hsim2").
@@ -359,7 +359,7 @@ Section sim_GS.
       SIM eₛ1 ⩾ eₜ1 [[ Χ ]] {{# (≈) }} -∗
       SIM eₛ2 ⩾ eₜ2 [[ Χ ]] {{# (≈) }} -∗
       SIM eₛ3 ⩾ eₜ3 [[ Χ ]] {{# (≈) }} -∗
-      Φ ()%lambda_val ()%lambda_val -∗
+      Φ ()%data_val ()%data_val -∗
       SIM eₛ1 <-[eₛ2]- eₛ3 ⩾ eₜ1 <-[eₜ2]- eₜ3 [[ Χ ]] {{# Φ }}.
     Proof.
       iIntros "Hsim1 Hsim2 Hsim3 HΦ".

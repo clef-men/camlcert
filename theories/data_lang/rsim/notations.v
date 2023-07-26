@@ -1,25 +1,25 @@
 From simuliris Require Import
   prelude.
-From simuliris.lambda_lang Require Export
+From simuliris.data_lang Require Export
   sim.notations
   rsim.definition.
 
-Notation "'SIM' eₛ ⩾ eₜ [[ Χ ] ] {{ Φ } }" := (rsim Χ Φ%I eₛ%lambda_expr eₜ%lambda_expr)
+Notation "'SIM' eₛ ⩾ eₜ [[ Χ ] ] {{ Φ } }" := (rsim Χ Φ%I eₛ%data_expr eₜ%data_expr)
 ( at level 20,
   eₛ, eₜ, Χ, Φ at level 200,
   format "'[hv' SIM  '/  ' '[' eₛ ']'  '/' ⩾  '[' eₜ ']'  '/' [[  '/  ' '[' Χ ']'  '/' ] ]  {{  '/  ' '[' Φ ']'  '/' } } ']'"
 ) : bi_scope.
-Notation "'SIM' eₛ ⩾ eₜ {{ Φ } }" := (rsim ⊥ Φ%I eₛ%lambda_expr eₜ%lambda_expr)%I
+Notation "'SIM' eₛ ⩾ eₜ {{ Φ } }" := (rsim ⊥ Φ%I eₛ%data_expr eₜ%data_expr)%I
 ( at level 20,
   eₛ, eₜ, Φ at level 200,
   format "'[hv' SIM  '/  ' '[' eₛ ']'  '/' ⩾  '[' eₜ ']'  '/' {{  '/  ' '[' Φ ']'  '/' } } ']'"
 ) : bi_scope.
-Notation "'SIM' eₛ ⩾ eₜ [[ Χ ] ] {{# Φ } }" := (rsimv Χ Φ%I eₛ%lambda_expr eₜ%lambda_expr)
+Notation "'SIM' eₛ ⩾ eₜ [[ Χ ] ] {{# Φ } }" := (rsimv Χ Φ%I eₛ%data_expr eₜ%data_expr)
 ( at level 20,
   eₛ, eₜ, Χ, Φ at level 200,
   format "'[hv' SIM  '/  ' '[' eₛ ']'  '/' ⩾  '[' eₜ ']'  '/' [[  '/  ' '[' Χ ']'  '/' ] ]  {{#  '/  ' '[' Φ ']'  '/' } } ']'"
 ) : bi_scope.
-Notation "'SIM' eₛ ⩾ eₜ {{# Φ } }" := (rsimv ⊥ Φ%I eₛ%lambda_expr eₜ%lambda_expr)%I
+Notation "'SIM' eₛ ⩾ eₜ {{# Φ } }" := (rsimv ⊥ Φ%I eₛ%data_expr eₜ%data_expr)%I
 ( at level 20,
   eₛ, eₜ, Φ at level 200,
   format "'[hv' SIM  '/  ' '[' eₛ ']'  '/' ⩾  '[' eₜ ']'  '/' {{#  '/  ' '[' Φ ']'  '/' } } ']'"

@@ -1,23 +1,23 @@
 From simuliris Require Import
   prelude.
-From simuliris.lambda_lang Require Export
+From simuliris.data_lang Require Export
   sim.basic_rules.
-From simuliris.lambda_lang Require Import
+From simuliris.data_lang Require Import
   sim.proofmode
   sim.notations.
 
 Section sim_GS.
-  Context `{sim_programs : !SimPrograms lambda_ectx_lang lambda_ectx_lang}.
+  Context `{sim_programs : !SimPrograms data_ectx_lang data_ectx_lang}.
   Context `{sim_GS : !SimGS Σ}.
   Context (Χ : sim_protocol Σ).
-  Implicit Types func : lambda_function.
-  Implicit Types tag : lambda_tag.
+  Implicit Types func : data_function.
+  Implicit Types tag : data_tag.
   Implicit Types l lₛ lₜ : loc.
-  Implicit Types v vₛ vₜ : lambda_val.
-  Implicit Types e eₛ eₜ : lambda_expr.
+  Implicit Types v vₛ vₜ : data_val.
+  Implicit Types e eₛ eₜ : data_expr.
 
   Section sim.
-    Implicit Types Φ : lambda_expr → lambda_expr → iProp Σ.
+    Implicit Types Φ : data_expr → data_expr → iProp Σ.
 
     Lemma sim_let Φ eₛ1 eₛ2 eₜ1 eₜ2 :
       SIM eₛ1 ≳ eₜ1 [[ Χ ]] {{# (≈) }} -∗
@@ -57,7 +57,7 @@ Section sim_GS.
         vₛ ≈ vₜ -∗
         Φ vₛ vₜ
       ) -∗
-      SIM LambdaUnop op eₛ ≳ LambdaUnop op eₜ [[ Χ ]] {{ Φ }}.
+      SIM DataUnop op eₛ ≳ DataUnop op eₜ [[ Χ ]] {{ Φ }}.
     Proof.
       rewrite simv_unseal.
       iIntros "Hsim HΦ".
@@ -74,7 +74,7 @@ Section sim_GS.
         vₛ ≈ vₜ -∗
         Φ vₛ vₜ
       ) -∗
-      SIM LambdaBinop op eₛ1 eₛ2 ≳ LambdaBinop op eₜ1 eₜ2 [[ Χ ]] {{ Φ }}.
+      SIM DataBinop op eₛ1 eₛ2 ≳ DataBinop op eₜ1 eₜ2 [[ Χ ]] {{ Φ }}.
     Proof.
       rewrite simv_unseal.
       iIntros "Hsim1 Hsim2 HΦ".
@@ -95,7 +95,7 @@ Section sim_GS.
       ( SIM eₛ1 ≳ eₜ1 [[ Χ ]] {{ Φ }} ∧
         SIM eₛ2 ≳ eₜ2 [[ Χ ]] {{ Φ }}
       ) -∗
-      SIM LambdaIf eₛ0 eₛ1 eₛ2 ≳ LambdaIf eₜ0 eₜ1 eₜ2 [[ Χ ]] {{ Φ }}.
+      SIM DataIf eₛ0 eₛ1 eₛ2 ≳ DataIf eₜ0 eₜ1 eₜ2 [[ Χ ]] {{ Φ }}.
     Proof.
       rewrite simv_unseal.
       iIntros "Hsim0 Hsim12".
@@ -112,7 +112,7 @@ Section sim_GS.
       SIM eₛ1 ≳ eₜ1 [[ Χ ]] {{# (≈) }} -∗
       SIM eₛ2 ≳ eₜ2 [[ Χ ]] {{# (≈) }} -∗
       ( ∀ lₛ lₜ,
-        LambdaLoc lₛ ≈ LambdaLoc lₜ -∗
+        DataLoc lₛ ≈ DataLoc lₜ -∗
         Φ lₛ lₜ
       ) -∗
       SIM &tag eₛ1 eₛ2 ≳ &tag eₜ1 eₜ2 [[ Χ ]] {{ Φ }}.
@@ -199,7 +199,7 @@ Section sim_GS.
   End sim.
 
   Section simv.
-    Implicit Types Φ : lambda_val → lambda_val → iProp Σ.
+    Implicit Types Φ : data_val → data_val → iProp Σ.
 
     Lemma simv_unop Φ op eₛ eₜ :
       SIM eₛ ≳ eₜ [[ Χ ]] {{# (≈) }} -∗
@@ -207,7 +207,7 @@ Section sim_GS.
         vₛ ≈ vₜ -∗
         Φ vₛ vₜ
       ) -∗
-      SIM LambdaUnop op eₛ ≳ LambdaUnop op eₜ [[ Χ ]] {{# Φ }}.
+      SIM DataUnop op eₛ ≳ DataUnop op eₜ [[ Χ ]] {{# Φ }}.
     Proof.
       iIntros "Hsim HΦ".
       sim_apply (sim_unop with "Hsim").
@@ -221,7 +221,7 @@ Section sim_GS.
         vₛ ≈ vₜ -∗
         Φ vₛ vₜ
       ) -∗
-      SIM LambdaBinop op eₛ1 eₛ2 ≳ LambdaBinop op eₜ1 eₜ2 [[ Χ ]] {{# Φ }}.
+      SIM DataBinop op eₛ1 eₛ2 ≳ DataBinop op eₜ1 eₜ2 [[ Χ ]] {{# Φ }}.
     Proof.
       iIntros "Hsim1 Hsim2 HΦ".
       sim_apply (sim_binop with "Hsim1 Hsim2").
@@ -232,7 +232,7 @@ Section sim_GS.
       SIM eₛ1 ≳ eₜ1 [[ Χ ]] {{# (≈) }} -∗
       SIM eₛ2 ≳ eₜ2 [[ Χ ]] {{# (≈) }} -∗
       ( ∀ lₛ lₜ,
-        LambdaLoc lₛ ≈ LambdaLoc lₜ -∗
+        DataLoc lₛ ≈ DataLoc lₜ -∗
         Φ lₛ lₜ
       ) -∗
       SIM &tag eₛ1 eₛ2 ≳ &tag eₜ1 eₜ2 [[ Χ ]] {{# Φ }}.
@@ -290,7 +290,7 @@ Section sim_GS.
       SIM eₛ1 ≳ eₜ1 [[ Χ ]] {{# (≈) }} -∗
       SIM eₛ2 ≳ eₜ2 [[ Χ ]] {{# (≈) }} -∗
       SIM eₛ3 ≳ eₜ3 [[ Χ ]] {{# (≈) }} -∗
-      Φ ()%lambda_val ()%lambda_val -∗
+      Φ ()%data_val ()%data_val -∗
       SIM eₛ1 <-[eₛ2]- eₛ3 ≳ eₜ1 <-[eₜ2]- eₜ3 [[ Χ ]] {{# Φ }}.
     Proof.
       iIntros "Hsim1 Hsim2 Hsim3 HΦ".

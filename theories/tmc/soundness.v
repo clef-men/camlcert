@@ -2,7 +2,7 @@ From simuliris Require Import
   prelude.
 From simuliris.program_logic Require Import
   sim.adequacy.
-From simuliris.lambda_lang Require Import
+From simuliris.data_lang Require Import
   refinement
   subexpr
   sim.proofmode
@@ -14,16 +14,16 @@ From simuliris.tmc Require Import
   metatheory.
 
 Section sim_GS.
-  Context `{sim_programs : !SimPrograms lambda_ectx_lang lambda_ectx_lang}.
+  Context `{sim_programs : !SimPrograms data_ectx_lang data_ectx_lang}.
   Context `{sim_GS : !SimGS Σ}.
   Context (tmc : tmc sim_progₛ sim_progₜ).
-  Implicit Types func func_dps : lambda_function.
-  Implicit Types idx idxₛ idxₜ : lambda_index.
+  Implicit Types func func_dps : data_function.
+  Implicit Types idx idxₛ idxₜ : data_index.
   Implicit Types l lₛ lₜ dst : loc.
-  Implicit Types v vₛ vₜ : lambda_val.
-  Implicit Types e eₛ eₜ : lambda_expr.
-  Implicit Types Φ : lambda_val → lambda_val → iProp Σ.
-  Implicit Types Ψ : lambda_expr → lambda_expr → iProp Σ.
+  Implicit Types v vₛ vₜ : data_val.
+  Implicit Types e eₛ eₜ : data_expr.
+  Implicit Types Φ : data_val → data_val → iProp Σ.
+  Implicit Types Ψ : data_expr → data_expr → iProp Σ.
 
   Definition tmc_protocol_dir Ψ eₛ eₜ : iProp Σ :=
     ∃ func vₛ vₜ,
@@ -57,7 +57,7 @@ Section sim_GS.
     ( ∀ vₛ' vₜ',
       (dst +ₗ idx) ↦ₜ vₜ' -∗
       vₛ' ≈ vₜ' -∗
-      Φ vₛ' ()%lambda_val
+      Φ vₛ' ()%data_val
     ) -∗
     SIM func vₛ ≳ func_dps (dst, idx, vₜ) [[ tmc_protocol ]] {{# Φ }}.
   Proof.
@@ -80,16 +80,16 @@ Section sim_GS.
     (≈)%I.
   Definition tmc_dps_post dst idx vₛ vₜ : iProp Σ :=
     ∃ vₜ',
-    ⌜vₜ = ()%lambda_val⌝ ∗ (dst +ₗ idx) ↦ₜ vₜ' ∗ vₛ ≈ vₜ'.
+    ⌜vₜ = ()%data_val⌝ ∗ (dst +ₗ idx) ↦ₜ vₜ' ∗ vₛ ≈ vₜ'.
 
   Definition tmc_dir_spec' eₛ eₜ :=
-    lambda_expr_well_formed sim_progₛ eₛ →
+    data_expr_well_formed sim_progₛ eₛ →
     {{{ True }}} eₛ ⩾ eₜ [[ tmc_protocol ]] {{{# tmc_dir_post }}}.
   Definition tmc_dir_spec eₛ eₜ :=
     tmc_dir tmc.(tmc_ξ) eₛ eₜ →
     tmc_dir_spec' eₛ eₜ.
   Definition tmc_dps_spec' dst idx eₛ eₜ :=
-    lambda_expr_well_formed sim_progₛ eₛ →
+    data_expr_well_formed sim_progₛ eₛ →
     {{{ (dst +ₗ idx) ↦ₜ () }}} eₛ ⩾ eₜ [[ tmc_protocol ]] {{{# tmc_dps_post dst idx }}}.
   Definition tmc_dps_spec dst idx eₛ eₜ :=
     tmc_dps tmc.(tmc_ξ) dst idx eₛ eₜ →
@@ -101,7 +101,7 @@ Section sim_GS.
   Lemma tmc_specification eₛ eₜ :
     tmc_spec eₛ eₜ.
   Proof.
-    revert eₜ. induction eₛ as [eₛ IHeₛ] using (well_founded_ind lambda_subexpr_wf).
+    revert eₜ. induction eₛ as [eₛ IHeₛ] using (well_founded_ind data_subexpr_wf).
     cut (
       ( ∀ eₛ eₜ,
         tmc_dir tmc.(tmc_ξ) eₛ eₜ →
@@ -109,7 +109,7 @@ Section sim_GS.
         (∀ dst idx eₛ' eₜ', eₛ' ⊏ eₛ → tmc_dps_spec dst idx eₛ' eₜ') →
         tmc_dir_spec' eₛ eₜ
       ) ∧ (
-        ∀ (dst idx : lambda_expr) eₛ eₜ,
+        ∀ (dst idx : data_expr) eₛ eₜ,
         tmc_dps tmc.(tmc_ξ) dst idx eₛ eₜ →
         (∀ eₛ' eₜ', eₛ' ⊏ eₛ → tmc_dir_spec eₛ' eₜ') →
         (∀ dst idx eₛ' eₜ', eₛ' ⊏ eₛ → tmc_dps_spec dst idx eₛ' eₜ') →
@@ -151,9 +151,9 @@ Section sim_GS.
     - iApply rsimv_val; [done | iSmash].
     - iApply rsimv_var. iSmash.
     - iApply rsim_let;
-        iApply IHdirₛ; auto with lambda_lang.
+        iApply IHdirₛ; auto with data_lang.
     - iApply rsim_call;
-        [iApply IHdirₛ; auto with lambda_lang.. |].
+        [iApply IHdirₛ; auto with data_lang.. |].
       iIntros "%func %vₛ %vₜ %Hfunc #Hv".
       pose (Ψ := sim_post_vals' tmc_dir_post).
       iApply (sim_apply_protocol _ Ψ). iIntros "%σₛ %σₜ $". iSplitR.
@@ -161,24 +161,24 @@ Section sim_GS.
       iIntros "!> % % (%vₛ' & %vₜ' & (-> & ->) & HΨ)".
       sim_post.
     - iApply rsimv_unop; last iSmash.
-      iApply IHdirₛ; auto with lambda_lang.
+      iApply IHdirₛ; auto with data_lang.
     - iApply rsimv_binop; last iSmash;
-        iApply IHdirₛ; auto with lambda_lang.
+        iApply IHdirₛ; auto with data_lang.
     - iSmash.
     - iApply rsim_if; last iSplit;
-        iApply IHdirₛ; auto with lambda_lang.
+        iApply IHdirₛ; auto with data_lang.
     - iApply rsimv_constr; last iSmash;
-        iApply IHdirₛ; auto with lambda_lang.
+        iApply IHdirₛ; auto with data_lang.
     - iIntros "%Γ % % (-> & ->) #HΓ /=".
       sim_constrₛ1.
       sim_apply simv_constr_valₜ1.
-      { sim_apply IHdirₛ; auto with lambda_lang. }
+      { sim_apply IHdirₛ; auto with data_lang. }
       iIntros "%vₛ1 %lₜ %vₜ1 Hlₜ0 Hlₜ1 Hlₜ2 #Hv1".
       sim_apply (IHdpsₛ lₜ 𝟚 eₛ2 eₜ2.[#lₜ/] with "Hlₜ2 [Hlₜ0 Hlₜ1 HΦ]"); first 4 last.
       { autosubst. }
-      { auto with lambda_lang. }
+      { auto with data_lang. }
       { eapply tmc_dps_subst; eauto; autosubst. }
-      { auto with lambda_lang. }
+      { auto with data_lang. }
       iIntros "%vₛ2 % (%vₜ2 & -> & Hlₜ2 & #Hv2)".
       sim_constr_detₛ as lₛ "Hlₛ0" "Hlₛ1" "Hlₛ2".
       iDestruct (sim_heap_bij_tie_eq_2 with "Hlₛ0 Hlₜ0 [//]") as "Hl0".
@@ -191,13 +191,13 @@ Section sim_GS.
     - iIntros "%Γ % % (-> & ->) #HΓ /=".
       sim_constrₛ2.
       sim_apply simv_constr_valₜ2.
-      { sim_apply IHdirₛ; auto with lambda_lang. }
+      { sim_apply IHdirₛ; auto with data_lang. }
       iIntros "%vₛ2 %lₜ %vₜ2 Hlₜ0 Hlₜ1 Hlₜ2 #Hv2".
       sim_apply (IHdpsₛ lₜ 𝟙 eₛ1 eₜ1.[#lₜ/] with "Hlₜ1 [Hlₜ0 Hlₜ2 HΦ]"); first 4 last.
       { autosubst. }
-      { auto with lambda_lang. }
+      { auto with data_lang. }
       { eapply tmc_dps_subst; eauto; autosubst. }
-      { auto with lambda_lang. }
+      { auto with data_lang. }
       iIntros "%vₛ1 % (%vₜ1 & -> & Hlₜ1 & #Hv1)".
       sim_constr_detₛ as lₛ "Hlₛ0" "Hlₛ1" "Hlₛ2".
       iDestruct (sim_heap_bij_tie_eq_2 with "Hlₛ0 Hlₜ0 [//]") as "Hl0".
@@ -209,33 +209,33 @@ Section sim_GS.
       sim_pures.
     - iSmash.
     - iApply rsimv_load; last iSmash;
-       iApply IHdirₛ; auto with lambda_lang.
+       iApply IHdirₛ; auto with data_lang.
     - iApply rsimv_store; last iSmash;
-        iApply IHdirₛ; auto with lambda_lang.
+        iApply IHdirₛ; auto with data_lang.
     (* tmc_dps *)
     - iIntros "%Γ % % (-> & ->) #HΓ /=".
       sim_apply (IHdir with "[//] [Hpre HΦ]"); [done.. |]. iIntros "%vₛ %vₜ #Hv".
       sim_storeₜ.
     - iApply rsim_let.
-      { iApply (IHdirₛ with "[//] []"); auto with lambda_lang. }
-      iApply (IHdpsₛ with "Hpre [HΦ]"); [auto with lambda_lang.. |]. iSmash.
+      { iApply (IHdirₛ with "[//] []"); auto with data_lang. }
+      iApply (IHdpsₛ with "Hpre [HΦ]"); [auto with data_lang.. |]. iSmash.
     - iIntros "%Γ % % (-> & ->) #HΓ /=".
-      sim_apply (IHdirₛ with "[//] [Hpre HΦ] [//] HΓ"); [auto with lambda_lang.. |]. iIntros "%vₛ %vₜ #Hv".
-      sim_apply (tmc_protocol_dps' with "Hpre Hv"); auto with lambda_lang.
+      sim_apply (IHdirₛ with "[//] [Hpre HΦ] [//] HΓ"); [auto with data_lang.. |]. iIntros "%vₛ %vₜ #Hv".
+      sim_apply (tmc_protocol_dps' with "Hpre Hv"); auto with data_lang.
     - iApply rsim_if.
-      { iApply (IHdirₛ with "[//] []"); auto with lambda_lang. }
-      iSplit; iApply (IHdpsₛ with "Hpre [HΦ]"); [auto with lambda_lang.. | iSmash].
+      { iApply (IHdirₛ with "[//] []"); auto with data_lang. }
+      iSplit; iApply (IHdpsₛ with "Hpre [HΦ]"); [auto with data_lang.. | iSmash].
     - iIntros "%Γ % % (-> & ->) #HΓ /=".
       sim_constrₛ1.
       sim_apply simv_constr_valₜ1.
-      { sim_apply (IHdirₛ with "[//] [] [//] HΓ"); auto with lambda_lang. }
+      { sim_apply (IHdirₛ with "[//] [] [//] HΓ"); auto with data_lang. }
       iIntros "%vₛ1 %lₜ %vₜ1 Hlₜ0 Hlₜ1 Hlₜ2 #Hv1".
       sim_storeₜ.
       sim_apply (IHdpsₛ lₜ 𝟚 eₛ2 eₜ2.[#lₜ/] with "Hlₜ2 [Hpre Hlₜ0 Hlₜ1 HΦ] [] HΓ"); first 4 last.
       { autosubst. }
-      { auto with lambda_lang. }
+      { auto with data_lang. }
       { eapply tmc_dps_subst; eauto; autosubst. }
-      { auto with lambda_lang. }
+      { auto with data_lang. }
       iIntros "%vₛ2 % (%vₜ2 & -> & Hlₜ2 & #Hv2)".
       sim_constr_detₛ as lₛ "Hlₛ0" "Hlₛ1" "Hlₛ2".
       iDestruct (sim_heap_bij_tie_eq_2 with "Hlₛ0 Hlₜ0 [//]") as "Hl0".
@@ -248,14 +248,14 @@ Section sim_GS.
     - iIntros "%Γ % % (-> & ->) #HΓ /=".
       sim_constrₛ2.
       sim_apply simv_constr_valₜ2.
-      { sim_apply (IHdirₛ with "[//] [] [//] HΓ"); auto with lambda_lang. }
+      { sim_apply (IHdirₛ with "[//] [] [//] HΓ"); auto with data_lang. }
       iIntros "%vₛ2 %lₜ %vₜ2 Hlₜ0 Hlₜ1 Hlₜ2 #Hv2".
       sim_storeₜ.
       sim_apply (IHdpsₛ lₜ 𝟙 eₛ1 eₜ1.[#lₜ/] with "Hlₜ1 [Hpre Hlₜ0 Hlₜ2 HΦ] [] HΓ"); first 4 last.
       { autosubst. }
-      { auto with lambda_lang. }
+      { auto with data_lang. }
       { eapply tmc_dps_subst; eauto; autosubst. }
-      { auto with lambda_lang. }
+      { auto with data_lang. }
       iIntros "%vₛ1 % (%vₜ1 & -> & Hlₜ1 & #Hv1)".
       sim_constr_detₛ as lₛ "Hlₛ0" "Hlₛ1" "Hlₛ2".
       iDestruct (sim_heap_bij_tie_eq_2 with "Hlₛ0 Hlₜ0 [//]") as "Hl0".
@@ -278,19 +278,19 @@ Section sim_GS.
   Qed.
 
   Lemma tmc_simv_close Φ eₛ eₜ :
-    lambda_program_valid sim_progₛ →
+    data_program_valid sim_progₛ →
     SIM eₛ ≳ eₜ [[ tmc_protocol ]] {{# Φ }} -∗
     SIM eₛ ≳ eₜ {{# Φ }}.
   Proof.
     intros (Hprogₛ_wf & Hprogₛ_scope).
-    eapply lambda_program_scope_tmc in Hprogₛ_scope as Hprogₜ_scope; last done.
+    eapply data_program_scope_tmc in Hprogₛ_scope as Hprogₜ_scope; last done.
     iApply sim_close_pure_head_step. clear eₛ eₜ. iIntros "!> %Ψ %eₛ %eₜ [Hprotocol | Hprotocol]".
     - iDestruct "Hprotocol" as "(%func & %vₛ & %vₜ & %Hfuncₛ & (-> & ->) & #Hv & HΨ)".
       simpl in Hfuncₛ. apply lookup_lookup_total_dom in Hfuncₛ. set (eₛ := _ !!! _) in Hfuncₛ.
       edestruct tmc.(tmc_dirs) as (eₜ & Hdir & Hfuncₜ); first done.
-      iExists eₛ.[#vₛ/], eₜ.[#vₜ/]. iSplit; first auto with lambda_lang.
-      erewrite (subst_lambda_program_scope' ids inhabitant); last done; last done.
-      erewrite (subst_lambda_program_scope' ids inhabitant); last done; last done.
+      iExists eₛ.[#vₛ/], eₜ.[#vₜ/]. iSplit; first auto with data_lang.
+      erewrite (subst_data_program_scope' ids inhabitant); last done; last done.
+      erewrite (subst_data_program_scope' ids inhabitant); last done; last done.
       iDestruct (tmc_dir_specification $! tmc_dir_post with "[//] [] [//] []") as "Hsim"; eauto.
       + iApply (bisubst_cons_well_formed with "Hv").
         iApply bisubst_inhabitant_well_formed.
@@ -299,14 +299,14 @@ Section sim_GS.
     - iDestruct "Hprotocol" as "(%func & %func_dps & %vₛ & %l1 & %l2 & %dst & %idx & %vₜ & (%Hfuncₛ & %Hξ) & (-> & ->) & Hl11 & Hl12 & Hl21 & Hl22 & Hdst & #Hv & HΨ)".
       simpl in Hfuncₛ. apply lookup_lookup_total_dom in Hfuncₛ. set (eₛ := _ !!! _) in Hfuncₛ.
       edestruct tmc.(tmc_dpss) as (eₜ & Hdps & Hfunc_dpsₜ); [done.. |].
-      iExists eₛ.[#vₛ/], _. iSplit; first auto with lambda_lang.
+      iExists eₛ.[#vₛ/], _. iSplit; first auto with data_lang.
       do 4 sim_loadₜ. sim_pures.
       eapply (tmc_dps_subst _ (ids 0 .: #dst .: #idx .: ren (+1))) in Hdps; [| autosubst..].
-      erewrite (subst_lambda_program_scope' _ (ren (+1))) in Hdps; last done; last done. asimpl in Hdps.
+      erewrite (subst_data_program_scope' _ (ren (+1))) in Hdps; last done; last done. asimpl in Hdps.
       replace eₜ.[#vₜ, #dst, #idx, #l2, #l1/] with eₜ.[ids 0 .: #dst .: #idx .: ren (+1)].[#vₜ, #l2, #l1/] by autosubst.
-      erewrite (subst_lambda_program_scope' ids inhabitant); last done; last done.
-      erewrite (subst_lambda_expr_scope_1' (#l2 .: #l1 .: ids) inhabitant); last first.
-      { eapply lambda_expr_scope_tmc_dps; naive_solver. }
+      erewrite (subst_data_program_scope' ids inhabitant); last done; last done.
+      erewrite (subst_data_expr_scope_1' (#l2 .: #l1 .: ids) inhabitant); last first.
+      { eapply data_expr_scope_tmc_dps; naive_solver. }
       iDestruct (tmc_dps_specification $! (tmc_dps_post dst idx) with "Hdst [] [//] []") as "Hsim"; eauto.
       + iApply (bisubst_cons_well_formed with "Hv").
         iApply bisubst_inhabitant_well_formed.
@@ -316,14 +316,14 @@ Section sim_GS.
 End sim_GS.
 
 Section tmc_sound.
-  Context {progₛ progₜ : lambda_program}.
-  Context (Hwf : lambda_program_valid progₛ).
+  Context {progₛ progₜ : data_program}.
+  Context (Hwf : data_program_valid progₛ).
   Context (tmc : tmc progₛ progₜ).
 
   Notation Σ := sim_Σ.
   Notation M := (iResUR Σ).
 
-  #[local] Instance tmc_sim_programs : SimPrograms lambda_ectx_lang lambda_ectx_lang :=
+  #[local] Instance tmc_sim_programs : SimPrograms data_ectx_lang data_ectx_lang :=
     Build_SimPrograms progₛ progₜ.
 
   #[local] Instance tmc_sim_GpreS :
@@ -333,21 +333,21 @@ Section tmc_sound.
   Qed.
 
   Lemma tmc_sound :
-    lambda_program_refinement progₛ progₜ.
+    data_program_refinement progₛ progₜ.
   Proof.
-    rewrite /lambda_program_refinement map_Forall_lookup => func eₛ Hfuncₛ vₛ vₜ Hvₛ Hv.
+    rewrite /data_program_refinement map_Forall_lookup => func eₛ Hfuncₛ vₛ vₜ Hvₛ Hv.
     pose proof (sim_adequacy' (M := M)) as Hadequacy. apply Hadequacy.
     iMod (sim_init ∅ ∅) as "(%sim_GS & Hsi & _ & _ & _ & _)".
     iModIntro. iExists _, _. iFrame. iSplitR.
     { clear dependent vₛ vₜ. iIntros "!> %vₛ %vₜ #Hv".
-      iApply (lambda_val_bi_similar_similar with "Hv").
+      iApply (data_val_bi_similar_similar with "Hv").
     }
     iApply (tmc_simv_close (sim_programs := tmc_sim_programs) tmc); first done.
     iApply (sim_apply_protocol _ (sim_post_vals (≈)%I)). iIntros "%σₛ %σₜ $ !>".
     iSplitL.
     - iLeft. iExists func, vₛ, vₜ. repeat iSplit; try iSmash.
       + iPureIntro. simpl. eapply elem_of_dom_2. done.
-      + iApply lambda_val_similar_bi_similar; done.
+      + iApply data_val_similar_bi_similar; done.
       + rewrite sim_post_vals_unseal /sim_post_vals'. iSmash.
     - clear dependent vₛ eₛ vₜ. iIntros "%eₛ %eₜ Hsimilar".
       rewrite sim_post_vals_unseal. sim_post.
