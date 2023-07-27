@@ -36,9 +36,10 @@ Section aps_plus.
     ).
   Proof.
     apply aps_plus_ind; solve
-    [ intros; simplify; eauto using aps_plus_dir_refl
+    [ intros; simplify;
+      auto using aps_plus_dir_refl
     | intros * ? ? ? IHaps **; simplify;
-      econstructor; try naive_solver; try eapply IHaps with (up ς); autosubst
+      econstructor; try naive_solver; try apply IHaps with (up ς); autosubst
     ].
   Qed.
   Lemma aps_plus_dir_subst ς eₛ eₛ' eₜ eₜ' :

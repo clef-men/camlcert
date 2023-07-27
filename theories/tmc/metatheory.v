@@ -37,9 +37,10 @@ Section tmc.
     ).
   Proof.
     apply tmc_ind; solve
-    [ intros; simplify; eauto using tmc_dir_refl
+    [ intros; simplify;
+      auto using tmc_dir_refl
     | intros * ? ? ? IHdps **; simplify;
-      econstructor; try naive_solver; try eapply IHdps with (up ς); autosubst
+      econstructor; try naive_solver; try apply IHdps with (up ς); autosubst
     ].
   Qed.
   Lemma tmc_dir_subst ς eₛ eₛ' eₜ eₜ' :
