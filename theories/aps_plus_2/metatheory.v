@@ -6,7 +6,7 @@ From simuliris.data_lang Require Export
   metatheory.
 From simuliris.data_lang Require Import
   notations.
-From simuliris.aps_plus Require Export
+From simuliris.aps_plus_2 Require Export
   definition.
 
 Section aps_plus.
