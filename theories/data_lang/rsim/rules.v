@@ -164,30 +164,30 @@ Section sim_GS.
       iIntros "Hrsim1 Hrsim2 HΦ". rsim_intro.
       sim_apply (sim_constr with "(Hrsim1 [//] HΓ) (Hrsim2 [//] HΓ)").
     Qed.
-    Lemma rsim_constr_valₜ1 Φ tag eₛ eₜ :
+    Lemma rsim_constr_valₜ1 Φ tag eₛ eₜ vₜ2 :
       SIM eₛ ⩾ eₜ [[ Χ ]] {{# (≈) }} -∗
       ( ∀ vₛ lₜ vₜ,
         (lₜ +ₗ 0) ↦ₜ tag -∗
         (lₜ +ₗ 1) ↦ₜ vₜ -∗
-        (lₜ +ₗ 2) ↦ₜ () -∗
+        (lₜ +ₗ 2) ↦ₜ vₜ2 -∗
         vₛ ≈ vₜ -∗
         Φ vₛ lₜ
       ) -∗
-      SIM eₛ ⩾ &tag eₜ #() [[ Χ ]] {{ Φ }}.
+      SIM eₛ ⩾ &tag eₜ vₜ2 [[ Χ ]] {{ Φ }}.
     Proof.
       iIntros "Hrsim HΦ". rsim_intro.
       sim_apply (sim_constr_valₜ1 with "(Hrsim [//] HΓ)").
     Qed.
-    Lemma rsim_constr_valₜ2 Φ tag eₛ eₜ :
+    Lemma rsim_constr_valₜ2 Φ tag eₛ vₜ1 eₜ :
       SIM eₛ ⩾ eₜ [[ Χ ]] {{# (≈) }} -∗
       ( ∀ vₛ lₜ vₜ,
         (lₜ +ₗ 0) ↦ₜ tag -∗
-        (lₜ +ₗ 1) ↦ₜ () -∗
+        (lₜ +ₗ 1) ↦ₜ vₜ1 -∗
         (lₜ +ₗ 2) ↦ₜ vₜ -∗
         vₛ ≈ vₜ -∗
         Φ vₛ lₜ
       ) -∗
-      SIM eₛ ⩾ &tag #() eₜ [[ Χ ]] {{ Φ }}.
+      SIM eₛ ⩾ &tag vₜ1 eₜ [[ Χ ]] {{ Φ }}.
     Proof.
       iIntros "Hrsim HΦ". rsim_intro.
       sim_apply (sim_constr_valₜ2 with "(Hrsim [//] HΓ)").
@@ -310,31 +310,31 @@ Section sim_GS.
       iApply (rsim_constr with "Hsim1 Hsim2").
       rewrite sim_post_vals_unseal /sim_post_vals'. iSmash.
     Qed.
-    Lemma rsimv_constr_valₜ1 Φ tag eₛ eₜ :
+    Lemma rsimv_constr_valₜ1 Φ tag eₛ eₜ vₜ2 :
       SIM eₛ ⩾ eₜ [[ Χ ]] {{# (≈) }} -∗
       ( ∀ vₛ lₜ vₜ,
         (lₜ +ₗ 0) ↦ₜ tag -∗
         (lₜ +ₗ 1) ↦ₜ vₜ -∗
-        (lₜ +ₗ 2) ↦ₜ () -∗
+        (lₜ +ₗ 2) ↦ₜ vₜ2 -∗
         vₛ ≈ vₜ -∗
         Φ vₛ lₜ
       ) -∗
-      SIM eₛ ⩾ &tag eₜ #() [[ Χ ]] {{# Φ }}.
+      SIM eₛ ⩾ &tag eₜ vₜ2 [[ Χ ]] {{# Φ }}.
     Proof.
       iIntros "Hsim HΦ".
       iApply (rsim_constr_valₜ1 with "Hsim").
       rewrite sim_post_vals_unseal /sim_post_vals'. iSmash.
     Qed.
-    Lemma rsimv_constr_valₜ2 Φ tag eₛ eₜ :
+    Lemma rsimv_constr_valₜ2 Φ tag eₛ vₜ1 eₜ :
       SIM eₛ ⩾ eₜ [[ Χ ]] {{# (≈) }} -∗
       ( ∀ vₛ lₜ vₜ,
         (lₜ +ₗ 0) ↦ₜ tag -∗
-        (lₜ +ₗ 1) ↦ₜ () -∗
+        (lₜ +ₗ 1) ↦ₜ vₜ1 -∗
         (lₜ +ₗ 2) ↦ₜ vₜ -∗
         vₛ ≈ vₜ -∗
         Φ vₛ lₜ
       ) -∗
-      SIM eₛ ⩾ &tag #() eₜ [[ Χ ]] {{# Φ }}.
+      SIM eₛ ⩾ &tag vₜ1 eₜ [[ Χ ]] {{# Φ }}.
     Proof.
       iIntros "Hsim HΦ".
       iApply (rsim_constr_valₜ2 with "Hsim").
