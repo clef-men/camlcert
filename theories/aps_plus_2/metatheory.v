@@ -86,13 +86,13 @@ Section aps_plus.
     - intros * Hdir1 IH1 Haps2 IH2 scope Hacc (Hscope1 & Hscope2).
       split; first auto.
       apply IH2; try done; apply data_expr_scope_lift1; done.
-    - intros * Hξ Hdir IH -> scope Hacc (_ & Hwf).
+    - intros * Hξ Hdir IH -> scope Hacc (_ & Hscope).
       simpl. split_and!; [eauto using data_expr_scope_lift1.. | lia].
-    - intros * Hdir1 IH1 Haps2 IH2 scope Hacc (Hwf1 & Hwf2).
+    - intros * Hdir1 IH1 Haps2 IH2 scope Hacc (Hscope1 & Hscope2).
       simpl. split_and!; try naive_solver lia.
       apply IH2; first naive_solver lia.
       apply data_expr_scope_lift1. done.
-    - intros * Hdir2 IH2 Haps1 IH1 scope Hacc (Hwf1 & Hwf2).
+    - intros * Hdir2 IH2 Haps1 IH1 scope Hacc (Hscope1 & Hscope2).
       simpl. split_and!; try naive_solver lia.
       apply IH1; first naive_solver lia.
       apply data_expr_scope_lift1. done.

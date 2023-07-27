@@ -89,16 +89,16 @@ Section tmc.
     - intros * Hdir1 IH1 Hdps2 IH2 scope Hdst Hidx (Hscope1 & Hscope2).
       split; first auto.
       apply IH2; try done; apply data_expr_scope_lift1; done.
-    - intros * Hξ Hdir IH -> scope Hdst Hidx (_ & Hwf).
+    - intros * Hξ Hdir IH -> scope Hdst Hidx (_ & Hscope).
       simpl. split_and!; [eauto using data_expr_scope_lift1.. | lia].
-    - intros * Hdir1 IH1 Hdps2 IH2 -> scope Hdst Hidx (Hwf1 & Hwf2).
+    - intros * Hdir1 IH1 Hdps2 IH2 -> scope Hdst Hidx (Hscope1 & Hscope2).
       simpl. split_and!; try naive_solver lia.
       + apply data_expr_scope_lift1. done.
       + apply data_expr_scope_lift1. done.
       + apply (data_expr_scope_le (S (S scope))); first lia.
         apply data_expr_scope_lift1, IH2; try naive_solver lia.
         apply data_expr_scope_lift1. done.
-    - intros * Hdir2 IH2 Hdps1 IH1 -> scope Hdst Hidx (Hwf1 & Hwf2).
+    - intros * Hdir2 IH2 Hdps1 IH1 -> scope Hdst Hidx (Hscope1 & Hscope2).
       simpl. split_and!; try naive_solver lia.
       + apply data_expr_scope_lift1. done.
       + apply data_expr_scope_lift1. done.

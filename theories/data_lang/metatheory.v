@@ -156,9 +156,9 @@ Lemma subst_data_program_scope ς1 ς2 prog func e :
   prog !! func = Some e →
   e.[ς1] = e.[ς2].
 Proof.
-  intros Hσ Hwf Hlookup.
+  intros Hσ Hscope Hlookup.
   eapply subst_data_expr_scope_1; first done.
-  eapply map_Forall_lookup_1 in Hwf; naive_solver.
+  eapply map_Forall_lookup_1 in Hscope; naive_solver.
 Qed.
 Lemma subst_data_program_scope' ς1 ς2 v prog func e :
   data_program_scope prog →
