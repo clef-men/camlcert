@@ -75,8 +75,8 @@ Proof.
       rewrite lookup_insert.
       eexists. split; last done. repeat econstructor.
     + intros * (<- & <-)%lookup_singleton_Some (_ & <-)%lookup_singleton_Some.
-      eexists. split; last done.
-      repeat constructor. eapply tmc_dps_constr_1; first constructor.
+      eexists. split; last done. repeat constructor.
+      eapply tmc_dps_constr_1; first constructor.
       * eapply tmc_dps_call; repeat constructor.
       * done.
 Qed.

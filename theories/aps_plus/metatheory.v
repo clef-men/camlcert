@@ -88,18 +88,14 @@ Section aps_plus.
       apply IH2; try done; apply data_expr_scope_lift1; done.
     - intros * Hξ Hdir IH -> scope Hacc (_ & Hwf).
       simpl. split_and!; [eauto using data_expr_scope_lift1.. | lia].
-    - intros * Hdir1 IH1 Haps2 IH2 -> scope Hacc (Hwf1 & Hwf2).
+    - intros * Hdir1 IH1 Haps2 IH2 scope Hacc (Hwf1 & Hwf2).
       simpl. split_and!; try naive_solver lia.
-      apply IH2.
-      + split; first naive_solver lia.
-        apply data_expr_scope_lift1. done.
-      + apply data_expr_scope_lift1. done.
-    - intros * Hdir2 IH2 Haps1 IH1 -> scope Hacc (Hwf1 & Hwf2).
+      apply IH2; first naive_solver lia.
+      apply data_expr_scope_lift1. done.
+    - intros * Hdir2 IH2 Haps1 IH1 scope Hacc (Hwf1 & Hwf2).
       simpl. split_and!; try naive_solver lia.
-      apply IH1.
-      + split; first naive_solver lia.
-        apply data_expr_scope_lift1. done.
-      + apply data_expr_scope_lift1. done.
+      apply IH1; first naive_solver lia.
+      apply data_expr_scope_lift1. done.
   Qed.
   Lemma data_expr_scope_aps_plus_dir scope eₛ eₜ :
     aps_plus_dir ξ eₛ eₜ →

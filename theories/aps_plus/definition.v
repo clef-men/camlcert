@@ -112,20 +112,18 @@ with aps_plus_aps ξ : data_expr → data_expr → data_expr → Prop :=
       aps_plus_aps ξ acc
         (func eₛ)
         eₜ'
-  | aps_plus_aps_plus_1 acc eₛ1 eₛ2 eₜ1 eₜ2 eₜ :
+  | aps_plus_aps_plus_1 acc eₛ1 eₛ2 eₜ1 eₜ2 :
       aps_plus_dir ξ eₛ1 eₜ1 →
-      aps_plus_aps ξ ($0 + acc.[ren (+1)]) eₛ2.[ren (+1)] eₜ2 →
-      eₜ = (let: eₜ1 in eₜ2)%data_expr →
+      aps_plus_aps ξ $0 eₛ2.[ren (+1)] eₜ2 →
       aps_plus_aps ξ acc
         (eₛ1 + eₛ2)
-        eₜ
-  | aps_plus_aps_plus_2 acc eₛ1 eₛ2 eₜ1 eₜ2 eₜ :
+        (let: eₜ1 + acc in eₜ2)
+  | aps_plus_aps_plus_2 acc eₛ1 eₛ2 eₜ1 eₜ2 :
       aps_plus_dir ξ eₛ2 eₜ2 →
-      aps_plus_aps ξ ($0 + acc.[ren (+1)]) eₛ1.[ren (+1)] eₜ1 →
-      eₜ = (let: eₜ2 in eₜ1)%data_expr →
+      aps_plus_aps ξ $0 eₛ1.[ren (+1)] eₜ1 →
       aps_plus_aps ξ acc
         (eₛ1 + eₛ2)
-        eₜ
+        (let: eₜ2 + acc in eₜ1)
   | aps_plus_aps_if acc eₛ0 eₛ1 eₛ2 eₜ0 eₜ1 eₜ2 :
       aps_plus_dir ξ eₛ0 eₜ0 →
       aps_plus_aps ξ acc eₛ1 eₜ1 →
