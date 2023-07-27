@@ -298,12 +298,10 @@ End sim_GS.
     )
   ).
 
-#[local] Ltac sim_finish_helper :=
-  asimpl.
 Tactic Notation "sim_finish" :=
-  sim_finish sim_finish_helper.
+  sim_finish asimpl.
 Tactic Notation "sim_finisher" :=
-  sim_finisher sim_finish_helper.
+  sim_finisher asimpl.
 
 Ltac sim_asimpl :=
   sim_eval (asimpl; simpl).
@@ -378,30 +376,31 @@ Tactic Notation "sim_bind" open_constr(e_focₛ) open_constr(e_focₜ) :=
 Tactic Notation "sim_bind" :=
   sim_bind _ _.
 
-Tactic Notation "sim_pureₛ" open_constr(e_foc) :=
+#[local] Tactic Notation "sim_pure_coreₛ" open_constr(e_foc) :=
   sim_focalizeₛ e_foc
-    ltac:(fun K => sim_pure_coreₛ K sim_finish_helper)
+    ltac:(fun K => sim_pure_coreₛ K)
     ltac:(fun e => fail "sim_pureₛ: cannot find" e_foc "in source" e "or" e_foc "is not a redex").
+Tactic Notation "sim_pureₛ" open_constr(e_foc) :=
+  sim_pure_coreₛ e_foc; last sim_finisher.
 Tactic Notation "sim_pureₛ" :=
   sim_pureₛ _.
 Ltac sim_puresₛ :=
-  first
-  [ repeat progress (sim_pureₛ; []); try solve [sim_pureₛ]
-  | sim_finisher
-  ].
-Tactic Notation "sim_pureₜ" open_constr(e_foc) :=
+  repeat (sim_pure_coreₛ _; []);
+  sim_finisher.
+#[local] Tactic Notation "sim_pure_coreₜ" open_constr(e_foc) :=
   sim_focalizeₜ e_foc
-    ltac:(fun K => sim_pure_coreₜ K sim_finish_helper)
+    ltac:(fun K => sim_pure_coreₜ K)
     ltac:(fun e => fail "sim_pureₜ: cannot find" e_foc "in target" e "or" e_foc "is not a redex").
+Tactic Notation "sim_pureₜ" open_constr(e_foc) :=
+  sim_pure_coreₜ e_foc; last sim_finisher.
 Tactic Notation "sim_pureₜ" :=
   sim_pureₜ _.
 Ltac sim_puresₜ :=
-  first
-  [ repeat progress (sim_pureₜ; []); try solve [sim_pureₜ]
-  | sim_finisher
-  ].
+  repeat (sim_pure_coreₜ _; []);
+  sim_finisher.
 Ltac sim_pures :=
-  sim_puresₜ; sim_puresₛ.
+  sim_puresₜ;
+  sim_puresₛ.
 
 #[local] Ltac sim_heap_bij_insert_core Htie Hsimilar :=
   iStartProof;

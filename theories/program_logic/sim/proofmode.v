@@ -473,19 +473,19 @@ Tactic Notation "sim_bind_core" open_constr(Kₛ) open_constr(Kₜ) :=
     )
   ).
 
-Tactic Notation "sim_pure_coreₛ" open_constr(K) tactic3(finish_helper) :=
+Tactic Notation "sim_pure_coreₛ" open_constr(K) :=
   on_sim ltac:(fun _ _ _ _ _ =>
     eapply (tac_sim_pure_execₛ _ _ _ _ _ K)
   );
   [ tc_solve
   | try done
-  | sim_finisher finish_helper
+  | idtac
   ].
-Tactic Notation "sim_pure_coreₜ" open_constr(K) tactic3(finish_helper) :=
+Tactic Notation "sim_pure_coreₜ" open_constr(K) :=
   on_sim ltac:(fun _ _ _ _ _ =>
     eapply (tac_sim_pure_execₜ _ _ _ _ _ _ K)
   );
   [ tc_solve
   | try done
-  | sim_finisher finish_helper
+  | idtac
   ].
