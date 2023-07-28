@@ -113,7 +113,7 @@ Section isat.
     - intros P Q [H] [x [Hv HP]]; by eauto.
     - intros φ [x [_ Hφ]]. apply Hφ.
     - intros P [x [Hv HP]].
-      destruct (HP 0 ε) as [y HP']; [done|by rewrite right_id|].
+      destruct (HP 0 ε) as [y HP']; [done | rewrite right_id // |].
       revert HP'; rewrite right_id; eauto.
     - intros X Φ [x [Hv [a HΦ]]]; eauto.
   Qed.
