@@ -150,9 +150,9 @@ Section sim_GS.
     (* tmc_dir *)
     - iApply rsimv_val; [done | iSmash].
     - iApply rsimv_var. iSmash.
-    - iApply rsim_let;
+    - iApply rsimv_let;
         iApply IHdirₛ; auto with data_lang.
-    - iApply rsim_call;
+    - iApply rsimv_call;
         [iApply IHdirₛ; auto with data_lang.. |].
       iIntros "%func %vₛ %vₜ %Hfunc #Hv".
       pose (Ψ := sim_post_vals' tmc_dir_post).
@@ -165,7 +165,7 @@ Section sim_GS.
     - iApply rsimv_binop; last iSmash;
         iApply IHdirₛ; auto with data_lang.
     - iSmash.
-    - iApply rsim_if; last iSplit;
+    - iApply rsimv_if; last iSplit;
         iApply IHdirₛ; auto with data_lang.
     - iApply rsimv_constr; last iSmash;
         iApply IHdirₛ; auto with data_lang.
@@ -216,13 +216,13 @@ Section sim_GS.
     - iIntros "%Γ % % (-> & ->) #HΓ /=".
       sim_apply (IHdir with "[//] [Hpre HΦ]"); [done.. |]. iIntros "%vₛ %vₜ #Hv".
       sim_storeₜ.
-    - iApply rsim_let.
+    - iApply rsimv_let.
       { iApply (IHdirₛ with "[//] []"); auto with data_lang. }
       iApply (IHdpsₛ with "Hpre [HΦ]"); [auto with data_lang.. |]. iSmash.
     - iIntros "%Γ % % (-> & ->) #HΓ /=".
       sim_apply (IHdirₛ with "[//] [Hpre HΦ] [//] HΓ"); [auto with data_lang.. |]. iIntros "%vₛ %vₜ #Hv".
       sim_apply (tmc_protocol_dps' with "Hpre Hv"); auto with data_lang.
-    - iApply rsim_if.
+    - iApply rsimv_if.
       { iApply (IHdirₛ with "[//] []"); auto with data_lang. }
       iSplit; iApply (IHdpsₛ with "Hpre [HΦ]"); [auto with data_lang.. | iSmash].
     - iIntros "%Γ % % (-> & ->) #HΓ /=".

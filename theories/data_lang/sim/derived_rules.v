@@ -10,6 +10,7 @@ Section sim_GS.
   Context `{sim_programs : !SimPrograms data_ectx_lang data_ectx_lang}.
   Context `{sim_GS : !SimGS Σ}.
   Context (Χ : sim_protocol Σ).
+  Implicit Types n : Z.
   Implicit Types func : data_function.
   Implicit Types tag : data_tag.
   Implicit Types l lₛ lₜ : loc.
@@ -20,22 +21,21 @@ Section sim_GS.
     Implicit Types Φ : data_expr → data_expr → iProp Σ.
 
     Lemma sim_let Φ eₛ1 eₛ2 eₜ1 eₜ2 :
-      SIM eₛ1 ≳ eₜ1 [[ Χ ]] {{# (≈) }} -∗
+      SIM eₛ1 ≳ eₜ1 [[ Χ ]] {{ sim_post_vals' (≈) }} -∗
       ( ∀ vₛ vₜ,
         vₛ ≈ vₜ -∗
         SIM eₛ2.[#vₛ/] ≳ eₜ2.[#vₜ/] [[ Χ ]] {{ Φ }}
       ) -∗
       SIM let: eₛ1 in eₛ2 ≳ let: eₜ1 in eₜ2 [[ Χ ]] {{ Φ }}.
     Proof.
-      rewrite simv_unseal.
       iIntros "Hsim1 Hsim2".
       sim_mono "Hsim1". iIntros "% % (%vₛ & %vₜ & (-> & ->) & #Hv)".
       sim_mono ("Hsim2" with "Hv").
     Qed.
 
     Lemma sim_call Φ eₛ1 eₛ2 eₜ1 eₜ2 :
-      SIM eₛ1 ≳ eₜ1 [[ Χ ]] {{# (≈) }} -∗
-      SIM eₛ2 ≳ eₜ2 [[ Χ ]] {{# (≈) }} -∗
+      SIM eₛ1 ≳ eₜ1 [[ Χ ]] {{ sim_post_vals' (≈) }} -∗
+      SIM eₛ2 ≳ eₜ2 [[ Χ ]] {{ sim_post_vals' (≈) }} -∗
       ( ∀ func vₛ vₜ,
         ⌜func ∈ dom sim_progₛ⌝ -∗
         vₛ ≈ vₜ -∗
@@ -43,7 +43,6 @@ Section sim_GS.
       ) -∗
       SIM eₛ1 eₛ2 ≳ eₜ1 eₜ2 [[ Χ ]] {{ Φ }}.
     Proof.
-      rewrite simv_unseal.
       iIntros "Hsim1 Hsim2 Hsim".
       sim_mono "Hsim2". iIntros "% % (%vₛ2 & %vₜ2 & (-> & ->) & #Hv2)".
       sim_mono "Hsim1". iIntros "% % (%vₛ1 & %vₜ1 & (-> & ->) & #Hv1)".
@@ -52,14 +51,13 @@ Section sim_GS.
     Qed.
 
     Lemma sim_unop Φ op eₛ eₜ :
-      SIM eₛ ≳ eₜ [[ Χ ]] {{# (≈) }} -∗
+      SIM eₛ ≳ eₜ [[ Χ ]] {{ sim_post_vals' (≈) }} -∗
       ( ∀ vₛ vₜ,
         vₛ ≈ vₜ -∗
         Φ vₛ vₜ
       ) -∗
       SIM DataUnop op eₛ ≳ DataUnop op eₜ [[ Χ ]] {{ Φ }}.
     Proof.
-      rewrite simv_unseal.
       iIntros "Hsim HΦ".
       sim_mono "Hsim". iIntros "% % (%vₛ & %vₜ & (-> & ->) & #Hv)".
       destruct vₛ, vₜ; try iDestruct "Hv" as %[];
@@ -68,15 +66,14 @@ Section sim_GS.
     Qed.
 
     Lemma sim_binop Φ op eₛ1 eₛ2 eₜ1 eₜ2 :
-      SIM eₛ1 ≳ eₜ1 [[ Χ ]] {{# (≈) }} -∗
-      SIM eₛ2 ≳ eₜ2 [[ Χ ]] {{# (≈) }} -∗
+      SIM eₛ1 ≳ eₜ1 [[ Χ ]] {{ sim_post_vals' (≈) }} -∗
+      SIM eₛ2 ≳ eₜ2 [[ Χ ]] {{ sim_post_vals' (≈) }} -∗
       ( ∀ vₛ vₜ,
         vₛ ≈ vₜ -∗
         Φ vₛ vₜ
       ) -∗
       SIM DataBinop op eₛ1 eₛ2 ≳ DataBinop op eₜ1 eₜ2 [[ Χ ]] {{ Φ }}.
     Proof.
-      rewrite simv_unseal.
       iIntros "Hsim1 Hsim2 HΦ".
       sim_binopₜ;
         [| iCombine "Hsim1 Hsim2" as "(Hsim2 & Hsim1)"];
@@ -91,13 +88,12 @@ Section sim_GS.
     Qed.
 
     Lemma sim_if Φ eₛ0 eₛ1 eₛ2 eₜ0 eₜ1 eₜ2 :
-      SIM eₛ0 ≳ eₜ0 [[ Χ ]] {{# (≈) }} -∗
+      SIM eₛ0 ≳ eₜ0 [[ Χ ]] {{ sim_post_vals' (≈) }} -∗
       ( SIM eₛ1 ≳ eₜ1 [[ Χ ]] {{ Φ }} ∧
         SIM eₛ2 ≳ eₜ2 [[ Χ ]] {{ Φ }}
       ) -∗
       SIM DataIf eₛ0 eₛ1 eₛ2 ≳ DataIf eₜ0 eₜ1 eₜ2 [[ Χ ]] {{ Φ }}.
     Proof.
-      rewrite simv_unseal.
       iIntros "Hsim0 Hsim12".
       sim_mono "Hsim0". iIntros "% % (%vₛ0 & %vₜ0 & (-> & ->) & #Hv0)".
       destruct vₛ0, vₜ0; try iDestruct "Hv0" as %[]; try sim_strongly_stuck.
@@ -109,15 +105,14 @@ Section sim_GS.
     Qed.
 
     Lemma sim_constr Φ tag eₛ1 eₛ2 eₜ1 eₜ2 :
-      SIM eₛ1 ≳ eₜ1 [[ Χ ]] {{# (≈) }} -∗
-      SIM eₛ2 ≳ eₜ2 [[ Χ ]] {{# (≈) }} -∗
+      SIM eₛ1 ≳ eₜ1 [[ Χ ]] {{ sim_post_vals' (≈) }} -∗
+      SIM eₛ2 ≳ eₜ2 [[ Χ ]] {{ sim_post_vals' (≈) }} -∗
       ( ∀ lₛ lₜ,
         DataLoc lₛ ≈ DataLoc lₜ -∗
         Φ lₛ lₜ
       ) -∗
       SIM &tag eₛ1 eₛ2 ≳ &tag eₜ1 eₜ2 [[ Χ ]] {{ Φ }}.
     Proof.
-      rewrite simv_unseal.
       iIntros "Hsim1 Hsim2 HΦ".
       sim_constrₜ;
         [| iCombine "Hsim1 Hsim2" as "(Hsim2 & Hsim1)"];
@@ -128,7 +123,7 @@ Section sim_GS.
         iApply "HΦ"; iSmash+.
     Qed.
     Lemma sim_constr_valₜ1 Φ eₛ tag eₜ vₜ2 :
-      SIM eₛ ≳ eₜ [[ Χ ]] {{# (≈) }} -∗
+      SIM eₛ ≳ eₜ [[ Χ ]] {{ sim_post_vals' (≈) }} -∗
       ( ∀ vₛ l vₜ1,
         (l +ₗ 0) ↦ₜ tag -∗
         (l +ₗ 1) ↦ₜ vₜ1 -∗
@@ -138,14 +133,13 @@ Section sim_GS.
       ) -∗
       SIM eₛ ≳ &tag eₜ vₜ2 [[ Χ ]] {{ Φ }}.
     Proof.
-      rewrite simv_unseal.
       iIntros "Hsim HΦ".
       sim_constrₜ;
         sim_mono "Hsim"; iIntros "% % (%vₛ & %vₜ1 & (-> & ->) & #Hv)";
         sim_constr_detₜ as l "Hl0" "Hl1" "Hl2".
     Qed.
     Lemma sim_constr_valₜ2 Φ eₛ tag vₜ1 eₜ :
-      SIM eₛ ≳ eₜ [[ Χ ]] {{# (≈) }} -∗
+      SIM eₛ ≳ eₜ [[ Χ ]] {{ sim_post_vals' (≈) }} -∗
       ( ∀ vₛ l vₜ2,
         (l +ₗ 0) ↦ₜ tag -∗
         (l +ₗ 1) ↦ₜ vₜ1 -∗
@@ -155,7 +149,6 @@ Section sim_GS.
       ) -∗
       SIM eₛ ≳ &tag vₜ1 eₜ [[ Χ ]] {{ Φ }}.
     Proof.
-      rewrite simv_unseal.
       iIntros "Hsim HΦ".
       sim_constrₜ;
         sim_mono "Hsim"; iIntros "% % (%vₛ & %vₜ2 & (-> & ->) & #Hv)";
@@ -163,15 +156,14 @@ Section sim_GS.
     Qed.
 
     Lemma sim_load Φ eₛ1 eₛ2 eₜ1 eₜ2 :
-      SIM eₛ1 ≳ eₜ1 [[ Χ ]] {{# (≈) }} -∗
-      SIM eₛ2 ≳ eₜ2 [[ Χ ]] {{# (≈) }} -∗
+      SIM eₛ1 ≳ eₜ1 [[ Χ ]] {{ sim_post_vals' (≈) }} -∗
+      SIM eₛ2 ≳ eₜ2 [[ Χ ]] {{ sim_post_vals' (≈) }} -∗
       ( ∀ vₛ vₜ,
         vₛ ≈ vₜ -∗
         Φ vₛ vₜ
       ) -∗
       SIM ![eₛ2] eₛ1 ≳ ![eₜ2] eₜ1 [[ Χ ]] {{ Φ }}.
     Proof.
-      rewrite simv_unseal.
       iIntros "Hsim1 Hsim2 HΦ".
       sim_mono "Hsim2". iIntros "% % (%vₛ2 & %vₜ2 & (-> & ->) & #Hv2)".
       sim_mono "Hsim1". iIntros "% % (%vₛ1 & %vₜ1 & (-> & ->) & #Hv1)".
@@ -181,13 +173,12 @@ Section sim_GS.
     Qed.
 
     Lemma sim_store Φ eₛ1 eₛ2 eₛ3 eₜ1 eₜ2 eₜ3 :
-      SIM eₛ1 ≳ eₜ1 [[ Χ ]] {{# (≈) }} -∗
-      SIM eₛ2 ≳ eₜ2 [[ Χ ]] {{# (≈) }} -∗
-      SIM eₛ3 ≳ eₜ3 [[ Χ ]] {{# (≈) }} -∗
+      SIM eₛ1 ≳ eₜ1 [[ Χ ]] {{ sim_post_vals' (≈) }} -∗
+      SIM eₛ2 ≳ eₜ2 [[ Χ ]] {{ sim_post_vals' (≈) }} -∗
+      SIM eₛ3 ≳ eₜ3 [[ Χ ]] {{ sim_post_vals' (≈) }} -∗
       Φ #() #() -∗
       SIM eₛ1 <-[eₛ2]- eₛ3 ≳ eₜ1 <-[eₜ2]- eₜ3 [[ Χ ]] {{ Φ }}.
     Proof.
-      rewrite simv_unseal.
       iIntros "Hsim1 Hsim2 Hsim3 HΦ".
       sim_mono "Hsim3". iIntros "% % (%vₛ3 & %vₜ3 & (-> & ->) & #Hv3)".
       sim_mono "Hsim2". iIntros "% % (%vₛ2 & %vₜ2 & (-> & ->) & #Hv2)".
@@ -201,6 +192,34 @@ Section sim_GS.
   Section simv.
     Implicit Types Φ : data_val → data_val → iProp Σ.
 
+    Lemma simv_let Φ eₛ1 eₛ2 eₜ1 eₜ2 :
+      SIM eₛ1 ≳ eₜ1 [[ Χ ]] {{# (≈) }} -∗
+      ( ∀ vₛ vₜ,
+        vₛ ≈ vₜ -∗
+        SIM eₛ2.[#vₛ/] ≳ eₜ2.[#vₜ/] [[ Χ ]] {{# Φ }}
+      ) -∗
+      SIM let: eₛ1 in eₛ2 ≳ let: eₜ1 in eₜ2 [[ Χ ]] {{# Φ }}.
+    Proof.
+      rewrite !simv_unseal.
+      iIntros "Hsim1 Hsim2".
+      sim_apply (sim_let with "Hsim1 Hsim2").
+    Qed.
+
+    Lemma simv_call Φ eₛ1 eₛ2 eₜ1 eₜ2 :
+      SIM eₛ1 ≳ eₜ1 [[ Χ ]] {{# (≈) }} -∗
+      SIM eₛ2 ≳ eₜ2 [[ Χ ]] {{# (≈) }} -∗
+      ( ∀ func vₛ vₜ,
+        ⌜func ∈ dom sim_progₛ⌝ -∗
+        vₛ ≈ vₜ -∗
+        SIM func vₛ ≳ func vₜ [[ Χ ]] {{# Φ }}
+      ) -∗
+      SIM eₛ1 eₛ2 ≳ eₜ1 eₜ2 [[ Χ ]] {{# Φ }}.
+    Proof.
+      rewrite !simv_unseal.
+      iIntros "Hsim1 Hsim2 HΦ".
+      sim_apply (sim_call with "Hsim1 Hsim2").
+    Qed.
+
     Lemma simv_unop Φ op eₛ eₜ :
       SIM eₛ ≳ eₜ [[ Χ ]] {{# (≈) }} -∗
       ( ∀ vₛ vₜ,
@@ -209,9 +228,10 @@ Section sim_GS.
       ) -∗
       SIM DataUnop op eₛ ≳ DataUnop op eₜ [[ Χ ]] {{# Φ }}.
     Proof.
+      rewrite !simv_unseal.
       iIntros "Hsim HΦ".
       sim_apply (sim_unop with "Hsim").
-      rewrite sim_post_vals_unseal /sim_post_vals'. iSmash.
+      rewrite /sim_post_vals'. iSmash.
     Qed.
 
     Lemma simv_binop Φ op eₛ1 eₛ2 eₜ1 eₜ2 :
@@ -223,9 +243,22 @@ Section sim_GS.
       ) -∗
       SIM DataBinop op eₛ1 eₛ2 ≳ DataBinop op eₜ1 eₜ2 [[ Χ ]] {{# Φ }}.
     Proof.
+      rewrite !simv_unseal.
       iIntros "Hsim1 Hsim2 HΦ".
       sim_apply (sim_binop with "Hsim1 Hsim2").
-      rewrite sim_post_vals_unseal /sim_post_vals'. iSmash.
+      rewrite /sim_post_vals'. iSmash.
+    Qed.
+
+    Lemma simv_if Φ eₛ0 eₛ1 eₛ2 eₜ0 eₜ1 eₜ2 :
+      SIM eₛ0 ≳ eₜ0 [[ Χ ]] {{# (≈) }} -∗
+      ( SIM eₛ1 ≳ eₜ1 [[ Χ ]] {{# Φ }} ∧
+        SIM eₛ2 ≳ eₜ2 [[ Χ ]] {{# Φ }}
+      ) -∗
+      SIM DataIf eₛ0 eₛ1 eₛ2 ≳ DataIf eₜ0 eₜ1 eₜ2 [[ Χ ]] {{# Φ }}.
+    Proof.
+      rewrite !simv_unseal.
+      iIntros "Hsim0 Hsim12".
+      sim_apply (sim_if with "Hsim0 Hsim12").
     Qed.
 
     Lemma simv_constr Φ tag eₛ1 eₛ2 eₜ1 eₜ2 :
@@ -237,9 +270,10 @@ Section sim_GS.
       ) -∗
       SIM &tag eₛ1 eₛ2 ≳ &tag eₜ1 eₜ2 [[ Χ ]] {{# Φ }}.
     Proof.
+      rewrite !simv_unseal.
       iIntros "Hsim1 Hsim2 HΦ".
       sim_apply (sim_constr with "Hsim1 Hsim2").
-      rewrite sim_post_vals_unseal /sim_post_vals'. iSmash.
+      rewrite /sim_post_vals'. iSmash.
     Qed.
     Lemma simv_constr_valₜ1 Φ eₛ tag eₜ vₜ2 :
       SIM eₛ ≳ eₜ [[ Χ ]] {{# (≈) }} -∗
@@ -252,9 +286,10 @@ Section sim_GS.
       ) -∗
       SIM eₛ ≳ &tag eₜ vₜ2 [[ Χ ]] {{# Φ }}.
     Proof.
+      rewrite !simv_unseal.
       iIntros "Hsim HΦ".
       sim_apply (sim_constr_valₜ1 with "Hsim").
-      rewrite sim_post_vals_unseal /sim_post_vals'. iSmash.
+      rewrite /sim_post_vals'. iSmash.
     Qed.
     Lemma simv_constr_valₜ2 Φ eₛ tag vₜ1 eₜ :
       SIM eₛ ≳ eₜ [[ Χ ]] {{# (≈) }} -∗
@@ -267,9 +302,10 @@ Section sim_GS.
       ) -∗
       SIM eₛ ≳ &tag vₜ1 eₜ [[ Χ ]] {{# Φ }}.
     Proof.
+      rewrite !simv_unseal.
       iIntros "Hsim HΦ".
       sim_apply (sim_constr_valₜ2 with "Hsim").
-      rewrite sim_post_vals_unseal /sim_post_vals'. iSmash.
+      rewrite /sim_post_vals'. iSmash.
     Qed.
 
     Lemma simv_load Φ eₛ1 eₛ2 eₜ1 eₜ2 :
@@ -281,9 +317,10 @@ Section sim_GS.
       ) -∗
       SIM ![eₛ2] eₛ1 ≳ ![eₜ2] eₜ1 [[ Χ ]] {{# Φ }}.
     Proof.
+      rewrite !simv_unseal.
       iIntros "Hsim1 Hsim2 HΦ".
       sim_apply (sim_load with "Hsim1 Hsim2").
-      rewrite sim_post_vals_unseal /sim_post_vals'. iSmash.
+      rewrite /sim_post_vals'. iSmash.
     Qed.
 
     Lemma simv_store Φ eₛ1 eₛ2 eₛ3 eₜ1 eₜ2 eₜ3 :
@@ -293,9 +330,9 @@ Section sim_GS.
       Φ ()%data_val ()%data_val -∗
       SIM eₛ1 <-[eₛ2]- eₛ3 ≳ eₜ1 <-[eₜ2]- eₜ3 [[ Χ ]] {{# Φ }}.
     Proof.
+      rewrite !simv_unseal.
       iIntros "Hsim1 Hsim2 Hsim3 HΦ".
       sim_apply (sim_store with "Hsim1 Hsim2 Hsim3").
-      rewrite sim_post_vals_unseal /sim_post_vals'. iSmash.
     Qed.
   End simv.
 End sim_GS.

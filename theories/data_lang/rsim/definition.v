@@ -21,4 +21,10 @@ Section sim_GS.
   Definition rsimv Φ eₛ eₜ : iProp Σ :=
     rsim (sim_post_vals Φ) eₛ eₜ.
   #[global] Arguments rsimv _%I (_ _)%data_expr : assert.
+
+  Lemma rsimv_unseal Φ eₛ eₜ :
+    rsimv Φ eₛ eₜ = rsim (sim_post_vals' Φ) eₛ eₜ.
+  Proof.
+    rewrite /rsimv sim_post_vals_unseal //.
+  Qed.
 End sim_GS.
