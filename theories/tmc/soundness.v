@@ -214,13 +214,15 @@ Section sim_GS.
         iApply IHdirₛ; auto with data_lang.
     (* tmc_dps *)
     - iIntros "%Γ % % (-> & ->) #HΓ /=".
-      sim_apply (IHdir with "[//] [Hpre HΦ]"); [done.. |]. iIntros "%vₛ %vₜ #Hv".
+      sim_apply (IHdir with "[//] [Hpre HΦ]"); [done.. |].
+      iIntros "%vₛ %vₜ #Hv".
       sim_storeₜ.
     - iApply rsimv_let.
       { iApply (IHdirₛ with "[//] []"); auto with data_lang. }
       iApply (IHdpsₛ with "Hpre [HΦ]"); [auto with data_lang.. |]. iSmash.
     - iIntros "%Γ % % (-> & ->) #HΓ /=".
-      sim_apply (IHdirₛ with "[//] [Hpre HΦ] [//] HΓ"); [auto with data_lang.. |]. iIntros "%vₛ %vₜ #Hv".
+      sim_apply (IHdirₛ with "[//] [Hpre HΦ] [//] HΓ"); [auto with data_lang.. |].
+      iIntros "%vₛ %vₜ #Hv".
       sim_apply (tmc_protocol_dps' with "Hpre Hv"); auto with data_lang.
     - iApply rsimv_if.
       { iApply (IHdirₛ with "[//] []"); auto with data_lang. }
