@@ -36,7 +36,7 @@ Section tmc.
   Proof.
     apply tmc_ind; solve
     [ intros; simplify;
-      auto using tmc_dir_refl
+      eauto using tmc_dir_refl with tmc
     | intros * ? ? ? IHdps **; simplify;
       econstructor; try naive_solver; try apply IHdps with (up ς); autosubst
     ].

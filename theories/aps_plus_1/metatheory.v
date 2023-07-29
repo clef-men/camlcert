@@ -35,7 +35,7 @@ Section aps_plus.
   Proof.
     apply aps_plus_ind; solve
     [ intros; simplify;
-      auto using aps_plus_dir_refl
+      eauto using aps_plus_dir_refl with aps_plus
     | intros * ? ? ? IHaps **; simplify;
       econstructor; try naive_solver; try apply IHaps with (up ς); autosubst
     | intros * ? IHaps **; simplify;
