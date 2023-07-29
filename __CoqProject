@@ -66,6 +66,11 @@ theories/tmc/soundness.v
 theories/tmc/examples/list_append.v
 theories/tmc/examples/list_map.v
 
+theories/aps_plus_1/definition.v
+theories/aps_plus_1/metatheory.v
+theories/aps_plus_1/soundness.v
+theories/aps_plus_1/examples/list_length.v
+
 theories/aps_plus_2/definition.v
 theories/aps_plus_2/metatheory.v
 theories/aps_plus_2/examples/list_length.v
