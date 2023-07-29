@@ -86,6 +86,22 @@ Section sim_GS.
         destruct op; try sim_strongly_stuck;
         sim_pures.
     Qed.
+    Lemma sim_binop_valsₛ Φ op v1 v2 v e :
+      data_binop_eval op v1 v2 = Some v →
+      SIM v ≳ e [[ Χ ]] {{ Φ }} ⊢
+      SIM DataBinop op v1 v2 ≳ e [[ Χ ]] {{ Φ }}.
+    Proof.
+      iIntros "%Heval Hsim".
+      sim_binopₛ1. sim_pures.
+    Qed.
+    Lemma sim_binop_valsₜ Φ op e v1 v2 v :
+      data_binop_eval op v1 v2 = Some v →
+      SIM e ≳ v [[ Χ ]] {{ Φ }} ⊢
+      SIM e ≳ DataBinop op v1 v2 [[ Χ ]] {{ Φ }}.
+    Proof.
+      iIntros "%Heval Hsim".
+      sim_binopₜ; sim_pures.
+    Qed.
 
     Lemma sim_if Φ eₛ0 eₛ1 eₛ2 eₜ0 eₜ1 eₜ2 :
       SIM eₛ0 ≳ eₜ0 [[ Χ ]] {{ sim_post_vals' (≈) }} -∗
