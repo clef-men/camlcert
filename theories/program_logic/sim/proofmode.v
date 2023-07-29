@@ -410,6 +410,7 @@ Ltac sim_post :=
   try iSmash+.
 
 Tactic Notation "sim_finish" tactic3(helper) :=
+  try done;
   sim_eval (simpl; rewrite ?fill_empty; helper);
   on_sim_or_simv
     ltac:(fun _ _ _ eₛ eₜ =>
