@@ -138,8 +138,8 @@ Combined Scheme aps_plus_ind from aps_plus_dir_aps_ind, aps_plus_aps_dir_ind.
 
 Create HintDb aps_plus.
 
-#[export] Hint Constructors aps_plus_dir : aps_plus.
-#[export] Hint Constructors aps_plus_aps : aps_plus.
+#[global] Hint Constructors aps_plus_dir : aps_plus.
+#[global] Hint Constructors aps_plus_aps : aps_plus.
 
 Record aps_plus {progₛ progₜ} := {
   aps_plus_ξ : gmap data_function data_function ;

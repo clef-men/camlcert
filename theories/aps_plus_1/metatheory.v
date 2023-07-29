@@ -107,7 +107,7 @@ Section aps_plus.
   Qed.
 End aps_plus.
 
-#[export] Hint Resolve aps_plus_dir_refl : aps_plus.
+#[global] Hint Resolve aps_plus_dir_refl : aps_plus.
 
 Lemma data_program_scope_aps_plus progₛ progₜ :
   aps_plus progₛ progₜ →

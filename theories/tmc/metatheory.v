@@ -123,7 +123,7 @@ Section tmc.
   Qed.
 End tmc.
 
-#[export] Hint Resolve tmc_dir_refl : tmc.
+#[global] Hint Resolve tmc_dir_refl : tmc.
 
 Lemma data_program_scope_tmc progₛ progₜ :
   tmc progₛ progₜ →

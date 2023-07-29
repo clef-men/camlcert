@@ -140,8 +140,8 @@ Combined Scheme tmc_ind from tmc_dir_dps_ind, tmc_dps_dir_ind.
 
 Create HintDb tmc.
 
-#[export] Hint Constructors tmc_dir : tmc.
-#[export] Hint Constructors tmc_dps : tmc.
+#[global] Hint Constructors tmc_dir : tmc.
+#[global] Hint Constructors tmc_dps : tmc.
 
 Record tmc {progₛ progₜ} := {
   tmc_ξ : gmap data_function data_function ;
