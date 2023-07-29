@@ -733,10 +733,10 @@ Tactic Notation "sim_apply" open_constr(H) :=
       iPoseProofCore H as false ltac:(fun H =>
         expr_decompose [eₛ eₜ] ltac:(fun Kₛ _ Kₜ _ =>
           sim_bind_core Kₛ Kₜ;
-          iApplyHyp H;
-          try iSmash+
+          iApplyHyp H
         )
-      )
+      );
+      try iSmash+
     then idtac else (
       fail "sim_apply: cannot apply" H
     )
@@ -760,11 +760,12 @@ Tactic Notation "sim_mono" open_constr(H) :=
           on_sim_or_simv
             ltac:(fun _ _ _ _ _ => iApply (sim_mono' with H_sel))
             ltac:(fun _ _ _ _ _ => iApply (simv_mono' with H_sel));
-          [ iApplyHyp H; try iSmash+
-          | try iSmash+
+          [ iApplyHyp H
+          | idtac
           ]
         )
-      )
+      );
+      try iSmash+
     then idtac else (
       fail "sim_mono: cannot apply" H
     )
