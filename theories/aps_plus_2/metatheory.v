@@ -4,8 +4,6 @@ From simuliris.common Require Import
   tactics.
 From simuliris.data_lang Require Export
   metatheory.
-From simuliris.data_lang Require Import
-  notations.
 From simuliris.aps_plus_2 Require Export
   definition.
 
