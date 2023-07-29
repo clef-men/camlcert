@@ -122,23 +122,7 @@ Section sim_GS.
         sim_constr_det as lₛ lₜ "Hl";
         iApply "HΦ"; iSmash+.
     Qed.
-    Lemma sim_constr_valₜ1 Φ eₛ tag eₜ vₜ2 :
-      SIM eₛ ≳ eₜ [[ Χ ]] {{ sim_post_vals' (≈) }} -∗
-      ( ∀ vₛ l vₜ1,
-        (l +ₗ 0) ↦ₜ tag -∗
-        (l +ₗ 1) ↦ₜ vₜ1 -∗
-        (l +ₗ 2) ↦ₜ vₜ2 -∗
-        vₛ ≈ vₜ1 -∗
-        Φ vₛ l
-      ) -∗
-      SIM eₛ ≳ &tag eₜ vₜ2 [[ Χ ]] {{ Φ }}.
-    Proof.
-      iIntros "Hsim HΦ".
-      sim_constrₜ;
-        sim_mono "Hsim"; iIntros "% % (%vₛ & %vₜ1 & (-> & ->) & #Hv)";
-        sim_constr_detₜ as l "Hl0" "Hl1" "Hl2".
-    Qed.
-    Lemma sim_constr_valₜ2 Φ eₛ tag vₜ1 eₜ :
+    Lemma sim_constr_valₜ1 Φ eₛ tag vₜ1 eₜ :
       SIM eₛ ≳ eₜ [[ Χ ]] {{ sim_post_vals' (≈) }} -∗
       ( ∀ vₛ l vₜ2,
         (l +ₗ 0) ↦ₜ tag -∗
@@ -152,6 +136,22 @@ Section sim_GS.
       iIntros "Hsim HΦ".
       sim_constrₜ;
         sim_mono "Hsim"; iIntros "% % (%vₛ & %vₜ2 & (-> & ->) & #Hv)";
+        sim_constr_detₜ as l "Hl0" "Hl1" "Hl2".
+    Qed.
+    Lemma sim_constr_valₜ2 Φ eₛ tag eₜ vₜ2 :
+      SIM eₛ ≳ eₜ [[ Χ ]] {{ sim_post_vals' (≈) }} -∗
+      ( ∀ vₛ l vₜ1,
+        (l +ₗ 0) ↦ₜ tag -∗
+        (l +ₗ 1) ↦ₜ vₜ1 -∗
+        (l +ₗ 2) ↦ₜ vₜ2 -∗
+        vₛ ≈ vₜ1 -∗
+        Φ vₛ l
+      ) -∗
+      SIM eₛ ≳ &tag eₜ vₜ2 [[ Χ ]] {{ Φ }}.
+    Proof.
+      iIntros "Hsim HΦ".
+      sim_constrₜ;
+        sim_mono "Hsim"; iIntros "% % (%vₛ & %vₜ1 & (-> & ->) & #Hv)";
         sim_constr_detₜ as l "Hl0" "Hl1" "Hl2".
     Qed.
 
@@ -275,23 +275,7 @@ Section sim_GS.
       sim_apply (sim_constr with "Hsim1 Hsim2").
       rewrite /sim_post_vals'. iSmash.
     Qed.
-    Lemma simv_constr_valₜ1 Φ eₛ tag eₜ vₜ2 :
-      SIM eₛ ≳ eₜ [[ Χ ]] {{# (≈) }} -∗
-      ( ∀ vₛ l vₜ1,
-        (l +ₗ 0) ↦ₜ tag -∗
-        (l +ₗ 1) ↦ₜ vₜ1 -∗
-        (l +ₗ 2) ↦ₜ vₜ2 -∗
-        vₛ ≈ vₜ1 -∗
-        Φ vₛ l
-      ) -∗
-      SIM eₛ ≳ &tag eₜ vₜ2 [[ Χ ]] {{# Φ }}.
-    Proof.
-      rewrite !simv_unseal.
-      iIntros "Hsim HΦ".
-      sim_apply (sim_constr_valₜ1 with "Hsim").
-      rewrite /sim_post_vals'. iSmash.
-    Qed.
-    Lemma simv_constr_valₜ2 Φ eₛ tag vₜ1 eₜ :
+    Lemma simv_constr_valₜ1 Φ eₛ tag vₜ1 eₜ :
       SIM eₛ ≳ eₜ [[ Χ ]] {{# (≈) }} -∗
       ( ∀ vₛ l vₜ2,
         (l +ₗ 0) ↦ₜ tag -∗
@@ -301,6 +285,22 @@ Section sim_GS.
         Φ vₛ l
       ) -∗
       SIM eₛ ≳ &tag vₜ1 eₜ [[ Χ ]] {{# Φ }}.
+    Proof.
+      rewrite !simv_unseal.
+      iIntros "Hsim HΦ".
+      sim_apply (sim_constr_valₜ1 with "Hsim").
+      rewrite /sim_post_vals'. iSmash.
+    Qed.
+    Lemma simv_constr_valₜ2 Φ eₛ tag eₜ vₜ2 :
+      SIM eₛ ≳ eₜ [[ Χ ]] {{# (≈) }} -∗
+      ( ∀ vₛ l vₜ1,
+        (l +ₗ 0) ↦ₜ tag -∗
+        (l +ₗ 1) ↦ₜ vₜ1 -∗
+        (l +ₗ 2) ↦ₜ vₜ2 -∗
+        vₛ ≈ vₜ1 -∗
+        Φ vₛ l
+      ) -∗
+      SIM eₛ ≳ &tag eₜ vₜ2 [[ Χ ]] {{# Φ }}.
     Proof.
       rewrite !simv_unseal.
       iIntros "Hsim HΦ".

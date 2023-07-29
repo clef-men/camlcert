@@ -171,7 +171,7 @@ Section sim_GS.
         iApply IHdirₛ; auto with data_lang.
     - iIntros "%Γ % % (-> & ->) #HΓ /=".
       sim_constrₛ1.
-      sim_apply simv_constr_valₜ1.
+      sim_apply simv_constr_valₜ2.
       { sim_apply IHdirₛ; auto with data_lang. }
       iIntros "%vₛ1 %lₜ %vₜ1 Hlₜ0 Hlₜ1 Hlₜ2 #Hv1".
       sim_apply (IHdpsₛ lₜ 𝟚 eₛ2 eₜ2.[#lₜ/] with "Hlₜ2 [Hlₜ0 Hlₜ1 HΦ]"); first 4 last.
@@ -190,7 +190,7 @@ Section sim_GS.
       sim_pures.
     - iIntros "%Γ % % (-> & ->) #HΓ /=".
       sim_constrₛ2.
-      sim_apply simv_constr_valₜ2.
+      sim_apply simv_constr_valₜ1.
       { sim_apply IHdirₛ; auto with data_lang. }
       iIntros "%vₛ2 %lₜ %vₜ2 Hlₜ0 Hlₜ1 Hlₜ2 #Hv2".
       sim_apply (IHdpsₛ lₜ 𝟙 eₛ1 eₜ1.[#lₜ/] with "Hlₜ1 [Hlₜ0 Hlₜ2 HΦ]"); first 4 last.
@@ -229,7 +229,7 @@ Section sim_GS.
       iSplit; iApply (IHdpsₛ with "Hpre [HΦ]"); [auto with data_lang.. | iSmash].
     - iIntros "%Γ % % (-> & ->) #HΓ /=".
       sim_constrₛ1.
-      sim_apply simv_constr_valₜ1.
+      sim_apply simv_constr_valₜ2.
       { sim_apply (IHdirₛ with "[//] [] [//] HΓ"); auto with data_lang. }
       iIntros "%vₛ1 %lₜ %vₜ1 Hlₜ0 Hlₜ1 Hlₜ2 #Hv1".
       sim_storeₜ.
@@ -249,7 +249,7 @@ Section sim_GS.
       iSmash.
     - iIntros "%Γ % % (-> & ->) #HΓ /=".
       sim_constrₛ2.
-      sim_apply simv_constr_valₜ2.
+      sim_apply simv_constr_valₜ1.
       { sim_apply (IHdirₛ with "[//] [] [//] HΓ"); auto with data_lang. }
       iIntros "%vₛ2 %lₜ %vₜ2 Hlₜ0 Hlₜ1 Hlₜ2 #Hv2".
       sim_storeₜ.
