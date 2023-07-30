@@ -75,3 +75,7 @@ theories/aps_plus_2/definition.v
 theories/aps_plus_2/metatheory.v
 theories/aps_plus_2/examples/list_length.v
 theories/aps_plus_2/examples/list_sum.v
+
+theories/inline/definition.v
+theories/inline/metatheory.v
+theories/inline/soundness.v
