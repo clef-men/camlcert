@@ -156,9 +156,9 @@ Section sim_GS.
         [iApply IHdirₛ; auto with data_lang.. |].
       iIntros "%func %vₛ %vₜ %Hfunc #Hv".
       pose (Ψ := sim_post_vals' tmc_dir_post).
-      iApply (sim_apply_protocol _ Ψ). iIntros "%σₛ %σₜ $". iSplitR.
+      iApply (sim_apply_protocol _ Ψ). iIntros "%σₛ %σₜ $ !>". iSplitR.
       { rewrite /Ψ /sim_post_vals'. iSmash. }
-      iIntros "!> % % (%vₛ' & %vₜ' & (-> & ->) & HΨ)".
+      iIntros "% % (%vₛ' & %vₜ' & (-> & ->) & HΨ)".
       sim_post.
     - iApply rsimv_unop; last iSmash.
       iApply IHdirₛ; auto with data_lang.

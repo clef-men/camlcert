@@ -141,9 +141,9 @@ Section sim_GS.
     - iApply rsim_call;
         [iApply IHdirₛ; auto with data_lang.. |].
       iIntros "%func %vₛ %vₜ %Hfunc #Hv".
-      iApply (sim_apply_protocol _ aps_plus_dir_post). iIntros "%σₛ %σₜ $". iSplitR.
+      iApply (sim_apply_protocol _ aps_plus_dir_post). iIntros "%σₛ %σₜ $ !>". iSplitR.
       { rewrite /aps_plus_dir_post /sim_post_vals'. iSmash. }
-      iIntros "!> % % (%vₛ' & %vₜ' & (-> & ->) & HΨ)".
+      iIntros "% % (%vₛ' & %vₜ' & (-> & ->) & HΨ)".
       sim_post.
     - iApply rsim_unop; last iSmash.
       iApply IHdirₛ; auto with data_lang.
