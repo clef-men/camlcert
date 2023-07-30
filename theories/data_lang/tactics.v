@@ -77,7 +77,7 @@ Ltac data_expr_simplifier :=
         solve [by destruct v]
     | data_expr_well_formed _ _ =>
         simpl in H; destruct_and? H
-    | data_expr_scope _ _ =>
+    | data_expr_scoped _ _ =>
         simpl in H; destruct_and? H
     end
   );
@@ -91,7 +91,7 @@ Ltac data_expr_simplifier :=
   progress data_expr_simplifier
 ) : data_lang.
 #[global] Hint Extern 1 (
-  data_expr_scope _ _
+  data_expr_scoped _ _
 ) => (
   progress data_expr_simplifier
 ) : data_lang.

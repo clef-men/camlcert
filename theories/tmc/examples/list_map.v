@@ -68,7 +68,7 @@ Proof.
   - split.
     + apply data_human_program_compile_well_formed.
       rewrite /data_human_program_well_formed map_Forall_singleton //.
-    + apply data_human_program_compile_scope.
+    + apply data_human_program_compile_scoped.
   - rewrite /data_human_program_compile map_fmap_singleton fmap_insert map_fmap_singleton /=.
     exists {["list_map" := "list_map_dps"]}; try set_solver.
     + intros * (<- & <-)%lookup_singleton_Some.

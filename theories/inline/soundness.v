@@ -45,7 +45,7 @@ Section sim_GS.
     inline_protocol_inline Ψ eₛ eₜ.
 
   Definition inline_spec eₛ eₜ :=
-    data_program_scope sim_progₛ →
+    data_program_scoped sim_progₛ →
     inline_expr sim_progₛ eₛ eₜ →
     data_expr_well_formed sim_progₛ eₛ →
     {{{ True }}} eₛ ⩾ eₜ [[ inline_protocol ]] {{{# (≈) }}}.
@@ -53,7 +53,7 @@ Section sim_GS.
   Lemma inline_specification eₛ eₜ :
     inline_spec eₛ eₜ.
   Proof.
-    intros Hprogₛ_scope. induction 1 as
+    intros Hprogₛ_scoped. induction 1 as
       [
       |
       | * Hinline1 IH1 Hinline2 IH2
@@ -88,8 +88,8 @@ Section sim_GS.
       iApply (sim_apply_protocol _ (sim_post_vals' (≈))). iIntros "%σₛ %σₜ $ !>". iSplitR.
       { iRight. iExists func, e_funcₛ, e_funcₜ, vₛ, vₜ. repeat iSplit; try iSmash.
         - iPureIntro.
-          rewrite (subst_data_expr_scope_1 _ ids); asimpl; try done.
-          eapply data_expr_scope_inline; naive_solver.
+          rewrite (subst_data_expr_scoped_1 _ ids); asimpl; try done.
+          eapply data_expr_scoped_inline; naive_solver.
         - rewrite /sim_post_vals'. iSmash.
       }
       iIntros "% % (%vₛ' & %vₜ' & (-> & ->) & #Hv')".
@@ -122,15 +122,15 @@ Section sim_GS.
     SIM eₛ ≳ eₜ [[ inline_protocol ]] {{# Φ }} -∗
     SIM eₛ ≳ eₜ {{# Φ }}.
   Proof.
-    intros (Hprogₛ_wf & Hprogₛ_scope).
-    eapply data_program_scope_inline in Hprogₛ_scope as Hprogₜ_scope; last done.
+    intros (Hprogₛ_wf & Hprogₛ_scoped).
+    eapply data_program_scoped_inline in Hprogₛ_scoped as Hprogₜ_scoped; last done.
     iApply sim_close_pure_head_step. clear eₛ eₜ. iIntros "!> %Ψ %eₛ %eₜ [Hprotocol | Hprotocol]".
     - iDestruct "Hprotocol" as "(%func & %vₛ & %vₜ & %Hfuncₛ & (-> & ->) & #Hv & HΨ)".
       simpl in Hfuncₛ. apply lookup_lookup_total_dom in Hfuncₛ. set (eₛ := _ !!! _) in Hfuncₛ.
       edestruct inline.(inline_transform) as (eₜ & Hdir & Hfuncₜ); first done.
       iExists eₛ.[#vₛ/], eₜ.[#vₜ/]. iSplit; first auto with data_lang.
-      erewrite (subst_data_program_scope' ids inhabitant.ₛ#); last done; last done.
-      erewrite (subst_data_program_scope' ids inhabitant.ₜ#); last done; last done.
+      erewrite (subst_data_program_scoped' ids inhabitant.ₛ#); last done; last done.
+      erewrite (subst_data_program_scoped' ids inhabitant.ₜ#); last done; last done.
       iDestruct (inline_specification $! (≈)%I with "[//] [] [//] []") as "Hsim"; eauto.
       + iApply (bisubst_cons_well_formed with "Hv").
         iApply bisubst_inhabitant_well_formed.
@@ -139,9 +139,9 @@ Section sim_GS.
     - iDestruct "Hprotocol" as "(%func & %e_funcₛ & %e_funcₜ & %vₛ & %vₜ & (%Hfunc & %Hinline_func) & (-> & ->) & #Hv & HΨ)".
       iExists _, _. iSplit; first auto with data_lang.
       iDestruct (inline_specification $! (≈)%I with "[//] []") as "Hsim"; [auto with data_lang.. | naive_solver | iSmash |].
-      erewrite (subst_data_program_scope' _ inhabitant.ₛ#); last done; last done.
-      rewrite (subst_data_expr_scope_1' _ inhabitant.ₜ# vₜ); last first.
-      { eapply data_expr_scope_inline; [| done |]; naive_solver. }
+      erewrite (subst_data_program_scoped' _ inhabitant.ₛ#); last done; last done.
+      rewrite (subst_data_expr_scoped_1' _ inhabitant.ₜ# vₜ); last first.
+      { eapply data_expr_scoped_inline; [| done |]; naive_solver. }
       erewrite bisubst_consₛ, bisubst_consₜ.
       sim_mono "Hsim".
       + iApply (bisubst_cons_well_formed with "Hv").

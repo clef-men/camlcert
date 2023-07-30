@@ -123,17 +123,17 @@ Proof.
   apply data_human_bindings_lookup_aux_Some.
 Qed.
 
-Lemma data_human_expr_compile_scope scope bdgs e :
+Lemma data_human_expr_compile_scoped scope bdgs e :
   length bdgs = scope →
-  data_expr_scope scope (data_human_expr_compile bdgs e).
+  data_expr_scoped scope (data_human_expr_compile bdgs e).
 Proof.
   revert scope bdgs. induction e; simpl; intros scope bdgs Hlength; try naive_solver.
   destruct (data_human_bindings_lookup _ _) eqn:Hlookup; last done.
   rewrite -Hlength. eapply data_human_bindings_lookup_Some. done.
 Qed.
-Lemma data_human_program_compile_scope prog :
-  data_program_scope (data_human_program_compile prog).
+Lemma data_human_program_compile_scoped prog :
+  data_program_scoped (data_human_program_compile prog).
 Proof.
   apply map_Forall_lookup. intros func ? ((x & e) & <- & Hfunc)%lookup_fmap_Some.
-  apply data_human_expr_compile_scope. done.
+  apply data_human_expr_compile_scoped. done.
 Qed.
