@@ -220,10 +220,10 @@ Section sim_state.
           + iDestruct "Hsim" as "(%eₛ' & %σₛ' & %Hstepsₛ & Hsi & HN1)".
             iRight. iExists eₛ', σₛ'. iSplitR; first iSmash.
             iApply ("HN" with "HR HN1 Hsi").
-        - iDestruct "Hsim" as "(%Kₛ & %eₛ' & %Kₜ & %eₜ' & %Ψ & (-> & ->) & HΧ & Hsi & HN1)".
+        - iDestruct "Hsim" as "(%Kₛ & %eₛ' & %Kₜ & %eₜ' & %Ψ & (-> & ->) & HΧ & Hsi & HM1)".
           do 3 iRight. iExists Kₛ, eₛ', Kₜ, eₜ', Ψ. iFrame. iSplitR; first iSmash. clear eₛ' σₛ eₜ' σₜ. iIntros "!> %eₛ %eₜ HΨ".
-          iMod ("HN1" with "HΨ") as "HN1".
-          iApply ("HN" with "HR HN1").
+          iMod ("HM1" with "HΨ") as "HM1".
+          iApply ("HM" with "HR HM1").
       Qed.
 
       Lemma sim_body_cupd_mono N1 N2 M1 M2 Φ eₛ eₜ :
@@ -590,7 +590,7 @@ Section sim_state.
             sim_state_interp σₛ σₜ ∗
               ∀ eₛ eₜ,
               Ψ eₛ eₜ ++∗
-              N Φ (Kₛ @@ eₛ) (Kₜ @@ eₜ)
+              M Φ (Kₛ @@ eₛ) (Kₜ @@ eₜ)
 
         ) ⊢
         sim_body N M Φ eₛ eₜ.
@@ -940,7 +940,7 @@ Section sim_state.
             iSmash.
         - iDestruct "Hsim1" as "(%Kₛ' & %eₛ' & %Kₜ' & %eₜ' & %Ψ & (-> & ->) & HΧ & Hsi & HN1)".
           do 3 iRight. iExists (Kₛ ⋅ Kₛ'), eₛ', (Kₜ ⋅ Kₜ'), eₜ', Ψ. iFrame. iSplitR; first rewrite !fill_op //. iIntros "!> %eₛ'' %eₜ'' HΨ".
-          rewrite -!fill_op. iSmash.
+          rewrite -!fill_op. iApply ("HN1" with "HΨ HN Hsim2").
       Qed.
       Lemma sim_inner_bind N1 N2 Φ Kₛ eₛ Kₜ eₜ :
         NonExpansive N1 →
@@ -1276,7 +1276,7 @@ Section sim_state.
             sim_state_interp σₛ σₜ ∗
               ∀ eₛ eₜ,
               Ψ eₛ eₜ ++∗
-              N Φ (Kₛ @@ eₛ) (Kₜ @@ eₜ)
+              sim_inner N Φ (Kₛ @@ eₛ) (Kₜ @@ eₜ)
 
         ) ⊢
         sim_inner N Φ eₛ eₜ.
@@ -1795,8 +1795,8 @@ Section sim_state.
       Proof.
         rewrite sim_fixpoint. iIntros "Hsim".
         iApply (sim_inner_apply_protocol Ψ ∅ _ ∅); [solve_proper | rewrite fill_empty //.. |]. iIntros "%σₛ %σₜ Hsi".
-        iMod ("Hsim" with "Hsi") as "($ & $ & Hsim)".
-        setoid_rewrite fill_empty. iSmash.
+        iMod ("Hsim" with "Hsi") as "($ & $ & Hsim)". iIntros "!> %eₛ' %eₜ' HΨ !>".
+        rewrite !fill_empty -sim_fixpoint. iSmash.
       Qed.
     End sim.
 
@@ -1917,8 +1917,10 @@ Section sim_state.
       iRevert (σₛ σₜ) "Hsi". setoid_rewrite <- sim_inner_fixpoint; last solve_proper.
       iApply (sim_inner_bind' with "HΨ [Hsim]"); [solve_proper | iIntros "%eₛ %eₜ HΨ" | iIntros "%eₛ %eₜ []"].
       iApply (sim_bind' with "HΨ"). clear eₛ eₜ. iIntros "%eₛ %eₜ HΨ".
-      iApply cupd_sim. iSmash.
-    Qed.
+      iApply cupd_sim.
+      rewrite sim_fixpoint.
+      admit.
+    Admitted.
     Lemma sim_close_steps Φ eₛ eₜ :
       □ (
         ∀ Ψ eₛ σₛ eₜ σₜ,
