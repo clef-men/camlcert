@@ -9,7 +9,7 @@ Definition data_val_well_formed prog v :=
   match v with
   | DataLoc _ =>
       False
-  | DataFunc func =>
+  | DataFunc func _ =>
       func ∈ dom prog
   | _ =>
       True

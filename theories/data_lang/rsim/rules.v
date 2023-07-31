@@ -105,10 +105,10 @@ Section sim_GS.
     Lemma rsim_call Φ eₛ1 eₛ2 eₜ1 eₜ2 :
       SIM eₜ1 ⩾ eₛ1 [[ Χ ]] {{ sim_post_vals' (≈) }} -∗
       SIM eₜ2 ⩾ eₛ2 [[ Χ ]] {{ sim_post_vals' (≈) }} -∗
-      ( ∀ func vₛ vₜ,
+      ( ∀ func annot vₛ vₜ,
         ⌜func ∈ dom sim_progₛ⌝ -∗
         vₛ ≈ vₜ -∗
-        SIM func vₛ ≳ func vₜ [[ Χ ]] {{ Φ }}
+        SIM (DataFunc func annot) vₛ ≳ (DataFunc func annot) vₜ [[ Χ ]] {{ Φ }}
       ) -∗
       SIM eₜ1 eₜ2 ⩾ eₛ1 eₛ2 [[ Χ ]] {{ Φ }}.
     Proof.
@@ -291,10 +291,10 @@ Section sim_GS.
     Lemma rsimv_call Φ eₛ1 eₛ2 eₜ1 eₜ2 :
       SIM eₜ1 ⩾ eₛ1 [[ Χ ]] {{# (≈) }} -∗
       SIM eₜ2 ⩾ eₛ2 [[ Χ ]] {{# (≈) }} -∗
-      ( ∀ func vₛ vₜ,
+      ( ∀ func annot vₛ vₜ,
         ⌜func ∈ dom sim_progₛ⌝ -∗
         vₛ ≈ vₜ -∗
-        SIM func vₛ ≳ func vₜ [[ Χ ]] {{# Φ }}
+        SIM (DataFunc func annot) vₛ ≳ (DataFunc func annot) vₜ [[ Χ ]] {{# Φ }}
       ) -∗
       SIM eₜ1 eₜ2 ⩾ eₛ1 eₛ2 [[ Χ ]] {{# Φ }}.
     Proof.

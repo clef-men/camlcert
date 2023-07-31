@@ -1,5 +1,7 @@
 From simuliris Require Import
   prelude.
+From simuliris.common Require Import
+  tactics.
 From simuliris.program_logic Require Export
   sim.rules.
 From simuliris.program_logic Require Import
@@ -39,7 +41,7 @@ Section sim_GS.
     ⌜vₛ ≈ vₜ⌝.
   Proof.
     iIntros "Hv".
-    destruct vₛ, vₜ; try iDestruct "Hv" as %[]; iSmash.
+    destruct vₛ, vₜ; try iDestruct "Hv" as %?; simplify; iSmash.
   Qed.
 
   Lemma sim_state_interp_allocₛ l v σₛ σₜ :

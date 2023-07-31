@@ -18,6 +18,7 @@ Section sim_GS.
   Context `{sim_GS : !SimGS Σ}.
   Context (inline : inline sim_progₛ sim_progₜ).
   Implicit Types func : data_function.
+  Implicit Types annot : data_annotation.
   Implicit Types l lₛ lₜ : loc.
   Implicit Types v vₛ vₜ : data_val.
   Implicit Types e eₛ eₜ : data_expr.
@@ -25,17 +26,17 @@ Section sim_GS.
   Implicit Types Ψ : data_expr → data_expr → iProp Σ.
 
   Definition inline_protocol_dir Ψ eₛ eₜ : iProp Σ :=
-    ∃ func vₛ vₜ,
+    ∃ func annot vₛ vₜ,
     ⌜func ∈ dom sim_progₛ⌝ ∗
-    ⌜eₛ = func vₛ ∧ eₜ = func vₜ⌝ ∗
+    ⌜eₛ = (DataFunc func annot) vₛ ∧ eₜ = (DataFunc func annot) vₜ⌝ ∗
     vₛ ≈ vₜ ∗
       ∀ vₛ' vₜ',
       vₛ' ≈ vₜ' -∗
       Ψ vₛ' vₜ'.
   Definition inline_protocol_inline Ψ eₛ eₜ : iProp Σ :=
-    ∃ func e_funcₛ e_funcₜ vₛ vₜ,
+    ∃ func annot e_funcₛ e_funcₜ vₛ vₜ,
     ⌜sim_progₛ !! func = Some e_funcₛ ∧ inline_expr sim_progₛ e_funcₛ e_funcₜ⌝ ∗
-    ⌜eₛ = func vₛ ∧ eₜ = (let: vₜ in e_funcₜ)%data_expr⌝ ∗
+    ⌜eₛ = (DataFunc func annot) vₛ ∧ eₜ = (let: vₜ in e_funcₜ)%data_expr⌝ ∗
     vₛ ≈ vₜ ∗
       ∀ vₛ' vₜ',
       vₛ' ≈ vₜ' -∗
@@ -77,7 +78,7 @@ Section sim_GS.
     - iApply rsimv_call.
       + iApply IH1; auto with data_lang.
       + iApply IH2; auto with data_lang.
-      + iIntros "%func %vₛ %vₜ %Hfunc #Hv".
+      + iIntros "%func %annot %vₛ %vₜ %Hfunc #Hv".
         iApply (sim_apply_protocol _ (sim_post_vals' (≈))). iIntros "%σₛ %σₜ $ !>". iSplitR.
         { rewrite /sim_post_vals'. iSmash. }
         iIntros "% % (%vₛ' & %vₜ' & (-> & ->) & HΨ)".
@@ -86,7 +87,7 @@ Section sim_GS.
       sim_apply (IH with "[//] [HΦ]"); first auto with data_lang.
       iIntros "%vₛ %vₜ #Hv".
       iApply (sim_apply_protocol _ (sim_post_vals' (≈))). iIntros "%σₛ %σₜ $ !>". iSplitR.
-      { iRight. iExists func, e_funcₛ, e_funcₜ, vₛ, vₜ. repeat iSplit; try iSmash.
+      { iRight. iExists func, annot, e_funcₛ, e_funcₜ, vₛ, vₜ. repeat iSplit; try iSmash.
         - iPureIntro.
           rewrite (subst_data_expr_scoped_1 _ ids); asimpl; try done.
           eapply data_expr_scoped_inline; naive_solver.
@@ -125,7 +126,7 @@ Section sim_GS.
     intros (Hprogₛ_wf & Hprogₛ_scoped).
     eapply data_program_scoped_inline in Hprogₛ_scoped as Hprogₜ_scoped; last done.
     iApply sim_close_pure_head_step. clear eₛ eₜ. iIntros "!> %Ψ %eₛ %eₜ [Hprotocol | Hprotocol]".
-    - iDestruct "Hprotocol" as "(%func & %vₛ & %vₜ & %Hfuncₛ & (-> & ->) & #Hv & HΨ)".
+    - iDestruct "Hprotocol" as "(%func & %annot & %vₛ & %vₜ & %Hfuncₛ & (-> & ->) & #Hv & HΨ)".
       simpl in Hfuncₛ. apply lookup_lookup_total_dom in Hfuncₛ. set (eₛ := _ !!! _) in Hfuncₛ.
       edestruct inline.(inline_transform) as (eₜ & Hdir & Hfuncₜ); first done.
       iExists eₛ.[#vₛ/], eₜ.[#vₜ/]. iSplit; first auto with data_lang.
@@ -136,7 +137,7 @@ Section sim_GS.
         iApply bisubst_inhabitant_well_formed.
       + rewrite -bisubst_consₛ -bisubst_consₜ.
         sim_mono "Hsim". rewrite sim_post_vals_unseal. iSmash.
-    - iDestruct "Hprotocol" as "(%func & %e_funcₛ & %e_funcₜ & %vₛ & %vₜ & (%Hfunc & %Hinline_func) & (-> & ->) & #Hv & HΨ)".
+    - iDestruct "Hprotocol" as "(%func & %annot & %e_funcₛ & %e_funcₜ & %vₛ & %vₜ & (%Hfunc & %Hinline_func) & (-> & ->) & #Hv & HΨ)".
       iExists _, _. iSplit; first auto with data_lang.
       iDestruct (inline_specification $! (≈)%I with "[//] []") as "Hsim"; [auto with data_lang.. | naive_solver | iSmash |].
       erewrite (subst_data_program_scoped' _ inhabitant.ₛ#); last done; last done.
@@ -180,7 +181,7 @@ Section inline_sound.
     iApply (inline_simv_close (sim_programs := inline_sim_programs) inline); first done.
     iApply (sim_apply_protocol _ (sim_post_vals (≈)%I)). iIntros "%σₛ %σₜ $ !>".
     iSplitL.
-    - iLeft. iExists func, vₛ, vₜ. repeat iSplit; try iSmash.
+    - iLeft. iExists func, [], vₛ, vₜ. repeat iSplit; try iSmash.
       + iPureIntro. simpl. eapply elem_of_dom_2. done.
       + iApply data_val_similar_bi_similar; done.
       + rewrite sim_post_vals_unseal /sim_post_vals'. iSmash.

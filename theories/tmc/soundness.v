@@ -18,6 +18,7 @@ Section sim_GS.
   Context `{sim_GS : !SimGS Σ}.
   Context (tmc : tmc sim_progₛ sim_progₜ).
   Implicit Types func func_dps : data_function.
+  Implicit Types annot : data_annotation.
   Implicit Types idx idxₛ idxₜ : data_index.
   Implicit Types l lₛ lₜ dst : loc.
   Implicit Types v vₛ vₜ : data_val.
@@ -26,17 +27,17 @@ Section sim_GS.
   Implicit Types Ψ : data_expr → data_expr → iProp Σ.
 
   Definition tmc_protocol_dir Ψ eₛ eₜ : iProp Σ :=
-    ∃ func vₛ vₜ,
+    ∃ func annot vₛ vₜ,
     ⌜func ∈ dom sim_progₛ⌝ ∗
-    ⌜eₛ = func vₛ ∧ eₜ = func vₜ⌝ ∗
+    ⌜eₛ = (DataFunc func annot) vₛ ∧ eₜ = (DataFunc func annot) vₜ⌝ ∗
     vₛ ≈ vₜ ∗
       ∀ vₛ' vₜ',
       vₛ' ≈ vₜ' -∗
       Ψ vₛ' vₜ'.
   Definition tmc_protocol_dps Ψ eₛ eₜ : iProp Σ :=
-    ∃ func func_dps vₛ l1 l2 dst idx vₜ,
+    ∃ func annot vₛ func_dps l1 l2 dst idx vₜ,
     ⌜func ∈ dom sim_progₛ ∧ tmc.(tmc_ξ) !! func = Some func_dps⌝ ∗
-    ⌜eₛ = func vₛ ∧ eₜ = func_dps l1⌝ ∗
+    ⌜eₛ = (DataFunc func annot) vₛ ∧ eₜ = (DataFunc func_dps annot) l1⌝ ∗
     (l1 +ₗ 1) ↦ₜ l2 ∗ (l1 +ₗ 2) ↦ₜ vₜ ∗
     (l2 +ₗ 1) ↦ₜ dst ∗ (l2 +ₗ 2) ↦ₜ idx ∗
     (dst +ₗ idx) ↦ₜ () ∗
@@ -49,7 +50,7 @@ Section sim_GS.
     tmc_protocol_dir Ψ eₛ eₜ ∨
     tmc_protocol_dps Ψ eₛ eₜ.
 
-  Lemma tmc_protocol_dps' Φ func vₛ func_dps dst idx vₜ :
+  Lemma tmc_protocol_dps' Φ func annot vₛ func_dps dst idx vₜ :
     func ∈ dom sim_progₛ →
     tmc.(tmc_ξ) !! func = Some func_dps →
     (dst +ₗ idx) ↦ₜ () -∗
@@ -59,16 +60,16 @@ Section sim_GS.
       vₛ' ≈ vₜ' -∗
       Φ vₛ' ()%data_val
     ) -∗
-    SIM func vₛ ≳ func_dps (dst, idx, vₜ) [[ tmc_protocol ]] {{# Φ }}.
+    SIM (DataFunc func annot) vₛ ≳ (DataFunc func_dps annot) (dst, idx, vₜ) [[ tmc_protocol ]] {{# Φ }}.
   Proof.
     rewrite simv_unseal.
     iIntros "%Hfuncₛ %Hξ Hdst #Hv HΦ".
     sim_constrₜ; sim_constrₜ;
       sim_constr_detₜ as l2 "Hl20" "Hl21" "Hl22";
       sim_constr_detₜ as l1 "Hl10" "Hl11" "Hl12";
-      sim_apply (sim_apply_protocol _ (sim_post_vals' Φ) _ (func vₛ) (func_dps l1)); iIntros "%σₛ %σₜ $ !>";
+      sim_apply (sim_apply_protocol _ (sim_post_vals' Φ) _ ((DataFunc func annot) vₛ) ((DataFunc func_dps annot) l1)); iIntros "%σₛ %σₜ $ !>";
       ( iSplitL;
-        [ iRight; iExists func, func_dps, vₛ, l1, l2, dst, idx, vₜ; iFrame "#∗";
+        [ iRight; repeat iExists _; iFrame "#∗";
           do 2 (iSplit; first done); iIntros "%vₛ' %vₜ' Hdst #Hv'"; iSmash
         | iIntros "%eₛ %eₜ HΦ";
           sim_post
@@ -154,7 +155,7 @@ Section sim_GS.
         iApply IHdirₛ; auto with data_lang.
     - iApply rsimv_call;
         [iApply IHdirₛ; auto with data_lang.. |].
-      iIntros "%func %vₛ %vₜ %Hfunc #Hv".
+      iIntros "%func %annot %vₛ %vₜ %Hfunc #Hv".
       pose (Ψ := sim_post_vals' tmc_dir_post).
       iApply (sim_apply_protocol _ Ψ). iIntros "%σₛ %σₜ $ !>". iSplitR.
       { rewrite /Ψ /sim_post_vals'. iSmash. }
@@ -287,7 +288,7 @@ Section sim_GS.
     intros (Hprogₛ_wf & Hprogₛ_scoped).
     eapply data_program_scoped_tmc in Hprogₛ_scoped as Hprogₜ_scoped; last done.
     iApply sim_close_pure_head_step. clear eₛ eₜ. iIntros "!> %Ψ %eₛ %eₜ [Hprotocol | Hprotocol]".
-    - iDestruct "Hprotocol" as "(%func & %vₛ & %vₜ & %Hfuncₛ & (-> & ->) & #Hv & HΨ)".
+    - iDestruct "Hprotocol" as "(%func & %annot & %vₛ & %vₜ & %Hfuncₛ & (-> & ->) & #Hv & HΨ)".
       simpl in Hfuncₛ. apply lookup_lookup_total_dom in Hfuncₛ. set (eₛ := _ !!! _) in Hfuncₛ.
       edestruct tmc.(tmc_dirs) as (eₜ & Hdir & Hfuncₜ); first done.
       iExists eₛ.[#vₛ/], eₜ.[#vₜ/]. iSplit; first auto with data_lang.
@@ -298,7 +299,7 @@ Section sim_GS.
         iApply bisubst_inhabitant_well_formed.
       + rewrite -bisubst_consₛ -bisubst_consₜ.
         sim_mono "Hsim". rewrite sim_post_vals_unseal. iSmash.
-    - iDestruct "Hprotocol" as "(%func & %func_dps & %vₛ & %l1 & %l2 & %dst & %idx & %vₜ & (%Hfuncₛ & %Hξ) & (-> & ->) & Hl11 & Hl12 & Hl21 & Hl22 & Hdst & #Hv & HΨ)".
+    - iDestruct "Hprotocol" as "(%func & %annot & %vₛ & %func_dps & %l1 & %l2 & %dst & %idx & %vₜ & (%Hfuncₛ & %Hξ) & (-> & ->) & Hl11 & Hl12 & Hl21 & Hl22 & Hdst & #Hv & HΨ)".
       simpl in Hfuncₛ. apply lookup_lookup_total_dom in Hfuncₛ. set (eₛ := _ !!! _) in Hfuncₛ.
       edestruct tmc.(tmc_dpss) as (eₜ & Hdps & Hfunc_dpsₜ); [done.. |].
       iExists eₛ.[#vₛ/], _. iSplit; first auto with data_lang.
@@ -347,7 +348,7 @@ Section tmc_sound.
     iApply (tmc_simv_close (sim_programs := tmc_sim_programs) tmc); first done.
     iApply (sim_apply_protocol _ (sim_post_vals (≈)%I)). iIntros "%σₛ %σₜ $ !>".
     iSplitL.
-    - iLeft. iExists func, vₛ, vₜ. repeat iSplit; try iSmash.
+    - iLeft. iExists func, [], vₛ, vₜ. repeat iSplit; try iSmash.
       + iPureIntro. simpl. eapply elem_of_dom_2. done.
       + iApply data_val_similar_bi_similar; done.
       + rewrite sim_post_vals_unseal /sim_post_vals'. iSmash.

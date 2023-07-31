@@ -21,6 +21,7 @@ Qed.
 Implicit Types b : bool.
 Implicit Types l : loc.
 Implicit Types func : data_function.
+Implicit Types annot : data_annotation.
 Implicit Types tag : data_tag.
 Implicit Types idx : data_index.
 Implicit Types v w : data_val.
@@ -84,7 +85,7 @@ Definition data_binop_eval op v1 v2 :=
       data_binop_eval_int op n1 n2
   | DataBool b1, DataBool b2 =>
       data_binop_eval_bool op b1 b2
-  | DataFunc func1, DataFunc func2 =>
+  | DataFunc func1 _, DataFunc func2 _ =>
       data_binop_eval_function op func1 func2
   | _, _ =>
       None
@@ -97,11 +98,11 @@ Inductive data_head_step prog : data_expr → data_state → data_expr → data_
       data_head_step prog
         (let: v in e) σ
         e' σ
-  | data_head_step_call func v e e' σ :
+  | data_head_step_call func annot v e e' σ :
       prog !! func = Some e →
       e' = e.[#v/] →
       data_head_step prog
-        (func v) σ
+        ((DataFunc func annot) v) σ
         e' σ
   | data_head_step_unop op v v' σ :
       data_unop_eval op v = Some v' →

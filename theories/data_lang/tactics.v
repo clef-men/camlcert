@@ -120,7 +120,7 @@ Proof.
 Qed.
 #[global] Instance strongly_head_stuck_data_call prog v1 v2 :
   IsStronglyHeadStuck prog
-    (if v1 is DataFunc _ then False else True)
+    (if v1 is DataFunc _ _ then False else True)
     (DataCall (DataVal v1) (DataVal v2)).
 Proof.
   solve_strongly_head_stuck.
@@ -174,10 +174,10 @@ Qed.
 Proof.
   solve_pure_head_exec.
 Qed.
-#[global] Instance pure_exec_data_call prog func v e :
+#[global] Instance pure_exec_data_call prog func annot v e :
   PureHeadExec prog 1
     (prog !! func = Some e)
-    (DataCall (DataVal (DataFunc func)) (DataVal v))
+    (DataCall (DataVal (DataFunc func annot)) (DataVal v))
     e.[DataVal v/].
 Proof.
   solve_pure_head_exec.

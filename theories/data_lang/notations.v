@@ -15,7 +15,7 @@ Coercion DataTag : data_tag >-> data_val.
 Coercion DataInt : Z >-> data_val.
 Coercion DataBool : bool >-> data_val.
 Coercion DataLoc : loc >-> data_val.
-Coercion DataFunc : data_function >-> data_val.
+Coercion DataFunc' : data_function >-> data_val.
 
 Coercion DataVal : data_val >-> data_expr.
 Coercion DataCall : data_expr >-> Funclass.

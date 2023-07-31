@@ -6,6 +6,7 @@ From simuliris.data_lang Require Import
   notations.
 
 Implicit Types func : data_function.
+Implicit Types annot : data_annotation.
 Implicit Types v vₛ vₜ : data_val.
 Implicit Types e eₛ eₜ : data_expr.
 Implicit Types prog progₛ progₜ : data_program.
@@ -31,12 +32,12 @@ Inductive inline_expr prog : data_expr → data_expr → Prop :=
       inline_expr prog
         (eₛ1 eₛ2)
         (eₜ1 eₜ2)
-  | inline_expr_call_inline func e_funcₛ eₛ e_funcₜ eₜ :
+  | inline_expr_call_inline func annot e_funcₛ eₛ e_funcₜ eₜ :
       prog !! func = Some e_funcₛ →
       inline_expr prog e_funcₛ e_funcₜ →
       inline_expr prog eₛ eₜ →
       inline_expr prog
-        (func eₛ)
+        ((DataFunc func annot) eₛ)
         (let: eₜ in e_funcₜ)
   | inline_expr_unop op eₛ eₜ :
       inline_expr prog eₛ eₜ →

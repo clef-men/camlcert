@@ -33,7 +33,7 @@ Notation "#ₕ v" := (DataHumanVal v%Z%data_human_val%stdpp)
 Notation "'Fail'" := (#ₕ() #ₕ())%data_human_expr
 : data_human_expr_scope.
 
-Notation "$ x" := (DataHumanFunc x)
+Notation "$ x" := (DataHumanFunc x [])
 ( at level 5,
   format "$ x"
 ) : data_human_expr_scope.

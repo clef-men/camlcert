@@ -6,6 +6,7 @@ From simuliris.data_lang Require Import
   notations.
 
 Implicit Types func func_aps : data_function.
+Implicit Types annot : data_annotation.
 Implicit Types v vₛ vₜ : data_val.
 Implicit Types e eₛ eₜ : data_expr.
 Implicit Types prog progₛ progₜ : data_program.
@@ -105,12 +106,12 @@ with aps_plus_aps ξ : data_expr → data_expr → data_expr → Prop :=
       aps_plus_aps ξ acc
         (let: eₛ1 in eₛ2)
         (let: eₜ1 in eₜ2)
-  | aps_plus_aps_call acc func func_aps eₛ eₜ eₜ' :
+  | aps_plus_aps_call acc func annot eₛ func_aps eₜ eₜ' :
       ξ !! func = Some func_aps →
       aps_plus_dir ξ eₛ eₜ →
-      eₜ' = (let: eₜ in func_aps (acc.[ren (+1)], $0))%data_expr →
+      eₜ' = (let: eₜ in (DataFunc func_aps annot) (acc.[ren (+1)], $0))%data_expr →
       aps_plus_aps ξ acc
-        (func eₛ)
+        ((DataFunc func annot) eₛ)
         eₜ'
   | aps_plus_aps_plus_1 acc eₛ1 eₛ2 eₜ1 eₜ2 :
       aps_plus_dir ξ eₛ1 eₜ1 →

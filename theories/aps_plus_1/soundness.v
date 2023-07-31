@@ -19,23 +19,24 @@ Section sim_GS.
   Context (aps_plus : aps_plus sim_progₛ sim_progₜ).
   Implicit Types acc : Z.
   Implicit Types func func_aps : data_function.
+  Implicit Types annot : data_annotation.
   Implicit Types l lₛ lₜ : loc.
   Implicit Types v vₛ vₜ : data_val.
   Implicit Types e eₛ eₜ : data_expr.
   Implicit Types Φ Ψ : data_expr → data_expr → iProp Σ.
 
   Definition aps_plus_protocol_dir Ψ eₛ eₜ : iProp Σ :=
-    ∃ func vₛ vₜ,
+    ∃ func annot vₛ vₜ,
     ⌜func ∈ dom sim_progₛ⌝ ∗
-    ⌜eₛ = func vₛ ∧ eₜ = func vₜ⌝ ∗
+    ⌜eₛ = (DataFunc func annot) vₛ ∧ eₜ = (DataFunc func annot) vₜ⌝ ∗
     vₛ ≈ vₜ ∗
       ∀ vₛ' vₜ',
       vₛ' ≈ vₜ' -∗
       Ψ vₛ' vₜ'.
   Definition aps_plus_protocol_aps Ψ eₛ eₜ : iProp Σ :=
-    ∃ func func_aps vₛ l acc vₜ,
+    ∃ func annot vₛ func_aps l acc vₜ,
     ⌜func ∈ dom sim_progₛ ∧ aps_plus.(aps_plus_ξ) !! func = Some func_aps⌝ ∗
-    ⌜eₛ = func vₛ ∧ eₜ = func_aps l⌝ ∗
+    ⌜eₛ = (DataFunc func annot) vₛ ∧ eₜ = (DataFunc func_aps annot) l⌝ ∗
     (l +ₗ 1) ↦ₜ acc ∗ (l +ₗ 2) ↦ₜ vₜ ∗
     vₛ ≈ vₜ ∗
       ∀ vₛ' eₜ',
@@ -45,7 +46,7 @@ Section sim_GS.
     aps_plus_protocol_dir Ψ eₛ eₜ ∨
     aps_plus_protocol_aps Ψ eₛ eₜ.
 
-  Lemma aps_plus_protocol_aps' Φ func vₛ func_aps acc vₜ :
+  Lemma aps_plus_protocol_aps' Φ func annot vₛ func_aps acc vₜ :
     func ∈ dom sim_progₛ →
     aps_plus.(aps_plus_ξ) !! func = Some func_aps →
     vₛ ≈ vₜ -∗
@@ -53,12 +54,12 @@ Section sim_GS.
       ⌜if vₛ' is DataInt n then eₜ' = (acc + n)%Z else strongly_stuck sim_progₜ eₜ'⌝ -∗
       Φ vₛ' eₜ'
     ) -∗
-    SIM func vₛ ≳ func_aps (acc, vₜ) [[ aps_plus_protocol ]] {{ Φ }}.
+    SIM (DataFunc func annot) vₛ ≳ (DataFunc func_aps annot) (acc, vₜ) [[ aps_plus_protocol ]] {{ Φ }}.
   Proof.
     iIntros "%Hfuncₛ %Hξ #Hv HΦ".
     sim_constrₜ;
       sim_constr_detₜ as l "Hl0" "Hl1" "Hl2";
-      sim_apply (sim_apply_protocol _ Φ _ (func vₛ) (func_aps l)); iIntros "%σₛ %σₜ $ !>";
+      sim_apply (sim_apply_protocol _ Φ _ ((DataFunc func annot) vₛ) ((DataFunc func_aps annot) l)); iIntros "%σₛ %σₜ $ !>";
       (iSplitL; [iSmash | iIntros "%eₛ %eₜ HΦ"; sim_post]).
   Qed.
 
@@ -140,7 +141,7 @@ Section sim_GS.
         iApply IHdirₛ; auto with data_lang.
     - iApply rsim_call;
         [iApply IHdirₛ; auto with data_lang.. |].
-      iIntros "%func %vₛ %vₜ %Hfunc #Hv".
+      iIntros "%func %annot %vₛ %vₜ %Hfunc #Hv".
       iApply (sim_apply_protocol _ aps_plus_dir_post). iIntros "%σₛ %σₜ $ !>". iSplitR.
       { rewrite /aps_plus_dir_post /sim_post_vals'. iSmash. }
       iIntros "% % (%vₛ' & %vₜ' & (-> & ->) & HΨ)".
@@ -243,7 +244,7 @@ Section sim_GS.
     intros (Hprogₛ_wf & Hprogₛ_scoped).
     eapply data_program_scoped_aps_plus in Hprogₛ_scoped as Hprogₜ_scoped; last done.
     iApply sim_close_pure_head_step. clear eₛ eₜ. iIntros "!> %Ψ %eₛ %eₜ [Hprotocol | Hprotocol]".
-    - iDestruct "Hprotocol" as "(%func & %vₛ & %vₜ & %Hfuncₛ & (-> & ->) & #Hv & HΨ)".
+    - iDestruct "Hprotocol" as "(%func & %annot & %vₛ & %vₜ & %Hfuncₛ & (-> & ->) & #Hv & HΨ)".
       simpl in Hfuncₛ. apply lookup_lookup_total_dom in Hfuncₛ. set (eₛ := _ !!! _) in Hfuncₛ.
       edestruct aps_plus.(aps_plus_dirs) as (eₜ & Hdir & Hfuncₜ); first done.
       iExists eₛ.[#vₛ/], eₜ.[#vₜ/]. iSplit; first auto with data_lang.
@@ -254,7 +255,7 @@ Section sim_GS.
         iApply bisubst_inhabitant_well_formed.
       + rewrite -bisubst_consₛ -bisubst_consₜ.
         sim_mono "Hsim".
-    - iDestruct "Hprotocol" as "(%func & %func_aps & %vₛ & %l & %acc & %vₜ & (%Hfuncₛ & %Hξ) & (-> & ->) & Hl1 & Hl2 & #Hv & HΨ)".
+    - iDestruct "Hprotocol" as "(%func & %annot & %vₛ & %func_aps & %l & %acc & %vₜ & (%Hfuncₛ & %Hξ) & (-> & ->) & Hl1 & Hl2 & #Hv & HΨ)".
       simpl in Hfuncₛ. apply lookup_lookup_total_dom in Hfuncₛ. set (eₛ := _ !!! _) in Hfuncₛ.
       edestruct aps_plus.(aps_plus_apss) as (eₜ & Haps & Hfunc_apsₜ); [done.. |].
       iExists eₛ.[#vₛ/], _. iSplit; first auto with data_lang.
@@ -303,7 +304,7 @@ Section aps_plus_sound.
     iApply (aps_plus_sim_close (sim_programs := aps_plus_sim_programs) aps_plus); first done.
     iApply (sim_apply_protocol _ (sim_post_vals (≈)%I)). iIntros "%σₛ %σₜ $ !>".
     iSplitL.
-    - iLeft. iExists func, vₛ, vₜ. repeat iSplit; try iSmash.
+    - iLeft. iExists func, [], vₛ, vₜ. repeat iSplit; try iSmash.
       + iPureIntro. simpl. eapply elem_of_dom_2. done.
       + iApply data_val_similar_bi_similar; done.
       + rewrite sim_post_vals_unseal /sim_post_vals'. iSmash.

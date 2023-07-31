@@ -18,6 +18,8 @@ Definition data_tag := nat.
 
 Notation data_function := string (only parsing).
 
+Definition data_annotation := list string.
+
 Inductive data_val :=
   | DataUnit
   | DataIndex (idx : data_index)
@@ -25,7 +27,10 @@ Inductive data_val :=
   | DataInt (n : Z)
   | DataBool (b : bool)
   | DataLoc (l : loc)
-  | DataFunc (func : data_function).
+  | DataFunc (func : data_function) (annot : data_annotation).
+
+Definition DataFunc' func :=
+  DataFunc func [].
 
 #[global] Instance data_val_inhabited : Inhabited data_val :=
   populate DataUnit.
@@ -48,8 +53,8 @@ Proof.
         inr $ inr $ inr $ inr $ inl b
     | DataLoc l =>
         inr $ inr $ inr $ inr $ inr $ inl l
-    | DataFunc func =>
-        inr $ inr $ inr $ inr $ inr $ inr func
+    | DataFunc func annot =>
+        inr $ inr $ inr $ inr $ inr $ inr (func, annot)
     end.
   pose decode v :=
     match v with
@@ -65,8 +70,8 @@ Proof.
         DataBool b
     | inr (inr (inr (inr (inr (inl l))))) =>
         DataLoc l
-    | inr (inr (inr (inr (inr (inr func))))) =>
-        DataFunc func
+    | inr (inr (inr (inr (inr (inr (func, annot)))))) =>
+        DataFunc func annot
     end.
   apply (inj_countable' encode decode). intros []; done.
 Qed.
@@ -86,8 +91,8 @@ Qed.
         b1 = b2
     | DataLoc _, DataLoc _ =>
         True
-    | DataFunc func1, DataFunc func2 =>
-        func1 = func2
+    | DataFunc func1 annot1, DataFunc func2 annot2 =>
+        func1 = func2 ∧ annot1 = annot2
     | _, _ =>
         False
     end.

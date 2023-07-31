@@ -7,7 +7,7 @@ Implicit Types prog : data_human_program.
 
 Definition data_human_val_well_formed prog v :=
   match v with
-  | DataHumanFunc func =>
+  | DataHumanFunc func _ =>
       func ∈ dom prog
   | _ =>
       True

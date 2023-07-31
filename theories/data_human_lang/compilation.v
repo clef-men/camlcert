@@ -34,8 +34,8 @@ Definition data_human_val_compile v :=
       DataInt n
   | DataHumanBool b =>
       DataBool b
-  | DataHumanFunc func =>
-      DataFunc func
+  | DataHumanFunc func annot =>
+      DataFunc func annot
   end.
 
 Fixpoint data_human_expr_compile bdgs e :=

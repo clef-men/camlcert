@@ -1,5 +1,7 @@
 From simuliris Require Import
   prelude.
+From simuliris.common Require Import
+  tactics.
 From simuliris.data_lang Require Export
   sim.basic_rules.
 From simuliris.data_lang Require Import
@@ -36,18 +38,17 @@ Section sim_GS.
     Lemma sim_call Φ eₛ1 eₛ2 eₜ1 eₜ2 :
       SIM eₛ1 ≳ eₜ1 [[ Χ ]] {{ sim_post_vals' (≈) }} -∗
       SIM eₛ2 ≳ eₜ2 [[ Χ ]] {{ sim_post_vals' (≈) }} -∗
-      ( ∀ func vₛ vₜ,
+      ( ∀ func annot vₛ vₜ,
         ⌜func ∈ dom sim_progₛ⌝ -∗
         vₛ ≈ vₜ -∗
-        SIM func vₛ ≳ func vₜ [[ Χ ]] {{ Φ }}
+        SIM (DataFunc func annot) vₛ ≳ (DataFunc func annot) vₜ [[ Χ ]] {{ Φ }}
       ) -∗
       SIM eₛ1 eₛ2 ≳ eₜ1 eₜ2 [[ Χ ]] {{ Φ }}.
     Proof.
       iIntros "Hsim1 Hsim2 Hsim".
       sim_mono "Hsim2". iIntros "% % (%vₛ2 & %vₜ2 & (-> & ->) & #Hv2)".
       sim_mono "Hsim1". iIntros "% % (%vₛ1 & %vₜ1 & (-> & ->) & #Hv1)".
-      destruct vₛ1, vₜ1; try iDestruct "Hv1" as %[]; try sim_strongly_stuck.
-      iSmash.
+      destruct vₛ1, vₜ1; try iDestruct "Hv1" as %?; simplify; try sim_strongly_stuck. iSmash.
     Qed.
 
     Lemma sim_unop Φ op eₛ eₜ :
@@ -224,10 +225,10 @@ Section sim_GS.
     Lemma simv_call Φ eₛ1 eₛ2 eₜ1 eₜ2 :
       SIM eₛ1 ≳ eₜ1 [[ Χ ]] {{# (≈) }} -∗
       SIM eₛ2 ≳ eₜ2 [[ Χ ]] {{# (≈) }} -∗
-      ( ∀ func vₛ vₜ,
+      ( ∀ func annot vₛ vₜ,
         ⌜func ∈ dom sim_progₛ⌝ -∗
         vₛ ≈ vₜ -∗
-        SIM func vₛ ≳ func vₜ [[ Χ ]] {{# Φ }}
+        SIM (DataFunc func annot) vₛ ≳ (DataFunc func annot) vₜ [[ Χ ]] {{# Φ }}
       ) -∗
       SIM eₛ1 eₛ2 ≳ eₜ1 eₜ2 [[ Χ ]] {{# Φ }}.
     Proof.

@@ -14,7 +14,7 @@ Inductive data_human_val :=
   | DataHumanTag (tag : data_tag)
   | DataHumanInt (n : Z)
   | DataHumanBool (b : bool)
-  | DataHumanFunc (func : data_function).
+  | DataHumanFunc (func : data_function) (annot : data_annotation).
 
 #[global] Instance data_human_val_inhabited : Inhabited data_human_val :=
   populate DataHumanUnit.
@@ -35,8 +35,8 @@ Proof.
         inr $ inr $ inr $ inl n
     | DataHumanBool b =>
         inr $ inr $ inr $ inr $ inl b
-    | DataHumanFunc func =>
-        inr $ inr $ inr $ inr $ inr func
+    | DataHumanFunc func annot =>
+        inr $ inr $ inr $ inr $ inr (func, annot)
     end.
   pose decode v :=
     match v with
@@ -50,8 +50,8 @@ Proof.
         DataHumanInt n
     | inr (inr (inr (inr (inl b)))) =>
         DataHumanBool b
-    | inr (inr (inr (inr (inr func)))) =>
-        DataHumanFunc func
+    | inr (inr (inr (inr (inr (func, annot))))) =>
+        DataHumanFunc func annot
     end.
   apply (inj_countable' encode decode). intros []; done.
 Qed.
