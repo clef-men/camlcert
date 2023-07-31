@@ -1,7 +1,6 @@
 From simuliris Require Import
   prelude.
 From simuliris.common Require Import
-  tactics
   relation.
 From simuliris.data_lang Require Export
   tactics.

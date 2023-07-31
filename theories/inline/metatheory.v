@@ -1,7 +1,5 @@
 From simuliris Require Import
   prelude.
-From simuliris.common Require Import
-  tactics.
 From simuliris.data_lang Require Export
   metatheory.
 From simuliris.inline Require Export

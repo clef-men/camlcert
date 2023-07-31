@@ -1,7 +1,5 @@
 From simuliris Require Import
   prelude.
-From simuliris.common Require Import
-  tactics.
 From simuliris.program_logic Require Export
   ectxi_language.
 From simuliris.data_lang Require Export

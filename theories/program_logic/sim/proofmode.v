@@ -4,8 +4,6 @@ From iris.proofmode Require Import
 
 From simuliris Require Import
   prelude.
-From simuliris.common Require Import
-  tactic_flag.
 From simuliris.base_logic Require Export
   lib.cupd.proofmode.
 From simuliris.program_logic Require Export

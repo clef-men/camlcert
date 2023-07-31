@@ -9,8 +9,6 @@ From iris.algebra Require Export
 
 From simuliris Require Import
   prelude.
-From simuliris.common Require Import
-  tactics.
 
 Section LanguageMixin.
   Context {expr val program state : Type}.

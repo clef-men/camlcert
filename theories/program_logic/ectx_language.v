@@ -3,8 +3,6 @@ From iris.algebra Require Export
 
 From simuliris Require Import
   prelude.
-From simuliris.common Require Import
-  tactics.
 From simuliris.common Require Export
   typeclasses.
 From simuliris.program_logic Require Export

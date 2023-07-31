@@ -7,8 +7,7 @@ From iris.base_logic Require Import
 From simuliris Require Import
   prelude.
 From simuliris.common Require Import
-  induction
-  tactics.
+  induction.
 From simuliris.program_logic Require Import
   refinement
   idiverges

@@ -1,8 +1,8 @@
-From Coq Require Export
-  Program.Equality.
+From simuliris.prelude Require Export
+  base.
 
-From simuliris Require Import
-  prelude.
+Ltac done :=
+  stdpp.tactics.done.
 
 Ltac goal_is_false :=
   lazymatch goal with
