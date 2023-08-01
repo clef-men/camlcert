@@ -40,6 +40,39 @@ Definition data_unop_eval op v :=
   end.
 #[global] Arguments data_unop_eval !_ !_ / : assert.
 
+Definition data_binop_eval_unit op :=
+  match op with
+  | DataOpEq =>
+      Some (DataBool true)
+  | DataOpNe =>
+      Some (DataBool false)
+  | _ =>
+      None
+  end.
+#[global] Arguments data_binop_eval_unit !_ / : assert.
+
+Definition data_binop_eval_index op idx1 idx2 :=
+  match op with
+  | DataOpEq =>
+      Some (DataBool (bool_decide (idx1 = idx2)))
+  | DataOpNe =>
+      Some (DataBool (bool_decide (idx1 ≠ idx2)))
+  | _ =>
+      None
+  end.
+#[global] Arguments data_binop_eval_index !_ _ _ / : assert.
+
+Definition data_binop_eval_tag op tag1 tag2 :=
+  match op with
+  | DataOpEq =>
+      Some (DataBool (bool_decide (tag1 = tag2)))
+  | DataOpNe =>
+      Some (DataBool (bool_decide (tag1 ≠ tag2)))
+  | _ =>
+      None
+  end.
+#[global] Arguments data_binop_eval_tag !_ _ _ / : assert.
+
 Definition data_binop_eval_int op n1 n2 :=
   match op with
   | DataOpPlus =>
