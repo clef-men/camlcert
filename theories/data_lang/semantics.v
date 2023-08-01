@@ -111,6 +111,17 @@ Definition data_binop_eval_bool op b1 b2 :=
   end.
 #[global] Arguments data_binop_eval_bool !_ _ _ / : assert.
 
+Definition data_binop_eval_loc op l1 l2 :=
+  match op with
+  | DataOpEq =>
+      Some (DataBool (bool_decide (l1 = l2)))
+  | DataOpNe =>
+      Some (DataBool (bool_decide (l1 ≠ l2)))
+  | _ =>
+      None
+  end.
+#[global] Arguments data_binop_eval_loc !_ _ _ / : assert.
+
 Definition data_binop_eval_function op func1 func2 :=
   match op with
   | DataOpEq =>
@@ -134,6 +145,8 @@ Definition data_binop_eval op v1 v2 :=
       data_binop_eval_int op n1 n2
   | DataBool b1, DataBool b2 =>
       data_binop_eval_bool op b1 b2
+  | DataLoc l1, DataLoc l2 =>
+      data_binop_eval_loc op l1 l2
   | DataFunc func1 _, DataFunc func2 _ =>
       data_binop_eval_function op func1 func2
   | _, _ =>
