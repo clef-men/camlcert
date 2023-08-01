@@ -10,7 +10,10 @@ Implicit Types annot : data_annotation.
 Implicit Types v vₛ vₜ : data_val.
 Implicit Types e eₛ eₜ : data_expr.
 Implicit Types prog progₛ progₜ : data_program.
-Implicit Types ξ : gmap data_function data_function.
+
+Definition aps_plus_mapping :=
+  gmap data_function data_function.
+Implicit Types ξ : aps_plus_mapping.
 
 Inductive aps_plus_dir ξ : data_expr → data_expr → Prop :=
   | aps_plus_dir_val v :

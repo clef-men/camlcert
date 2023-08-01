@@ -6,7 +6,7 @@ From simuliris.tmc Require Export
   definition.
 
 Section tmc.
-  Context (ξ : gmap data_function data_function).
+  Context (ξ : tmc_mapping).
 
   Lemma tmc_dir_refl e :
     tmc_dir ξ e e.

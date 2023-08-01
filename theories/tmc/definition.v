@@ -10,7 +10,10 @@ Implicit Types annot : data_annotation.
 Implicit Types v vₛ vₜ : data_val.
 Implicit Types e eₛ eₜ : data_expr.
 Implicit Types prog progₛ progₜ : data_program.
-Implicit Types ξ : gmap data_function data_function.
+
+Definition tmc_mapping :=
+  gmap data_function data_function.
+Implicit Types ξ : tmc_mapping.
 
 Inductive tmc_dir ξ : data_expr → data_expr → Prop :=
   | tmc_dir_val v :

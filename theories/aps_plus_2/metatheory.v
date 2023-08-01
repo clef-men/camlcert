@@ -6,7 +6,7 @@ From simuliris.aps_plus_2 Require Export
   definition.
 
 Section aps_plus.
-  Context (ξ : gmap data_function data_function).
+  Context (ξ : aps_plus_mapping).
 
   Lemma aps_plus_dir_refl e :
     aps_plus_dir ξ e e.
