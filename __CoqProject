@@ -81,3 +81,5 @@ theories/inline/definition.v
 theories/inline/metatheory.v
 theories/inline/soundness.v
 theories/inline/compile.v
+
+theories/constant_propagation/definition.v
