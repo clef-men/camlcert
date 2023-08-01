@@ -124,6 +124,12 @@ Definition data_binop_eval_function op func1 func2 :=
 
 Definition data_binop_eval op v1 v2 :=
   match v1, v2 with
+  | DataUnit, DataUnit =>
+      data_binop_eval_unit op
+  | DataIndex idx1, DataIndex idx2 =>
+      data_binop_eval_index op idx1 idx2
+  | DataTag tag1, DataTag tag2 =>
+      data_binop_eval_tag op tag1 tag2
   | DataInt n1, DataInt n2 =>
       data_binop_eval_int op n1 n2
   | DataBool b1, DataBool b2 =>
