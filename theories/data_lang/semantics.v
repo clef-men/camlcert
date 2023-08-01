@@ -40,6 +40,39 @@ Definition data_unop_eval op v :=
   end.
 #[global] Arguments data_unop_eval !_ !_ / : assert.
 
+Definition data_binop_eval_unit op :=
+  match op with
+  | DataOpEq =>
+      Some (DataBool true)
+  | DataOpNe =>
+      Some (DataBool false)
+  | _ =>
+      None
+  end.
+#[global] Arguments data_binop_eval_unit !_ / : assert.
+
+Definition data_binop_eval_index op idx1 idx2 :=
+  match op with
+  | DataOpEq =>
+      Some (DataBool (bool_decide (idx1 = idx2)))
+  | DataOpNe =>
+      Some (DataBool (bool_decide (idx1 ≠ idx2)))
+  | _ =>
+      None
+  end.
+#[global] Arguments data_binop_eval_index !_ _ _ / : assert.
+
+Definition data_binop_eval_tag op tag1 tag2 :=
+  match op with
+  | DataOpEq =>
+      Some (DataBool (bool_decide (tag1 = tag2)))
+  | DataOpNe =>
+      Some (DataBool (bool_decide (tag1 ≠ tag2)))
+  | _ =>
+      None
+  end.
+#[global] Arguments data_binop_eval_tag !_ _ _ / : assert.
+
 Definition data_binop_eval_int op n1 n2 :=
   match op with
   | DataOpPlus =>
@@ -91,6 +124,12 @@ Definition data_binop_eval_function op func1 func2 :=
 
 Definition data_binop_eval op v1 v2 :=
   match v1, v2 with
+  | DataUnit, DataUnit =>
+      data_binop_eval_unit op
+  | DataIndex idx1, DataIndex idx2 =>
+      data_binop_eval_index op idx1 idx2
+  | DataTag tag1, DataTag tag2 =>
+      data_binop_eval_tag op tag1 tag2
   | DataInt n1, DataInt n2 =>
       data_binop_eval_int op n1 n2
   | DataBool b1, DataBool b2 =>
