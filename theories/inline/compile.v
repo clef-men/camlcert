@@ -83,7 +83,7 @@ Fixpoint inline_compile_expr prog depth := fix inline_compile_expr' e :=
 #[global] Arguments inline_compile_expr _ _ !_ / : assert.
 
 Definition inline_compile prog :=
-  (inline_compile_expr prog inline_max_depth) <$> prog.
+  inline_compile_expr prog inline_max_depth <$> prog.
 
 Lemma inline_compile_expr_sound prog depth e :
   inline_expr prog e (inline_compile_expr prog depth e).
