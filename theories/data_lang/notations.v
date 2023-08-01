@@ -78,9 +78,13 @@ Notation "e1 ≤ e2" := (DataBinop DataOpLe e1%data_expr e2%data_expr)
 : data_expr_scope.
 Notation "e1 < e2" := (DataBinop DataOpLt e1%data_expr e2%data_expr)
 : data_expr_scope.
+Notation "e1 ≥ e2" := (DataBinop DataOpGe e1%data_expr e2%data_expr)
+: data_expr_scope.
+Notation "e1 > e2" := (DataBinop DataOpGt e1%data_expr e2%data_expr)
+: data_expr_scope.
 Notation "e1 = e2" := (DataBinop DataOpEq e1%data_expr e2%data_expr)
 : data_expr_scope.
-Notation "e1 ≠ e2" := (~ (e1 = e2))%data_expr
+Notation "e1 ≠ e2" := (DataBinop DataOpNe e1%data_expr e2%data_expr)
 : data_expr_scope.
 
 Notation "'if:' e0 'then' e1 'else' e2" := (DataIf e0%data_expr e1%data_expr e2%data_expr)

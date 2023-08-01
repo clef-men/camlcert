@@ -121,7 +121,7 @@ Qed.
 
 Inductive data_binop :=
   | DataOpPlus | DataOpMinus | DataOpMult | DataOpQuot | DataOpRem
-  | DataOpLe | DataOpLt | DataOpEq.
+  | DataOpLe | DataOpLt | DataOpGe | DataOpGt | DataOpEq | DataOpNe.
 
 #[global] Instance data_binop_eq_dec : EqDecision data_binop :=
   ltac:(solve_decision).
@@ -137,7 +137,10 @@ Proof.
     | DataOpRem => 4
     | DataOpLe => 5
     | DataOpLt => 6
-    | DataOpEq => 7
+    | DataOpGe => 7
+    | DataOpGt => 8
+    | DataOpEq => 9
+    | DataOpNe => 10
     end.
   pose decode op :=
     match op with
@@ -148,7 +151,10 @@ Proof.
     | 4 => DataOpRem
     | 5 => DataOpLe
     | 6 => DataOpLt
-    | _ => DataOpEq
+    | 7 => DataOpGe
+    | 8 => DataOpGt
+    | 9 => DataOpEq
+    | _ => DataOpNe
     end.
   apply (inj_countable' encode decode). intros []; done.
 Qed.

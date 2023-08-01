@@ -56,8 +56,14 @@ Definition data_binop_eval_int op n1 n2 :=
       Some (DataBool (bool_decide (n1 ≤ n2)%Z))
   | DataOpLt =>
       Some (DataBool (bool_decide (n1 < n2)%Z))
+  | DataOpGe =>
+      Some (DataBool (bool_decide (n1 >= n2)%Z))
+  | DataOpGt =>
+      Some (DataBool (bool_decide (n1 > n2)%Z))
   | DataOpEq =>
       Some (DataBool (bool_decide (n1 = n2)%Z))
+  | DataOpNe =>
+      Some (DataBool (bool_decide (n1 ≠ n2)%Z))
   end.
 #[global] Arguments data_binop_eval_int !_ _ _ / : assert.
 
@@ -65,6 +71,8 @@ Definition data_binop_eval_bool op b1 b2 :=
   match op with
   | DataOpEq =>
       Some (DataBool (bool_decide (b1 = b2)))
+  | DataOpNe =>
+      Some (DataBool (bool_decide (b1 ≠ b2)))
   | _ =>
       None
   end.
@@ -74,6 +82,8 @@ Definition data_binop_eval_function op func1 func2 :=
   match op with
   | DataOpEq =>
       Some (DataBool (bool_decide (func1 = func2)))
+  | DataOpNe =>
+      Some (DataBool (bool_decide (func1 ≠ func2)))
   | _ =>
       None
   end.
