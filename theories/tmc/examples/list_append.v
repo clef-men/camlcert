@@ -3,7 +3,7 @@ From simuliris Require Import
 From simuliris.data_lang Require Export
   refinement.
 From simuliris.data_human_lang Require Export
-  compilation.
+  compile.
 From simuliris.data_human_lang Require Import
   notations.
 From simuliris.tmc Require Import
