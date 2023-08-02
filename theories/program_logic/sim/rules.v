@@ -3,8 +3,6 @@ From iris.bi Require Import
 
 From simuliris Require Import
   prelude.
-From simuliris.common Require Import
-  tactics.
 From simuliris.base_logic Require Import
   lib.cupd.proofmode.
 From simuliris.program_logic Require Export

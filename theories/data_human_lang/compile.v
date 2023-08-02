@@ -34,8 +34,8 @@ Definition data_human_val_compile v :=
       DataInt n
   | DataHumanBool b =>
       DataBool b
-  | DataHumanFunc func =>
-      DataFunc func
+  | DataHumanFunc func annot =>
+      DataFunc func annot
   end.
 
 Fixpoint data_human_expr_compile bdgs e :=
@@ -80,7 +80,14 @@ Fixpoint data_human_expr_compile bdgs e :=
   end.
 
 Definition data_human_program_compile (prog : data_human_program) : data_program :=
-  (λ '(x, e), data_human_expr_compile [x] e) <$> prog.
+  (λ def,
+    let annot := def.(data_human_definition_annot) in
+    let param := def.(data_human_definition_param) in
+    let body := def.(data_human_definition_body) in
+    {|data_definition_annot := annot ;
+      data_definition_body := data_human_expr_compile [param] body ;
+    |}
+  ) <$> prog.
 
 Lemma data_human_val_compile_well_formed prog v :
   data_human_program_well_formed prog →
@@ -102,7 +109,7 @@ Lemma data_human_program_compile_well_formed prog :
   data_human_program_well_formed prog →
   data_program_well_formed (data_human_program_compile prog).
 Proof.
-  intros Hprog. apply map_Forall_lookup. intros func ? ((x & e) & <- & Hfunc)%lookup_fmap_Some.
+  intros Hprog. apply map_Forall_lookup. intros func ? (def & <- & Hfunc)%lookup_fmap_Some.
   apply data_human_expr_compile_well_formed; first done.
   rewrite /data_human_program_well_formed map_Forall_lookup in Hprog. naive_solver.
 Qed.
@@ -134,6 +141,6 @@ Qed.
 Lemma data_human_program_compile_scoped prog :
   data_program_scoped (data_human_program_compile prog).
 Proof.
-  apply map_Forall_lookup. intros func ? ((x & e) & <- & Hfunc)%lookup_fmap_Some.
+  apply map_Forall_lookup. intros func ? (def & <- & Hfunc)%lookup_fmap_Some.
   apply data_human_expr_compile_scoped. done.
 Qed.

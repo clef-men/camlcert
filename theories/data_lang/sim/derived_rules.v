@@ -36,18 +36,17 @@ Section sim_GS.
     Lemma sim_call Φ eₛ1 eₛ2 eₜ1 eₜ2 :
       SIM eₛ1 ≳ eₜ1 [[ Χ ]] {{ sim_post_vals' (≈) }} -∗
       SIM eₛ2 ≳ eₜ2 [[ Χ ]] {{ sim_post_vals' (≈) }} -∗
-      ( ∀ func vₛ vₜ,
+      ( ∀ func annot vₛ vₜ,
         ⌜func ∈ dom sim_progₛ⌝ -∗
         vₛ ≈ vₜ -∗
-        SIM func vₛ ≳ func vₜ [[ Χ ]] {{ Φ }}
+        SIM (DataFunc func annot) vₛ ≳ (DataFunc func annot) vₜ [[ Χ ]] {{ Φ }}
       ) -∗
       SIM eₛ1 eₛ2 ≳ eₜ1 eₜ2 [[ Χ ]] {{ Φ }}.
     Proof.
       iIntros "Hsim1 Hsim2 Hsim".
       sim_mono "Hsim2". iIntros "% % (%vₛ2 & %vₜ2 & (-> & ->) & #Hv2)".
       sim_mono "Hsim1". iIntros "% % (%vₛ1 & %vₜ1 & (-> & ->) & #Hv1)".
-      destruct vₛ1, vₜ1; try iDestruct "Hv1" as %[]; try sim_strongly_stuck.
-      iSmash.
+      destruct vₛ1, vₜ1; try iDestruct "Hv1" as %?; simplify; try sim_strongly_stuck. iSmash.
     Qed.
 
     Lemma sim_unop Φ op eₛ eₜ :
@@ -76,15 +75,20 @@ Section sim_GS.
     Proof.
       iIntros "Hsim1 Hsim2 HΦ".
       sim_binopₜ;
-        [| iCombine "Hsim1 Hsim2" as "(Hsim2 & Hsim1)"];
-        [sim_binopₛ1 | sim_binopₛ2];
-        sim_mono "Hsim1"; iIntros "% % (%vₛ1 & %vₜ1 & (-> & ->) & #Hv1)";
-        sim_mono "Hsim2"; iIntros "% % (%vₛ2 & %vₜ2 & (-> & ->) & #Hv2)";
-        sim_pures;
-        destruct vₛ1, vₜ1; try iDestruct "Hv1" as %[]; try sim_strongly_stuck;
-        destruct vₛ2, vₜ2; try iDestruct "Hv2" as %[]; try sim_strongly_stuck;
-        destruct op; try sim_strongly_stuck;
-        sim_pures.
+      [ sim_binopₛ1
+      | iCombine "Hsim1 Hsim2" as "(Hsim2 & Hsim1)"; sim_binopₛ2
+      ].
+      all: sim_mono "Hsim1"; iIntros "% % (%vₛ1 & %vₜ1 & (-> & ->) & #Hv1)".
+      all: sim_mono "Hsim2"; iIntros "% % (%vₛ2 & %vₜ2 & (-> & ->) & #Hv2)".
+      all: sim_pures.
+      all: destruct vₛ1, vₜ1; try iDestruct "Hv1" as %[]; try sim_strongly_stuck.
+      all: destruct vₛ2, vₜ2; try iDestruct "Hv2" as %[]; try sim_strongly_stuck.
+      all: destruct op; try sim_strongly_stuck.
+      all: sim_pures.
+      all: iDestruct "Hv1" as "(Hv1 & _)"; iDestruct "Hv2" as "(Hv2 & _)"; rewrite !loc_add_0.
+      all: iDestruct (sim_heap_bij_agree with "Hv1 Hv2") as %Hiff.
+      all: iApply "HΦ".
+      all: iPureIntro; rewrite ?bool_decide_not; f_equal; apply bool_decide_ext; naive_solver.
     Qed.
     Lemma sim_binop_valsₛ Φ op v1 v2 v e :
       data_binop_eval op v1 v2 = Some v →
@@ -131,12 +135,13 @@ Section sim_GS.
     Proof.
       iIntros "Hsim1 Hsim2 HΦ".
       sim_constrₜ;
-        [| iCombine "Hsim1 Hsim2" as "(Hsim2 & Hsim1)"];
-        [sim_constrₛ1 | sim_constrₛ2];
-        sim_mono "Hsim1"; iIntros "% % (%vₛ1 & %vₜ1 & (-> & ->) & #Hv1)";
-        sim_mono "Hsim2"; iIntros "% % (%vₛ2 & %vₜ2 & (-> & ->) & #Hv2)";
-        sim_constr_det as lₛ lₜ "Hl";
-        iApply "HΦ"; iSmash+.
+      [ sim_constrₛ1
+      | iCombine "Hsim1 Hsim2" as "(Hsim2 & Hsim1)"; sim_constrₛ2
+      ].
+      all: sim_mono "Hsim1"; iIntros "% % (%vₛ1 & %vₜ1 & (-> & ->) & #Hv1)".
+      all: sim_mono "Hsim2"; iIntros "% % (%vₛ2 & %vₜ2 & (-> & ->) & #Hv2)".
+      all: sim_constr_det as lₛ lₜ "Hl".
+      all: iApply "HΦ"; iSmash+.
     Qed.
     Lemma sim_constr_valₜ1 Φ eₛ tag vₜ1 eₜ :
       SIM eₛ ≳ eₜ [[ Χ ]] {{ sim_post_vals' (≈) }} -∗
@@ -150,9 +155,9 @@ Section sim_GS.
       SIM eₛ ≳ &tag vₜ1 eₜ [[ Χ ]] {{ Φ }}.
     Proof.
       iIntros "Hsim HΦ".
-      sim_constrₜ;
-        sim_mono "Hsim"; iIntros "% % (%vₛ & %vₜ2 & (-> & ->) & #Hv)";
-        sim_constr_detₜ as l "Hl0" "Hl1" "Hl2".
+      sim_constrₜ.
+      all: sim_mono "Hsim"; iIntros "% % (%vₛ & %vₜ2 & (-> & ->) & #Hv)".
+      all: sim_constr_detₜ as l "Hl0" "Hl1" "Hl2".
     Qed.
     Lemma sim_constr_valₜ2 Φ eₛ tag eₜ vₜ2 :
       SIM eₛ ≳ eₜ [[ Χ ]] {{ sim_post_vals' (≈) }} -∗
@@ -166,9 +171,9 @@ Section sim_GS.
       SIM eₛ ≳ &tag eₜ vₜ2 [[ Χ ]] {{ Φ }}.
     Proof.
       iIntros "Hsim HΦ".
-      sim_constrₜ;
-        sim_mono "Hsim"; iIntros "% % (%vₛ & %vₜ1 & (-> & ->) & #Hv)";
-        sim_constr_detₜ as l "Hl0" "Hl1" "Hl2".
+      sim_constrₜ.
+      all: sim_mono "Hsim"; iIntros "% % (%vₛ & %vₜ1 & (-> & ->) & #Hv)".
+      all: sim_constr_detₜ as l "Hl0" "Hl1" "Hl2".
     Qed.
 
     Lemma sim_load Φ eₛ1 eₛ2 eₜ1 eₜ2 :
@@ -224,10 +229,10 @@ Section sim_GS.
     Lemma simv_call Φ eₛ1 eₛ2 eₜ1 eₜ2 :
       SIM eₛ1 ≳ eₜ1 [[ Χ ]] {{# (≈) }} -∗
       SIM eₛ2 ≳ eₜ2 [[ Χ ]] {{# (≈) }} -∗
-      ( ∀ func vₛ vₜ,
+      ( ∀ func annot vₛ vₜ,
         ⌜func ∈ dom sim_progₛ⌝ -∗
         vₛ ≈ vₜ -∗
-        SIM func vₛ ≳ func vₜ [[ Χ ]] {{# Φ }}
+        SIM (DataFunc func annot) vₛ ≳ (DataFunc func annot) vₜ [[ Χ ]] {{# Φ }}
       ) -∗
       SIM eₛ1 eₛ2 ≳ eₜ1 eₜ2 [[ Χ ]] {{# Φ }}.
     Proof.

@@ -4,16 +4,17 @@
 
 theories -> simuliris
 
-theories/prelude.v
+theories/prelude/base.v
+theories/prelude/tactics.v
+theories/prelude/tactic_flag.v
+theories/prelude/prelude.v
 
-theories/common/tactics.v
 theories/common/typeclasses.v
 theories/common/autosubst.v
 theories/common/relation.v
 theories/common/induction.v
 theories/common/three.v
 theories/common/loc.v
-theories/common/tactic_flag.v
 
 theories/proofmode.v
 
@@ -58,7 +59,7 @@ theories/data_lang/rsim/rules.v
 theories/data_human_lang/syntax.v
 theories/data_human_lang/notations.v
 theories/data_human_lang/metatheory.v
-theories/data_human_lang/compilation.v
+theories/data_human_lang/compile.v
 
 theories/tmc/definition.v
 theories/tmc/metatheory.v
@@ -79,3 +80,4 @@ theories/aps_plus_2/examples/list_sum.v
 theories/inline/definition.v
 theories/inline/metatheory.v
 theories/inline/soundness.v
+theories/inline/compile.v

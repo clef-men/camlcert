@@ -9,7 +9,7 @@ Definition data_val_well_formed prog v :=
   match v with
   | DataLoc _ =>
       False
-  | DataFunc func =>
+  | DataFunc func _ =>
       func ∈ dom prog
   | _ =>
       True
@@ -92,10 +92,14 @@ Fixpoint data_expr_scoped scope e :=
   end.
 
 Definition data_program_well_formed prog :=
-  map_Forall (λ _, data_expr_well_formed prog) prog.
+  map_Forall (λ _ def,
+    data_expr_well_formed prog def.(data_definition_body)
+  ) prog.
 
 Definition data_program_scoped prog :=
-  map_Forall (λ _, data_expr_scoped 1) prog.
+  map_Forall (λ _ def,
+    data_expr_scoped 1 def.(data_definition_body)
+  ) prog.
 
 Definition data_program_valid prog :=
   data_program_well_formed prog ∧ data_program_scoped prog.
@@ -150,19 +154,21 @@ Proof.
   apply subst_data_expr_scoped_1. done.
 Qed.
 
-Lemma subst_data_program_scoped ς1 ς2 prog func e :
+Lemma subst_data_program_scoped ς1 ς2 prog func def e :
   ς1 0 = ς2 0 →
   data_program_scoped prog →
-  prog !! func = Some e →
+  prog !! func = Some def →
+  e = def.(data_definition_body) →
   e.[ς1] = e.[ς2].
 Proof.
-  intros Hσ Hscoped Hlookup.
+  intros Hσ Hscoped Hlookup ->.
   eapply subst_data_expr_scoped_1; first done.
-  eapply map_Forall_lookup_1 in Hscoped; naive_solver.
+  eapply map_Forall_lookup_1 in Hscoped; done.
 Qed.
-Lemma subst_data_program_scoped' ς1 ς2 v prog func e :
+Lemma subst_data_program_scoped' ς1 ς2 v prog func def e :
   data_program_scoped prog →
-  prog !! func = Some e →
+  prog !! func = Some def →
+  e = def.(data_definition_body) →
   e.[v .: ς1] = e.[v .: ς2].
 Proof.
   apply subst_data_program_scoped. done.

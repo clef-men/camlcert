@@ -9,8 +9,6 @@ From iris.base_logic Require Import
 From simuliris Require Import
   prelude
   proofmode.
-From simuliris.common Require Import
-  tactics.
 From simuliris.base_logic Require Import
   satisfiable.
 From simuliris.program_logic Require Import

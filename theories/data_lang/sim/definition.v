@@ -61,8 +61,8 @@ Section sim_programs.
           (lₛ +ₗ 0) ≈ (lₜ +ₗ 0) ∗
           (lₛ +ₗ 1) ≈ (lₜ +ₗ 1) ∗
           (lₛ +ₗ 2) ≈ (lₜ +ₗ 2)
-      | DataFunc funcₛ, DataFunc funcₜ =>
-          ⌜funcₛ = funcₜ ∧ funcₛ ∈ dom sim_progₛ⌝
+      | DataFunc funcₛ annotₛ, DataFunc funcₜ annotₜ =>
+          ⌜funcₛ = funcₜ ∧ annotₛ = annotₜ ∧ funcₛ ∈ dom sim_progₛ⌝
       | _, _ =>
           False
       end%I.

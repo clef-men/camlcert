@@ -21,6 +21,7 @@ Qed.
 Implicit Types b : bool.
 Implicit Types l : loc.
 Implicit Types func : data_function.
+Implicit Types annot : data_annotation.
 Implicit Types tag : data_tag.
 Implicit Types idx : data_index.
 Implicit Types v w : data_val.
@@ -39,6 +40,39 @@ Definition data_unop_eval op v :=
   end.
 #[global] Arguments data_unop_eval !_ !_ / : assert.
 
+Definition data_binop_eval_unit op :=
+  match op with
+  | DataOpEq =>
+      Some (DataBool true)
+  | DataOpNe =>
+      Some (DataBool false)
+  | _ =>
+      None
+  end.
+#[global] Arguments data_binop_eval_unit !_ / : assert.
+
+Definition data_binop_eval_index op idx1 idx2 :=
+  match op with
+  | DataOpEq =>
+      Some (DataBool (bool_decide (idx1 = idx2)))
+  | DataOpNe =>
+      Some (DataBool (bool_decide (idx1 ≠ idx2)))
+  | _ =>
+      None
+  end.
+#[global] Arguments data_binop_eval_index !_ _ _ / : assert.
+
+Definition data_binop_eval_tag op tag1 tag2 :=
+  match op with
+  | DataOpEq =>
+      Some (DataBool (bool_decide (tag1 = tag2)))
+  | DataOpNe =>
+      Some (DataBool (bool_decide (tag1 ≠ tag2)))
+  | _ =>
+      None
+  end.
+#[global] Arguments data_binop_eval_tag !_ _ _ / : assert.
+
 Definition data_binop_eval_int op n1 n2 :=
   match op with
   | DataOpPlus =>
@@ -55,8 +89,14 @@ Definition data_binop_eval_int op n1 n2 :=
       Some (DataBool (bool_decide (n1 ≤ n2)%Z))
   | DataOpLt =>
       Some (DataBool (bool_decide (n1 < n2)%Z))
+  | DataOpGe =>
+      Some (DataBool (bool_decide (n1 >= n2)%Z))
+  | DataOpGt =>
+      Some (DataBool (bool_decide (n1 > n2)%Z))
   | DataOpEq =>
       Some (DataBool (bool_decide (n1 = n2)%Z))
+  | DataOpNe =>
+      Some (DataBool (bool_decide (n1 ≠ n2)%Z))
   end.
 #[global] Arguments data_binop_eval_int !_ _ _ / : assert.
 
@@ -64,15 +104,30 @@ Definition data_binop_eval_bool op b1 b2 :=
   match op with
   | DataOpEq =>
       Some (DataBool (bool_decide (b1 = b2)))
+  | DataOpNe =>
+      Some (DataBool (bool_decide (b1 ≠ b2)))
   | _ =>
       None
   end.
 #[global] Arguments data_binop_eval_bool !_ _ _ / : assert.
 
+Definition data_binop_eval_loc op l1 l2 :=
+  match op with
+  | DataOpEq =>
+      Some (DataBool (bool_decide (l1 = l2)))
+  | DataOpNe =>
+      Some (DataBool (bool_decide (l1 ≠ l2)))
+  | _ =>
+      None
+  end.
+#[global] Arguments data_binop_eval_loc !_ _ _ / : assert.
+
 Definition data_binop_eval_function op func1 func2 :=
   match op with
   | DataOpEq =>
       Some (DataBool (bool_decide (func1 = func2)))
+  | DataOpNe =>
+      Some (DataBool (bool_decide (func1 ≠ func2)))
   | _ =>
       None
   end.
@@ -80,11 +135,19 @@ Definition data_binop_eval_function op func1 func2 :=
 
 Definition data_binop_eval op v1 v2 :=
   match v1, v2 with
+  | DataUnit, DataUnit =>
+      data_binop_eval_unit op
+  | DataIndex idx1, DataIndex idx2 =>
+      data_binop_eval_index op idx1 idx2
+  | DataTag tag1, DataTag tag2 =>
+      data_binop_eval_tag op tag1 tag2
   | DataInt n1, DataInt n2 =>
       data_binop_eval_int op n1 n2
   | DataBool b1, DataBool b2 =>
       data_binop_eval_bool op b1 b2
-  | DataFunc func1, DataFunc func2 =>
+  | DataLoc l1, DataLoc l2 =>
+      data_binop_eval_loc op l1 l2
+  | DataFunc func1 _, DataFunc func2 _ =>
       data_binop_eval_function op func1 func2
   | _, _ =>
       None
@@ -97,11 +160,12 @@ Inductive data_head_step prog : data_expr → data_state → data_expr → data_
       data_head_step prog
         (let: v in e) σ
         e' σ
-  | data_head_step_call func v e e' σ :
-      prog !! func = Some e →
+  | data_head_step_call func def annot v e e' σ :
+      prog !! func = Some def →
+      e = def.(data_definition_body) →
       e' = e.[#v/] →
       data_head_step prog
-        (func v) σ
+        ((DataFunc func annot) v) σ
         e' σ
   | data_head_step_unop op v v' σ :
       data_unop_eval op v = Some v' →

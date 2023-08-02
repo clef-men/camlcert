@@ -1,7 +1,5 @@
 From simuliris Require Import
   prelude.
-From simuliris.common Require Import
-  tactics.
 From simuliris.data_lang Require Export
   metatheory.
 From simuliris.inline Require Export
@@ -26,7 +24,7 @@ Section inline.
     intros (Hprog_wf & Hprog_scoped) Hinline.
     revert eₛ' eₜ' ς. induction Hinline; intros eₛ' eₜ' ς -> ->;
       eauto using inline_expr_refl with inline.
-    apply inline_expr_call_inline with (e_funcₛ := e_funcₛ.[up ς]); try naive_solver.
+    eapply inline_expr_call_inline with (e_funcₛ := e_funcₛ.[up ς]); try naive_solver.
     erewrite (subst_data_program_scoped _ ids); asimpl; done.
   Qed.
 

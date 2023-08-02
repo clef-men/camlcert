@@ -1,7 +1,5 @@
 From simuliris Require Import
   prelude.
-From simuliris.common Require Import
-  tactics.
 From simuliris.data_lang Require Export
   language.
 From simuliris.data_lang Require Import
@@ -120,7 +118,7 @@ Proof.
 Qed.
 #[global] Instance strongly_head_stuck_data_call prog v1 v2 :
   IsStronglyHeadStuck prog
-    (if v1 is DataFunc _ then False else True)
+    (if v1 is DataFunc _ _ then False else True)
     (DataCall (DataVal v1) (DataVal v2)).
 Proof.
   solve_strongly_head_stuck.
@@ -162,7 +160,7 @@ Proof.
 Qed.
 
 #[local] Ltac solve_pure_head_exec :=
-  intros ?; apply nsteps_once; constructor;
+  intros ?; simplify; apply nsteps_once; constructor;
   [ auto with data_lang
   | intros; invert_data_head_step; auto
   ].
@@ -174,10 +172,10 @@ Qed.
 Proof.
   solve_pure_head_exec.
 Qed.
-#[global] Instance pure_exec_data_call prog func v e :
+#[global] Instance pure_exec_data_call prog func annot v e :
   PureHeadExec prog 1
-    (prog !! func = Some e)
-    (DataCall (DataVal (DataFunc func)) (DataVal v))
+    (∃ def, prog !! func = Some def ∧ e = def.(data_definition_body))
+    (DataCall (DataVal (DataFunc func annot)) (DataVal v))
     e.[DataVal v/].
 Proof.
   solve_pure_head_exec.

@@ -12,11 +12,17 @@ From simuliris.common Require Export
   loc
   typeclasses.
 
-Notation data_index := three (only parsing).
+Notation data_index :=
+  three (only parsing).
 
-Definition data_tag := nat.
+Definition data_tag :=
+  nat.
 
-Notation data_function := string (only parsing).
+Notation data_function :=
+  string (only parsing).
+
+Definition data_annotation :=
+  list string.
 
 Inductive data_val :=
   | DataUnit
@@ -25,7 +31,10 @@ Inductive data_val :=
   | DataInt (n : Z)
   | DataBool (b : bool)
   | DataLoc (l : loc)
-  | DataFunc (func : data_function).
+  | DataFunc (func : data_function) (annot : data_annotation).
+
+Definition DataFunc' func :=
+  DataFunc func [].
 
 #[global] Instance data_val_inhabited : Inhabited data_val :=
   populate DataUnit.
@@ -48,8 +57,8 @@ Proof.
         inr $ inr $ inr $ inr $ inl b
     | DataLoc l =>
         inr $ inr $ inr $ inr $ inr $ inl l
-    | DataFunc func =>
-        inr $ inr $ inr $ inr $ inr $ inr func
+    | DataFunc func annot =>
+        inr $ inr $ inr $ inr $ inr $ inr (func, annot)
     end.
   pose decode v :=
     match v with
@@ -65,8 +74,8 @@ Proof.
         DataBool b
     | inr (inr (inr (inr (inr (inl l))))) =>
         DataLoc l
-    | inr (inr (inr (inr (inr (inr func))))) =>
-        DataFunc func
+    | inr (inr (inr (inr (inr (inr (func, annot)))))) =>
+        DataFunc func annot
     end.
   apply (inj_countable' encode decode). intros []; done.
 Qed.
@@ -86,8 +95,8 @@ Qed.
         b1 = b2
     | DataLoc _, DataLoc _ =>
         True
-    | DataFunc func1, DataFunc func2 =>
-        func1 = func2
+    | DataFunc func1 annot1, DataFunc func2 annot2 =>
+        func1 = func2 ∧ annot1 = annot2
     | _, _ =>
         False
     end.
@@ -116,7 +125,7 @@ Qed.
 
 Inductive data_binop :=
   | DataOpPlus | DataOpMinus | DataOpMult | DataOpQuot | DataOpRem
-  | DataOpLe | DataOpLt | DataOpEq.
+  | DataOpLe | DataOpLt | DataOpGe | DataOpGt | DataOpEq | DataOpNe.
 
 #[global] Instance data_binop_eq_dec : EqDecision data_binop :=
   ltac:(solve_decision).
@@ -132,7 +141,10 @@ Proof.
     | DataOpRem => 4
     | DataOpLe => 5
     | DataOpLt => 6
-    | DataOpEq => 7
+    | DataOpGe => 7
+    | DataOpGt => 8
+    | DataOpEq => 9
+    | DataOpNe => 10
     end.
   pose decode op :=
     match op with
@@ -143,7 +155,10 @@ Proof.
     | 4 => DataOpRem
     | 5 => DataOpLe
     | 6 => DataOpLt
-    | _ => DataOpEq
+    | 7 => DataOpGe
+    | 8 => DataOpGt
+    | 9 => DataOpEq
+    | _ => DataOpNe
     end.
   apply (inj_countable' encode decode). intros []; done.
 Qed.
@@ -233,4 +248,31 @@ Qed.
 #[global] Instance data_expr_subst : Subst data_expr. derive. Defined.
 #[global] Instance data_expr_subst_lemmas : SubstLemmas data_expr. derive. Qed.
 
-Definition data_program := gmap data_function data_expr.
+Record data_definition := {
+  data_definition_annot : data_annotation ;
+  data_definition_body : data_expr ;
+}.
+
+#[global] Instance data_definition_inhabited : Inhabited data_definition :=
+  populate {|
+    data_definition_annot := inhabitant ;
+    data_definition_body := inhabitant ;
+  |}.
+#[global] Instance data_definition_eq_dec : EqDecision data_definition :=
+  ltac:(solve_decision).
+#[global] Instance data_definition_countable :
+  Countable data_definition.
+Proof.
+  pose encode def :=
+    ( def.(data_definition_annot),
+      def.(data_definition_body)
+    ).
+  pose decode def :=
+    {|data_definition_annot := def.1 ;
+      data_definition_body := def.2 ;
+    |}.
+  apply (inj_countable' encode decode). intros []; done.
+Qed.
+
+Definition data_program :=
+  gmap data_function data_definition.

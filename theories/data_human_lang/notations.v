@@ -33,7 +33,7 @@ Notation "#ₕ v" := (DataHumanVal v%Z%data_human_val%stdpp)
 Notation "'Fail'" := (#ₕ() #ₕ())%data_human_expr
 : data_human_expr_scope.
 
-Notation "$ x" := (DataHumanFunc x)
+Notation "$ x" := (DataHumanFunc x [])
 ( at level 5,
   format "$ x"
 ) : data_human_expr_scope.
@@ -69,9 +69,13 @@ Notation "e1 ≤ e2" := (DataHumanBinop DataOpLe e1%data_human_expr e2%data_huma
 : data_human_expr_scope.
 Notation "e1 < e2" := (DataHumanBinop DataOpLt e1%data_human_expr e2%data_human_expr)
 : data_human_expr_scope.
+Notation "e1 ≥ e2" := (DataHumanBinop DataOpGe e1%data_human_expr e2%data_human_expr)
+: data_human_expr_scope.
+Notation "e1 > e2" := (DataHumanBinop DataOpGt e1%data_human_expr e2%data_human_expr)
+: data_human_expr_scope.
 Notation "e1 = e2" := (DataHumanBinop DataOpEq e1%data_human_expr e2%data_human_expr)
 : data_human_expr_scope.
-Notation "e1 ≠ e2" := (~ (e1 = e2))%data_human_expr
+Notation "e1 ≠ e2" := (DataHumanBinop DataOpNe e1%data_human_expr e2%data_human_expr)
 : data_human_expr_scope.
 
 Notation "'if:' e0 'then' e1 'else' e2" := (DataHumanIf e0%data_human_expr e1%data_human_expr e2%data_human_expr)

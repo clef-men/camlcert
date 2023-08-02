@@ -8,6 +8,3 @@ From stdpp Require Export
 #[export] Set Suggest Proof Using.
 
 Open Scope general_if_scope.
-
-Ltac done :=
-  stdpp.tactics.done.

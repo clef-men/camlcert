@@ -6,7 +6,8 @@ From simuliris Require Import
 From simuliris.data_lang Require Export
   syntax.
 
-Notation data_human_name := string (only parsing).
+Notation data_human_name :=
+  string (only parsing).
 
 Inductive data_human_val :=
   | DataHumanUnit
@@ -14,7 +15,7 @@ Inductive data_human_val :=
   | DataHumanTag (tag : data_tag)
   | DataHumanInt (n : Z)
   | DataHumanBool (b : bool)
-  | DataHumanFunc (func : data_function).
+  | DataHumanFunc (func : data_function) (annot : data_annotation).
 
 #[global] Instance data_human_val_inhabited : Inhabited data_human_val :=
   populate DataHumanUnit.
@@ -35,8 +36,8 @@ Proof.
         inr $ inr $ inr $ inl n
     | DataHumanBool b =>
         inr $ inr $ inr $ inr $ inl b
-    | DataHumanFunc func =>
-        inr $ inr $ inr $ inr $ inr func
+    | DataHumanFunc func annot =>
+        inr $ inr $ inr $ inr $ inr (func, annot)
     end.
   pose decode v :=
     match v with
@@ -50,8 +51,8 @@ Proof.
         DataHumanInt n
     | inr (inr (inr (inr (inl b)))) =>
         DataHumanBool b
-    | inr (inr (inr (inr (inr func)))) =>
-        DataHumanFunc func
+    | inr (inr (inr (inr (inr (func, annot))))) =>
+        DataHumanFunc func annot
     end.
   apply (inj_countable' encode decode). intros []; done.
 Qed.
@@ -126,5 +127,35 @@ Proof.
   apply (inj_countable' encode decode). intros e. induction e; simpl; congruence.
 Qed.
 
+Record data_human_definition := {
+  data_human_definition_annot : data_annotation ;
+  data_human_definition_param : binder ;
+  data_human_definition_body : data_human_expr ;
+}.
+
+#[global] Instance data_human_definition_inhabited : Inhabited data_human_definition :=
+  populate {|
+    data_human_definition_annot := inhabitant ;
+    data_human_definition_param := inhabitant ;
+    data_human_definition_body := inhabitant ;
+  |}.
+#[global] Instance data_human_definition_eq_dec : EqDecision data_human_definition :=
+  ltac:(solve_decision).
+#[global] Instance data_human_definition_countable :
+  Countable data_human_definition.
+Proof.
+  pose encode def :=
+    ( def.(data_human_definition_annot),
+      def.(data_human_definition_param),
+      def.(data_human_definition_body)
+    ).
+  pose decode def :=
+    {|data_human_definition_annot := def.1.1 ;
+      data_human_definition_param := def.1.2 ;
+      data_human_definition_body := def.2 ;
+    |}.
+  apply (inj_countable' encode decode). intros []; done.
+Qed.
+
 Definition data_human_program :=
-  gmap data_function (binder * data_human_expr).
+  gmap data_function data_human_definition.

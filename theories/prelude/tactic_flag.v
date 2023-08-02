@@ -4,8 +4,8 @@ From stdpp Require Import
 From iris.proofmode Require Import
   string_ident.
 
-From simuliris Require Import
-  prelude.
+From simuliris.prelude Require Export
+  base.
 
 Class TacticFlag (name : string) := {
   tactic_flag : bool ;
