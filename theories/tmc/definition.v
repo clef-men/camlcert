@@ -155,11 +155,10 @@ Record tmc {progₛ progₜ} := {
   tmc_dom :
     dom progₜ = dom progₛ ∪ map_img tmc_ξ ;
 
-  tmc_dir func defₛ eₛ :
+  tmc_dir func defₛ :
     progₛ !! func = Some defₛ →
-    eₛ = defₛ.(data_definition_body) →
       ∃ eₜ,
-      tmc_expr_dir tmc_ξ eₛ eₜ ∧
+      tmc_expr_dir tmc_ξ defₛ.(data_definition_body) eₜ ∧
       progₜ !! func =
         Some {|
           data_definition_annot :=
@@ -168,12 +167,11 @@ Record tmc {progₛ progₜ} := {
             eₜ ;
         |} ;
 
-  tmc_dps func defₛ eₛ func_dps :
+  tmc_dps func defₛ func_dps :
     progₛ !! func = Some defₛ →
-    eₛ = defₛ.(data_definition_body) →
     tmc_ξ !! func = Some func_dps →
       ∃ eₜ,
-      tmc_expr_dps tmc_ξ $1 $2 eₛ eₜ ∧
+      tmc_expr_dps tmc_ξ $1 $2 defₛ.(data_definition_body) eₜ ∧
       progₜ !! func_dps =
         Some {|
           data_definition_annot :=

@@ -52,6 +52,6 @@ Proof.
   intros inline. rewrite /data_program_scoped !map_Forall_lookup => Hscoped func eₜ Hfuncₜ.
   apply elem_of_dom_2 in Hfuncₜ as Hfuncₜ'.
   rewrite inline.(inline_dom) in Hfuncₜ'. apply lookup_lookup_total_dom in Hfuncₜ'.
-  edestruct inline.(inline_transform) as (_eₜ & Hinline & Heq); [done.. |].
+  edestruct inline.(inline_transform) as (_eₜ & Hinline & Heq); first done.
   rewrite Heq in Hfuncₜ. eapply data_expr_scoped_inline; naive_solver.
 Qed.

@@ -103,7 +103,7 @@ Lemma inline_compile_sound prog :
 Proof.
   split.
   - rewrite dom_fmap_L //.
-  - intros func def e Hfunc ->. eexists. split.
+  - intros func def Hfunc. eexists. split.
     + apply inline_compile_expr_sound.
     + rewrite lookup_fmap Hfunc //.
 Qed.

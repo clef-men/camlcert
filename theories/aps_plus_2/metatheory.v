@@ -121,7 +121,7 @@ Proof.
   intros aps_plus. rewrite /data_program_scoped !map_Forall_lookup => Hscoped func eₜ Hfuncₜ.
   apply elem_of_dom_2 in Hfuncₜ as Hfuncₜ'. rewrite aps_plus.(aps_plus_dom) elem_of_union in Hfuncₜ'.
   destruct Hfuncₜ' as [Hfuncₛ%lookup_lookup_total_dom | (func_dir & Hξ)%elem_of_map_img].
-  - edestruct aps_plus.(aps_plus_dir) as (_eₜ & Hdir & Heq); [done.. |].
+  - edestruct aps_plus.(aps_plus_dir) as (_eₜ & Hdir & Heq); first done.
     eapply data_expr_scoped_aps_plus_expr_dir; last naive_solver.
     rewrite Heq in Hfuncₜ. naive_solver.
   - pose proof Hξ as Hfunc_dirₛ%elem_of_dom_2%(aps_plus.(aps_plus_ξ_dom))%lookup_lookup_total_dom.

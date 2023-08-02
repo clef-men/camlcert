@@ -98,11 +98,10 @@ Record inline {progₛ progₜ} := {
   inline_dom :
     dom progₜ = dom progₛ ;
 
-  inline_transform func defₛ eₛ :
+  inline_transform func defₛ :
     progₛ !! func = Some defₛ →
-    eₛ = defₛ.(data_definition_body) →
       ∃ eₜ,
-      inline_expr progₛ eₛ eₜ ∧
+      inline_expr progₛ defₛ.(data_definition_body) eₜ ∧
       progₜ !! func =
         Some {|
           data_definition_annot :=

@@ -153,11 +153,10 @@ Record aps_plus {progₛ progₜ} := {
   aps_plus_dom :
     dom progₜ = dom progₛ ∪ map_img aps_plus_ξ ;
 
-  aps_plus_dir func defₛ eₛ :
+  aps_plus_dir func defₛ :
     progₛ !! func = Some defₛ →
-    eₛ = defₛ.(data_definition_body) →
       ∃ eₜ,
-      aps_plus_expr_dir aps_plus_ξ eₛ eₜ ∧
+      aps_plus_expr_dir aps_plus_ξ defₛ.(data_definition_body) eₜ ∧
       progₜ !! func =
         Some {|
           data_definition_annot :=
@@ -166,12 +165,11 @@ Record aps_plus {progₛ progₜ} := {
             eₜ ;
         |} ;
 
-  aps_plus_aps func defₛ eₛ func_aps :
+  aps_plus_aps func defₛ func_aps :
     progₛ !! func = Some defₛ →
-    eₛ = defₛ.(data_definition_body) →
     aps_plus_ξ !! func = Some func_aps →
       ∃ eₜ,
-      aps_plus_expr_aps aps_plus_ξ $1 eₛ eₜ ∧
+      aps_plus_expr_aps aps_plus_ξ $1 defₛ.(data_definition_body) eₜ ∧
       progₜ !! func_aps =
         Some {|
           data_definition_annot :=

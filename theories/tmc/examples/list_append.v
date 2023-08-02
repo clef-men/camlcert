@@ -83,10 +83,10 @@ Proof.
     + apply data_human_program_compile_scoped.
   - rewrite /data_human_program_compile map_fmap_singleton fmap_insert map_fmap_singleton /=.
     exists {["list_append" := "list_append_dps"]}; try set_solver.
-    + intros * (<- & <-)%lookup_singleton_Some ->.
+    + intros * (<- & <-)%lookup_singleton_Some.
       rewrite lookup_insert.
       eexists. split; last done. repeat econstructor.
-    + intros * (<- & <-)%lookup_singleton_Some -> (_ & <-)%lookup_singleton_Some.
+    + intros * (<- & <-)%lookup_singleton_Some (_ & <-)%lookup_singleton_Some.
       eexists. split; last done. repeat constructor.
       eapply tmc_expr_dps_constr_1; first constructor.
       * eapply tmc_expr_dps_call; repeat constructor.

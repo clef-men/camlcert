@@ -291,7 +291,7 @@ Section sim_GS.
     - iDestruct "Hprotocol" as "(%func & %annot & %vₛ & %vₜ & %Hfuncₛ & (-> & ->) & #Hv & HΨ)".
       simpl in Hfuncₛ. apply lookup_lookup_total_dom in Hfuncₛ.
       set defₛ := _ !!! _ in Hfuncₛ. set eₛ := defₛ.(data_definition_body).
-      edestruct tmc.(tmc_dir) as (eₜ & Hdir & Hfuncₜ); [done.. |].
+      edestruct tmc.(tmc_dir) as (eₜ & Hdir & Hfuncₜ); first done.
       iExists _, _. iSplit; first eauto 10 with data_lang. sim_asimpl.
       erewrite (subst_data_program_scoped' ids inhabitant.ₛ# _ sim_progₛ); [| done..].
       erewrite (subst_data_program_scoped' ids inhabitant.ₜ# _ sim_progₜ); [| done..].
