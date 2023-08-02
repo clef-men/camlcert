@@ -79,14 +79,14 @@ Section sim_GS.
       + iApply IH1; auto with data_lang.
       + iApply IH2; auto with data_lang.
       + iIntros "%func %annot %vₛ %vₜ %Hfunc #Hv".
-        iApply (sim_apply_protocol _ (sim_post_vals' (≈))). iIntros "%σₛ %σₜ $ !>". iSplitR.
+        iApply (sim_apply_protocol (sim_post_vals' (≈))). iIntros "%σₛ %σₜ $ !>". iSplitR.
         { rewrite /sim_post_vals'. iSmash. }
         iIntros "% % (%vₛ' & %vₜ' & (-> & ->) & HΨ)".
         sim_post.
     - iIntros "%Γ % % (-> & ->) #HΓ /=".
       sim_apply (IH with "[//] [HΦ]"); first auto with data_lang.
       iIntros "%vₛ %vₜ #Hv".
-      iApply (sim_apply_protocol _ (sim_post_vals' (≈))). iIntros "%σₛ %σₜ $ !>". iSplitR.
+      iApply (sim_apply_protocol (sim_post_vals' (≈))). iIntros "%σₛ %σₜ $ !>". iSplitR.
       { iRight. repeat iExists _. repeat iSplit; try iSmash.
         - iPureIntro.
           rewrite (subst_data_expr_scoped_1 _ ids); asimpl; try done.
@@ -180,7 +180,7 @@ Section inline_sound.
       iApply (data_val_bi_similar_similar with "Hv").
     }
     iApply (inline_simv_close (sim_programs := inline_sim_programs) inline); first done.
-    iApply (sim_apply_protocol _ (sim_post_vals (≈)%I)). iIntros "%σₛ %σₜ $ !>".
+    iApply (sim_apply_protocol (sim_post_vals (≈)%I)). iIntros "%σₛ %σₜ $ !>".
     iSplitL.
     - iLeft. iExists func, [], vₛ, vₜ. repeat iSplit; try iSmash.
       + iPureIntro. simpl. eapply elem_of_dom_2. done.

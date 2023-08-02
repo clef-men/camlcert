@@ -59,7 +59,7 @@ Section sim_GS.
     iIntros "%Hfuncₛ %Hξ #Hv HΦ".
     sim_constrₜ;
       sim_constr_detₜ as l "Hl0" "Hl1" "Hl2";
-      sim_apply (sim_apply_protocol _ Φ _ ((DataFunc func annot) vₛ) ((DataFunc func_aps annot) l)); iIntros "%σₛ %σₜ $ !>";
+      sim_apply (sim_apply_protocol Φ _ _ ((DataFunc func annot) vₛ) ((DataFunc func_aps annot) l)); iIntros "%σₛ %σₜ $ !>";
       (iSplitL; [iSmash | iIntros "%eₛ %eₜ HΦ"; sim_post]).
   Qed.
 
@@ -142,7 +142,7 @@ Section sim_GS.
     - iApply rsim_call;
         [iApply IHdirₛ; auto with data_lang.. |].
       iIntros "%func %annot %vₛ %vₜ %Hfunc #Hv".
-      iApply (sim_apply_protocol _ aps_plus_expr_dir_post). iIntros "%σₛ %σₜ $ !>". iSplitR.
+      iApply (sim_apply_protocol aps_plus_expr_dir_post). iIntros "%σₛ %σₜ $ !>". iSplitR.
       { rewrite /aps_plus_expr_dir_post /sim_post_vals'. iSmash. }
       iIntros "% % (%vₛ' & %vₜ' & (-> & ->) & HΨ)".
       sim_post.
@@ -304,7 +304,7 @@ Section aps_plus_sound.
       iApply (data_val_bi_similar_similar with "Hv").
     }
     iApply (aps_plus_sim_close (sim_programs := aps_plus_sim_programs) aps_plus); first done.
-    iApply (sim_apply_protocol _ (sim_post_vals (≈)%I)). iIntros "%σₛ %σₜ $ !>".
+    iApply (sim_apply_protocol (sim_post_vals (≈)%I)). iIntros "%σₛ %σₜ $ !>".
     iSplitL.
     - iLeft. iExists func, [], vₛ, vₜ. repeat iSplit; try iSmash.
       + iPureIntro. simpl. eapply elem_of_dom_2. done.
