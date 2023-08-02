@@ -14,8 +14,8 @@ Implicit Types prog progₛ progₜ : data_program.
 Inductive inline_expr prog : data_expr → data_expr → Prop :=
   | inline_expr_val v :
       inline_expr prog
-        #v
-        #v
+        v
+        v
   | inline_expr_var x :
       inline_expr prog
         $x

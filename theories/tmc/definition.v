@@ -18,8 +18,8 @@ Implicit Types ξ : tmc_mapping.
 Inductive tmc_dir ξ : data_expr → data_expr → Prop :=
   | tmc_dir_val v :
       tmc_dir ξ
-        #v
-        #v
+        v
+        v
   | tmc_dir_var x :
       tmc_dir ξ
         $x

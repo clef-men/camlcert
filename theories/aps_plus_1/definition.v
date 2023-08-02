@@ -19,8 +19,8 @@ Implicit Types ξ : aps_plus_mapping.
 Inductive aps_plus_dir ξ : data_expr → data_expr → Prop :=
   | aps_plus_dir_val v :
       aps_plus_dir ξ
-        #v
-        #v
+        v
+        v
   | aps_plus_dir_var x :
       aps_plus_dir ξ
         $x
