@@ -24,13 +24,13 @@ Fixpoint inline_compile_expr prog depth := fix inline_compile_expr' e :=
       match e1 with
       | DataVal (DataFunc func annot) =>
           match bool_decide (inline_annotation ∈ annot), prog !! func with
-          | true, Some e_func =>
+          | true, Some def =>
               let e_func :=
                 match depth with
                 | 0 =>
-                    e_func
+                    def.(data_definition_body)
                 | S depth =>
-                    inline_compile_expr prog depth e_func
+                    inline_compile_expr prog depth def.(data_definition_body)
                 end
               in
               DataLet
@@ -83,7 +83,13 @@ Fixpoint inline_compile_expr prog depth := fix inline_compile_expr' e :=
 #[global] Arguments inline_compile_expr _ _ !_ / : assert.
 
 Definition inline_compile prog :=
-  inline_compile_expr prog inline_max_depth <$> prog.
+  (λ def,
+    let annot := def.(data_definition_annot) in
+    let body := def.(data_definition_body) in
+    {|data_definition_annot := annot ;
+      data_definition_body := inline_compile_expr prog inline_max_depth body
+    |}
+  ) <$> prog.
 
 Lemma inline_compile_expr_sound prog depth e :
   inline_expr prog e (inline_compile_expr prog depth e).
@@ -97,7 +103,7 @@ Lemma inline_compile_sound prog :
 Proof.
   split.
   - rewrite dom_fmap_L //.
-  - intros func e Hfunc. eexists. split.
+  - intros func def e Hfunc ->. eexists. split.
     + apply inline_compile_expr_sound.
     + rewrite lookup_fmap Hfunc //.
 Qed.

@@ -160,8 +160,9 @@ Inductive data_head_step prog : data_expr → data_state → data_expr → data_
       data_head_step prog
         (let: v in e) σ
         e' σ
-  | data_head_step_call func annot v e e' σ :
-      prog !! func = Some e →
+  | data_head_step_call func def annot v e e' σ :
+      prog !! func = Some def →
+      e = def.(data_definition_body) →
       e' = e.[#v/] →
       data_head_step prog
         ((DataFunc func annot) v) σ

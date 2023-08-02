@@ -160,7 +160,7 @@ Proof.
 Qed.
 
 #[local] Ltac solve_pure_head_exec :=
-  intros ?; apply nsteps_once; constructor;
+  intros ?; simplify; apply nsteps_once; constructor;
   [ auto with data_lang
   | intros; invert_data_head_step; auto
   ].
@@ -174,7 +174,7 @@ Proof.
 Qed.
 #[global] Instance pure_exec_data_call prog func annot v e :
   PureHeadExec prog 1
-    (prog !! func = Some e)
+    (∃ def, prog !! func = Some def ∧ e = def.(data_definition_body))
     (DataCall (DataVal (DataFunc func annot)) (DataVal v))
     e.[DataVal v/].
 Proof.

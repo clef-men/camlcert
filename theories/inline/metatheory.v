@@ -24,7 +24,7 @@ Section inline.
     intros (Hprog_wf & Hprog_scoped) Hinline.
     revert eₛ' eₜ' ς. induction Hinline; intros eₛ' eₜ' ς -> ->;
       eauto using inline_expr_refl with inline.
-    apply inline_expr_call_inline with (e_funcₛ := e_funcₛ.[up ς]); try naive_solver.
+    eapply inline_expr_call_inline with (e_funcₛ := e_funcₛ.[up ς]); try naive_solver.
     erewrite (subst_data_program_scoped _ ids); asimpl; done.
   Qed.
 
@@ -52,6 +52,6 @@ Proof.
   intros inline. rewrite /data_program_scoped !map_Forall_lookup => Hscoped func eₜ Hfuncₜ.
   apply elem_of_dom_2 in Hfuncₜ as Hfuncₜ'.
   rewrite inline.(inline_dom) in Hfuncₜ'. apply lookup_lookup_total_dom in Hfuncₜ'.
-  edestruct inline.(inline_transform) as (_eₜ & Hinline & Heq); first done.
+  edestruct inline.(inline_transform) as (_eₜ & Hinline & Heq); [done.. |].
   rewrite Heq in Hfuncₜ. eapply data_expr_scoped_inline; naive_solver.
 Qed.

@@ -154,22 +154,36 @@ Record tmc {progₛ progₜ} := {
     dom tmc_ξ ⊆ dom progₛ ;
   tmc_dom :
     dom progₜ = dom progₛ ∪ map_img tmc_ξ ;
-  tmc_dirs func eₛ :
-    progₛ !! func = Some eₛ →
+
+  tmc_dirs func defₛ eₛ :
+    progₛ !! func = Some defₛ →
+    eₛ = defₛ.(data_definition_body) →
       ∃ eₜ,
       tmc_dir tmc_ξ eₛ eₜ ∧
-      progₜ !! func = Some eₜ ;
-  tmc_dpss func eₛ func_dps :
-    progₛ !! func = Some eₛ →
+      progₜ !! func =
+        Some {|
+          data_definition_annot :=
+            defₛ.(data_definition_annot) ;
+          data_definition_body :=
+            eₜ ;
+        |} ;
+
+  tmc_dpss func defₛ eₛ func_dps :
+    progₛ !! func = Some defₛ →
+    eₛ = defₛ.(data_definition_body) →
     tmc_ξ !! func = Some func_dps →
       ∃ eₜ,
       tmc_dps tmc_ξ $1 $2 eₛ eₜ ∧
-      progₜ !! func_dps = Some (
-        let: ![𝟙] $0 in
-        let: ![𝟚] $0 in
-        let: ![𝟙] $1 in
-        let: ![𝟚] $3 in
-        eₜ
-      )%data_expr ;
+      progₜ !! func_dps =
+        Some {|
+          data_definition_annot :=
+            defₛ.(data_definition_annot) ;
+          data_definition_body :=
+            let: ![𝟙] $0 in
+            let: ![𝟚] $0 in
+            let: ![𝟙] $1 in
+            let: ![𝟚] $3 in
+            eₜ ;
+        |} ;
 }.
 #[global] Arguments tmc : clear implicits.

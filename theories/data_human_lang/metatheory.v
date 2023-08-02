@@ -47,4 +47,6 @@ Fixpoint data_human_expr_well_formed prog e :=
   end.
 
 Definition data_human_program_well_formed prog :=
-  map_Forall (λ _ '(_, e), data_human_expr_well_formed prog e) prog.
+  map_Forall (λ _ def,
+    data_human_expr_well_formed prog def.(data_human_definition_body)
+  ) prog.

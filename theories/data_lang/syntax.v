@@ -12,13 +12,17 @@ From simuliris.common Require Export
   loc
   typeclasses.
 
-Notation data_index := three (only parsing).
+Notation data_index :=
+  three (only parsing).
 
-Definition data_tag := nat.
+Definition data_tag :=
+  nat.
 
-Notation data_function := string (only parsing).
+Notation data_function :=
+  string (only parsing).
 
-Definition data_annotation := list string.
+Definition data_annotation :=
+  list string.
 
 Inductive data_val :=
   | DataUnit
@@ -244,4 +248,31 @@ Qed.
 #[global] Instance data_expr_subst : Subst data_expr. derive. Defined.
 #[global] Instance data_expr_subst_lemmas : SubstLemmas data_expr. derive. Qed.
 
-Definition data_program := gmap data_function data_expr.
+Record data_definition := {
+  data_definition_annot : data_annotation ;
+  data_definition_body : data_expr ;
+}.
+
+#[global] Instance data_definition_inhabited : Inhabited data_definition :=
+  populate {|
+    data_definition_annot := inhabitant ;
+    data_definition_body := inhabitant ;
+  |}.
+#[global] Instance data_definition_eq_dec : EqDecision data_definition :=
+  ltac:(solve_decision).
+#[global] Instance data_definition_countable :
+  Countable data_definition.
+Proof.
+  pose encode def :=
+    ( def.(data_definition_annot),
+      def.(data_definition_body)
+    ).
+  pose decode def :=
+    {|data_definition_annot := def.1 ;
+      data_definition_body := def.2 ;
+    |}.
+  apply (inj_countable' encode decode). intros []; done.
+Qed.
+
+Definition data_program :=
+  gmap data_function data_definition.

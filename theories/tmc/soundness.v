@@ -289,25 +289,27 @@ Section sim_GS.
     eapply data_program_scoped_tmc in Hprogₛ_scoped as Hprogₜ_scoped; last done.
     iApply sim_close_pure_head_step. clear eₛ eₜ. iIntros "!> %Ψ %eₛ %eₜ [Hprotocol | Hprotocol]".
     - iDestruct "Hprotocol" as "(%func & %annot & %vₛ & %vₜ & %Hfuncₛ & (-> & ->) & #Hv & HΨ)".
-      simpl in Hfuncₛ. apply lookup_lookup_total_dom in Hfuncₛ. set (eₛ := _ !!! _) in Hfuncₛ.
-      edestruct tmc.(tmc_dirs) as (eₜ & Hdir & Hfuncₜ); first done.
-      iExists eₛ.[#vₛ/], eₜ.[#vₜ/]. iSplit; first auto with data_lang.
-      erewrite (subst_data_program_scoped' ids inhabitant.ₛ#); last done; last done.
-      erewrite (subst_data_program_scoped' ids inhabitant.ₜ#); last done; last done.
+      simpl in Hfuncₛ. apply lookup_lookup_total_dom in Hfuncₛ.
+      set defₛ := _ !!! _ in Hfuncₛ. set eₛ := defₛ.(data_definition_body).
+      edestruct tmc.(tmc_dirs) as (eₜ & Hdir & Hfuncₜ); [done.. |].
+      iExists _, _. iSplit; first eauto 10 with data_lang. sim_asimpl.
+      erewrite (subst_data_program_scoped' ids inhabitant.ₛ# _ sim_progₛ); [| done..].
+      erewrite (subst_data_program_scoped' ids inhabitant.ₜ# _ sim_progₜ); [| done..].
       iDestruct (tmc_dir_specification $! tmc_dir_post with "[//] [] [//] []") as "Hsim"; eauto.
       + iApply (bisubst_cons_well_formed with "Hv").
         iApply bisubst_inhabitant_well_formed.
       + rewrite -bisubst_consₛ -bisubst_consₜ.
         sim_mono "Hsim". rewrite sim_post_vals_unseal. iSmash.
     - iDestruct "Hprotocol" as "(%func & %annot & %vₛ & %func_dps & %l1 & %l2 & %dst & %idx & %vₜ & (%Hfuncₛ & %Hξ) & (-> & ->) & Hl11 & Hl12 & Hl21 & Hl22 & Hdst & #Hv & HΨ)".
-      simpl in Hfuncₛ. apply lookup_lookup_total_dom in Hfuncₛ. set (eₛ := _ !!! _) in Hfuncₛ.
+      simpl in Hfuncₛ. apply lookup_lookup_total_dom in Hfuncₛ.
+      set defₛ := _ !!! _ in Hfuncₛ. set eₛ := defₛ.(data_definition_body).
       edestruct tmc.(tmc_dpss) as (eₜ & Hdps & Hfunc_dpsₜ); [done.. |].
-      iExists eₛ.[#vₛ/], _. iSplit; first auto with data_lang.
+      iExists _, _. iSplit; first eauto 10 with data_lang. sim_asimpl.
       do 4 sim_loadₜ. sim_pures.
       eapply (tmc_dps_subst _ (ids 0 .: #dst .: #idx .: ren (+1))) in Hdps; [| autosubst..].
-      erewrite (subst_data_program_scoped' _ (ren (+1))) in Hdps; last done; last done. asimpl in Hdps.
+      erewrite (subst_data_program_scoped' _ (ren (+1)) _ sim_progₛ) in Hdps; [| done..]. asimpl in Hdps.
       replace eₜ.[#vₜ, #dst, #idx, #l2, #l1/] with eₜ.[ids 0 .: #dst .: #idx .: ren (+1)].[#vₜ, #l2, #l1/] by autosubst.
-      erewrite (subst_data_program_scoped' ids inhabitant.ₛ#); last done; last done.
+      erewrite (subst_data_program_scoped' ids inhabitant.ₛ# _ sim_progₛ); [| done..].
       erewrite (subst_data_expr_scoped_1' (#l2 .: #l1 .: ids) inhabitant.ₜ#); last first.
       { eapply data_expr_scoped_tmc_dps; naive_solver. }
       iDestruct (tmc_dps_specification $! (tmc_dps_post dst idx) with "Hdst [] [//] []") as "Hsim"; eauto.

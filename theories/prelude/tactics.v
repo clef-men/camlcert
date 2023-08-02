@@ -1,3 +1,6 @@
+From Coq.Program Require Import
+  Tactics.
+
 From simuliris.prelude Require Export
   base.
 
@@ -45,7 +48,9 @@ Tactic Notation "unprotect" ident(x1) ident(x2) ident(x3) ident(x4) ident(x5) id
   unprotect x1 x2 x3 x4 x5 x6 x7; unprotect x8.
 
 Tactic Notation "simplify" :=
-  destruct_and?; destruct_or?; simplify_eq/=.
+  repeat (destruct_conjs; simpl proj1_sig in * );
+  destruct_or?;
+  simplify_eq/=.
 Tactic Notation "simplify" "-" ident(x1) :=
   protect x1; simplify; unprotect x1.
 Tactic Notation "simplify" "-" ident(x1) ident(x2) :=

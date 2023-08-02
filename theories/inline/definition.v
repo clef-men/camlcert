@@ -32,8 +32,9 @@ Inductive inline_expr prog : data_expr → data_expr → Prop :=
       inline_expr prog
         (eₛ1 eₛ2)
         (eₜ1 eₜ2)
-  | inline_expr_call_inline func annot e_funcₛ eₛ e_funcₜ eₜ :
-      prog !! func = Some e_funcₛ →
+  | inline_expr_call_inline func annot defₛ e_funcₛ eₛ e_funcₜ eₜ :
+      prog !! func = Some defₛ →
+      e_funcₛ = defₛ.(data_definition_body) →
       inline_expr prog e_funcₛ e_funcₜ →
       inline_expr prog eₛ eₜ →
       inline_expr prog
@@ -96,10 +97,18 @@ Create HintDb inline.
 Record inline {progₛ progₜ} := {
   inline_dom :
     dom progₜ = dom progₛ ;
-  inline_transform func eₛ :
-    progₛ !! func = Some eₛ →
+
+  inline_transform func defₛ eₛ :
+    progₛ !! func = Some defₛ →
+    eₛ = defₛ.(data_definition_body) →
       ∃ eₜ,
       inline_expr progₛ eₛ eₜ ∧
-      progₜ !! func = Some eₜ ;
+      progₜ !! func =
+        Some {|
+          data_definition_annot :=
+            defₛ.(data_definition_annot) ;
+          data_definition_body :=
+            eₜ ;
+        |} ;
 }.
 #[global] Arguments inline : clear implicits.

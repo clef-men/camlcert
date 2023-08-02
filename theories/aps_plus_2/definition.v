@@ -152,16 +152,34 @@ Record aps_plus {progₛ progₜ} := {
     dom aps_plus_ξ ⊆ dom progₛ ;
   aps_plus_dom :
     dom progₜ = dom progₛ ∪ map_img aps_plus_ξ ;
-  aps_plus_dirs func eₛ :
-    progₛ !! func = Some eₛ →
+
+  aps_plus_dirs func defₛ eₛ :
+    progₛ !! func = Some defₛ →
+    eₛ = defₛ.(data_definition_body) →
       ∃ eₜ,
       aps_plus_dir aps_plus_ξ eₛ eₜ ∧
-      progₜ !! func = Some eₜ ;
-  aps_plus_apss func eₛ func_aps :
-    progₛ !! func = Some eₛ →
+      progₜ !! func =
+        Some {|
+          data_definition_annot :=
+            defₛ.(data_definition_annot) ;
+          data_definition_body :=
+            eₜ ;
+        |} ;
+
+  aps_plus_apss func defₛ eₛ func_aps :
+    progₛ !! func = Some defₛ →
+    eₛ = defₛ.(data_definition_body) →
     aps_plus_ξ !! func = Some func_aps →
       ∃ eₜ,
       aps_plus_aps aps_plus_ξ $1 eₛ eₜ ∧
-      progₜ !! func_aps = Some (let: ![𝟙] $0 in let: ![𝟚] $1 in eₜ)%data_expr ;
+      progₜ !! func_aps =
+        Some {|
+          data_definition_annot :=
+            defₛ.(data_definition_annot) ;
+          data_definition_body :=
+            let: ![𝟙] $0 in
+            let: ![𝟚] $1 in
+            eₜ
+        |} ;
 }.
 #[global] Arguments aps_plus : clear implicits.

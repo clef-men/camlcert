@@ -245,25 +245,27 @@ Section sim_GS.
     eapply data_program_scoped_aps_plus in Hprogₛ_scoped as Hprogₜ_scoped; last done.
     iApply sim_close_pure_head_step. clear eₛ eₜ. iIntros "!> %Ψ %eₛ %eₜ [Hprotocol | Hprotocol]".
     - iDestruct "Hprotocol" as "(%func & %annot & %vₛ & %vₜ & %Hfuncₛ & (-> & ->) & #Hv & HΨ)".
-      simpl in Hfuncₛ. apply lookup_lookup_total_dom in Hfuncₛ. set (eₛ := _ !!! _) in Hfuncₛ.
-      edestruct aps_plus.(aps_plus_dirs) as (eₜ & Hdir & Hfuncₜ); first done.
-      iExists eₛ.[#vₛ/], eₜ.[#vₜ/]. iSplit; first auto with data_lang.
-      erewrite (subst_data_program_scoped' ids inhabitant.ₛ#); last done; last done.
-      erewrite (subst_data_program_scoped' ids inhabitant.ₜ#); last done; last done.
+      simpl in Hfuncₛ. apply lookup_lookup_total_dom in Hfuncₛ.
+      set defₛ := _ !!! _ in Hfuncₛ. set eₛ := defₛ.(data_definition_body).
+      edestruct aps_plus.(aps_plus_dirs) as (eₜ & Hdir & Hfuncₜ); [done.. |].
+      iExists _, _. iSplit; first eauto 10 with data_lang.
+      erewrite (subst_data_program_scoped' ids inhabitant.ₛ# _ sim_progₛ); [| done..].
+      erewrite (subst_data_program_scoped' ids inhabitant.ₜ# _ sim_progₜ); [| done..].
       iDestruct (aps_plus_dir_specification $! aps_plus_dir_post with "[//] [] [//] []") as "Hsim"; eauto.
       + iApply (bisubst_cons_well_formed with "Hv").
         iApply bisubst_inhabitant_well_formed.
       + rewrite -bisubst_consₛ -bisubst_consₜ.
         sim_mono "Hsim".
     - iDestruct "Hprotocol" as "(%func & %annot & %vₛ & %func_aps & %l & %acc & %vₜ & (%Hfuncₛ & %Hξ) & (-> & ->) & Hl1 & Hl2 & #Hv & HΨ)".
-      simpl in Hfuncₛ. apply lookup_lookup_total_dom in Hfuncₛ. set (eₛ := _ !!! _) in Hfuncₛ.
+      simpl in Hfuncₛ. apply lookup_lookup_total_dom in Hfuncₛ.
+      set defₛ := _ !!! _ in Hfuncₛ. set eₛ := defₛ.(data_definition_body).
       edestruct aps_plus.(aps_plus_apss) as (eₜ & Haps & Hfunc_apsₜ); [done.. |].
-      iExists eₛ.[#vₛ/], _. iSplit; first auto with data_lang.
+      iExists _, _. iSplit; first eauto 10 with data_lang.
       do 2 sim_loadₜ. sim_pures.
       eapply (aps_plus_aps_subst _ (ids 0 .: #acc .: ren (+1))) in Haps; [| autosubst..].
-      erewrite (subst_data_program_scoped' _ (ren (+1))) in Haps; last done; last done. asimpl in Haps.
+      erewrite (subst_data_program_scoped' _ (ren (+1)) _ sim_progₛ) in Haps; [| done..]. asimpl in Haps.
       replace eₜ.[#vₜ, #acc, #l/] with eₜ.[ids 0 .: #acc .: ren (+1)].[#vₜ, #l/] by autosubst.
-      erewrite (subst_data_program_scoped' ids inhabitant.ₛ#); last done; last done.
+      erewrite (subst_data_program_scoped' ids inhabitant.ₛ# _ sim_progₛ); [| done..].
       erewrite (subst_data_expr_scoped_1' (#l .: ids) inhabitant.ₜ#); last first.
       { eapply data_expr_scoped_aps_plus_aps; naive_solver. }
       iDestruct (aps_plus_aps_specification $! (aps_plus_aps_post acc) with "[//] [] [//] []") as "Hsim"; eauto.
