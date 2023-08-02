@@ -63,54 +63,54 @@ Section sim_GS.
       (iSplitL; [iSmash | iIntros "%eₛ %eₜ HΦ"; sim_post]).
   Qed.
 
-  Definition aps_plus_dir_post :=
+  Definition aps_plus_expr_dir_post :=
     sim_post_vals' (≈).
-  Definition aps_plus_aps_post acc eₛ eₜ : iProp Σ :=
+  Definition aps_plus_expr_aps_post acc eₛ eₜ : iProp Σ :=
     ∃ vₛ,
     ⌜eₛ = vₛ⌝ ∗
     ⌜if vₛ is DataInt n then eₜ = (acc + n)%Z else strongly_stuck sim_progₜ eₜ⌝.
 
-  Definition aps_plus_dir_spec' eₛ eₜ :=
+  Definition aps_plus_expr_dir_spec' eₛ eₜ :=
     data_expr_well_formed sim_progₛ eₛ →
-    {{{ True }}} eₛ ⩾ eₜ [[ aps_plus_protocol ]] {{{ aps_plus_dir_post }}}.
-  Definition aps_plus_dir_spec eₛ eₜ :=
-    aps_plus_dir aps_plus.(aps_plus_ξ) eₛ eₜ →
-    aps_plus_dir_spec' eₛ eₜ.
-  Definition aps_plus_aps_spec' acc eₛ eₜ :=
+    {{{ True }}} eₛ ⩾ eₜ [[ aps_plus_protocol ]] {{{ aps_plus_expr_dir_post }}}.
+  Definition aps_plus_expr_dir_spec eₛ eₜ :=
+    aps_plus_expr_dir aps_plus.(aps_plus_ξ) eₛ eₜ →
+    aps_plus_expr_dir_spec' eₛ eₜ.
+  Definition aps_plus_expr_aps_spec' acc eₛ eₜ :=
     data_expr_well_formed sim_progₛ eₛ →
-    {{{ True }}} eₛ ⩾ eₜ [[ aps_plus_protocol ]] {{{ aps_plus_aps_post acc }}}.
-  Definition aps_plus_aps_spec acc eₛ eₜ :=
-    aps_plus_aps aps_plus.(aps_plus_ξ) acc eₛ eₜ →
-    aps_plus_aps_spec' acc eₛ eₜ.
-  Definition aps_plus_spec eₛ eₜ :=
-    aps_plus_dir_spec eₛ eₜ ∧
-    ∀ acc, aps_plus_aps_spec acc eₛ eₜ.
+    {{{ True }}} eₛ ⩾ eₜ [[ aps_plus_protocol ]] {{{ aps_plus_expr_aps_post acc }}}.
+  Definition aps_plus_expr_aps_spec acc eₛ eₜ :=
+    aps_plus_expr_aps aps_plus.(aps_plus_ξ) acc eₛ eₜ →
+    aps_plus_expr_aps_spec' acc eₛ eₜ.
+  Definition aps_plus_expr_spec eₛ eₜ :=
+    aps_plus_expr_dir_spec eₛ eₜ ∧
+    ∀ acc, aps_plus_expr_aps_spec acc eₛ eₜ.
 
-  Lemma aps_plus_specification eₛ eₜ :
-    aps_plus_spec eₛ eₜ.
+  Lemma aps_plus_expr_specification eₛ eₜ :
+    aps_plus_expr_spec eₛ eₜ.
   Proof.
     revert eₜ. induction eₛ as [eₛ IHeₛ] using (well_founded_ind data_subexpr_wf).
     cut (
       ( ∀ eₛ eₜ,
-        aps_plus_dir aps_plus.(aps_plus_ξ) eₛ eₜ →
-        (∀ eₛ' eₜ', eₛ' ⊏ eₛ → aps_plus_dir_spec eₛ' eₜ') →
-        (∀ acc eₛ' eₜ', eₛ' ⊏ eₛ → aps_plus_aps_spec acc eₛ' eₜ') →
-        aps_plus_dir_spec' eₛ eₜ
+        aps_plus_expr_dir aps_plus.(aps_plus_ξ) eₛ eₜ →
+        (∀ eₛ' eₜ', eₛ' ⊏ eₛ → aps_plus_expr_dir_spec eₛ' eₜ') →
+        (∀ acc eₛ' eₜ', eₛ' ⊏ eₛ → aps_plus_expr_aps_spec acc eₛ' eₜ') →
+        aps_plus_expr_dir_spec' eₛ eₜ
       ) ∧ (
         ∀ (acc : data_expr) eₛ eₜ,
-        aps_plus_aps aps_plus.(aps_plus_ξ) acc eₛ eₜ →
-        (∀ eₛ' eₜ', eₛ' ⊏ eₛ → aps_plus_dir_spec eₛ' eₜ') →
-        (∀ acc eₛ' eₜ', eₛ' ⊏ eₛ → aps_plus_aps_spec acc eₛ' eₜ') →
+        aps_plus_expr_aps aps_plus.(aps_plus_ξ) acc eₛ eₜ →
+        (∀ eₛ' eₜ', eₛ' ⊏ eₛ → aps_plus_expr_dir_spec eₛ' eₜ') →
+        (∀ acc eₛ' eₜ', eₛ' ⊏ eₛ → aps_plus_expr_aps_spec acc eₛ' eₜ') →
         ∀ acc',
         acc = acc' →
-        aps_plus_aps_spec' acc' eₛ eₜ
+        aps_plus_expr_aps_spec' acc' eₛ eₜ
       )
     ). {
-      rewrite /aps_plus_spec /aps_plus_dir_spec /aps_plus_aps_spec in IHeₛ |- *.
+      rewrite /aps_plus_expr_spec /aps_plus_expr_dir_spec /aps_plus_expr_aps_spec in IHeₛ |- *.
       naive_solver.
     }
-    clear eₛ IHeₛ. apply aps_plus_ind;
-      rewrite /aps_plus_dir_spec' /aps_plus_dir_post /sim_post_vals' /aps_plus_aps_spec';
+    clear eₛ IHeₛ. apply aps_plus_expr_ind;
+      rewrite /aps_plus_expr_dir_spec' /aps_plus_expr_dir_post /sim_post_vals' /aps_plus_expr_aps_spec';
       intros *;
       [ intros _ _
       | intros _ _
@@ -134,7 +134,7 @@ Section sim_GS.
       | intros Hdir0 _ Haps1 _ Haps2 _ IHdirₛ IHapsₛ acc' ->
       ];
       iIntros "%Hwf %Φ _ HΦ".
-    (* aps_plus_dir *)
+    (* aps_plus_expr_dir *)
     - iApply rsim_val; [done | iSmash].
     - iApply rsim_var. iSmash.
     - iApply rsim_let;
@@ -142,8 +142,8 @@ Section sim_GS.
     - iApply rsim_call;
         [iApply IHdirₛ; auto with data_lang.. |].
       iIntros "%func %annot %vₛ %vₜ %Hfunc #Hv".
-      iApply (sim_apply_protocol _ aps_plus_dir_post). iIntros "%σₛ %σₜ $ !>". iSplitR.
-      { rewrite /aps_plus_dir_post /sim_post_vals'. iSmash. }
+      iApply (sim_apply_protocol _ aps_plus_expr_dir_post). iIntros "%σₛ %σₜ $ !>". iSplitR.
+      { rewrite /aps_plus_expr_dir_post /sim_post_vals'. iSmash. }
       iIntros "% % (%vₛ' & %vₜ' & (-> & ->) & HΨ)".
       sim_post.
     - iApply rsim_unop; last iSmash.
@@ -174,7 +174,7 @@ Section sim_GS.
        iApply IHdirₛ; auto with data_lang.
     - iApply rsim_store; last iSmash;
         iApply IHdirₛ; auto with data_lang.
-    (* aps_plus_aps *)
+    (* aps_plus_expr_aps *)
     - iIntros "%Γ % % (-> & ->) #HΓ /=".
       sim_binopₜ;
         (sim_apply (IHdir with "[//] [HΦ]"); [auto with data_lang.. |]);
@@ -197,7 +197,7 @@ Section sim_GS.
       sim_apply (IHapsₛ (acc' + n)%Z eₛ eₜ.[#(acc' + n)/] with "[//] [HΦ]"); first 4 last.
       { naive_solver autosubst. }
       { auto with data_lang. }
-      { eapply aps_plus_aps_subst; eauto; autosubst. }
+      { eapply aps_plus_expr_aps_subst; eauto; autosubst. }
       { auto with data_lang. }
       iIntros "% %eₜ' (%vₛ & -> & %Heₜ')".
       sim_pures.
@@ -212,7 +212,7 @@ Section sim_GS.
       sim_apply (IHapsₛ (acc' + n)%Z eₛ eₜ.[#(acc' + n)/] with "[//] [HΦ]"); first 4 last.
       { naive_solver autosubst. }
       { auto with data_lang. }
-      { eapply aps_plus_aps_subst; eauto; autosubst. }
+      { eapply aps_plus_expr_aps_subst; eauto; autosubst. }
       { auto with data_lang. }
       iIntros "% %eₜ' (%vₛ & -> & %Heₜ')".
       sim_pures.
@@ -225,15 +225,15 @@ Section sim_GS.
       iSplit;
         iApply (IHapsₛ with "[//] [HΦ]"); [auto with data_lang.. | iSmash].
   Qed.
-  Lemma aps_plus_dir_specification eₛ eₜ :
-    aps_plus_dir_spec eₛ eₜ.
+  Lemma aps_plus_expr_dir_specification eₛ eₜ :
+    aps_plus_expr_dir_spec eₛ eₜ.
   Proof.
-    eapply proj1, aps_plus_specification.
+    eapply proj1, aps_plus_expr_specification.
   Qed.
-  Lemma aps_plus_aps_specification acc eₛ eₜ :
-    aps_plus_aps_spec acc eₛ eₜ.
+  Lemma aps_plus_expr_aps_specification acc eₛ eₜ :
+    aps_plus_expr_aps_spec acc eₛ eₜ.
   Proof.
-    revert acc. eapply proj2, aps_plus_specification.
+    revert acc. eapply proj2, aps_plus_expr_specification.
   Qed.
 
   Lemma aps_plus_sim_close Φ eₛ eₜ :
@@ -247,11 +247,11 @@ Section sim_GS.
     - iDestruct "Hprotocol" as "(%func & %annot & %vₛ & %vₜ & %Hfuncₛ & (-> & ->) & #Hv & HΨ)".
       simpl in Hfuncₛ. apply lookup_lookup_total_dom in Hfuncₛ.
       set defₛ := _ !!! _ in Hfuncₛ. set eₛ := defₛ.(data_definition_body).
-      edestruct aps_plus.(aps_plus_dirs) as (eₜ & Hdir & Hfuncₜ); [done.. |].
+      edestruct aps_plus.(aps_plus_dir) as (eₜ & Hdir & Hfuncₜ); [done.. |].
       iExists _, _. iSplit; first eauto 10 with data_lang.
       erewrite (subst_data_program_scoped' ids inhabitant.ₛ# _ sim_progₛ); [| done..].
       erewrite (subst_data_program_scoped' ids inhabitant.ₜ# _ sim_progₜ); [| done..].
-      iDestruct (aps_plus_dir_specification $! aps_plus_dir_post with "[//] [] [//] []") as "Hsim"; eauto.
+      iDestruct (aps_plus_expr_dir_specification $! aps_plus_expr_dir_post with "[//] [] [//] []") as "Hsim"; eauto.
       + iApply (bisubst_cons_well_formed with "Hv").
         iApply bisubst_inhabitant_well_formed.
       + rewrite -bisubst_consₛ -bisubst_consₜ.
@@ -259,16 +259,16 @@ Section sim_GS.
     - iDestruct "Hprotocol" as "(%func & %annot & %vₛ & %func_aps & %l & %acc & %vₜ & (%Hfuncₛ & %Hξ) & (-> & ->) & Hl1 & Hl2 & #Hv & HΨ)".
       simpl in Hfuncₛ. apply lookup_lookup_total_dom in Hfuncₛ.
       set defₛ := _ !!! _ in Hfuncₛ. set eₛ := defₛ.(data_definition_body).
-      edestruct aps_plus.(aps_plus_apss) as (eₜ & Haps & Hfunc_apsₜ); [done.. |].
+      edestruct aps_plus.(aps_plus_aps) as (eₜ & Haps & Hfunc_apsₜ); [done.. |].
       iExists _, _. iSplit; first eauto 10 with data_lang.
       do 2 sim_loadₜ. sim_pures.
-      eapply (aps_plus_aps_subst _ (ids 0 .: #acc .: ren (+1))) in Haps; [| autosubst..].
+      eapply (aps_plus_expr_aps_subst _ (ids 0 .: #acc .: ren (+1))) in Haps; [| autosubst..].
       erewrite (subst_data_program_scoped' _ (ren (+1)) _ sim_progₛ) in Haps; [| done..]. asimpl in Haps.
       replace eₜ.[#vₜ, #acc, #l/] with eₜ.[ids 0 .: #acc .: ren (+1)].[#vₜ, #l/] by autosubst.
       erewrite (subst_data_program_scoped' ids inhabitant.ₛ# _ sim_progₛ); [| done..].
       erewrite (subst_data_expr_scoped_1' (#l .: ids) inhabitant.ₜ#); last first.
-      { eapply data_expr_scoped_aps_plus_aps; naive_solver. }
-      iDestruct (aps_plus_aps_specification $! (aps_plus_aps_post acc) with "[//] [] [//] []") as "Hsim"; eauto.
+      { eapply data_expr_scoped_aps_plus_expr_aps; naive_solver. }
+      iDestruct (aps_plus_expr_aps_specification $! (aps_plus_expr_aps_post acc) with "[//] [] [//] []") as "Hsim"; eauto.
       + iApply (bisubst_cons_well_formed with "Hv").
         iApply bisubst_inhabitant_well_formed.
       + rewrite -bisubst_consₛ -bisubst_consₜ. asimpl.
