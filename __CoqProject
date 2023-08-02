@@ -80,4 +80,4 @@ theories/aps_plus_2/examples/list_sum.v
 theories/inline/definition.v
 theories/inline/metatheory.v
 theories/inline/soundness.v
-theories/inline/compile.v
+theories/inline/compilation.v
