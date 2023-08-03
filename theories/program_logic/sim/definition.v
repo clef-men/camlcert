@@ -88,7 +88,7 @@ Section sim_state.
   Context `{sim_programs : !SimPrograms Λₛ Λₜ}.
   Context `{!BiBUpd PROP, !BiAffine PROP}.
   Context `{sim_state : !SimState PROP Λₛ Λₜ}.
-  Context (Χ : sim_protocol PROP Λₛ Λₜ).
+  Context (Χ : sim_protocol_O PROP Λₛ Λₜ).
 
   Notation expr_relation :=
     (expr Λₛ → expr Λₜ → PROP).
@@ -128,7 +128,7 @@ Section sim_state.
         sim_state_interp σₛ σₜ ∗
           ∀ eₛ eₜ,
           Ψ eₛ eₜ ++∗
-          N Φ (Kₛ @@ eₛ) (Kₜ @@ eₜ)
+          M Φ (Kₛ @@ eₛ) (Kₜ @@ eₜ)
       )
   )%I.
   #[global] Arguments sim_body _ _ _%I _ _ : assert.

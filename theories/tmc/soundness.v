@@ -67,7 +67,7 @@ Section sim_GS.
     sim_constrₜ; sim_constrₜ;
       sim_constr_detₜ as l2 "Hl20" "Hl21" "Hl22";
       sim_constr_detₜ as l1 "Hl10" "Hl11" "Hl12";
-      sim_apply (sim_apply_protocol _ (sim_post_vals' Φ) _ ((DataFunc func annot) vₛ) ((DataFunc func_dps annot) l1)); iIntros "%σₛ %σₜ $ !>";
+      sim_apply (sim_apply_protocol (sim_post_vals' Φ) _ _ ((DataFunc func annot) vₛ) ((DataFunc func_dps annot) l1)); iIntros "%σₛ %σₜ $ !>";
       ( iSplitL;
         [ iRight; repeat iExists _; iFrame "#∗";
           do 2 (iSplit; first done); iIntros "%vₛ' %vₜ' Hdst #Hv'"; iSmash
@@ -157,7 +157,7 @@ Section sim_GS.
         [iApply IHdirₛ; auto with data_lang.. |].
       iIntros "%func %annot %vₛ %vₜ %Hfunc #Hv".
       pose (Ψ := sim_post_vals' tmc_expr_dir_post).
-      iApply (sim_apply_protocol _ Ψ). iIntros "%σₛ %σₜ $ !>". iSplitR.
+      iApply (sim_apply_protocol Ψ). iIntros "%σₛ %σₜ $ !>". iSplitR.
       { rewrite /Ψ /sim_post_vals'. iSmash. }
       iIntros "% % (%vₛ' & %vₜ' & (-> & ->) & HΨ)".
       sim_post.
@@ -348,7 +348,7 @@ Section tmc_sound.
       iApply (data_val_bi_similar_similar with "Hv").
     }
     iApply (tmc_simv_close (sim_programs := tmc_sim_programs) tmc); first done.
-    iApply (sim_apply_protocol _ (sim_post_vals (≈)%I)). iIntros "%σₛ %σₜ $ !>".
+    iApply (sim_apply_protocol (sim_post_vals (≈)%I)). iIntros "%σₛ %σₜ $ !>".
     iSplitL.
     - iLeft. iExists func, [], vₛ, vₜ. repeat iSplit; try iSmash.
       + iPureIntro. simpl. eapply elem_of_dom_2. done.
