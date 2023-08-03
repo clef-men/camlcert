@@ -128,14 +128,14 @@ Lemma data_program_scoped_tmc progₛ progₜ :
   data_program_scoped progₛ →
   data_program_scoped progₜ.
 Proof.
-  intros tmc. rewrite /data_program_scoped !map_Forall_lookup. intros Hscoped func (annot & eₜ) Hfuncₜ.
+  intros tmc. rewrite /data_program_scoped !map_Forall_lookup. intros Hscoped func defₜ Hfuncₜ.
   apply elem_of_dom_2 in Hfuncₜ as Hfuncₜ'. rewrite tmc.(tmc_dom) elem_of_union in Hfuncₜ'.
   destruct Hfuncₜ' as [Hfuncₛ%lookup_lookup_total_dom | (func_dir & Hξ)%elem_of_map_img].
-  - edestruct tmc.(tmc_dir) as (_eₜ & Hdir & Heq); first done.
+  - edestruct tmc.(tmc_dir) as (eₜ & Hdir & Heq); first done.
     eapply data_expr_scoped_tmc_expr_dir; last naive_solver.
     rewrite Heq in Hfuncₜ. naive_solver.
   - pose proof Hξ as Hfunc_dirₛ%elem_of_dom_2%(tmc.(tmc_ξ_dom))%lookup_lookup_total_dom.
-    edestruct tmc.(tmc_dps) as (eₜ' & Hdps & Heq); [done.. |].
+    edestruct tmc.(tmc_dps) as (eₜ & Hdps & Heq); [done.. |].
     rewrite Hfuncₜ in Heq. simplify.
     repeat constructor. eapply data_expr_scoped_tmc_expr_dps; [naive_solver.. |].
     apply (data_expr_scoped_le 1); naive_solver lia.
