@@ -90,7 +90,7 @@ Section sim_GS.
       { iRight. repeat iExists _. repeat iSplit; try iSmash.
         - iPureIntro.
           rewrite (subst_data_expr_scoped_1 _ ids); asimpl; try done.
-          eapply data_expr_scoped_inline; naive_solver.
+          eapply data_expr_scoped_inline_expr; naive_solver.
         - rewrite /sim_post_vals'. iSmash.
       }
       iIntros "% % (%vₛ' & %vₜ' & (-> & ->) & #Hv')".
@@ -143,7 +143,7 @@ Section sim_GS.
       iDestruct (inline_expr_specification $! (≈)%I with "[//] []") as "Hsim"; [auto with data_lang.. | naive_solver | iSmash |].
       erewrite (subst_data_program_scoped' ids inhabitant.ₛ# _ sim_progₛ); [| done..].
       rewrite (subst_data_expr_scoped_1' _ inhabitant.ₜ# vₜ); last first.
-      { eapply data_expr_scoped_inline; [| done |]; naive_solver. }
+      { eapply data_expr_scoped_inline_expr; [| done |]; naive_solver. }
       erewrite bisubst_consₛ, bisubst_consₜ.
       sim_mono "Hsim".
       + iApply (bisubst_cons_well_formed with "Hv").

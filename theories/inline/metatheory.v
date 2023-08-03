@@ -28,7 +28,7 @@ Section inline_expr.
     erewrite (subst_data_program_scoped _ ids); asimpl; done.
   Qed.
 
-  Lemma data_expr_scoped_inline eₛ eₜ scope :
+  Lemma data_expr_scoped_inline_expr eₛ eₜ scope :
     data_program_scoped prog →
     inline_expr prog eₛ eₜ →
     data_expr_scoped scope eₛ →
@@ -53,5 +53,5 @@ Proof.
   apply elem_of_dom_2 in Hfuncₜ as Hfuncₜ'.
   rewrite inline.(inline_dom) in Hfuncₜ'. apply lookup_lookup_total_dom in Hfuncₜ'.
   edestruct inline.(inline_transform) as (_eₜ & Hinline & Heq); first done.
-  rewrite Heq in Hfuncₜ. eapply data_expr_scoped_inline; naive_solver.
+  rewrite Heq in Hfuncₜ. eapply data_expr_scoped_inline_expr; naive_solver.
 Qed.
