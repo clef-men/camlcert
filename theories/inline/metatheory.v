@@ -14,7 +14,7 @@ Section inline_expr.
     induction e; auto with inline.
   Qed.
 
-  Lemma inline_expr_subst eₛ eₛ' eₜ eₜ' ς :
+  Lemma inline_expr_subst ς eₛ eₛ' eₜ eₜ' :
     data_program_valid prog →
     inline_expr prog eₛ eₜ →
     eₛ' = eₛ.[ς] →
@@ -22,7 +22,7 @@ Section inline_expr.
     inline_expr prog eₛ' eₜ'.
   Proof.
     intros (Hprog_wf & Hprog_scoped) Hinline.
-    revert eₛ' eₜ' ς. induction Hinline; intros eₛ' eₜ' ς -> ->;
+    revert ς eₛ' eₜ'. induction Hinline; intros ς eₛ' eₜ' -> ->;
       eauto using inline_expr_refl with inline.
     eapply inline_expr_call_inline with (e_funcₛ := e_funcₛ.[up ς]); try naive_solver.
     erewrite (subst_data_program_scoped _ ids); asimpl; done.
