@@ -11,7 +11,7 @@ Section aps_plus_expr.
   Lemma aps_plus_expr_dir_refl e :
     aps_plus_expr_dir ξ e e.
   Proof.
-    induction e; eauto with aps_plus.
+    induction e; auto with aps_plus.
   Qed.
 
   Lemma aps_plus_expr_subst :

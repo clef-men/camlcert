@@ -11,7 +11,7 @@ Section inline_expr.
   Lemma inline_expr_refl e :
     inline_expr prog e e.
   Proof.
-    induction e; eauto with inline.
+    induction e; auto with inline.
   Qed.
 
   Lemma inline_expr_subst eₛ eₛ' eₜ eₜ' ς :

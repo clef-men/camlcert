@@ -11,7 +11,7 @@ Section tmc_expr.
   Lemma tmc_expr_dir_refl e :
     tmc_expr_dir ξ e e.
   Proof.
-    induction e; eauto with tmc.
+    induction e; auto with tmc.
   Qed.
 
   Lemma tmc_expr_subst :
