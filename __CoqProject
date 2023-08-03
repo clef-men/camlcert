@@ -83,3 +83,5 @@ theories/inline/soundness.v
 theories/inline/compile.v
 
 theories/compose/definition.v
+theories/compose/metatheory.v
+theories/compose/soundness.v

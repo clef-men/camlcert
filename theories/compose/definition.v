@@ -38,7 +38,7 @@ Section compose_expr.
     | compose_expr_dir_call_compose annot1 annot2 eₛ eₜ :
         compose_expr_dir eₛ eₜ →
         compose_expr_dir
-          ((DataFunc func2 annot1) ((DataFunc func1 annot2) eₛ))
+          ((DataFunc func2 annot2) ((DataFunc func1 annot1) eₛ))
           ((DataFunc func annot1) eₜ)
     | compose_expr_dir_unop op eₛ eₜ :
         compose_expr_dir eₛ eₜ →
@@ -124,6 +124,10 @@ Create HintDb compose.
 Record compose {progₛ progₜ func1 func2} := {
   compose_func : data_function ;
 
+  compose_defined1 :
+    func1 ∈ dom progₛ ;
+  compose_defined2 :
+    func2 ∈ dom progₛ ;
   compose_dom :
     dom progₜ = dom progₛ ∪ {[compose_func]} ;
 
