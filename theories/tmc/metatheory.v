@@ -5,7 +5,7 @@ From simuliris.data_lang Require Export
 From simuliris.tmc Require Export
   definition.
 
-Section tmc.
+Section tmc_expr.
   Context (ξ : tmc_mapping).
 
   Lemma tmc_expr_dir_refl e :
@@ -119,7 +119,7 @@ Section tmc.
   Proof.
     eauto using (proj2 data_expr_scoped_tmc_expr).
   Qed.
-End tmc.
+End tmc_expr.
 
 #[global] Hint Resolve tmc_expr_dir_refl : tmc.
 

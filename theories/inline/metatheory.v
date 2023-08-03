@@ -5,7 +5,7 @@ From simuliris.data_lang Require Export
 From simuliris.inline Require Export
   definition.
 
-Section inline.
+Section inline_expr.
   Context (prog : data_program).
 
   Lemma inline_expr_refl e :
@@ -40,7 +40,7 @@ Section inline.
     split; first naive_solver.
     apply (data_expr_scoped_le 1); [lia | naive_solver].
   Qed.
-End inline.
+End inline_expr.
 
 #[global] Hint Resolve inline_expr_refl : inline.
 

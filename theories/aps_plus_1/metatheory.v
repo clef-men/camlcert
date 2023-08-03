@@ -5,7 +5,7 @@ From simuliris.data_lang Require Export
 From simuliris.aps_plus_1 Require Export
   definition.
 
-Section aps_plus.
+Section aps_plus_expr.
   Context (ξ : aps_plus_mapping).
 
   Lemma aps_plus_expr_dir_refl e :
@@ -103,7 +103,7 @@ Section aps_plus.
   Proof.
     eauto using (proj2 data_expr_scoped_aps_plus_expr).
   Qed.
-End aps_plus.
+End aps_plus_expr.
 
 #[global] Hint Resolve aps_plus_expr_dir_refl : aps_plus.
 
