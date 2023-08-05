@@ -73,7 +73,7 @@ Proof.
     exists {["list_length" := "list_length_aps"]}; try set_solver.
     + intros * (<- & <-)%lookup_singleton_Some.
       rewrite lookup_insert.
-      eexists. split; last done. repeat econstructor.
+      eexists. split; last done. eauto 10 with aps_plus.
     + intros * (<- & <-)%lookup_singleton_Some (_ & <-)%lookup_singleton_Some.
-      eexists. split; last done. repeat econstructor.
+      eexists. split; last done. eauto 10 with aps_plus.
 Qed.

@@ -80,8 +80,8 @@ Section list_sum_aps_plus_sound.
       exists {["list_sum" := "list_sum_aps"]}; try set_solver.
       + intros * (<- & <-)%lookup_singleton_Some.
         rewrite lookup_insert.
-        eexists. split; last done. repeat econstructor.
+        eexists. split; last done. eauto 20 with aps_plus.
       + intros * (<- & <-)%lookup_singleton_Some (_ & <-)%lookup_singleton_Some.
-        eexists. split; last done. repeat econstructor.
+        eexists. split; last done. eauto 20 with aps_plus.
   Qed.
 End list_sum_aps_plus_sound.

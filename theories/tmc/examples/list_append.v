@@ -85,10 +85,7 @@ Proof.
     exists {["list_append" := "list_append_dps"]}; try set_solver.
     + intros * (<- & <-)%lookup_singleton_Some.
       rewrite lookup_insert.
-      eexists. split; last done. repeat econstructor.
+      eexists. split; last done. eauto 10 with tmc.
     + intros * (<- & <-)%lookup_singleton_Some (_ & <-)%lookup_singleton_Some.
-      eexists. split; last done. repeat constructor.
-      eapply tmc_expr_dps_constr_1; first constructor.
-      * eapply tmc_expr_dps_call; repeat constructor.
-      * done.
+      eexists. split; last done. eauto 10 with tmc.
 Qed.
