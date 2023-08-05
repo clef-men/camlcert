@@ -21,7 +21,7 @@ Definition list_length : data_human_program := {[
             0
         | CONS <>, "xs" =>
             1 + $"list_length" "xs"
-        end ;
+        end
     |}
 ]}.
 
@@ -39,7 +39,7 @@ Definition list_length_aps_plus : data_human_program := {[
             let: "acc" := 1 in
             let: "arg" := "xs" in
             $"list_length_aps" ("acc", "arg")
-        end ;
+        end
     |} ;
   "list_length_aps" :=
     {|data_human_definition_annot :=
@@ -56,7 +56,7 @@ Definition list_length_aps_plus : data_human_program := {[
             let: "acc" := 1 + "acc" in
             let: "arg" := "xs" in
             $"list_length_aps" ("acc", "arg")
-        end ;
+        end
     |}
 ]}.
 

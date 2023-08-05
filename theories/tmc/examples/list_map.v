@@ -24,7 +24,7 @@ Definition list_map : data_human_program := {[
         | CONS "x", "xs" =>
             let: "y" := DataHumanCall "fn" "x" in
             CONSₕ "y" ($"list_map" ("fn", "xs"))
-        end ;
+        end
     |}
 ]}.
 
@@ -47,7 +47,7 @@ Definition list_map_tmc : data_human_program := {[
               $"list_map_dps" ("dst", 𝟚, "arg")
             ) ;;
             "dst"
-        end ;
+        end
     |} ;
   "list_map_dps" :=
     {|data_human_definition_annot :=

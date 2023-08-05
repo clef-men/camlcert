@@ -23,7 +23,7 @@ Definition list_append : data_human_program := {[
             NILₕ
         | CONS "x", "xs" =>
             CONSₕ "x" ($"list_append" ("xs", "ys"))
-        end ;
+        end
     |}
 ]}.
 
@@ -45,7 +45,7 @@ Definition list_append_tmc : data_human_program := {[
               $"list_append_dps" ("dst", 𝟚, "arg")
             ) ;;
             "dst"
-        end ;
+        end
     |} ;
   "list_append_dps" :=
     {|data_human_definition_annot :=
@@ -67,7 +67,7 @@ Definition list_append_tmc : data_human_program := {[
             "dst" <-["idx"]- "dst'" ;;
             let: "arg" := ("xs", "ys") in
             $"list_append_dps" ("dst'", 𝟚, "arg")
-        end ;
+        end
     |}
 ]}.
 
