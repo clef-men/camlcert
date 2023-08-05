@@ -23,23 +23,31 @@ Fixpoint inline_compile_expr prog depth := fix inline_compile_expr' e :=
   | DataCall e1 e2 =>
       match e1 with
       | DataVal (DataFunc func annot) =>
-          match bool_decide (inline_annotation ∈ annot), prog !! func with
-          | true, Some def =>
-              let e_func :=
-                match depth with
-                | 0 =>
-                    def.(data_definition_body)
-                | S depth =>
-                    inline_compile_expr prog depth def.(data_definition_body)
-                end
-              in
-              DataLet
-                (inline_compile_expr' e2)
-                e_func
-          | _, _ =>
+          match prog !! func with
+          | None =>
               DataCall
                 (inline_compile_expr' e1)
                 (inline_compile_expr' e2)
+          | Some def =>
+              if bool_decide (inline_annotation ∈ def.(data_definition_annot))
+              || bool_decide (inline_annotation ∈ annot)
+              then (
+                let e_func :=
+                  match depth with
+                  | 0 =>
+                      def.(data_definition_body)
+                  | S depth =>
+                      inline_compile_expr prog depth def.(data_definition_body)
+                  end
+                in
+                DataLet
+                  (inline_compile_expr' e2)
+                  e_func
+              ) else (
+                DataCall
+                  (inline_compile_expr' e1)
+                  (inline_compile_expr' e2)
+              )
           end
       | _ =>
           DataCall
