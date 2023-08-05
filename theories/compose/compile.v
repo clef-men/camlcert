@@ -22,23 +22,23 @@ Section compose_compile_expr.
         DataLet
           (compose_compile_expr_dir e1)
           (compose_compile_expr_dir e2)
-    | DataCall (DataVal (DataFunc func2' annot2)) (DataCall (DataVal (DataFunc func1' annot1)) e) =>
-        match bool_decide (func1 = func1'), bool_decide (func2 = func2') with
-        | true, true =>
-            DataCall
-              (DataVal (DataFunc func annot1))
-              (compose_compile_expr_dir e)
+    | DataCall e1 e2 =>
+        match e1, e2 with
+        | DataVal (DataFunc func2' annot2), DataCall (DataVal (DataFunc func1' annot1)) e2' =>
+            if bool_decide (func1 = func1') && bool_decide (func2 = func2') then (
+              DataCall
+                (DataVal (DataFunc func annot1))
+                (compose_compile_expr_dir e2')
+            ) else (
+              DataCall
+                (compose_compile_expr_dir e1)
+                (compose_compile_expr_dir e2)
+            )
         | _, _ =>
             DataCall
-              (DataVal (DataFunc func2' annot2))
-              (DataCall
-                (DataVal (DataFunc func1' annot1))
-                (compose_compile_expr_dir e))
+              (compose_compile_expr_dir e1)
+              (compose_compile_expr_dir e2)
         end
-    | DataCall e1 e2 =>
-        DataCall
-          (compose_compile_expr_dir e1)
-          (compose_compile_expr_dir e2)
     | DataUnop op e =>
         DataUnop op
           (compose_compile_expr_dir e)
@@ -82,18 +82,17 @@ Section compose_compile_expr.
           (compose_compile_expr_dir e1)
           (compose_compile_expr_comp e2)
     | DataCall (DataVal (DataFunc func1' annot)) e =>
-        match bool_decide (func1 = func1') with
-        | true =>
-            DataCall
-              (DataVal (DataFunc func annot))
-              (compose_compile_expr_dir e)
-        | false =>
-            DataCall
-              (DataVal (DataFunc func2 []))
-              (DataCall
-                (DataVal (DataFunc func1' annot))
-                (compose_compile_expr_dir e))
-        end
+        if bool_decide (func1 = func1') then (
+          DataCall
+            (DataVal (DataFunc func annot))
+            (compose_compile_expr_dir e)
+        ) else (
+          DataCall
+            (DataVal (DataFunc func2 []))
+            (DataCall
+              (DataVal (DataFunc func1' annot))
+              (compose_compile_expr_dir e))
+        )
     | DataIf e0 e1 e2 =>
         DataIf
           (compose_compile_expr_dir e0)
