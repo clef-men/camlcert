@@ -81,6 +81,7 @@ theories/inline/definition.v
 theories/inline/metatheory.v
 theories/inline/soundness.v
 theories/inline/compile.v
+theories/inline/examples/list_rev_rev.v
 
 theories/compose/definition.v
 theories/compose/metatheory.v
