@@ -16,7 +16,7 @@ From simuliris.compose Require Import
 Section sim_GS.
   Context `{sim_programs : !SimPrograms data_ectx_lang data_ectx_lang}.
   Context `{sim_GS : !SimGS Σ}.
-  Context {func1 func2} (compose : compose sim_progₛ sim_progₜ func1 func2).
+  Context {func1 func2} (compose : compose func1 func2 sim_progₛ sim_progₜ).
   Implicit Types func : data_function.
   Implicit Types annot : data_annotation.
   Implicit Types l lₛ lₜ : loc.
@@ -215,7 +215,7 @@ End sim_GS.
 Section compose_sound.
   Context {progₛ progₜ : data_program}.
   Context (Hwf : data_program_valid progₛ).
-  Context {func1 func2} (compose : compose progₛ progₜ func1 func2).
+  Context {func1 func2} (compose : compose func1 func2 progₛ progₜ).
 
   Notation Σ := sim_Σ.
   Notation M := (iResUR Σ).

@@ -53,18 +53,18 @@ End compose_expr.
 
 #[global] Hint Resolve compose_expr_dir_refl : compose.
 
-Lemma data_program_scoped_compose progₛ progₜ func1 func2 :
-  compose progₛ progₜ func1 func2 →
+Lemma data_program_scoped_compose func1 func2 progₛ progₜ :
+  compose func1 func2 progₛ progₜ →
   data_program_scoped progₛ →
   data_program_scoped progₜ.
 Proof.
   intros compose. rewrite /data_program_scoped !map_Forall_lookup => Hscoped func defₜ Hfuncₜ.
   apply elem_of_dom_2 in Hfuncₜ as Hfuncₜ'. rewrite compose.(compose_dom) elem_of_union in Hfuncₜ'.
-  destruct Hfuncₜ' as [Hfuncₛ%lookup_lookup_total_dom | ->%elem_of_singleton].
-  - edestruct compose.(compose_dir) as (eₜ & Hdir & Heq); first done.
-    eapply data_expr_scoped_compose_expr_dir; last naive_solver.
-    rewrite Heq in Hfuncₜ. naive_solver.
+  destruct Hfuncₜ' as [->%elem_of_singleton | Hfuncₛ%lookup_lookup_total_dom].
   - edestruct compose.(compose_comp) as (defₛ & eₜ & Hfunc1ₛ & Hcomp & Heq).
     rewrite Hfuncₜ in Heq. simplify.
     eapply data_expr_scoped_compose_expr_comp; naive_solver.
+  - edestruct compose.(compose_dir) as (eₜ & Hdir & Heq); first done.
+    eapply data_expr_scoped_compose_expr_dir; last naive_solver.
+    rewrite Heq in Hfuncₜ. naive_solver.
 Qed.

@@ -121,7 +121,7 @@ Create HintDb compose.
 #[global] Hint Constructors compose_expr_dir : compose.
 #[global] Hint Constructors compose_expr_comp : compose.
 
-Record compose {progₛ progₜ func1 func2} := {
+Record compose {func1 func2 progₛ progₜ} := {
   compose_func : data_function ;
 
   compose_defined1 :
@@ -129,7 +129,7 @@ Record compose {progₛ progₜ func1 func2} := {
   compose_defined2 :
     func2 ∈ dom progₛ ;
   compose_dom :
-    dom progₜ = dom progₛ ∪ {[compose_func]} ;
+    dom progₜ =  {[compose_func]} ∪ dom progₛ ;
 
   compose_dir func defₛ :
     progₛ !! func = Some defₛ →
