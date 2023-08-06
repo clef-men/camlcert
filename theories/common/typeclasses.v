@@ -64,6 +64,9 @@ Notation "(.≈ x2 )" := (λ x1, similar x1 x2)
 ( only parsing
 ) : stdpp_scope.
 
+#[global] Instance similar_sym `{!Similar X1 X2} : Similar X2 X1 | 100 :=
+  Build_Similar (λ x2 x1, x1 ≈ x2).
+
 Class BiSimilar PROP X1 X2 := {
   bi_similar : X1 → X2 → PROP ;
 }.
@@ -82,6 +85,9 @@ Notation "( x1 ≈.)" := (bi_similar x1)
 Notation "(.≈ x2 )" := (λ x1, bi_similar x1 x2)
 ( only parsing
 ) : bi_scope.
+
+#[global] Instance bi_similar_sym `{!BiSimilar PROP X1 X2} : BiSimilar PROP X2 X1 | 100 :=
+  Build_BiSimilar (λ x2 x1, x1 ≈ x2)%I.
 
 Class BiTie PROP X1 X2 := {
   bi_tie : X1 → X2 → PROP ;
