@@ -2016,11 +2016,9 @@ Section sim_state.
     SIM eₛ ≳ eₜ {{ Φ }}.
   Proof.
     iIntros "#H".
-    iApply sim_close_steps. clear eₛ eₜ. iIntros "!> %Ψ %eₛ %σₛ %eₜ %σₜ HΧ Hsi".
-    iMod ("H" with "HΧ Hsi") as "(%Hreducibleₜ & Hsim)". iClear "H".
-    iSplitR; first done. iIntros "!> %eₜ' %σₜ' %Hstepₜ".
-    iMod ("Hsim" with "[//]") as "(%eₛ' & %σₛ' & %Hstepₛ & Hsi & Hsim)".
-    iExists eₛ', σₛ'. iFrame. eauto using tc_once, prim_step_step.
+    iApply sim_close. clear eₛ eₜ. iIntros "!> %Ψ %eₛ %eₜ HΧ".
+    iApply sim_inner_step. iIntros "%σₛ %σₜ".
+    iApply ("H" with "HΧ").
   Qed.
   Lemma sim_close_head_step Χ Φ eₛ eₜ :
     □ (
@@ -2039,12 +2037,9 @@ Section sim_state.
     SIM eₛ ≳ eₜ {{ Φ }}.
   Proof.
     iIntros "#H".
-    iApply sim_close_step. clear eₛ eₜ. iIntros "!> %Ψ %eₛ %σₛ %eₜ %σₜ HΧ Hsi".
-    iMod ("H" with "HΧ Hsi") as "(%Hreducibleₜ & Hsim)". iClear "H".
-    iSplitR; first auto using head_reducible_reducible. iIntros "!> %eₜ' %σₜ' %Hstepₜ".
-    apply head_reducible_prim_step in Hstepₜ; last done.
-    iMod ("Hsim" with "[//]") as "(%eₛ' & %σₛ' & %Hstepₛ & Hsi & Hsim)".
-    iExists eₛ', σₛ'. iFrame. iPureIntro. apply head_step_prim_step. done.
+    iApply sim_close. clear eₛ eₜ. iIntros "!> %Ψ %eₛ %eₜ HΧ".
+    iApply sim_inner_head_step. iIntros "%σₛ %σₜ".
+    iApply ("H" with "HΧ").
   Qed.
   Lemma sim_close_pure_steps Χ Φ eₛ eₜ :
     □ (
@@ -2058,13 +2053,9 @@ Section sim_state.
     SIM eₛ ≳ eₜ {{ Φ }}.
   Proof.
     iIntros "#H".
-    iApply sim_close_steps. clear eₛ eₜ. iIntros "!> %Ψ %eₛ %σₛ %eₜ %σₜ HΧ Hsi !>".
-    iDestruct ("H" with "HΧ") as "(%eₛ' & %eₜ' & (%Hstepsₛ & %Hstepₜ) & Hsim)".
-    iSplit; first eauto using pure_step_safe. iIntros "%_eₜ' %_σₜ %_Hstepₜ !>".
-    eapply pure_step_det in _Hstepₜ as (-> & ->); last done.
-    iExists eₛ', σₛ. iFrame. iPureIntro.
-    eapply (tc_congruence (λ eₛ, (eₛ, σₛ))); last done.
-    eauto using prim_step_step, pure_step_prim_step.
+    iApply sim_close. clear eₛ eₜ. iIntros "!> %Ψ %eₛ %eₜ HΧ".
+    iDestruct ("H" with "HΧ") as "(%eₛ' & %eₜ' & (%Hstepsₛ & %Hstepsₜ) & Hsim)".
+    iApply sim_inner_pure_steps; done.
   Qed.
   Lemma sim_close_pure_step Χ Φ eₛ eₜ :
     □ (
@@ -2078,9 +2069,9 @@ Section sim_state.
     SIM eₛ ≳ eₜ {{ Φ }}.
   Proof.
     iIntros "#H".
-    iApply sim_close_pure_steps. clear eₛ eₜ. iIntros "!> %Ψ %eₛ %eₜ HΧ".
-    iDestruct ("H" with "HΧ") as "(%eₛ' & %eₜ' & (%Hstepₛ & %Hstepₜ) & Hsim)". iClear "H".
-    iExists eₛ', eₜ'. iFrame. auto using tc_once.
+    iApply sim_close. clear eₛ eₜ. iIntros "!> %Ψ %eₛ %eₜ HΧ".
+    iDestruct ("H" with "HΧ") as "(%eₛ' & %eₜ' & (%Hstepₛ & %Hstepₜ) & Hsim)".
+    iApply sim_inner_pure_step; done.
   Qed.
   Lemma sim_close_pure_head_steps Χ Φ eₛ eₜ :
     □ (
@@ -2094,9 +2085,9 @@ Section sim_state.
     SIM eₛ ≳ eₜ {{ Φ }}.
   Proof.
     iIntros "#H".
-    iApply sim_close_pure_steps. clear eₛ eₜ. iIntros "!> %Ψ %eₛ %eₜ HΧ".
-    iDestruct ("H" with "HΧ") as "(%eₛ' & %eₜ' & (%Hstepₛ & %Hstepsₜ) & Hsim)". iClear "H".
-    iExists eₛ', eₜ'. iFrame. eauto 10 using (tc_congruence id), pure_head_step_pure_step.
+    iApply sim_close. clear eₛ eₜ. iIntros "!> %Ψ %eₛ %eₜ HΧ".
+    iDestruct ("H" with "HΧ") as "(%eₛ' & %eₜ' & (%Hstepsₛ & %Hstepsₜ) & Hsim)".
+    iApply sim_inner_pure_head_steps; done.
   Qed.
   Lemma sim_close_pure_head_step Χ Φ eₛ eₜ :
     □ (
@@ -2110,8 +2101,8 @@ Section sim_state.
     SIM eₛ ≳ eₜ {{ Φ }}.
   Proof.
     iIntros "#H".
-    iApply sim_close_pure_head_steps. clear eₛ eₜ. iIntros "!> %Ψ %eₛ %eₜ HΧ".
-    iDestruct ("H" with "HΧ") as "(%eₛ' & %eₜ' & (%Hstepₛ & %Hstepₜ) & Hsim)". iClear "H".
-    iExists eₛ', eₜ'. iFrame. auto using tc_once.
+    iApply sim_close. clear eₛ eₜ. iIntros "!> %Ψ %eₛ %eₜ HΧ".
+    iDestruct ("H" with "HΧ") as "(%eₛ' & %eₜ' & (%Hstepₛ & %Hstepₜ) & Hsim)".
+    iApply sim_inner_pure_head_step; done.
   Qed.
 End sim_state.
