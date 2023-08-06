@@ -1345,7 +1345,7 @@ Section sim_state.
       setoid_rewrite greatest_fixpoint_unfold; [done | apply _].
     Qed.
     Lemma sim_unfold Χ Φ eₛ eₜ :
-      SIM eₛ ≳ eₜ [[ Χ ]] {{ Φ }}  ⊢
+      SIM eₛ ≳ eₜ [[ Χ ]] {{ Φ }} ⊢
       sim_inner Χ (sim Χ) Φ eₛ eₜ.
     Proof.
       rewrite sim_fixpoint //.
