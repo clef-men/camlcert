@@ -61,6 +61,14 @@ theories/data_lang/rsim/bisubst.v
 theories/data_lang/rsim/definition.v
 theories/data_lang/rsim/notations.v
 theories/data_lang/rsim/rules.v
+theories/data_lang/bisim/definition.v
+theories/data_lang/bisim/notations.v
+theories/data_lang/bisim/basic_rules.v
+theories/data_lang/bisim/proofmode.v
+theories/data_lang/bisim/derived_rules.v
+theories/data_lang/rbisim/definition.v
+theories/data_lang/rbisim/notations.v
+theories/data_lang/rbisim/rules.v
 
 theories/data_human_lang/syntax.v
 theories/data_human_lang/notations.v
