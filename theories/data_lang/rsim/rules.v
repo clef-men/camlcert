@@ -284,8 +284,8 @@ Section sim_GS.
       SIM let: eₜ1 in eₜ2 ⩾ let: eₛ1 in eₛ2 [[ Χ ]] {{# Φ }}.
     Proof.
       rewrite !rsimv_unseal.
-      iIntros "Hsim1 Hsim2".
-      iApply (rsim_let with "Hsim1 Hsim2").
+      iIntros "Hrsim1 Hrsim2".
+      iApply (rsim_let with "Hrsim1 Hrsim2").
     Qed.
 
     Lemma rsimv_call Φ eₛ1 eₛ2 eₜ1 eₜ2 :
@@ -299,8 +299,8 @@ Section sim_GS.
       SIM eₜ1 eₜ2 ⩾ eₛ1 eₛ2 [[ Χ ]] {{# Φ }}.
     Proof.
       rewrite !simv_unseal !rsimv_unseal.
-      iIntros "Hsim1 Hsim2 HΦ".
-      iApply (rsim_call with "Hsim1 Hsim2"). iSmash.
+      iIntros "Hrsim1 Hrsim2 HΦ".
+      iApply (rsim_call with "Hrsim1 Hrsim2"). iSmash.
     Qed.
 
     Lemma rsimv_unop Φ op eₛ eₜ :
@@ -312,8 +312,8 @@ Section sim_GS.
       SIM DataUnop op eₛ ⩾ DataUnop op eₜ [[ Χ ]] {{# Φ }}.
     Proof.
       rewrite !rsimv_unseal.
-      iIntros "Hsim HΦ".
-      iApply (rsim_unop with "Hsim").
+      iIntros "Hrsim HΦ".
+      iApply (rsim_unop with "Hrsim").
       rewrite /sim_post_vals'. iSmash.
     Qed.
 
@@ -327,8 +327,8 @@ Section sim_GS.
       SIM DataBinop op eₛ1 eₛ2 ⩾ DataBinop op eₜ1 eₜ2 [[ Χ ]] {{# Φ }}.
     Proof.
       rewrite !rsimv_unseal.
-      iIntros "Hsim1 Hsim2 HΦ".
-      iApply (rsim_binop with "Hsim1 Hsim2").
+      iIntros "Hrsim1 Hrsim2 HΦ".
+      iApply (rsim_binop with "Hrsim1 Hrsim2").
       rewrite /sim_post_vals'. iSmash.
     Qed.
 
@@ -340,8 +340,8 @@ Section sim_GS.
       SIM DataIf eₛ0 eₛ1 eₛ2 ⩾ DataIf eₜ0 eₜ1 eₜ2 [[ Χ ]] {{# Φ }}.
     Proof.
       rewrite !rsimv_unseal.
-      iIntros "Hsim0 Hsim12".
-      iApply (rsim_if with "Hsim0 Hsim12").
+      iIntros "Hrsim0 Hrsim12".
+      iApply (rsim_if with "Hrsim0 Hrsim12").
     Qed.
 
     Lemma rsimv_constr Φ tag eₛ1 eₛ2 eₜ1 eₜ2 :
@@ -354,8 +354,8 @@ Section sim_GS.
       SIM &tag eₛ1 eₛ2 ⩾ &tag eₜ1 eₜ2 [[ Χ ]] {{# Φ }}.
     Proof.
       rewrite !rsimv_unseal.
-      iIntros "Hsim1 Hsim2 HΦ".
-      iApply (rsim_constr with "Hsim1 Hsim2").
+      iIntros "Hrsim1 Hrsim2 HΦ".
+      iApply (rsim_constr with "Hrsim1 Hrsim2").
       rewrite /sim_post_vals'. iSmash.
     Qed.
     Lemma rsimv_constr_valₜ1 Φ tag eₛ vₜ1 eₜ :
@@ -370,8 +370,8 @@ Section sim_GS.
       SIM eₛ ⩾ &tag vₜ1 eₜ [[ Χ ]] {{# Φ }}.
     Proof.
       rewrite !rsimv_unseal.
-      iIntros "Hsim HΦ".
-      iApply (rsim_constr_valₜ1 with "Hsim").
+      iIntros "Hrsim HΦ".
+      iApply (rsim_constr_valₜ1 with "Hrsim").
       rewrite /sim_post_vals'. iSmash.
     Qed.
     Lemma rsimv_constr_valₜ2 Φ tag eₛ eₜ vₜ2 :
@@ -386,8 +386,8 @@ Section sim_GS.
       SIM eₛ ⩾ &tag eₜ vₜ2 [[ Χ ]] {{# Φ }}.
     Proof.
       rewrite !rsimv_unseal.
-      iIntros "Hsim HΦ".
-      iApply (rsim_constr_valₜ2 with "Hsim").
+      iIntros "Hrsim HΦ".
+      iApply (rsim_constr_valₜ2 with "Hrsim").
       rewrite /sim_post_vals'. iSmash.
     Qed.
 
@@ -401,8 +401,8 @@ Section sim_GS.
       SIM ![eₛ2] eₛ1 ⩾ ![eₜ2] eₜ1 [[ Χ ]] {{# Φ }}.
     Proof.
       rewrite !rsimv_unseal.
-      iIntros "Hsim1 Hsim2 HΦ".
-      iApply (rsim_load with "Hsim1 Hsim2").
+      iIntros "Hrsim1 Hrsim2 HΦ".
+      iApply (rsim_load with "Hrsim1 Hrsim2").
       rewrite /sim_post_vals'. iSmash.
     Qed.
 
@@ -414,8 +414,8 @@ Section sim_GS.
       SIM eₛ1 <-[eₛ2]- eₛ3 ⩾ eₜ1 <-[eₜ2]- eₜ3 [[ Χ ]] {{# Φ }}.
     Proof.
       rewrite !rsimv_unseal.
-      iIntros "Hsim1 Hsim2 Hsim3 HΦ".
-      iApply (rsim_store with "Hsim1 Hsim2 Hsim3").
+      iIntros "Hrsim1 Hrsim2 Hrsim3 HΦ".
+      iApply (rsim_store with "Hrsim1 Hrsim2 Hrsim3").
       rewrite /sim_post_vals'. iSmash.
     Qed.
   End rsimv.
