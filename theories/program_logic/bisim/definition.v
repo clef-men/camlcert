@@ -8,6 +8,7 @@ From simuliris.base_logic Require Export
 From simuliris.base_logic Require Import
   lib.cupd.proofmode.
 From simuliris.program_logic Require Export
+  (* FIXME: remove this dependency *)
   sim.definition.
 
 Section sim_state.
