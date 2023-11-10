@@ -1,8 +1,8 @@
--w -redundant-canonical-projection
--w -uniform-inheritance
--w -ambiguous-paths
+-arg -w -arg -redundant-canonical-projection
+-arg -w -arg -uniform-inheritance
+-arg -w -arg -ambiguous-paths
 
-theories -> simuliris
+-Q theories simuliris
 
 theories/prelude/base.v
 theories/prelude/tactics.v

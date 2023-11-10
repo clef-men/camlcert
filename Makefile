@@ -1,6 +1,3 @@
-prebuild := depend setup
-prebuild_out := _CoqProject Makefile.coq Makefile.coq.conf
-
 .PHONY : all
 all :
 
@@ -8,19 +5,13 @@ all :
 depend :
 	@ opam install . --deps-only --verbose
 
-.PHONY : setup
-setup : _CoqProject
-
 Makefile.coq : _CoqProject
 	@ coq_makefile -f $< -o $@
 
-_CoqProject : __CoqProject
-	@ python3 tools/setup.py $< > $@ || (rm -f $@ ; exit 1)
-
-ifeq (,$(filter $(prebuild),$(MAKECMDGOALS)))
+ifeq (,$(filter depend,$(MAKECMDGOALS)))
 -include Makefile.coq
 endif
 
 .PHONY : clean
 clean ::
-	@ rm -f $(prebuild_out)
+	@ rm -f Makefile.coq Makefile.coq.conf
