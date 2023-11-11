@@ -16,26 +16,26 @@ theories/common/induction.v
 theories/common/three.v
 theories/common/loc.v
 
-theories/proofmode.v
+theories/iris/proofmode.v
 
-theories/base_logic/satisfiable.v
-theories/base_logic/lib/cupd/definition.v
-theories/base_logic/lib/cupd/rules.v
-theories/base_logic/lib/cupd/proofmode.v
-theories/base_logic/lib/sim/heap.v
-theories/base_logic/lib/sim/heap_bij.v
+theories/iris/base_logic/satisfiable.v
+theories/iris/base_logic/lib/cupd/definition.v
+theories/iris/base_logic/lib/cupd/rules.v
+theories/iris/base_logic/lib/cupd/proofmode.v
+theories/iris/base_logic/lib/sim/heap.v
+theories/iris/base_logic/lib/sim/heap_bij.v
 
-theories/program_logic/language.v
-theories/program_logic/ectx_language.v
-theories/program_logic/ectxi_language.v
-theories/program_logic/refinement.v
-theories/program_logic/idiverges.v
-theories/program_logic/sim/protocol.v
-theories/program_logic/sim/definition.v
-theories/program_logic/sim/notations.v
-theories/program_logic/sim/rules.v
-theories/program_logic/sim/proofmode.v
-theories/program_logic/sim/adequacy.v
+theories/iris/program_logic/language.v
+theories/iris/program_logic/ectx_language.v
+theories/iris/program_logic/ectxi_language.v
+theories/iris/program_logic/refinement.v
+theories/iris/program_logic/idiverges.v
+theories/iris/program_logic/sim/protocol.v
+theories/iris/program_logic/sim/definition.v
+theories/iris/program_logic/sim/notations.v
+theories/iris/program_logic/sim/rules.v
+theories/iris/program_logic/sim/proofmode.v
+theories/iris/program_logic/sim/adequacy.v
 
 theories/data_lang/syntax.v
 theories/data_lang/notations.v

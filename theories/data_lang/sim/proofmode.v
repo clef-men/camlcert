@@ -4,7 +4,7 @@ From iris.proofmode Require Import
 
 From simuliris Require Import
   prelude.
-From simuliris.program_logic Require Export
+From simuliris.iris.program_logic Require Export
   sim.proofmode.
 From simuliris.data_lang Require Export
   sim.basic_rules.

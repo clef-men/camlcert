@@ -3,11 +3,11 @@ From iris.bi Require Import
 
 From simuliris Require Import
   prelude.
-From simuliris.base_logic Require Import
+From simuliris.iris.base_logic Require Import
   lib.cupd.proofmode.
-From simuliris.program_logic Require Export
+From simuliris.iris.program_logic Require Export
   sim.definition.
-From simuliris.program_logic Require Import
+From simuliris.iris.program_logic Require Import
   sim.notations.
 
 #[local] Notation "Φ1 --∗ Φ2" := (∀ x1 x2, Φ1 x1 x2 -∗ Φ2 x1 x2)%I

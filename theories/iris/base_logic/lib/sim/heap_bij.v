@@ -4,11 +4,12 @@ From iris.base_logic Require Import
   lib.gset_bij.
 
 From simuliris Require Import
-  prelude
-  proofmode.
+  prelude.
 From simuliris.common Require Export
   typeclasses.
-From simuliris.base_logic Require Export
+From simuliris.iris Require Import
+  proofmode.
+From simuliris.iris.base_logic Require Export
   lib.sim.heap.
 
 Import heap.notations.

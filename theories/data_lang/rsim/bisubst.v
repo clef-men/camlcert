@@ -2,7 +2,8 @@ From Coq Require Import
   FunctionalExtensionality.
 
 From simuliris Require Import
-  prelude
+  prelude.
+From simuliris.iris Require Import
   proofmode.
 From simuliris.data_lang Require Export
   sim.definition.

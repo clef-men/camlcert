@@ -8,7 +8,7 @@ From simuliris Require Import
   prelude.
 From simuliris.common Require Import
   induction.
-From simuliris.program_logic Require Import
+From simuliris.iris.program_logic Require Import
   refinement
   idiverges
   sim.proofmode

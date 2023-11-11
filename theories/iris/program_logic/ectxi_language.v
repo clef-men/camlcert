@@ -1,6 +1,6 @@
 From simuliris Require Import
   prelude.
-From simuliris.program_logic Require Export
+From simuliris.iris.program_logic Require Export
   ectx_language.
 
 Section EctxiLanguageMixin.

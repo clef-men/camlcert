@@ -6,9 +6,9 @@ From diaframe Require Import
 
 From simuliris Require Import
   prelude.
-From simuliris Require Export
+From simuliris.iris Require Export
   proofmode.
-From simuliris.base_logic Require Export
+From simuliris.iris.base_logic Require Export
   lib.cupd.rules.
 
 Section bi_cupd.

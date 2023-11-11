@@ -5,7 +5,7 @@ From simuliris Require Import
   prelude.
 From simuliris.common Require Export
   typeclasses.
-From simuliris.program_logic Require Export
+From simuliris.iris.program_logic Require Export
   language.
 
 Section EctxLanguageMixin.

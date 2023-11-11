@@ -1,6 +1,6 @@
 From simuliris Require Import
   prelude.
-From simuliris.program_logic Require Export
+From simuliris.iris.program_logic Require Export
   sim.definition.
 
 Notation "'SIM' eₛ ≳ eₜ [[ Χ ] ] {{ Φ } }" := (sim Χ Φ%I eₛ eₜ)

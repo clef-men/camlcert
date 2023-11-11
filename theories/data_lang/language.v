@@ -1,6 +1,6 @@
 From simuliris Require Import
   prelude.
-From simuliris.program_logic Require Export
+From simuliris.iris.program_logic Require Export
   ectxi_language.
 From simuliris.data_lang Require Export
   semantics.

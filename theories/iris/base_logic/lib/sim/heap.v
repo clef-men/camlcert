@@ -7,7 +7,8 @@ From iris.base_logic Require Import
   lib.gen_heap.
 
 From simuliris Require Import
-  prelude
+  prelude.
+From simuliris.iris Require Import
   proofmode.
 
 Class SimHeapGpreS Σ locₛ valₛ locₜ valₜ `{Countable locₛ, Countable locₜ} := {

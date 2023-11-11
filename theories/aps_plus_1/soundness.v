@@ -1,6 +1,6 @@
 From simuliris Require Import
   prelude.
-From simuliris.program_logic Require Import
+From simuliris.iris.program_logic Require Import
   sim.adequacy.
 From simuliris.data_lang Require Import
   refinement

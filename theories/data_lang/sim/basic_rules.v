@@ -1,8 +1,8 @@
 From simuliris Require Import
   prelude.
-From simuliris.program_logic Require Export
+From simuliris.iris.program_logic Require Export
   sim.rules.
-From simuliris.program_logic Require Import
+From simuliris.iris.program_logic Require Import
   sim.proofmode.
 From simuliris.data_lang Require Export
   tactics

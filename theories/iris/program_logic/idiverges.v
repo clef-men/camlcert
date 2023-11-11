@@ -7,11 +7,12 @@ From iris.base_logic Require Import
   bi.
 
 From simuliris Require Import
-  prelude
+  prelude.
+From simuliris.iris Require Import
   proofmode.
-From simuliris.base_logic Require Import
+From simuliris.iris.base_logic Require Import
   satisfiable.
-From simuliris.program_logic Require Import
+From simuliris.iris.program_logic Require Import
   language.
 
 Section bi.

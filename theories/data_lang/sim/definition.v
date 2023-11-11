@@ -3,9 +3,9 @@ From iris.proofmode Require Import
 
 From simuliris Require Import
   prelude.
-From simuliris.base_logic Require Export
+From simuliris.iris.base_logic Require Export
   lib.sim.heap_bij.
-From simuliris.program_logic Require Export
+From simuliris.iris.program_logic Require Export
   sim.definition.
 From simuliris.data_lang Require Export
   language.
