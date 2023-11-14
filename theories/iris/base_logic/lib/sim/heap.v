@@ -186,16 +186,16 @@ Section sim_heap_GS.
   Qed.
 
   Lemma mapstoₛ_valid l dq v :
-    l ↦ₛ{dq} v -∗
+    l ↦ₛ{dq} v ⊢
     ⌜✓ dq⌝.
   Proof.
-    apply mapsto_valid.
+    apply bi.wand_entails', mapsto_valid.
   Qed.
   Lemma mapstoₜ_valid l dq v :
-    l ↦ₜ{dq} v -∗
+    l ↦ₜ{dq} v ⊢
     ⌜✓ dq⌝.
   Proof.
-    apply mapsto_valid.
+    apply bi.wand_entails', mapsto_valid.
   Qed.
 
   Lemma mapstoₛ_valid_2 l dq1 v1 dq2 v2 :
@@ -231,14 +231,16 @@ Section sim_heap_GS.
   Lemma mapstoₛ_combine l dq1 v1 dq2 v2 :
     l ↦ₛ{dq1} v1 -∗
     l ↦ₛ{dq2} v2 -∗
-    l ↦ₛ{dq1 ⋅ dq2} v1 ∗ ⌜v1 = v2⌝.
+      l ↦ₛ{dq1 ⋅ dq2} v1 ∗
+      ⌜v1 = v2⌝.
   Proof.
     apply mapsto_combine.
   Qed.
   Lemma mapstoₜ_combine l dq1 v1 dq2 v2 :
     l ↦ₜ{dq1} v1 -∗
     l ↦ₜ{dq2} v2 -∗
-    l ↦ₜ{dq1 ⋅ dq2} v1 ∗ ⌜v1 = v2⌝.
+      l ↦ₜ{dq1 ⋅ dq2} v1 ∗
+      ⌜v1 = v2⌝.
   Proof.
     apply mapsto_combine.
   Qed.
@@ -293,33 +295,33 @@ Section sim_heap_GS.
   Qed.
 
   Lemma mapstoₛ_persist l dq v :
-     l ↦ₛ{dq} v ==∗
+     l ↦ₛ{dq} v ⊢ |==>
      l ↦ₛ□ v.
   Proof.
-    apply mapsto_persist.
+    apply bi.wand_entails', mapsto_persist.
   Qed.
   Lemma mapstoₜ_persist l dq v :
-    l ↦ₜ{dq} v ==∗
+    l ↦ₜ{dq} v ⊢ |==>
     l ↦ₜ□ v.
   Proof.
-    apply mapsto_persist.
+    apply bi.wand_entails', mapsto_persist.
   Qed.
 
   Lemma meta_tokenₛ_union_1 l E1 E2 :
     E1 ## E2 →
-    meta_tokenₛ l (E1 ∪ E2) -∗
+    meta_tokenₛ l (E1 ∪ E2) ⊢
       meta_tokenₛ l E1 ∗
       meta_tokenₛ l E2.
   Proof.
-    apply meta_token_union_1.
+    intros. apply bi.wand_entails', meta_token_union_1. done.
   Qed.
   Lemma meta_tokenₜ_union_1 l E1 E2 :
     E1 ## E2 →
-    meta_tokenₜ l (E1 ∪ E2) -∗
+    meta_tokenₜ l (E1 ∪ E2) ⊢
       meta_tokenₜ l E1 ∗
       meta_tokenₜ l E2.
   Proof.
-    apply meta_token_union_1.
+    intros. apply bi.wand_entails', meta_token_union_1. done.
   Qed.
 
   Lemma meta_tokenₛ_union_2 l E1 E2 :
@@ -340,14 +342,16 @@ Section sim_heap_GS.
   Lemma meta_tokenₛ_union l E1 E2 :
     E1 ## E2 →
     meta_tokenₛ l (E1 ∪ E2) ⊣⊢
-    meta_tokenₛ l E1 ∗ meta_tokenₛ l E2.
+      meta_tokenₛ l E1 ∗
+      meta_tokenₛ l E2.
   Proof.
     apply meta_token_union.
   Qed.
   Lemma meta_tokenₜ_union l E1 E2 :
     E1 ## E2 →
     meta_tokenₜ l (E1 ∪ E2) ⊣⊢
-    meta_tokenₜ l E1 ∗ meta_tokenₜ l E2.
+      meta_tokenₜ l E1 ∗
+      meta_tokenₜ l E2.
   Proof.
     apply meta_token_union.
   Qed.
@@ -355,14 +359,16 @@ Section sim_heap_GS.
   Lemma meta_tokenₛ_difference l E1 E2 :
     E1 ⊆ E2 →
     meta_tokenₛ l E2 ⊣⊢
-    meta_tokenₛ l E1 ∗ meta_tokenₛ l (E2 ∖ E1).
+      meta_tokenₛ l E1 ∗
+      meta_tokenₛ l (E2 ∖ E1).
   Proof.
     apply meta_token_difference.
   Qed.
   Lemma meta_tokenₜ_difference l E1 E2 :
     E1 ⊆ E2 →
     meta_tokenₜ l E2 ⊣⊢
-    meta_tokenₜ l E1 ∗ meta_tokenₜ l (E2 ∖ E1).
+      meta_tokenₜ l E1 ∗
+      meta_tokenₜ l (E2 ∖ E1).
   Proof.
     apply meta_token_difference.
   Qed.
@@ -384,55 +390,55 @@ Section sim_heap_GS.
 
   Lemma metaₛ_set `{Countable X} E l (x : X) N :
     ↑ N ⊆ E →
-    meta_tokenₛ l E ==∗
+    meta_tokenₛ l E ⊢ |==>
     metaₛ l N x.
   Proof.
-    apply meta_set.
+    intros. apply bi.wand_entails', meta_set. done.
   Qed.
   Lemma metaₜ_set `{Countable X} E l (x : X) N :
     ↑ N ⊆ E →
-    meta_tokenₜ l E ==∗
+    meta_tokenₜ l E ⊢ |==>
     metaₜ l N x.
   Proof.
-    apply meta_set.
+    intros. apply bi.wand_entails', meta_set. done.
   Qed.
 
   Lemma sim_heap_allocₛ σ l v :
     σ !! l = None →
-    sim_heap_interpₛ σ ==∗
+    sim_heap_interpₛ σ ⊢ |==>
       sim_heap_interpₛ (<[l := v]> σ) ∗
       l ↦ₛ v ∗
       meta_tokenₛ l ⊤.
   Proof.
-    apply gen_heap_alloc.
+    intros. apply bi.wand_entails', gen_heap_alloc. done.
   Qed.
   Lemma sim_heap_allocₜ σ l v :
     σ !! l = None →
-    sim_heap_interpₜ σ ==∗
+    sim_heap_interpₜ σ ⊢ |==>
       sim_heap_interpₜ (<[l := v]> σ) ∗
       l ↦ₜ v ∗
       meta_tokenₜ l ⊤.
   Proof.
-    apply gen_heap_alloc.
+    intros. apply bi.wand_entails', gen_heap_alloc. done.
   Qed.
 
   Lemma sim_heap_alloc_bigₛ σ σ' :
     σ' ##ₘ σ →
-    sim_heap_interpₛ σ ==∗
+    sim_heap_interpₛ σ ⊢ |==>
       sim_heap_interpₛ (σ' ∪ σ) ∗
       ([∗ map] l ↦ v ∈ σ', l ↦ₛ v) ∗
       ([∗ map] l ↦ _ ∈ σ', meta_tokenₛ l ⊤).
   Proof.
-    apply gen_heap_alloc_big.
+    intros. apply bi.wand_entails', gen_heap_alloc_big. done.
   Qed.
   Lemma sim_heap_alloc_bigₜ σ σ' :
     σ' ##ₘ σ →
-    sim_heap_interpₜ σ ==∗
+    sim_heap_interpₜ σ ⊢ |==>
       sim_heap_interpₜ (σ' ∪ σ) ∗
       ([∗ map] l ↦ v ∈ σ', l ↦ₜ v) ∗
       ([∗ map] l ↦ _ ∈ σ', meta_tokenₜ l ⊤).
   Proof.
-    apply gen_heap_alloc_big.
+    intros. apply bi.wand_entails', gen_heap_alloc_big. done.
   Qed.
 
   Lemma sim_heap_validₛ σ l dq v :
