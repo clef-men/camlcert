@@ -30,14 +30,14 @@ Inductive data_subexprdir : data_expr → data_expr → Prop :=
       data_subexprdir e1 (DataIf e0 e1 e2)
   | data_subexprdir_if_2 e0 e1 e2 :
       data_subexprdir e2 (DataIf e0 e1 e2)
-  | data_subexprdir_constr_1 tag e1 e2 :
-      data_subexprdir e1 (DataConstr tag e1 e2)
-  | data_subexprdir_constr_2 tag e1 e2 :
-      data_subexprdir e2 (DataConstr tag e1 e2)
-  | data_subexprdir_constr_det_1 tag e1 e2 :
-      data_subexprdir e1 (DataConstrDet tag e1 e2)
-  | data_subexprdir_constr_det_2 tag e1 e2 :
-      data_subexprdir e2 (DataConstrDet tag e1 e2)
+  | data_subexprdir_block_1 tag e1 e2 :
+      data_subexprdir e1 (DataBlock tag e1 e2)
+  | data_subexprdir_block_2 tag e1 e2 :
+      data_subexprdir e2 (DataBlock tag e1 e2)
+  | data_subexprdir_block_det_1 tag e1 e2 :
+      data_subexprdir e1 (DataBlockDet tag e1 e2)
+  | data_subexprdir_block_det_2 tag e1 e2 :
+      data_subexprdir e2 (DataBlockDet tag e1 e2)
   | data_subexprdir_load_1 e1 e2 :
       data_subexprdir e1 (DataLoad e1 e2)
   | data_subexprdir_load_2 e1 e2 :
@@ -145,27 +145,27 @@ Lemma data_subexpr_if_2 e e0 e1 e2 :
 Proof.
   intros. eapply tc_r; eauto using data_subexprdir.
 Qed.
-Lemma data_subexpr_constr_1 e tag e1 e2 :
+Lemma data_subexpr_block_1 e tag e1 e2 :
   e ⊏ e1 →
-  e ⊏ (DataConstr tag e1 e2).
+  e ⊏ (DataBlock tag e1 e2).
 Proof.
   intros. eapply tc_r; eauto using data_subexprdir.
 Qed.
-Lemma data_subexpr_constr_2 e tag e1 e2 :
+Lemma data_subexpr_block_2 e tag e1 e2 :
   e ⊏ e2 →
-  e ⊏ (DataConstr tag e1 e2).
+  e ⊏ (DataBlock tag e1 e2).
 Proof.
   intros. eapply tc_r; eauto using data_subexprdir.
 Qed.
-Lemma data_subexpr_constr_det_1 e tag e1 e2 :
+Lemma data_subexpr_block_det_1 e tag e1 e2 :
   e ⊏ e1 →
-  e ⊏ (DataConstrDet tag e1 e2).
+  e ⊏ (DataBlockDet tag e1 e2).
 Proof.
   intros. eapply tc_r; eauto using data_subexprdir.
 Qed.
-Lemma data_subexpr_constr_det_2 e tag e1 e2 :
+Lemma data_subexpr_block_det_2 e tag e1 e2 :
   e ⊏ e2 →
-  e ⊏ (DataConstrDet tag e1 e2).
+  e ⊏ (DataBlockDet tag e1 e2).
 Proof.
   intros. eapply tc_r; eauto using data_subexprdir.
 Qed.
@@ -214,10 +214,10 @@ Qed.
 #[global] Hint Resolve data_subexpr_if_0 | 2 : data_lang.
 #[global] Hint Resolve data_subexpr_if_1 | 2 : data_lang.
 #[global] Hint Resolve data_subexpr_if_2 | 2 : data_lang.
-#[global] Hint Resolve data_subexpr_constr_1 | 2 : data_lang.
-#[global] Hint Resolve data_subexpr_constr_2 | 2 : data_lang.
-#[global] Hint Resolve data_subexpr_constr_det_1 | 2 : data_lang.
-#[global] Hint Resolve data_subexpr_constr_det_2 | 2 : data_lang.
+#[global] Hint Resolve data_subexpr_block_1 | 2 : data_lang.
+#[global] Hint Resolve data_subexpr_block_2 | 2 : data_lang.
+#[global] Hint Resolve data_subexpr_block_det_1 | 2 : data_lang.
+#[global] Hint Resolve data_subexpr_block_det_2 | 2 : data_lang.
 #[global] Hint Resolve data_subexpr_load_1 | 2 : data_lang.
 #[global] Hint Resolve data_subexpr_load_2 | 2 : data_lang.
 #[global] Hint Resolve data_subexpr_store_1 | 2 : data_lang.

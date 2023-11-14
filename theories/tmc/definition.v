@@ -62,25 +62,25 @@ Section tmc_expr.
         tmc_expr_dir
           (if: eₛ0 then eₛ1 else eₛ2)
           (if: eₜ0 then eₜ1 else eₜ2)
-    | tmc_expr_dir_constr tag eₛ1 eₛ2 eₜ1 eₜ2 :
+    | tmc_expr_dir_block tag eₛ1 eₛ2 eₜ1 eₜ2 :
         tmc_expr_dir eₛ1 eₜ1 →
         tmc_expr_dir eₛ2 eₜ2 →
         tmc_expr_dir
           (&tag eₛ1 eₛ2)
           (&tag eₜ1 eₜ2)
-    | tmc_expr_dir_constr_dps_1 tag eₛ1 eₛ2 eₜ1 eₜ2 :
+    | tmc_expr_dir_block_dps_1 tag eₛ1 eₛ2 eₜ1 eₜ2 :
         tmc_expr_dir eₛ1 eₜ1 →
         tmc_expr_dps $0 𝟚 eₛ2.[ren (+1)] eₜ2 →
         tmc_expr_dir
           (&tag eₛ1 eₛ2)
           (let: &tag eₜ1 #() in eₜ2 ;; $0)
-    | tmc_expr_dir_constr_dps_2 tag eₛ1 eₛ2 eₜ1 eₜ2 :
+    | tmc_expr_dir_block_dps_2 tag eₛ1 eₛ2 eₜ1 eₜ2 :
         tmc_expr_dir eₛ2 eₜ2 →
         tmc_expr_dps $0 𝟙 eₛ1.[ren (+1)] eₜ1 →
         tmc_expr_dir
           (&tag eₛ1 eₛ2)
           (let: &tag #() eₜ2 in eₜ1 ;; $0)
-    | tmc_expr_dir_constr_det tag eₛ1 eₛ2 eₜ1 eₜ2 :
+    | tmc_expr_dir_block_det tag eₛ1 eₛ2 eₜ1 eₜ2 :
         tmc_expr_dir eₛ1 eₜ1 →
         tmc_expr_dir eₛ2 eₜ2 →
         tmc_expr_dir
@@ -125,14 +125,14 @@ Section tmc_expr.
         tmc_expr_dps dst idx
           (if: eₛ0 then eₛ1 else eₛ2)
           (if: eₜ0 then eₜ1 else eₜ2)
-    | tmc_expr_dps_constr_1 dst idx tag eₛ1 eₛ2 eₜ1 eₜ2 eₜ :
+    | tmc_expr_dps_block_1 dst idx tag eₛ1 eₛ2 eₜ1 eₜ2 eₜ :
         tmc_expr_dir eₛ1 eₜ1 →
         tmc_expr_dps $0 𝟚 eₛ2.[ren (+1)] eₜ2 →
         eₜ = (let: &tag eₜ1 #() in dst.[ren (+1)] <-[idx.[ren (+1)]]- $0 ;; eₜ2)%data_expr →
         tmc_expr_dps dst idx
           (&tag eₛ1 eₛ2)
           eₜ
-    | tmc_expr_dps_constr_2 dst idx tag eₛ1 eₛ2 eₜ1 eₜ2 eₜ :
+    | tmc_expr_dps_block_2 dst idx tag eₛ1 eₛ2 eₜ1 eₜ2 eₜ :
         tmc_expr_dir eₛ2 eₜ2 →
         tmc_expr_dps $0 𝟙 eₛ1.[ren (+1)] eₜ1 →
         eₜ = (let: &tag #() eₜ2 in dst.[ren (+1)] <-[idx.[ren (+1)]]- $0 ;; eₜ1)%data_expr →

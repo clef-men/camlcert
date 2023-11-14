@@ -38,10 +38,10 @@ Fixpoint data_expr_well_formed prog e :=
       data_expr_well_formed prog e0 ∧
       data_expr_well_formed prog e1 ∧
       data_expr_well_formed prog e2
-  | DataConstr _ e1 e2 =>
+  | DataBlock _ e1 e2 =>
       data_expr_well_formed prog e1 ∧
       data_expr_well_formed prog e2
-  | DataConstrDet _ _ _ =>
+  | DataBlockDet _ _ _ =>
       False
   | DataLoad e1 e2 =>
       data_expr_well_formed prog e1 ∧
@@ -76,10 +76,10 @@ Fixpoint data_expr_scoped scope e :=
       data_expr_scoped scope e0 ∧
       data_expr_scoped scope e1 ∧
       data_expr_scoped scope e2
-  | DataConstr _ e1 e2 =>
+  | DataBlock _ e1 e2 =>
       data_expr_scoped scope e1 ∧
       data_expr_scoped scope e2
-  | DataConstrDet _ e1 e2 =>
+  | DataBlockDet _ e1 e2 =>
       data_expr_scoped scope e1 ∧
       data_expr_scoped scope e2
   | DataLoad e1 e2 =>

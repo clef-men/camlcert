@@ -67,13 +67,13 @@ Section inline_expr.
         inline_expr
           (if: eₛ0 then eₛ1 else eₛ2)
           (if: eₜ0 then eₜ1 else eₜ2)
-    | inline_expr_constr tag eₛ1 eₛ2 eₜ1 eₜ2 :
+    | inline_expr_block tag eₛ1 eₛ2 eₜ1 eₜ2 :
         inline_expr eₛ1 eₜ1 →
         inline_expr eₛ2 eₜ2 →
         inline_expr
           (&tag eₛ1 eₛ2)
           (&tag eₜ1 eₜ2)
-    | inline_expr_constr_det tag eₛ1 eₛ2 eₜ1 eₜ2 :
+    | inline_expr_block_det tag eₛ1 eₛ2 eₜ1 eₜ2 :
         inline_expr eₛ1 eₜ1 →
         inline_expr eₛ2 eₜ2 →
         inline_expr

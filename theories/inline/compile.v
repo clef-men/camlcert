@@ -70,12 +70,12 @@ Fixpoint inline_compile_expr prog depth := fix inline_compile_expr' e :=
         (inline_compile_expr' e0)
         (inline_compile_expr' e1)
         (inline_compile_expr' e2)
-  | DataConstr tag e1 e2 =>
-      DataConstr tag
+  | DataBlock tag e1 e2 =>
+      DataBlock tag
         (inline_compile_expr' e1)
         (inline_compile_expr' e2)
-  | DataConstrDet tag e1 e2 =>
-      DataConstrDet tag
+  | DataBlockDet tag e1 e2 =>
+      DataBlockDet tag
         (inline_compile_expr' e1)
         (inline_compile_expr' e2)
   | DataLoad e1 e2 =>

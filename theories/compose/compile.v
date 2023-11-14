@@ -55,12 +55,12 @@ Section compose_compile_expr.
           (compose_compile_expr_dir e0)
           (compose_compile_expr_dir e1)
           (compose_compile_expr_dir e2)
-    | DataConstr tag e1 e2 =>
-        DataConstr tag
+    | DataBlock tag e1 e2 =>
+        DataBlock tag
           (compose_compile_expr_dir e1)
           (compose_compile_expr_dir e2)
-    | DataConstrDet tag e1 e2 =>
-        DataConstrDet tag
+    | DataBlockDet tag e1 e2 =>
+        DataBlockDet tag
           (compose_compile_expr_dir e1)
           (compose_compile_expr_dir e2)
     | DataLoad e1 e2 =>

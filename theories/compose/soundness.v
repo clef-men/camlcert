@@ -101,7 +101,7 @@ Section sim_GS.
       + iApply IH0; auto with data_lang.
       + iApply IH1; auto with data_lang.
       + iApply IH2; auto with data_lang.
-    - iApply rsimv_constr; last iSmash.
+    - iApply rsimv_block; last iSmash.
       + iApply IH1; auto with data_lang.
       + iApply IH2; auto with data_lang.
     - iSmash.

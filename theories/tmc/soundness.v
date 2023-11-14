@@ -65,9 +65,9 @@ Section sim_GS.
   Proof.
     rewrite simv_unseal.
     iIntros "%Hfuncₛ %Hξ Hdst #Hv HΦ".
-    sim_constrₜ; sim_constrₜ;
-      sim_constr_detₜ as l2 "Hl20" "Hl21" "Hl22";
-      sim_constr_detₜ as l1 "Hl10" "Hl11" "Hl12";
+    sim_blockₜ; sim_blockₜ;
+      sim_block_detₜ as l2 "Hl20" "Hl21" "Hl22";
+      sim_block_detₜ as l1 "Hl10" "Hl11" "Hl12";
       sim_apply (sim_apply_protocol (sim_post_vals' Φ) _ _ ((DataFunc func annot) vₛ) ((DataFunc func_dps annot) l1)); iIntros "%σₛ %σₜ $ !>";
       ( iSplitL;
         [ iRight; repeat iExists _; iFrame "#∗";
@@ -169,11 +169,11 @@ Section sim_GS.
     - iSmash.
     - iApply rsimv_if; last iSplit;
         iApply IHdirₛ; auto with data_lang.
-    - iApply rsimv_constr; last iSmash;
+    - iApply rsimv_block; last iSmash;
         iApply IHdirₛ; auto with data_lang.
     - iIntros "%Γ % % (-> & ->) #HΓ /=".
-      sim_constrₛ1.
-      sim_apply simv_constr_valₜ2.
+      sim_blockₛ1.
+      sim_apply simv_block_valₜ2.
       { sim_apply IHdirₛ; auto with data_lang. }
       iIntros "%vₛ1 %lₜ %vₜ1 Hlₜ0 Hlₜ1 Hlₜ2 #Hv1".
       sim_apply (IHdpsₛ lₜ 𝟚 eₛ2 eₜ2.[#lₜ/] with "Hlₜ2 [Hlₜ0 Hlₜ1 HΦ]"); first 4 last.
@@ -182,7 +182,7 @@ Section sim_GS.
       { eapply tmc_expr_dps_subst; eauto; autosubst. }
       { auto with data_lang. }
       iIntros "%vₛ2 % (%vₜ2 & -> & Hlₜ2 & #Hv2)".
-      sim_constr_detₛ as lₛ "Hlₛ0" "Hlₛ1" "Hlₛ2".
+      sim_block_detₛ as lₛ "Hlₛ0" "Hlₛ1" "Hlₛ2".
       iDestruct (sim_heap_bij_tie_eq_2 with "Hlₛ0 Hlₜ0 [//]") as "Hl0".
       sim_heap_bij_insert.
       iDestruct (sim_heap_bij_tie_eq_2 with "Hlₛ1 Hlₜ1 [//]") as "Hl1".
@@ -191,8 +191,8 @@ Section sim_GS.
       sim_heap_bij_insert.
       sim_pures.
     - iIntros "%Γ % % (-> & ->) #HΓ /=".
-      sim_constrₛ2.
-      sim_apply simv_constr_valₜ1.
+      sim_blockₛ2.
+      sim_apply simv_block_valₜ1.
       { sim_apply IHdirₛ; auto with data_lang. }
       iIntros "%vₛ2 %lₜ %vₜ2 Hlₜ0 Hlₜ1 Hlₜ2 #Hv2".
       sim_apply (IHdpsₛ lₜ 𝟙 eₛ1 eₜ1.[#lₜ/] with "Hlₜ1 [Hlₜ0 Hlₜ2 HΦ]"); first 4 last.
@@ -201,7 +201,7 @@ Section sim_GS.
       { eapply tmc_expr_dps_subst; eauto; autosubst. }
       { auto with data_lang. }
       iIntros "%vₛ1 % (%vₜ1 & -> & Hlₜ1 & #Hv1)".
-      sim_constr_detₛ as lₛ "Hlₛ0" "Hlₛ1" "Hlₛ2".
+      sim_block_detₛ as lₛ "Hlₛ0" "Hlₛ1" "Hlₛ2".
       iDestruct (sim_heap_bij_tie_eq_2 with "Hlₛ0 Hlₜ0 [//]") as "Hl0".
       sim_heap_bij_insert.
       iDestruct (sim_heap_bij_tie_eq_2 with "Hlₛ1 Hlₜ1 [//]") as "Hl1".
@@ -230,8 +230,8 @@ Section sim_GS.
       { iApply (IHdirₛ with "[//] []"); auto with data_lang. }
       iSplit; iApply (IHdpsₛ with "Hpre [HΦ]"); [auto with data_lang.. | iSmash].
     - iIntros "%Γ % % (-> & ->) #HΓ /=".
-      sim_constrₛ1.
-      sim_apply simv_constr_valₜ2.
+      sim_blockₛ1.
+      sim_apply simv_block_valₜ2.
       { sim_apply (IHdirₛ with "[//] [] [//] HΓ"); auto with data_lang. }
       iIntros "%vₛ1 %lₜ %vₜ1 Hlₜ0 Hlₜ1 Hlₜ2 #Hv1".
       sim_storeₜ.
@@ -241,7 +241,7 @@ Section sim_GS.
       { eapply tmc_expr_dps_subst; eauto; autosubst. }
       { auto with data_lang. }
       iIntros "%vₛ2 % (%vₜ2 & -> & Hlₜ2 & #Hv2)".
-      sim_constr_detₛ as lₛ "Hlₛ0" "Hlₛ1" "Hlₛ2".
+      sim_block_detₛ as lₛ "Hlₛ0" "Hlₛ1" "Hlₛ2".
       iDestruct (sim_heap_bij_tie_eq_2 with "Hlₛ0 Hlₜ0 [//]") as "Hl0".
       sim_heap_bij_insert.
       iDestruct (sim_heap_bij_tie_eq_2 with "Hlₛ1 Hlₜ1 [//]") as "Hl1".
@@ -250,8 +250,8 @@ Section sim_GS.
       sim_heap_bij_insert.
       iSmash.
     - iIntros "%Γ % % (-> & ->) #HΓ /=".
-      sim_constrₛ2.
-      sim_apply simv_constr_valₜ1.
+      sim_blockₛ2.
+      sim_apply simv_block_valₜ1.
       { sim_apply (IHdirₛ with "[//] [] [//] HΓ"); auto with data_lang. }
       iIntros "%vₛ2 %lₜ %vₜ2 Hlₜ0 Hlₜ1 Hlₜ2 #Hv2".
       sim_storeₜ.
@@ -261,7 +261,7 @@ Section sim_GS.
       { eapply tmc_expr_dps_subst; eauto; autosubst. }
       { auto with data_lang. }
       iIntros "%vₛ1 % (%vₜ1 & -> & Hlₜ1 & #Hv1)".
-      sim_constr_detₛ as lₛ "Hlₛ0" "Hlₛ1" "Hlₛ2".
+      sim_block_detₛ as lₛ "Hlₛ0" "Hlₛ1" "Hlₛ2".
       iDestruct (sim_heap_bij_tie_eq_2 with "Hlₛ0 Hlₜ0 [//]") as "Hl0".
       sim_heap_bij_insert.
       iDestruct (sim_heap_bij_tie_eq_2 with "Hlₛ1 Hlₜ1 [//]") as "Hl1".

@@ -13,8 +13,8 @@ Fixpoint data_ectx_decompositions e :=
   | DataVal _
   | DataBinop _ _ _
   | DataBinopDet _ _ _
-  | DataConstr _ _ _
-  | DataConstrDet _ _ _ =>
+  | DataBlock _ _ _
+  | DataBlockDet _ _ _ =>
       []
   | DataLet e1 e2 =>
       data_ectx_decompositions_with (DataEctxiLet e2) e1

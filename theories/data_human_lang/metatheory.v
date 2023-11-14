@@ -34,7 +34,7 @@ Fixpoint data_human_expr_well_formed prog e :=
       data_human_expr_well_formed prog e0 ∧
       data_human_expr_well_formed prog e1 ∧
       data_human_expr_well_formed prog e2
-  | DataHumanConstr _ e1 e2 =>
+  | DataHumanBlock _ e1 e2 =>
       data_human_expr_well_formed prog e1 ∧
       data_human_expr_well_formed prog e2
   | DataHumanLoad e1 e2 =>

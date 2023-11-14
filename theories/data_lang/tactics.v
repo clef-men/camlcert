@@ -29,14 +29,14 @@ Create HintDb data_lang.
   econstructor
 ) : data_lang.
 #[global] Hint Extern 0 (
-  data_head_step _ (DataConstrDet _ _ _) _ _ _
+  data_head_step _ (DataBlockDet _ _ _) _ _ _
 ) => (
-  eapply data_head_step_constr_det'
+  eapply data_head_step_block_det'
 ) : data_lang.
 #[global] Hint Extern 0 (
-  ectx_language.head_step _ (DataConstrDet _ _ _) _ _ _
+  ectx_language.head_step _ (DataBlockDet _ _ _) _ _ _
 ) => (
-  eapply data_head_step_constr_det'
+  eapply data_head_step_block_det'
 ) : data_lang.
 #[global] Hint Extern 0 (
   pure_step _ _ _

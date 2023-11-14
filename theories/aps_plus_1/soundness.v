@@ -58,8 +58,8 @@ Section sim_GS.
     SIM (DataFunc func annot) vₛ ≳ (DataFunc func_aps annot) (acc, vₜ) [[ aps_plus_protocol ]] {{ Φ }}.
   Proof.
     iIntros "%Hfuncₛ %Hξ #Hv HΦ".
-    sim_constrₜ;
-      sim_constr_detₜ as l "Hl0" "Hl1" "Hl2";
+    sim_blockₜ;
+      sim_block_detₜ as l "Hl0" "Hl1" "Hl2";
       sim_apply (sim_apply_protocol Φ _ _ ((DataFunc func annot) vₛ) ((DataFunc func_aps annot) l)); iIntros "%σₛ %σₜ $ !>";
       (iSplitL; [iSmash | iIntros "%eₛ %eₜ HΦ"; sim_post]).
   Qed.
@@ -168,7 +168,7 @@ Section sim_GS.
     - iSmash.
     - iApply rsim_if; last iSplit;
         iApply IHdirₛ; auto with data_lang.
-    - iApply rsim_constr; last iSmash;
+    - iApply rsim_block; last iSmash;
         iApply IHdirₛ; auto with data_lang.
     - iSmash.
     - iApply rsim_load; last iSmash;

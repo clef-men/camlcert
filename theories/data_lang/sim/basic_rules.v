@@ -228,7 +228,7 @@ Section sim_GS.
       sim_post.
     Qed.
 
-    Lemma sim_constrₛ1 Φ tag e1 e2 e :
+    Lemma sim_blockₛ1 Φ tag e1 e2 e :
       SIM let: e1 in let: e2.[ren (+1)] in &&tag $1 $0 ≳ e [[ Χ ]] {{ Φ }} ⊢
       SIM &tag e1 e2 ≳ e [[ Χ ]] {{ Φ }}.
     Proof.
@@ -236,7 +236,7 @@ Section sim_GS.
       iApply sim_head_stepₛ. iIntros "%σₛ %σₜ Hsi !>".
       iExists _, σₛ. iFrame. auto with data_lang.
     Qed.
-    Lemma sim_constrₛ2 Φ tag e1 e2 e :
+    Lemma sim_blockₛ2 Φ tag e1 e2 e :
       SIM let: e2 in let: e1.[ren (+1)] in &&tag $0 $1 ≳ e [[ Χ ]] {{ Φ }} ⊢
       SIM &tag e1 e2 ≳ e [[ Χ ]] {{ Φ }}.
     Proof.
@@ -244,7 +244,7 @@ Section sim_GS.
       iApply sim_head_stepₛ. iIntros "%σₛ %σₜ Hsi !>".
       iExists _, σₛ. iFrame. auto with data_lang.
     Qed.
-    Lemma sim_constrₜ Φ tag e e1 e2 :
+    Lemma sim_blockₜ Φ tag e e1 e2 :
         SIM e ≳ let: e1 in let: e2.[ren (+1)] in &&tag $1 $0 [[ Χ ]] {{ Φ }}
       ∧ SIM e ≳ let: e2 in let: e1.[ren (+1)] in &&tag $0 $1 [[ Χ ]] {{ Φ }}
       ⊢
@@ -258,7 +258,7 @@ Section sim_GS.
       - iDestruct "Hsim" as "(_ & $)". iSmash.
     Qed.
 
-    Lemma sim_constr_detₛ Φ tag v1 v2 e :
+    Lemma sim_block_detₛ Φ tag v1 v2 e :
       ( ∀ l,
         (l +ₗ 0) ↦ₛ tag -∗
         (l +ₗ 1) ↦ₛ v1 -∗
@@ -283,10 +283,10 @@ Section sim_GS.
       { rewrite lookup_insert_ne; last by intros ?%(inj _). done. }
       rewrite big_sepM_singleton.
       iExists #l, (σₛ' ∪ σₛ). iFrame. iSplitR; last iSmash.
-      iPureIntro. apply data_head_step_constr_det'.
+      iPureIntro. apply data_head_step_block_det'.
       rewrite -!insert_union_l left_id //.
     Qed.
-    Lemma sim_constr_detₜ Φ e tag v1 v2 :
+    Lemma sim_block_detₜ Φ e tag v1 v2 :
       ( ∀ l,
         (l +ₗ 0) ↦ₜ tag -∗
         (l +ₗ 1) ↦ₜ v1 -∗
@@ -309,7 +309,7 @@ Section sim_GS.
       rewrite big_sepM_singleton.
       rewrite -!insert_union_l left_id. iFrame. iSmash.
     Qed.
-    Lemma sim_constr_det Φ tag vₛ1 vₛ2 vₜ1 vₜ2 :
+    Lemma sim_block_det Φ tag vₛ1 vₛ2 vₜ1 vₜ2 :
       vₛ1 ≈ vₜ1 -∗
       vₛ2 ≈ vₜ2 -∗
       ( ∀ lₛ lₜ,
@@ -319,8 +319,8 @@ Section sim_GS.
       SIM &&tag vₛ1 vₛ2 ≳ &&tag vₜ1 vₜ2 [[ Χ ]] {{ Φ }}.
     Proof.
       iIntros "Hv1 Hv2 HΦ".
-      iApply sim_constr_detₛ. iIntros "%lₛ Hlₛ0 Hlₛ1 Hlₛ2".
-      iApply sim_constr_detₜ. iIntros "%lₜ Hlₜ0 Hlₜ1 Hlₜ2".
+      iApply sim_block_detₛ. iIntros "%lₛ Hlₛ0 Hlₛ1 Hlₛ2".
+      iApply sim_block_detₜ. iIntros "%lₜ Hlₜ0 Hlₜ1 Hlₜ2".
       iMod (sim_state_interp_heap_bij_insert with "[Hlₛ0 Hlₜ0]") as "Hl0".
       { iExists tag, tag. iSmash. }
       iMod (sim_state_interp_heap_bij_insert with "[Hlₛ1 Hlₜ1 Hv1]") as "Hl1".
@@ -447,7 +447,7 @@ Section sim_GS.
       rewrite /sim_post_vals'. iSmash.
     Qed.
 
-    Lemma simv_constr_det Φ tag vₛ1 vₛ2 vₜ1 vₜ2 :
+    Lemma simv_block_det Φ tag vₛ1 vₛ2 vₜ1 vₜ2 :
       vₛ1 ≈ vₜ1 -∗
       vₛ2 ≈ vₜ2 -∗
       ( ∀ lₛ lₜ,
@@ -458,7 +458,7 @@ Section sim_GS.
     Proof.
       rewrite !simv_unseal.
       iIntros "#Hv1 #Hv2 HΦ".
-      iApply (sim_constr_det with "Hv1 Hv2").
+      iApply (sim_block_det with "Hv1 Hv2").
       rewrite /sim_post_vals'. iSmash.
     Qed.
 

@@ -176,8 +176,8 @@ Inductive data_expr :=
   | DataBinop (op : data_binop) (e1 e2 : data_expr)
   | DataBinopDet (op : data_binop) (e1 e2 : data_expr)
   | DataIf (e0 e1 e2 : data_expr)
-  | DataConstr (tag : data_tag) (e1 e2 : data_expr)
-  | DataConstrDet (tag : data_tag) (e1 e2 : data_expr)
+  | DataBlock (tag : data_tag) (e1 e2 : data_expr)
+  | DataBlockDet (tag : data_tag) (e1 e2 : data_expr)
   | DataLoad (e1 e2 : data_expr)
   | DataStore (e1 e2 e3 : data_expr).
 
@@ -206,9 +206,9 @@ Proof.
         GenNode 4 [GenLeaf (inr $ inr $ inr $ inl op); encode e1; encode e2]
     | DataIf e0 e1 e2 =>
         GenNode 5 [encode e0; encode e1; encode e2]
-    | DataConstr tag e1 e2 =>
+    | DataBlock tag e1 e2 =>
         GenNode 6 [GenLeaf (inr $ inr $ inr $ inr tag); encode e1; encode e2]
-    | DataConstrDet tag e1 e2 =>
+    | DataBlockDet tag e1 e2 =>
         GenNode 7 [GenLeaf (inr $ inr $ inr $ inr tag); encode e1; encode e2]
     | DataLoad e1 e2 =>
         GenNode 8 [encode e1; encode e2]
@@ -234,9 +234,9 @@ Proof.
     | GenNode 5 [e0; e1; e2] =>
         DataIf (decode e0) (decode e1) (decode e2)
     | GenNode 6 [GenLeaf (inr (inr (inr (inr tag)))); e1; e2] =>
-        DataConstr tag (decode e1) (decode e2)
+        DataBlock tag (decode e1) (decode e2)
     | GenNode 7 [GenLeaf (inr (inr (inr (inr tag)))); e1; e2] =>
-        DataConstrDet tag (decode e1) (decode e2)
+        DataBlockDet tag (decode e1) (decode e2)
     | GenNode 8 [e1; e2] =>
         DataLoad (decode e1) (decode e2)
     | GenNode 9 [e1; e2; e3] =>

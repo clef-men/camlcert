@@ -65,8 +65,8 @@ Fixpoint data_human_expr_compile bdgs e :=
         (data_human_expr_compile bdgs e0)
         (data_human_expr_compile bdgs e1)
         (data_human_expr_compile bdgs e2)
-  | DataHumanConstr tag e1 e2 =>
-      DataConstr tag
+  | DataHumanBlock tag e1 e2 =>
+      DataBlock tag
         (data_human_expr_compile bdgs e1)
         (data_human_expr_compile bdgs e2)
   | DataHumanLoad e1 e2 =>

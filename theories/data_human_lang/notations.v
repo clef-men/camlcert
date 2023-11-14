@@ -112,7 +112,7 @@ Notation "e1 || e2" :=
 ) : data_human_expr_scope.
 
 Notation "& tag" := (
-  DataHumanConstr tag
+  DataHumanBlock tag
 )(at level 5,
   format "& tag"
 ) : data_human_expr_scope.

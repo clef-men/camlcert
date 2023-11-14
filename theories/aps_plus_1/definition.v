@@ -73,13 +73,13 @@ Section aps_plus_expr.
         aps_plus_expr_dir
           (if: eₛ0 then eₛ1 else eₛ2)
           (if: eₜ0 then eₜ1 else eₜ2)
-    | aps_plus_expr_dir_constr tag eₛ1 eₛ2 eₜ1 eₜ2 :
+    | aps_plus_expr_dir_block tag eₛ1 eₛ2 eₜ1 eₜ2 :
         aps_plus_expr_dir eₛ1 eₜ1 →
         aps_plus_expr_dir eₛ2 eₜ2 →
         aps_plus_expr_dir
           (&tag eₛ1 eₛ2)
           (&tag eₜ1 eₜ2)
-    | aps_plus_expr_dir_constr_det tag eₛ1 eₛ2 eₜ1 eₜ2 :
+    | aps_plus_expr_dir_block_det tag eₛ1 eₛ2 eₜ1 eₜ2 :
         aps_plus_expr_dir eₛ1 eₜ1 →
         aps_plus_expr_dir eₛ2 eₜ2 →
         aps_plus_expr_dir

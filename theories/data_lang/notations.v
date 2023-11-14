@@ -124,12 +124,12 @@ Notation "e1 || e2" :=
 ) : data_expr_scope.
 
 Notation "& tag" := (
-  DataConstr tag
+  DataBlock tag
 )(at level 5,
   format "& tag"
 ) : data_expr_scope.
 Notation "&& tag" := (
-  DataConstrDet tag
+  DataBlockDet tag
 )(at level 5,
   format "&& tag"
 ) : data_expr_scope.

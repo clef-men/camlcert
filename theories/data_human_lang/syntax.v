@@ -67,7 +67,7 @@ Inductive data_human_expr :=
   | DataHumanUnop (op : data_unop) (e : data_human_expr)
   | DataHumanBinop (op : data_binop) (e1 e2 : data_human_expr)
   | DataHumanIf (e0 e1 e2 : data_human_expr)
-  | DataHumanConstr (tag : data_tag) (e1 e2 : data_human_expr)
+  | DataHumanBlock (tag : data_tag) (e1 e2 : data_human_expr)
   | DataHumanLoad (e1 e2 : data_human_expr)
   | DataHumanStore (e1 e2 e3 : data_human_expr).
 
@@ -94,7 +94,7 @@ Proof.
         GenNode 3 [GenLeaf (inr $ inr $ inr $ inl op); encode e1; encode e2]
     | DataHumanIf e0 e1 e2 =>
         GenNode 4 [encode e0; encode e1; encode e2]
-    | DataHumanConstr tag e1 e2 =>
+    | DataHumanBlock tag e1 e2 =>
         GenNode 5 [GenLeaf (inr $ inr $ inr $ inr tag); encode e1; encode e2]
     | DataHumanLoad e1 e2 =>
         GenNode 6 [encode e1; encode e2]
@@ -118,7 +118,7 @@ Proof.
     | GenNode 4 [e0; e1; e2] =>
         DataHumanIf (decode e0) (decode e1) (decode e2)
     | GenNode 5 [GenLeaf (inr (inr (inr (inr tag)))); e1; e2] =>
-        DataHumanConstr tag (decode e1) (decode e2)
+        DataHumanBlock tag (decode e1) (decode e2)
     | GenNode 6 [e1; e2] =>
         DataHumanLoad (decode e1) (decode e2)
     | GenNode 7 [e1; e2; e3] =>

@@ -192,17 +192,17 @@ Inductive data_head_step prog : data_expr → data_state → data_expr → data_
       data_head_step prog
         (if: b then e1 else e2) σ
         (if b then e1 else e2) σ
-  | data_head_step_constr_1 tag e1 e2 e' σ :
+  | data_head_step_block_1 tag e1 e2 e' σ :
       e' = (let: e1 in let: e2.[ren (+1)] in &&tag $1 $0)%data_expr →
       data_head_step prog
         (&tag e1 e2) σ
         e' σ
-  | data_head_step_constr_2 tag e1 e2 e' σ :
+  | data_head_step_block_2 tag e1 e2 e' σ :
       e' = (let: e2 in let: e1.[ren (+1)] in &&tag $0 $1)%data_expr →
       data_head_step prog
         (&tag e1 e2) σ
         e' σ
-  | data_head_step_constr_det tag v1 v2 σ l :
+  | data_head_step_block_det tag v1 v2 σ l :
       σ !! (l +ₗ 0) = None →
       σ !! (l +ₗ 1) = None →
       σ !! (l +ₗ 2) = None →
@@ -220,7 +220,7 @@ Inductive data_head_step prog : data_expr → data_state → data_expr → data_
         (l <-[idx]- w) σ
         #() (<[l +ₗ idx := w]> σ).
 
-Lemma data_head_step_constr_det' prog tag v1 v2 σ σ' :
+Lemma data_head_step_block_det' prog tag v1 v2 σ σ' :
   let l := loc_fresh (dom σ) in
   σ' = <[l +ₗ 2 := v2]> (<[l +ₗ 1 := v1]> (<[l +ₗ 0 := DataTag tag]> σ)) →
   data_head_step prog
@@ -228,7 +228,7 @@ Lemma data_head_step_constr_det' prog tag v1 v2 σ σ' :
     l σ'.
 Proof.
   intros l ->.
-  apply data_head_step_constr_det;
+  apply data_head_step_block_det;
     rewrite -not_elem_of_dom;
     apply loc_fresh_fresh; lia.
 Qed.

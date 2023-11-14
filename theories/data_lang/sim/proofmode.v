@@ -66,29 +66,29 @@ Section sim_GS.
     apply bi.and_intro; done.
   Qed.
 
-  Lemma tac_sim_constrₛ1 Δ Φ K tag e1 e2 e :
+  Lemma tac_sim_blockₛ1 Δ Φ K tag e1 e2 e :
     envs_entails Δ (SIM K @@ let: e1 in let: e2.[ren (+1)] in &&tag $1 $0 ≳ e [[ Χ ]] {{ Φ }}) →
     envs_entails Δ (SIM K @@ &tag e1 e2 ≳ e [[ Χ ]] {{ Φ }}).
   Proof.
-    rewrite envs_entails_unseal sim_bind_invₛ sim_constrₛ1 sim_bindₛ //.
+    rewrite envs_entails_unseal sim_bind_invₛ sim_blockₛ1 sim_bindₛ //.
   Qed.
-  Lemma tac_sim_constrₛ2 Δ Φ K tag e1 e2 e :
+  Lemma tac_sim_blockₛ2 Δ Φ K tag e1 e2 e :
     envs_entails Δ (SIM K @@ let: e2 in let: e1.[ren (+1)] in &&tag $0 $1 ≳ e [[ Χ ]] {{ Φ }}) →
     envs_entails Δ (SIM K @@ &tag e1 e2 ≳ e [[ Χ ]] {{ Φ }}).
   Proof.
-    rewrite envs_entails_unseal sim_bind_invₛ sim_constrₛ2 sim_bindₛ //.
+    rewrite envs_entails_unseal sim_bind_invₛ sim_blockₛ2 sim_bindₛ //.
   Qed.
-  Lemma tac_sim_constrₜ Δ Φ e K tag e1 e2 :
+  Lemma tac_sim_blockₜ Δ Φ e K tag e1 e2 :
     envs_entails Δ (SIM e ≳ K @@ let: e1 in let: e2.[ren (+1)] in &&tag $1 $0 [[ Χ ]] {{ Φ }}) →
     envs_entails Δ (SIM e ≳ K @@ let: e2 in let: e1.[ren (+1)] in &&tag $0 $1 [[ Χ ]] {{ Φ }}) →
     envs_entails Δ (SIM e ≳ K @@ &tag e1 e2 [[ Χ ]] {{ Φ }}).
   Proof.
     rewrite envs_entails_unseal => Hsim1 Hsim2.
-    rewrite -sim_bindₜ -sim_constrₜ -!sim_bind_invₜ.
+    rewrite -sim_bindₜ -sim_blockₜ -!sim_bind_invₜ.
     apply bi.and_intro; done.
   Qed.
 
-  Lemma tac_sim_constr_detₛ Δ Φ id0 id1 id2 K tag v1 v2 e :
+  Lemma tac_sim_block_detₛ Δ Φ id0 id1 id2 K tag v1 v2 e :
     ( ∀ l,
       match
         envs_app false (Esnoc (Esnoc (Esnoc Enil
@@ -106,13 +106,13 @@ Section sim_GS.
     envs_entails Δ (SIM K @@ &&tag v1 v2 ≳ e [[ Χ ]] {{ Φ }}).
   Proof.
     rewrite envs_entails_unseal => Hsim.
-    rewrite -sim_bindₛ -sim_constr_detₛ. setoid_rewrite <- sim_bind_invₛ.
+    rewrite -sim_bindₛ -sim_block_detₛ. setoid_rewrite <- sim_bind_invₛ.
     apply bi.forall_intro => l. specialize (Hsim l).
     destruct (envs_app _ _ _) as [Δ' |] eqn:HΔ'; last done.
     rewrite envs_app_sound // /= right_id Hsim.
     iIntros "H Hl0 Hl1 Hl2". iApply ("H" with "[$Hl0 $Hl1 $Hl2]").
   Qed.
-  Lemma tac_sim_constr_detₜ Δ Φ id0 id1 id2 e K tag v1 v2 :
+  Lemma tac_sim_block_detₜ Δ Φ id0 id1 id2 e K tag v1 v2 :
     ( ∀ l,
       match
         envs_app false (Esnoc (Esnoc (Esnoc Enil
@@ -130,13 +130,13 @@ Section sim_GS.
     envs_entails Δ (SIM e ≳ K @@ &&tag v1 v2 [[ Χ ]] {{ Φ }}).
   Proof.
     rewrite envs_entails_unseal => Hsim.
-    rewrite -sim_bindₜ -sim_constr_detₜ.
+    rewrite -sim_bindₜ -sim_block_detₜ.
     apply bi.forall_intro => l. specialize (Hsim l).
     destruct (envs_app _ _ _) as [Δ' |] eqn:HΔ'; last done.
     rewrite envs_app_sound // /= right_id Hsim sim_bind_invₜ.
     iIntros "H Hl0 Hl1 Hl2". iApply ("H" with "[$Hl0 $Hl1 $Hl2]").
   Qed.
-  Lemma tac_sim_constr_det Δ Φ id tag Kₛ vₛ1 vₛ2 Kₜ vₜ1 vₜ2 :
+  Lemma tac_sim_block_det Δ Φ id tag Kₛ vₛ1 vₛ2 Kₜ vₜ1 vₜ2 :
     envs_entails Δ (vₛ1 ≈ vₜ1) →
     envs_entails Δ (vₛ2 ≈ vₜ2) →
     ( ∀ lₛ lₜ,
@@ -154,7 +154,7 @@ Section sim_GS.
     iDestruct (Hv1 with "HΔ") as "#Hv1".
     iDestruct (Hv2 with "HΔ") as "#Hv2".
     iApply sim_bind.
-    iApply (sim_constr_det with "Hv1 Hv2"). iIntros "%lₛ %lₜ #Hl !>".
+    iApply (sim_block_det with "Hv1 Hv2"). iIntros "%lₛ %lₜ #Hl !>".
     specialize (Hsim lₛ lₜ). destruct (envs_app _ _ _) as [Δ' |] eqn:HΔ'; last done.
     iApply Hsim.
     iApply (envs_app_sound with "HΔ"); first done. naive_solver.
@@ -468,116 +468,116 @@ Ltac sim_binopₜ :=
     );
   sim_finisher.
 
-Ltac sim_constrₛ1 :=
+Ltac sim_blockₛ1 :=
   sim_puresₛ;
-  let e_foc := open_constr:(DataConstr _ _ _) in
+  let e_foc := open_constr:(DataBlock _ _ _) in
   sim_focalizeₛ e_foc
     ltac:(fun K =>
       on_sim ltac:(fun _ _ _ _ _ =>
-        eapply (tac_sim_constrₛ1 _ _ _ K)
+        eapply (tac_sim_blockₛ1 _ _ _ K)
       )
     )
     ltac:(fun e =>
-      fail "sim_constrₛ1: cannot find" e_foc "in source" e
+      fail "sim_blockₛ1: cannot find" e_foc "in source" e
     );
   sim_finisher.
-Ltac sim_constrₛ2 :=
+Ltac sim_blockₛ2 :=
   sim_puresₛ;
-  let e_foc := open_constr:(DataConstr _ _ _) in
+  let e_foc := open_constr:(DataBlock _ _ _) in
   sim_focalizeₛ e_foc
     ltac:(fun K =>
       on_sim ltac:(fun _ _ _ _ _ =>
-        eapply (tac_sim_constrₛ2 _ _ _ K)
+        eapply (tac_sim_blockₛ2 _ _ _ K)
       )
     )
     ltac:(fun e =>
-      fail "sim_constrₛ2: cannot find" e_foc "in source" e
+      fail "sim_blockₛ2: cannot find" e_foc "in source" e
     );
   sim_finisher.
-Ltac sim_constrₜ :=
+Ltac sim_blockₜ :=
   sim_puresₜ;
-  let e_foc := open_constr:(DataConstr _ _ _) in
+  let e_foc := open_constr:(DataBlock _ _ _) in
   sim_focalizeₜ e_foc
     ltac:(fun K =>
       on_sim ltac:(fun _ _ _ _ _ =>
-        eapply (tac_sim_constrₜ _ _ _ _ K)
+        eapply (tac_sim_blockₜ _ _ _ _ K)
       )
     )
     ltac:(fun e =>
-      fail "sim_constrₜ: cannot find" e_foc "in target" e
+      fail "sim_blockₜ: cannot find" e_foc "in target" e
     );
   sim_finisher.
 
-Tactic Notation "sim_constr_detₛ" "as" simple_intropattern(l) constr(Hl0) constr(Hl1) constr(Hl2) :=
+Tactic Notation "sim_block_detₛ" "as" simple_intropattern(l) constr(Hl0) constr(Hl1) constr(Hl2) :=
   sim_puresₛ;
-  let e_foc := open_constr:(DataConstrDet _ (DataVal _) (DataVal _)) in
+  let e_foc := open_constr:(DataBlockDet _ (DataVal _) (DataVal _)) in
   sim_focalizeₛ e_foc
     ltac:(fun K =>
       on_sim ltac:(fun _ _ _ _ _ =>
-        eapply (tac_sim_constr_detₛ _ _ _ Hl0 Hl1 Hl2 K)
+        eapply (tac_sim_block_detₛ _ _ _ Hl0 Hl1 Hl2 K)
       )
     )
     ltac:(fun e =>
-      fail "sim_constr_detₛ: cannot find" e_foc "in source" e
+      fail "sim_block_detₛ: cannot find" e_foc "in source" e
     );
   tryif intros l then idtac else (
-    fail "sim_constr_detₛ:" l "not fresh"
+    fail "sim_block_detₛ:" l "not fresh"
   );
   pm_reduce;
   tryif goal_is_false then (
-    fail "sim_constr_detₛ:" Hl0 "or" Hl1 "or" Hl2 "not fresh"
+    fail "sim_block_detₛ:" Hl0 "or" Hl1 "or" Hl2 "not fresh"
   ) else (
     sim_finisher
   ).
-Tactic Notation "sim_constr_detₛ" "as" simple_intropattern(l) :=
+Tactic Notation "sim_block_detₛ" "as" simple_intropattern(l) :=
   let Hl0 := iFresh in
   let Hl1 := iFresh in
   let Hl2 := iFresh in
-  sim_constr_detₛ as l Hl0 Hl1 Hl2.
-Tactic Notation "sim_constr_detₛ" :=
+  sim_block_detₛ as l Hl0 Hl1 Hl2.
+Tactic Notation "sim_block_detₛ" :=
   let l := fresh "lₛ" in
-  sim_constr_detₛ as l.
-Tactic Notation "sim_constr_detₜ" "as" simple_intropattern(l) constr(Hl0) constr(Hl1) constr(Hl2) :=
+  sim_block_detₛ as l.
+Tactic Notation "sim_block_detₜ" "as" simple_intropattern(l) constr(Hl0) constr(Hl1) constr(Hl2) :=
   sim_puresₜ;
-  let e_foc := open_constr:(DataConstrDet _ (DataVal _) (DataVal _)) in
+  let e_foc := open_constr:(DataBlockDet _ (DataVal _) (DataVal _)) in
   sim_focalizeₜ e_foc
     ltac:(fun K =>
       on_sim ltac:(fun _ _ _ _ _ =>
-        eapply (tac_sim_constr_detₜ _ _ _ Hl0 Hl1 Hl2 _ K)
+        eapply (tac_sim_block_detₜ _ _ _ Hl0 Hl1 Hl2 _ K)
       )
     )
     ltac:(fun e =>
-      fail "sim_constr_detₜ: cannot find" e_foc "in target" e
+      fail "sim_block_detₜ: cannot find" e_foc "in target" e
     );
   tryif intros l then idtac else (
-    fail "sim_constr_detₜ:" l "not fresh"
+    fail "sim_block_detₜ:" l "not fresh"
   );
   pm_reduce;
   tryif goal_is_false then (
-    fail "sim_constr_detₜ:" Hl0 "or" Hl1 "or" Hl2 "not fresh"
+    fail "sim_block_detₜ:" Hl0 "or" Hl1 "or" Hl2 "not fresh"
   ) else (
     sim_finisher
   ).
-Tactic Notation "sim_constr_detₜ" "as" simple_intropattern(l) :=
+Tactic Notation "sim_block_detₜ" "as" simple_intropattern(l) :=
   let Hl0 := iFresh in
   let Hl1 := iFresh in
   let Hl2 := iFresh in
-  sim_constr_detₜ as l Hl0 Hl1 Hl2.
-Tactic Notation "sim_constr_detₜ" :=
+  sim_block_detₜ as l Hl0 Hl1 Hl2.
+Tactic Notation "sim_block_detₜ" :=
   let l := fresh "lₜ" in
-  sim_constr_detₜ as l.
-Tactic Notation "sim_constr_det" "as" simple_intropattern(lₛ) simple_intropattern(lₜ) constr(Hl) :=
+  sim_block_detₜ as l.
+Tactic Notation "sim_block_det" "as" simple_intropattern(lₛ) simple_intropattern(lₜ) constr(Hl) :=
   sim_pures;
-  let e_focₛ := open_constr:(DataConstrDet _ (DataVal _) (DataVal _)) in
-  let e_focₜ := open_constr:(DataConstrDet _ (DataVal _) (DataVal _)) in
+  let e_focₛ := open_constr:(DataBlockDet _ (DataVal _) (DataVal _)) in
+  let e_focₜ := open_constr:(DataBlockDet _ (DataVal _) (DataVal _)) in
   sim_focalize e_focₛ e_focₜ
     ltac:(fun Kₛ Kₜ =>
       on_sim ltac:(fun _ _ _ _ _ =>
-        eapply (tac_sim_constr_det _ _ _ Hl _ Kₛ _ _ Kₜ)
+        eapply (tac_sim_block_det _ _ _ Hl _ Kₛ _ _ Kₜ)
       )
     )
     ltac:(fun eₛ eₜ =>
-      fail "sim_constr_det: cannot find" e_focₛ "in source" eₛ "or" e_focₜ "in target" eₜ
+      fail "sim_block_det: cannot find" e_focₛ "in source" eₛ "or" e_focₜ "in target" eₜ
     );
   [ try iSmash+
   | try iSmash+
@@ -585,22 +585,22 @@ Tactic Notation "sim_constr_det" "as" simple_intropattern(lₛ) simple_intropatt
       tryif intros lₜ then (
         pm_reduce;
         tryif goal_is_false then (
-          fail "sim_constr_det:" Hl "not fresh"
+          fail "sim_block_det:" Hl "not fresh"
         ) else (
           sim_finisher
         )
       ) else (
-        fail "sim_constr_det:" lₜ "not fresh"
+        fail "sim_block_det:" lₜ "not fresh"
       )
     ) else (
-      fail "sim_constr_det:" lₛ "not fresh"
+      fail "sim_block_det:" lₛ "not fresh"
     )
   ].
-Tactic Notation "sim_constr_det" "as" simple_intropattern(lₛ) simple_intropattern(lₜ) :=
+Tactic Notation "sim_block_det" "as" simple_intropattern(lₛ) simple_intropattern(lₜ) :=
   let Hl := iFresh in
-  sim_constr_det as lₜ lₛ Hl.
-Tactic Notation "sim_constr_det" :=
-  sim_constr_det as ? ?.
+  sim_block_det as lₜ lₛ Hl.
+Tactic Notation "sim_block_det" :=
+  sim_block_det as ? ?.
 
 Tactic Notation "sim_loadₛ" :=
   sim_puresₛ;

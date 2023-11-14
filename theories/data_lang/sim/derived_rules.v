@@ -125,7 +125,7 @@ Section sim_GS.
         sim_apply "Hsim2".
     Qed.
 
-    Lemma sim_constr Φ tag eₛ1 eₛ2 eₜ1 eₜ2 :
+    Lemma sim_block Φ tag eₛ1 eₛ2 eₜ1 eₜ2 :
       SIM eₛ1 ≳ eₜ1 [[ Χ ]] {{ sim_post_vals' (≈) }} -∗
       SIM eₛ2 ≳ eₜ2 [[ Χ ]] {{ sim_post_vals' (≈) }} -∗
       ( ∀ lₛ lₜ,
@@ -135,16 +135,16 @@ Section sim_GS.
       SIM &tag eₛ1 eₛ2 ≳ &tag eₜ1 eₜ2 [[ Χ ]] {{ Φ }}.
     Proof.
       iIntros "Hsim1 Hsim2 HΦ".
-      sim_constrₜ;
-      [ sim_constrₛ1
-      | iCombine "Hsim1 Hsim2" as "(Hsim2 & Hsim1)"; sim_constrₛ2
+      sim_blockₜ;
+      [ sim_blockₛ1
+      | iCombine "Hsim1 Hsim2" as "(Hsim2 & Hsim1)"; sim_blockₛ2
       ].
       all: sim_mono "Hsim1"; iIntros "% % (%vₛ1 & %vₜ1 & (-> & ->) & #Hv1)".
       all: sim_mono "Hsim2"; iIntros "% % (%vₛ2 & %vₜ2 & (-> & ->) & #Hv2)".
-      all: sim_constr_det as lₛ lₜ "Hl".
+      all: sim_block_det as lₛ lₜ "Hl".
       all: iApply "HΦ"; iSmash+.
     Qed.
-    Lemma sim_constr_valₜ1 Φ eₛ tag vₜ1 eₜ :
+    Lemma sim_block_valₜ1 Φ eₛ tag vₜ1 eₜ :
       SIM eₛ ≳ eₜ [[ Χ ]] {{ sim_post_vals' (≈) }} -∗
       ( ∀ vₛ l vₜ2,
         (l +ₗ 0) ↦ₜ tag -∗
@@ -156,11 +156,11 @@ Section sim_GS.
       SIM eₛ ≳ &tag vₜ1 eₜ [[ Χ ]] {{ Φ }}.
     Proof.
       iIntros "Hsim HΦ".
-      sim_constrₜ.
+      sim_blockₜ.
       all: sim_mono "Hsim"; iIntros "% % (%vₛ & %vₜ2 & (-> & ->) & #Hv)".
-      all: sim_constr_detₜ as l "Hl0" "Hl1" "Hl2".
+      all: sim_block_detₜ as l "Hl0" "Hl1" "Hl2".
     Qed.
-    Lemma sim_constr_valₜ2 Φ eₛ tag eₜ vₜ2 :
+    Lemma sim_block_valₜ2 Φ eₛ tag eₜ vₜ2 :
       SIM eₛ ≳ eₜ [[ Χ ]] {{ sim_post_vals' (≈) }} -∗
       ( ∀ vₛ l vₜ1,
         (l +ₗ 0) ↦ₜ tag -∗
@@ -172,9 +172,9 @@ Section sim_GS.
       SIM eₛ ≳ &tag eₜ vₜ2 [[ Χ ]] {{ Φ }}.
     Proof.
       iIntros "Hsim HΦ".
-      sim_constrₜ.
+      sim_blockₜ.
       all: sim_mono "Hsim"; iIntros "% % (%vₛ & %vₜ1 & (-> & ->) & #Hv)".
-      all: sim_constr_detₜ as l "Hl0" "Hl1" "Hl2".
+      all: sim_block_detₜ as l "Hl0" "Hl1" "Hl2".
     Qed.
 
     Lemma sim_load Φ eₛ1 eₛ2 eₜ1 eₜ2 :
@@ -283,7 +283,7 @@ Section sim_GS.
       sim_apply (sim_if with "Hsim0 Hsim12").
     Qed.
 
-    Lemma simv_constr Φ tag eₛ1 eₛ2 eₜ1 eₜ2 :
+    Lemma simv_block Φ tag eₛ1 eₛ2 eₜ1 eₜ2 :
       SIM eₛ1 ≳ eₜ1 [[ Χ ]] {{# (≈) }} -∗
       SIM eₛ2 ≳ eₜ2 [[ Χ ]] {{# (≈) }} -∗
       ( ∀ lₛ lₜ,
@@ -294,10 +294,10 @@ Section sim_GS.
     Proof.
       rewrite !simv_unseal.
       iIntros "Hsim1 Hsim2 HΦ".
-      sim_apply (sim_constr with "Hsim1 Hsim2").
+      sim_apply (sim_block with "Hsim1 Hsim2").
       rewrite /sim_post_vals'. iSmash.
     Qed.
-    Lemma simv_constr_valₜ1 Φ eₛ tag vₜ1 eₜ :
+    Lemma simv_block_valₜ1 Φ eₛ tag vₜ1 eₜ :
       SIM eₛ ≳ eₜ [[ Χ ]] {{# (≈) }} -∗
       ( ∀ vₛ l vₜ2,
         (l +ₗ 0) ↦ₜ tag -∗
@@ -310,10 +310,10 @@ Section sim_GS.
     Proof.
       rewrite !simv_unseal.
       iIntros "Hsim HΦ".
-      sim_apply (sim_constr_valₜ1 with "Hsim").
+      sim_apply (sim_block_valₜ1 with "Hsim").
       rewrite /sim_post_vals'. iSmash.
     Qed.
-    Lemma simv_constr_valₜ2 Φ eₛ tag eₜ vₜ2 :
+    Lemma simv_block_valₜ2 Φ eₛ tag eₜ vₜ2 :
       SIM eₛ ≳ eₜ [[ Χ ]] {{# (≈) }} -∗
       ( ∀ vₛ l vₜ1,
         (l +ₗ 0) ↦ₜ tag -∗
@@ -326,7 +326,7 @@ Section sim_GS.
     Proof.
       rewrite !simv_unseal.
       iIntros "Hsim HΦ".
-      sim_apply (sim_constr_valₜ2 with "Hsim").
+      sim_apply (sim_block_valₜ2 with "Hsim").
       rewrite /sim_post_vals'. iSmash.
     Qed.
 
