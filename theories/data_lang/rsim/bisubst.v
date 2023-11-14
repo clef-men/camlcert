@@ -10,28 +10,34 @@ From simuliris.data_lang Require Export
 From simuliris.data_lang Require Import
   notations.
 
-Definition bisubst := var → data_val * data_val.
+Definition bisubst :=
+  var → data_val * data_val.
 
-Notation "Γ .ₛ" := (fst ∘ Γ)
-( at level 5,
+Notation "Γ .ₛ" := (
+  fst ∘ Γ
+)(at level 5,
   format "Γ .ₛ"
 ).
-Notation "Γ .ₜ" := (snd ∘ Γ)
-( at level 5,
+Notation "Γ .ₜ" := (
+  snd ∘ Γ
+)(at level 5,
   format "Γ .ₜ"
 ).
-Notation "Γ .ₛ#" := (data_of_val ∘ Γ.ₛ)
-( at level 5,
+Notation "Γ .ₛ#" := (
+  data_of_val ∘ Γ.ₛ
+)(at level 5,
   format "Γ .ₛ#"
 ).
-Notation "Γ .ₜ#" := (data_of_val ∘ Γ.ₜ)
-( at level 5,
+Notation "Γ .ₜ#" := (
+  data_of_val ∘ Γ.ₜ
+)(at level 5,
   format "Γ .ₜ#"
 ).
 
 Section sim_GS.
   Context `{sim_programs : !SimPrograms data_ectx_lang data_ectx_lang}.
   Context `{sim_GS : !SimGS Σ}.
+
   Implicit Types v vₛ vₜ : data_val.
   Implicit Types Γ : bisubst.
 

@@ -10,18 +10,21 @@ Class CUpd PROP :=
 #[global] Arguments cupd {_}%type_scope {_} _%bi_scope.
 #[global] Typeclasses Opaque cupd.
 
-Notation "|++> P" := (cupd P)
-( at level 99,
+Notation "|++> P" := (
+  cupd P
+)(at level 99,
   P at level 200,
   format "'[  ' |++>  '/' P ']'"
 ) : bi_scope.
-Notation "P ++∗ Q" := (P -∗ |++> Q)%I
+Notation "P ++∗ Q" :=
+  (P -∗ |++> Q)%I
 ( at level 99,
   Q at level 200,
   format "'[' P  ++∗  '/' Q ']'"
 ) : bi_scope.
-Notation "P ++∗ Q" := (P -∗ |++> Q)
-: stdpp_scope.
+Notation "P ++∗ Q" := (
+  P -∗ |++> Q
+) : stdpp_scope.
 
 Record BiCUpdMixin (PROP : bi) `{!BUpd PROP} `{!CUpd PROP} := {
   bi_cupd_mixin_cupd_ne :

@@ -8,6 +8,7 @@ From simuliris Require Import
 
 Section Satisfiable.
   Context `{!BiBUpd PROP} `{!BiAffine PROP}.
+
   Implicit Types P Q : PROP.
 
   Class Satisfiable (sat : PROP → Prop) := {
@@ -27,6 +28,7 @@ Section Satisfiable.
 
   Section derived_lemmas.
     Context `{!Satisfiable sat}.
+
     Arguments sat _%I.
 
     #[global] Instance satisfiable_entails :
@@ -101,6 +103,7 @@ End Satisfiable.
 
 Section isat.
   Context {M : ucmra}.
+
   Implicit Types P : uPred M.
 
   Definition isat P :=

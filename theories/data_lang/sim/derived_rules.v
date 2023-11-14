@@ -10,6 +10,7 @@ Section sim_GS.
   Context `{sim_programs : !SimPrograms data_ectx_lang data_ectx_lang}.
   Context `{sim_GS : !SimGS Σ}.
   Context (Χ : sim_protocol Σ).
+
   Implicit Types n : Z.
   Implicit Types func : data_function.
   Implicit Types tag : data_tag.

@@ -9,6 +9,7 @@ Section sim_GS.
   Context `{sim_programs : !SimPrograms data_ectx_lang data_ectx_lang}.
   Context `{sim_GS : !SimGS Σ}.
   Context (Χ : sim_protocol Σ).
+
   Implicit Types Γ : bisubst.
 
   Definition rsim Φ eₛ eₜ : iProp Σ :=

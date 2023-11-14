@@ -10,7 +10,8 @@ Implicit Types v w : data_val.
 Implicit Types e : data_expr.
 Implicit Types σ : data_state.
 
-Notation data_of_val := DataVal.
+Notation data_of_val :=
+  DataVal.
 
 Definition data_to_val e :=
   match e with
@@ -18,9 +19,12 @@ Definition data_to_val e :=
   | _ => None
   end.
 
-Canonical data_val_O := leibnizO data_val.
-Canonical data_expr_O := leibnizO data_expr.
-Canonical data_state_O := leibnizO data_state.
+Canonical data_val_O :=
+  leibnizO data_val.
+Canonical data_expr_O :=
+  leibnizO data_expr.
+Canonical data_state_O :=
+  leibnizO data_state.
 
 Inductive data_ectxi :=
   | DataEctxiLet e2
@@ -34,7 +38,8 @@ Inductive data_ectxi :=
   | DataEctxiStore2 e1 v3
   | DataEctxiStore3 v2 v3.
 
-Definition data_ectx := list data_ectxi.
+Definition data_ectx :=
+  list data_ectxi.
 
 Definition data_fill_item k e :=
   match k with

@@ -7,7 +7,9 @@ From simuliris.data_lang Require Export
   syntax.
 
 Notation data_human_name :=
-  string (only parsing).
+  string
+( only parsing
+).
 
 Inductive data_human_val :=
   | DataHumanUnit

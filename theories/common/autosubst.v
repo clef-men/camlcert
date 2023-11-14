@@ -6,6 +6,7 @@ From simuliris Require Export
 
 Section subst.
   Context `{!Ids term, !Rename term, !Subst term, !SubstLemmas term}.
+
   Implicit Types x : var.
   Implicit Types ς : var → term.
 

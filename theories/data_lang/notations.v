@@ -20,127 +20,167 @@ Coercion DataFunc' : data_function >-> data_val.
 Coercion DataVal : data_val >-> data_expr.
 Coercion DataCall : data_expr >-> Funclass.
 
-Notation "𝟘" := Zero.
-Notation "𝟙" := One.
-Notation "𝟚" := Two.
+Notation "𝟘" :=
+  Zero.
+Notation "𝟙" :=
+  One.
+Notation "𝟚" :=
+  Two.
 
 Declare Scope data_val_scope.
 Delimit Scope data_val_scope with data_val.
 Bind Scope data_val_scope with data_val.
 
-Notation "()" := DataUnit
+Notation "()" :=
+  DataUnit
 : data_val_scope.
 
 Declare Scope data_expr_scope.
 Delimit Scope data_expr_scope with data_expr.
 Bind Scope data_expr_scope with data_expr.
 
-Notation "# v" := (DataVal v%Z%data_val%stdpp)
-( at level 5,
+Notation "# v" := (
+  DataVal v%Z%data_val%stdpp
+)(at level 5,
   format "# v"
 ).
 
-Notation "'Fail'" := (#() #())%data_expr
+Notation "'Fail'" :=
+  (#() #())%data_expr
 : data_expr_scope.
 
-Notation "$ x" := (DataVar x%nat)
-( at level 5,
+Notation "$ x" := (
+  DataVar x%nat
+)(at level 5,
   format "$ x"
 ) : data_expr_scope.
 
-Notation "'let:' e1 'in' e2" := (DataLet e1%data_expr e2%data_expr)
-( at level 200,
+Notation "'let:' e1 'in' e2" := (
+  DataLet e1%data_expr e2%data_expr
+)(at level 200,
   e1, e2 at level 200,
   format "'[v' 'let:'  '[' e1 ']'  'in' '/' e2 ']'"
 ) : data_expr_scope.
-Notation "e1 ;; e2" := (let: e1 in e2.[ren (+1)])%data_expr
+Notation "e1 ;; e2" :=
+  (let: e1 in e2.[ren (+1)])%data_expr
 ( at level 100,
   e2 at level 200,
   format "'[v' '[hv' '[' e1 ']'  ;; ']' '/' e2 ']'"
 ) : data_expr_scope.
 
-Notation "~ e" := (DataUnop DataOpNeg e%data_expr)
-: data_expr_scope.
-Notation "- e" := (DataUnop DataOpUminus e%data_expr)
-: data_expr_scope.
+Notation "~ e" := (
+  DataUnop DataOpNeg e%data_expr
+) : data_expr_scope.
+Notation "- e" := (
+  DataUnop DataOpUminus e%data_expr
+) : data_expr_scope.
 
-Notation "e1 + e2" := (DataBinop DataOpPlus e1%data_expr e2%data_expr)
-: data_expr_scope.
-Notation "e1 - e2" := (DataBinop DataOpMinus e1%data_expr e2%data_expr)
-: data_expr_scope.
-Notation "e1 * e2" := (DataBinop DataOpMult e1%data_expr e2%data_expr)
-: data_expr_scope.
-Notation "e1 `quot` e2" := (DataBinop DataOpQuot e1%data_expr e2%data_expr)
-: data_expr_scope.
-Notation "e1 `rem` e2" := (DataBinop DataOpRem e1%data_expr e2%data_expr)
-: data_expr_scope.
-Notation "e1 ≤ e2" := (DataBinop DataOpLe e1%data_expr e2%data_expr)
-: data_expr_scope.
-Notation "e1 < e2" := (DataBinop DataOpLt e1%data_expr e2%data_expr)
-: data_expr_scope.
-Notation "e1 ≥ e2" := (DataBinop DataOpGe e1%data_expr e2%data_expr)
-: data_expr_scope.
-Notation "e1 > e2" := (DataBinop DataOpGt e1%data_expr e2%data_expr)
-: data_expr_scope.
-Notation "e1 = e2" := (DataBinop DataOpEq e1%data_expr e2%data_expr)
-: data_expr_scope.
-Notation "e1 ≠ e2" := (DataBinop DataOpNe e1%data_expr e2%data_expr)
-: data_expr_scope.
+Notation "e1 + e2" := (
+  DataBinop DataOpPlus e1%data_expr e2%data_expr
+) : data_expr_scope.
+Notation "e1 - e2" := (
+  DataBinop DataOpMinus e1%data_expr e2%data_expr
+) : data_expr_scope.
+Notation "e1 * e2" := (
+  DataBinop DataOpMult e1%data_expr e2%data_expr
+) : data_expr_scope.
+Notation "e1 `quot` e2" := (
+  DataBinop DataOpQuot e1%data_expr e2%data_expr
+) : data_expr_scope.
+Notation "e1 `rem` e2" := (
+  DataBinop DataOpRem e1%data_expr e2%data_expr
+) : data_expr_scope.
+Notation "e1 ≤ e2" := (
+  DataBinop DataOpLe e1%data_expr e2%data_expr
+) : data_expr_scope.
+Notation "e1 < e2" := (
+  DataBinop DataOpLt e1%data_expr e2%data_expr
+) : data_expr_scope.
+Notation "e1 ≥ e2" := (
+  DataBinop DataOpGe e1%data_expr e2%data_expr
+) : data_expr_scope.
+Notation "e1 > e2" := (
+  DataBinop DataOpGt e1%data_expr e2%data_expr
+) : data_expr_scope.
+Notation "e1 = e2" := (
+  DataBinop DataOpEq e1%data_expr e2%data_expr
+) : data_expr_scope.
+Notation "e1 ≠ e2" := (
+  DataBinop DataOpNe e1%data_expr e2%data_expr
+) : data_expr_scope.
 
-Notation "'if:' e0 'then' e1 'else' e2" := (DataIf e0%data_expr e1%data_expr e2%data_expr)
-( at level 200,
+Notation "'if:' e0 'then' e1 'else' e2" := (
+  DataIf e0%data_expr e1%data_expr e2%data_expr
+)(at level 200,
   e0, e1, e2 at level 200
 ) : data_expr_scope.
-Notation "e1 && e2" := (if: e1 then e2 else #false)%data_expr
+Notation "e1 && e2" :=
+  (if: e1 then e2 else #false)%data_expr
 ( only parsing
 ) : data_expr_scope.
-Notation "e1 || e2" := (if: e1 then #true else e2)%data_expr
+Notation "e1 || e2" :=
+  (if: e1 then #true else e2)%data_expr
 ( only parsing
 ) : data_expr_scope.
 
-Notation "& tag" := (DataConstr tag)
-( at level 5,
+Notation "& tag" := (
+  DataConstr tag
+)(at level 5,
   format "& tag"
 ) : data_expr_scope.
-Notation "&& tag" := (DataConstrDet tag)
-( at level 5,
+Notation "&& tag" := (
+  DataConstrDet tag
+)(at level 5,
   format "&& tag"
 ) : data_expr_scope.
 
-Notation "![ e2 ] e1" := (DataLoad e1%data_expr e2%data_expr)
-( at level 9,
+Notation "![ e2 ] e1" := (
+  DataLoad e1%data_expr e2%data_expr
+)(at level 9,
   right associativity,
   format "![ e2 ]  e1"
 ) : data_expr_scope.
-Notation "! e" := (DataLoad e%data_expr 𝟘)
-( at level 9,
+Notation "! e" := (
+  DataLoad e%data_expr 𝟘
+)(at level 9,
   right associativity,
   format "! e"
 ) : data_expr_scope.
 
-Notation "e1 <-[ e2 ]- e3" := (DataStore e1%data_expr e2%data_expr e3%data_expr)
-( at level 20,
+Notation "e1 <-[ e2 ]- e3" := (
+  DataStore e1%data_expr e2%data_expr e3%data_expr
+)(at level 20,
   format "e1  <-[ e2 ]-  e3"
 ) : data_expr_scope.
 
-Definition data_tag_pair : data_tag := 0.
-Notation "( e1 , e2 , .. , en )" := (&data_tag_pair .. (&data_tag_pair e1 e2) .. en)%data_expr
+Definition data_tag_pair : data_tag :=
+  0.
+Notation "( e1 , e2 , .. , en )" :=
+  (&data_tag_pair .. (&data_tag_pair e1 e2) .. en)%data_expr
 : data_expr_scope.
 
-Definition data_tag_nil : data_tag := 0.
-Definition data_tag_cons : data_tag := 1.
-Notation NIL := (&data_tag_nil #() #())%data_expr (only parsing).
-Notation CONS := (&data_tag_cons)%data_expr (only parsing).
-Notation "'match:' e0 'with' 'NIL' => e1 | 'CONS' => e2 'end'" := (
-  let: e0 in
-  if: !$0 = data_tag_nil then (
-    e1.[ren (+1)]
-  ) else (
-    let: ![𝟚] $0 in
-    let: ![𝟙] $1 in
-    e2.[$0 .: $1 .: ren (+3)]
-  )
-)%data_expr (
-  only parsing,
+Definition data_tag_nil : data_tag :=
+  0.
+Definition data_tag_cons : data_tag :=
+  1.
+Notation NIL :=
+  (&data_tag_nil #() #())%data_expr
+( only parsing
+).
+Notation CONS :=
+  (&data_tag_cons)%data_expr
+( only parsing
+).
+Notation "'match:' e0 'with' 'NIL' => e1 | 'CONS' => e2 'end'" :=
+  ( let: e0 in
+    if: !$0 = data_tag_nil then (
+      e1.[ren (+1)]
+    ) else (
+      let: ![𝟚] $0 in
+      let: ![𝟙] $1 in
+      e2.[$0 .: $1 .: ren (+3)]
+    )
+  )%data_expr
+( only parsing,
   e0, e1, e2 at level 200
 ) : data_expr_scope.

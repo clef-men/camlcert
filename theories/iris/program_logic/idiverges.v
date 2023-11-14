@@ -19,6 +19,7 @@ Section bi.
   Context `{!BiBUpd PROP} `{!BiAffine PROP}.
   Context {Λ : language}.
   Context (prog : program Λ).
+
   Implicit Types N I : expr_O Λ -d> state_O Λ -d> PROP.
 
   Definition idiverges_body N : expr_O Λ -d> state_O Λ -d> PROP := (

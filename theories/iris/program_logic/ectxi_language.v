@@ -62,7 +62,10 @@ Structure ectxi_language := {
 
 Section ectxi_language.
   Context {Λ : ectxi_language}.
-  Notation ectx := (list (ectxi Λ)).
+
+  Notation ectx :=
+    (list (ectxi Λ)).
+
   Implicit Types v : val Λ.
   Implicit Types e : expr Λ.
   Implicit Types σ : state Λ.

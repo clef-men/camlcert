@@ -62,36 +62,44 @@ Section sim_heap_GS.
 End sim_heap_GS.
 
 Module Import notations.
-  Notation "l ↦ₛ{ dq } v" := (mapstoₛ l dq v)
-  ( at level 20,
+  Notation "l ↦ₛ{ dq } v" := (
+    mapstoₛ l dq v
+  )(at level 20,
     format "l  ↦ₛ{ dq }  v"
   ) : bi_scope.
-  Notation "l ↦ₛ□ v" := (l ↦ₛ{DfracDiscarded} v)%I
+  Notation "l ↦ₛ□ v" :=
+    (l ↦ₛ{DfracDiscarded} v)%I
   ( at level 20,
     format "l  ↦ₛ□  v"
   ) : bi_scope.
-  Notation "l ↦ₛ{# q } v" := (l ↦ₛ{DfracOwn q} v)%I
+  Notation "l ↦ₛ{# q } v" :=
+    (l ↦ₛ{DfracOwn q} v)%I
   ( at level 20,
     format "l  ↦ₛ{# q }  v"
   ) : bi_scope.
-  Notation "l ↦ₛ v" := (l ↦ₛ{#1} v)%I
+  Notation "l ↦ₛ v" :=
+    (l ↦ₛ{#1} v)%I
   ( at level 20,
     format "l  ↦ₛ  v"
   ) : bi_scope.
 
-  Notation "l ↦ₜ{ dq } v" := (mapstoₜ l dq v)
-  ( at level 20,
+  Notation "l ↦ₜ{ dq } v" := (
+    mapstoₜ l dq v
+  )(at level 20,
     format "l  ↦ₜ{ dq }  v"
   ) : bi_scope.
-  Notation "l ↦ₜ□ v" := (l ↦ₜ{DfracDiscarded} v)%I
+  Notation "l ↦ₜ□ v" :=
+    (l ↦ₜ{DfracDiscarded} v)%I
   ( at level 20,
     format "l  ↦ₜ□  v"
   ) : bi_scope.
-  Notation "l ↦ₜ{# q } v" := (l ↦ₜ{DfracOwn q} v)%I
+  Notation "l ↦ₜ{# q } v" :=
+    (l ↦ₜ{DfracOwn q} v)%I
   ( at level 20,
     format "l  ↦ₜ{# q }  v"
   ) : bi_scope.
-  Notation "l ↦ₜ v" := (l ↦ₜ{#1} v)%I
+  Notation "l ↦ₜ v" :=
+    (l ↦ₜ{#1} v)%I
   ( at level 20,
     format "l  ↦ₜ  v"
   ) : bi_scope.

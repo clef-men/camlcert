@@ -17,6 +17,7 @@ Section sim_GS.
   Context `{sim_programs : !SimPrograms data_ectx_lang data_ectx_lang}.
   Context `{sim_GS : !SimGS Σ}.
   Context (tmc : tmc sim_progₛ sim_progₜ).
+
   Implicit Types func func_dps : data_function.
   Implicit Types annot : data_annotation.
   Implicit Types idx idxₛ idxₜ : data_index.
@@ -325,8 +326,10 @@ Section tmc_sound.
   Context (Hwf : data_program_valid progₛ).
   Context (tmc : tmc progₛ progₜ).
 
-  Notation Σ := sim_Σ.
-  Notation M := (iResUR Σ).
+  Notation Σ :=
+    sim_Σ.
+  Notation M :=
+    (iResUR Σ).
 
   #[local] Instance tmc_sim_programs : SimPrograms data_ectx_lang data_ectx_lang :=
     Build_SimPrograms progₛ progₜ.

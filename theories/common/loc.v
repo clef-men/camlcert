@@ -45,15 +45,18 @@ Definition loc_le l1 l2 :=
 Definition loc_lt l1 l2 :=
   loc_car l1 < loc_car l2.
 
-Notation "l +ₗ off" := (loc_add l off)
-( at level 50,
+Notation "l +ₗ off" := (
+  loc_add l off
+)(at level 50,
   left associativity
 ) : stdpp_scope.
-Notation "l1 ≤ₗ l2" := (loc_le l1 l2)
-( at level 70
+Notation "l1 ≤ₗ l2" := (
+  loc_le l1 l2
+)(at level 70
 ) : stdpp_scope.
-Notation "l1 <ₗ l2" := (loc_lt l1 l2)
-( at level 70
+Notation "l1 <ₗ l2" := (
+  loc_lt l1 l2
+)(at level 70
 ) : stdpp_scope.
 
 #[global] Instance loc_add_inj l :

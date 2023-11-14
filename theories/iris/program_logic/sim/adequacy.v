@@ -18,7 +18,9 @@ Section sim.
   Context `{!Similar (val Λₛ) (val Λₜ)}.
   Context `{sim_programs : !SimPrograms Λₛ Λₜ}.
   Context {M : ucmra}.
-  Notation PROP := (uPredI M).
+
+  Notation PROP :=
+    (uPredI M).
 
   Lemma sim_adequacy_converges eₛ σₛ eₜ e_finalₜ σₜ :
     ( ⊢ |==>

@@ -13,13 +13,17 @@ From simuliris.common Require Export
   typeclasses.
 
 Notation data_index :=
-  three (only parsing).
+  three
+( only parsing
+).
 
 Definition data_tag :=
   nat.
 
 Notation data_function :=
-  string (only parsing).
+  string
+( only parsing
+).
 
 Definition data_annotation :=
   list string.

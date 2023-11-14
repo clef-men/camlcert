@@ -13,6 +13,7 @@ From simuliris.iris.base_logic Require Export
 
 Section bi_cupd.
   Context `{BiCUpd PROP}.
+
   Implicit Types P Q R : PROP.
 
   #[local] Tactic Notation "solve" "with" constr(H) :=

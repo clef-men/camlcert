@@ -17,6 +17,7 @@ Section sim_GS.
   Context `{sim_programs : !SimPrograms data_ectx_lang data_ectx_lang}.
   Context `{sim_GS : !SimGS Σ}.
   Context (inline : inline sim_progₛ sim_progₜ).
+
   Implicit Types func : data_function.
   Implicit Types annot : data_annotation.
   Implicit Types l lₛ lₜ : loc.
@@ -157,8 +158,10 @@ Section inline_sound.
   Context (Hwf : data_program_valid progₛ).
   Context (inline : inline progₛ progₜ).
 
-  Notation Σ := sim_Σ.
-  Notation M := (iResUR Σ).
+  Notation Σ :=
+    sim_Σ.
+  Notation M :=
+    (iResUR Σ).
 
   #[local] Instance inline_sim_programs : SimPrograms data_ectx_lang data_ectx_lang :=
     Build_SimPrograms progₛ progₜ.

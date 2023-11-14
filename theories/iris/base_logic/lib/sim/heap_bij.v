@@ -41,6 +41,7 @@ Qed.
 Section sim_heap_bij_GS.
   Context `{sim_heap_GS : SimHeapGS Σ locₛ valₛ locₜ valₜ}.
   Context `{sim_heap_bij_GS : !SimHeapBijGS Σ locₛ locₜ}.
+
   Implicit Types lₛ : locₛ.
   Implicit Types lₜ : locₜ.
   Implicit Types vₛ : valₛ.

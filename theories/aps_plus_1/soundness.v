@@ -17,6 +17,7 @@ Section sim_GS.
   Context `{sim_programs : !SimPrograms data_ectx_lang data_ectx_lang}.
   Context `{sim_GS : !SimGS Σ}.
   Context (aps_plus : aps_plus sim_progₛ sim_progₜ).
+
   Implicit Types acc : Z.
   Implicit Types func func_aps : data_function.
   Implicit Types annot : data_annotation.
@@ -281,8 +282,10 @@ Section aps_plus_sound.
   Context (Hwf : data_program_valid progₛ).
   Context (aps_plus : aps_plus progₛ progₜ).
 
-  Notation Σ := sim_Σ.
-  Notation M := (iResUR Σ).
+  Notation Σ :=
+    sim_Σ.
+  Notation M :=
+    (iResUR Σ).
 
   #[local] Instance aps_plus_sim_programs : SimPrograms data_ectx_lang data_ectx_lang :=
     Build_SimPrograms progₛ progₜ.

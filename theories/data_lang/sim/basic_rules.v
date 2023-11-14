@@ -14,6 +14,7 @@ From simuliris.data_lang Require Import
 Section sim_GS.
   Context `{sim_programs : !SimPrograms data_ectx_lang data_ectx_lang}.
   Context `{sim_GS : !SimGS Σ}.
+
   Implicit Types tag : data_tag.
   Implicit Types idx idxₛ idxₜ : data_index.
   Implicit Types l lₛ lₜ : loc.

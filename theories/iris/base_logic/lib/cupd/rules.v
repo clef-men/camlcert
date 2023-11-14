@@ -5,6 +5,7 @@ From simuliris.iris.base_logic Require Export
 
 Section bi_cupd.
   Context `{BiCUpd PROP}.
+
   Implicit Types P Q : PROP.
 
   Program Definition cupd_bi_bupd : BiBUpd PROP :=

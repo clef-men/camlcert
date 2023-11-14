@@ -72,6 +72,7 @@ Qed.
 
 Section language.
   Context {Λ : language}.
+
   Implicit Types v : val Λ.
   Implicit Types e : expr Λ.
   Implicit Types prog : program Λ.

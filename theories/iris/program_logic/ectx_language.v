@@ -77,6 +77,7 @@ Structure ectx_language := {
 
 Section ectx_language.
   Context {Λ : ectx_language}.
+
   Implicit Types v : val Λ.
   Implicit Types e : expr Λ.
   Implicit Types σ : state Λ.

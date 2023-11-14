@@ -7,7 +7,8 @@ From simuliris.data_lang Require Import
 From simuliris.data_human_lang Require Export
   metatheory.
 
-Definition data_human_bindings := list binder.
+Definition data_human_bindings :=
+  list binder.
 Implicit Types bdgs : data_human_bindings.
 
 Fixpoint data_human_bindings_lookup_aux i bdgs x :=

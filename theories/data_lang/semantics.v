@@ -5,7 +5,8 @@ From simuliris.data_lang Require Export
 From simuliris.data_lang Require Import
   notations.
 
-Definition data_state := gmap loc data_val.
+Definition data_state :=
+  gmap loc data_val.
 
 #[global] Instance data_state_eq_dec :
   EqDecision data_state.

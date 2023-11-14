@@ -10,61 +10,74 @@ From simuliris.iris.program_logic Require Export
 From simuliris.iris.program_logic Require Import
   sim.notations.
 
-#[local] Notation "Φ1 --∗ Φ2" := (∀ x1 x2, Φ1 x1 x2 -∗ Φ2 x1 x2)%I
+#[local] Notation "Φ1 --∗ Φ2" :=
+  (∀ x1 x2, Φ1 x1 x2 -∗ Φ2 x1 x2)%I
 ( at level 99,
   Φ2 at level 200,
   right associativity,
   format "'[' Φ1  --∗  '/' '[' Φ2 ']' ']'"
 ) : bi_scope.
-#[local] Notation "Φ1 --∗ Φ2" := (⊢ Φ1 --∗ Φ2)
-( only parsing
+#[local] Notation "Φ1 --∗ Φ2" := (
+  ⊢ Φ1 --∗ Φ2
+)(only parsing
 ) : stdpp_scope.
-#[local] Notation "Φ1 ===∗ Φ2" := (∀ x1 x2, Φ1 x1 x2 -∗ |==> Φ2 x1 x2)%I
+#[local] Notation "Φ1 ===∗ Φ2" :=
+  (∀ x1 x2, Φ1 x1 x2 -∗ |==> Φ2 x1 x2)%I
 ( at level 99,
   Φ2 at level 200,
   format "'[' Φ1  ===∗  '/' '[' Φ2 ']' ']'"
 ) : bi_scope.
-#[local] Notation "Φ1 ===∗ Φ2" := (⊢ Φ1 ===∗ Φ2)
-( only parsing
+#[local] Notation "Φ1 ===∗ Φ2" := (
+  ⊢ Φ1 ===∗ Φ2
+)(only parsing
 ) : stdpp_scope.
-#[local] Notation "Φ1 +++∗ Φ2" := (∀ x1 x2, Φ1 x1 x2 -∗ |++> Φ2 x1 x2)%I
+#[local] Notation "Φ1 +++∗ Φ2" :=
+  (∀ x1 x2, Φ1 x1 x2 -∗ |++> Φ2 x1 x2)%I
 ( at level 99,
   Φ2 at level 200,
   format "'[' Φ1  +++∗  '/' '[' Φ2 ']' ']'"
 ) : bi_scope.
-#[local] Notation "Φ1 +++∗ Φ2" := (⊢ Φ1 +++∗ Φ2)
-( only parsing
+#[local] Notation "Φ1 +++∗ Φ2" := (
+  ⊢ Φ1 +++∗ Φ2
+)(only parsing
 ) : stdpp_scope.
 
-#[local] Notation "Φ1 ---∗ Φ2" := (∀ x1 x2 x3, Φ1 x1 x2 x3 -∗ Φ2 x1 x2 x3)%I
+#[local] Notation "Φ1 ---∗ Φ2" :=
+  (∀ x1 x2 x3, Φ1 x1 x2 x3 -∗ Φ2 x1 x2 x3)%I
 ( at level 99,
   Φ2 at level 200,
   right associativity,
   format "'[' Φ1  ---∗  '/' '[' Φ2 ']' ']'"
 ) : bi_scope.
-#[local] Notation "Φ1 ---∗ Φ2" := (⊢ Φ1 ---∗ Φ2)
-( only parsing
+#[local] Notation "Φ1 ---∗ Φ2" := (
+  ⊢ Φ1 ---∗ Φ2
+)(only parsing
 ) : stdpp_scope.
-#[local] Notation "Φ1 ====∗ Φ2" := (∀ x1 x2 x3, Φ1 x1 x2 x3 -∗ |==> Φ2 x1 x2 x3)%I
+#[local] Notation "Φ1 ====∗ Φ2" :=
+  (∀ x1 x2 x3, Φ1 x1 x2 x3 -∗ |==> Φ2 x1 x2 x3)%I
 ( at level 99,
   Φ2 at level 200,
   format "'[' Φ1  ====∗  '/' '[' Φ2 ']' ']'"
 ) : bi_scope.
-#[local] Notation "Φ1 ====∗ Φ2" := (⊢ Φ1 ====∗ Φ2)
-( only parsing
+#[local] Notation "Φ1 ====∗ Φ2" := (
+  ⊢ Φ1 ====∗ Φ2
+)(only parsing
 ) : stdpp_scope.
-#[local] Notation "Φ1 ++++∗ Φ2" := (∀ x1 x2 x3, Φ1 x1 x2 x3 -∗ |++> Φ2 x1 x2 x3)%I
+#[local] Notation "Φ1 ++++∗ Φ2" :=
+  (∀ x1 x2 x3, Φ1 x1 x2 x3 -∗ |++> Φ2 x1 x2 x3)%I
 ( at level 99,
   Φ2 at level 200,
   format "'[' Φ1  ++++∗  '/' '[' Φ2 ']' ']'"
 ) : bi_scope.
-#[local] Notation "Φ1 ++++∗ Φ2" := (⊢ Φ1 ++++∗ Φ2)
-( only parsing
+#[local] Notation "Φ1 ++++∗ Φ2" := (
+  ⊢ Φ1 ++++∗ Φ2
+)(only parsing
 ) : stdpp_scope.
 
 Section sim_post_vals.
   Context {Λₛ Λₜ : ectx_language}.
   Context `{!BiBUpd PROP, !BiAffine PROP}.
+
   Implicit Types Φ : val Λₛ → val Λₜ → PROP.
 
   Lemma sim_post_vals_cupd_mono `{sim_state : !SimState PROP Λₛ Λₜ} Φ1 Φ2 eₛ eₜ :
@@ -108,8 +121,11 @@ Section sim_state.
   Context `{!BiBUpd PROP, !BiAffine PROP}.
   Context `{sim_state : !SimState PROP Λₛ Λₜ}.
 
-  Notation sim_protocol := (sim_protocol PROP Λₛ Λₜ).
-  Notation sim_protocol_O := (sim_protocol_O PROP Λₛ Λₜ).
+  Notation sim_protocol :=
+    (sim_protocol PROP Λₛ Λₜ).
+  Notation sim_protocol_O :=
+    (sim_protocol_O PROP Λₛ Λₜ).
+
   Implicit Types Χ : sim_protocol.
   Implicit Types N M I : sim_protocol_O.
 
