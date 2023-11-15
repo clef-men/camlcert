@@ -82,14 +82,18 @@ Section sim_GS.
       all: sim_mono "Hsim1"; iIntros "% % (%vₛ1 & %vₜ1 & (-> & ->) & #Hv1)".
       all: sim_mono "Hsim2"; iIntros "% % (%vₛ2 & %vₜ2 & (-> & ->) & #Hv2)".
       all: sim_pures.
-      all: destruct vₛ1, vₜ1; try iDestruct "Hv1" as %[]; try sim_strongly_stuck.
-      all: destruct vₛ2, vₜ2; try iDestruct "Hv2" as %[]; try sim_strongly_stuck.
+      all: destruct (decide (op = DataOpEq)) as [-> | Hop1].
+        1,3: sim_pures.
+        1,2: iDestruct (data_val_bi_similar_agree with "Hv1 Hv2") as %Hiff.
+        1,2: setoid_rewrite bool_decide_ext at 1; [iSmash | naive_solver].
+      all: destruct (decide (op = DataOpNe)) as [-> | Hop2].
+        1,3: sim_pures.
+        1,2: iDestruct (data_val_bi_similar_agree' with "Hv1 Hv2") as %Hiff.
+        1,2: setoid_rewrite bool_decide_ext at 1; [iSmash | naive_solver].
+      all: destruct vₛ1, vₜ1; try iDestruct "Hv1" as %[].
+      all: destruct vₛ2, vₜ2; try iDestruct "Hv2" as %[].
       all: destruct op; try sim_strongly_stuck.
       all: sim_pures.
-      all: iDestruct "Hv1" as "(Hv1 & _)"; iDestruct "Hv2" as "(Hv2 & _)"; rewrite !loc_add_0.
-      all: iDestruct (sim_heap_bij_agree with "Hv1 Hv2") as %Hiff.
-      all: iApply "HΦ".
-      all: iPureIntro; rewrite ?bool_decide_not; f_equal; apply bool_decide_ext; naive_solver.
     Qed.
     Lemma sim_binop_valsₛ Φ op v1 v2 v e :
       data_binop_eval op v1 v2 = Some v →

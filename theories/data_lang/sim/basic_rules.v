@@ -27,6 +27,38 @@ Section sim_GS.
     destruct vₛ, vₜ; apply _.
   Qed.
 
+  Lemma data_val_bi_similar_agree vₛ1 vₛ2 vₜ1 vₜ2 :
+    vₛ1 ≈ vₜ1 -∗
+    vₛ2 ≈ vₜ2 -∗
+    ⌜vₛ1 = vₛ2 ↔ vₜ1 = vₜ2⌝.
+  Proof.
+    iIntros "#Hv1 #Hv2".
+    rewrite /iff. iSplit; iIntros (->).
+    Ltac solve_loc :=
+      iDestruct "Hv1" as "(Hv1 & _)";
+      iDestruct "Hv2" as "(Hv2 & _)";
+      rewrite !loc_add_0;
+      iDestruct (sim_heap_bij_agree with "Hv1 Hv2") as %?;
+      naive_solver.
+    - all: destruct vₛ2, vₜ1; try iDestruct "Hv1" as %[].
+      all: destruct vₜ2; try iDestruct "Hv2" as %[].
+      all: try naive_solver.
+      solve_loc.
+    - all: destruct vₛ2, vₜ2; try iDestruct "Hv2" as %[].
+      all: destruct vₛ1; try iDestruct "Hv1" as %[].
+      all: try naive_solver.
+      solve_loc.
+  Qed.
+  Lemma data_val_bi_similar_agree' vₛ1 vₛ2 vₜ1 vₜ2 :
+    vₛ1 ≈ vₜ1 -∗
+    vₛ2 ≈ vₜ2 -∗
+    ⌜vₛ1 ≠ vₛ2 ↔ vₜ1 ≠ vₜ2⌝.
+  Proof.
+    iIntros "#Hv1 #Hv2".
+    iDestruct (data_val_bi_similar_agree with "Hv1 Hv2") as %->.
+    iSmash.
+  Qed.
+
   Lemma data_val_similar_bi_similar vₛ vₜ :
     data_val_well_formed sim_progₛ vₛ →
     vₛ ≈ vₜ →
