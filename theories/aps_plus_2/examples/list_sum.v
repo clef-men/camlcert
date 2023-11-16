@@ -11,54 +11,39 @@ From simuliris.aps_plus_2 Require Import
 
 Definition list_sum : data_human_program := {[
   "list_sum" :=
-    {|data_human_definition_annot :=
-        [] ;
-      data_human_definition_param :=
-        BNamed "arg" ;
-      data_human_definition_body :=
-        match: ![𝟙] "arg" with
-          NIL =>
-            0
-        | CONS "x", "xs" =>
-            "x" + $"list_sum" "xs"
-        end ;
-    |}
-]}.
+    rec: "arg" :=
+      match: ![𝟙] "arg" with
+        NIL =>
+          0
+      | CONS "x", "xs" =>
+          "x" + $"list_sum" "xs"
+      end
+]}%data_human_def.
 
 Definition list_sum_aps_plus : data_human_program := {[
   "list_sum" :=
-    {|data_human_definition_annot :=
-        [] ;
-      data_human_definition_param :=
-        BNamed "arg" ;
-      data_human_definition_body :=
-        match: ![𝟙] "arg" with
-          NIL =>
-            0
-        | CONS "x", "xs" =>
-            let: "acc" := "x" in
-            let: "arg" := "xs" in
-            $"list_sum_aps" ("acc", "arg")
-        end ;
-    |} ;
+    rec: "arg" :=
+      match: ![𝟙] "arg" with
+        NIL =>
+          0
+      | CONS "x", "xs" =>
+          let: "acc" := "x" in
+          let: "arg" := "xs" in
+          $"list_sum_aps" ("acc", "arg")
+      end ;
   "list_sum_aps" :=
-    {|data_human_definition_annot :=
-        [] ;
-      data_human_definition_param :=
-        BNamed "arg" ;
-      data_human_definition_body :=
-        let: "acc" := ![𝟙] "arg" in
-        let: "arg" := ![𝟚] "arg" in
-        match: ![𝟙] "arg" with
-          NIL =>
-            0 + "acc"
-        | CONS "x", "xs" =>
-            let: "acc" := "x" + "acc" in
-            let: "arg" := "xs" in
-            $"list_sum_aps" ("acc", "arg")
-        end ;
-    |}
-]}.
+    rec: "arg" :=
+      let: "acc" := ![𝟙] "arg" in
+      let: "arg" := ![𝟚] "arg" in
+      match: ![𝟙] "arg" with
+        NIL =>
+          0 + "acc"
+      | CONS "x", "xs" =>
+          let: "acc" := "x" + "acc" in
+          let: "arg" := "xs" in
+          $"list_sum_aps" ("acc", "arg")
+      end
+]}%data_human_def.
 
 Section list_sum_aps_plus_sound.
   Variable aps_plus_sound : ∀ progₛ progₜ,

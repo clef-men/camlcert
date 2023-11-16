@@ -161,12 +161,10 @@ Record aps_plus {progₛ progₜ} := {
       ∃ eₜ,
       aps_plus_expr_dir aps_plus_ξ defₛ.(data_definition_body) eₜ ∧
       progₜ !! func =
-        Some {|
-          data_definition_annot :=
-            defₛ.(data_definition_annot) ;
-          data_definition_body :=
-            eₜ ;
-        |} ;
+        Some (
+          rec: defₛ.(data_definition_annot) :=
+            eₜ
+        )%data_def ;
 
   aps_plus_aps func defₛ func_aps :
     progₛ !! func = Some defₛ →
@@ -174,13 +172,11 @@ Record aps_plus {progₛ progₜ} := {
       ∃ eₜ,
       aps_plus_expr_aps aps_plus_ξ $1 defₛ.(data_definition_body) eₜ ∧
       progₜ !! func_aps =
-        Some {|
-          data_definition_annot :=
-            defₛ.(data_definition_annot) ;
-          data_definition_body :=
+        Some (
+          rec: defₛ.(data_definition_annot) :=
             let: ![𝟙] $0 in
             let: ![𝟚] $1 in
             eₜ
-        |} ;
+        )%data_def ;
 }.
 #[global] Arguments aps_plus : clear implicits.

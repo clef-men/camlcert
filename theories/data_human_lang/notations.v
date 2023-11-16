@@ -161,3 +161,23 @@ Notation "'match:' e0 'with' 'NIL' => e1 | 'CONS' x , y => e2 'end'" :=
 ( only parsing,
   e0, e1, x, y, e2 at level 200
 ) : data_human_expr_scope.
+
+Declare Scope data_human_def_scope.
+Delimit Scope data_human_def_scope with data_human_def.
+Bind Scope data_human_def_scope with data_human_definition.
+
+Notation "'rec:' annot param := body" := (
+  Build_data_human_definition annot param%binder body%data_human_expr
+)(at level 200,
+  annot at level 1,
+  param at level 1,
+  body at level 200,
+  format "'[' 'rec:'  annot  param  :=  '/  ' body ']'"
+) : data_human_def_scope.
+Notation "'rec:' param := body" := (
+  Build_data_human_definition [] param%binder body%data_human_expr
+)(at level 200,
+  param at level 1,
+  body at level 200,
+  format "'[' 'rec:'  param  :=  '/  ' body ']'"
+) : data_human_def_scope.

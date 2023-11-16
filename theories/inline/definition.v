@@ -107,11 +107,9 @@ Record inline {progₛ progₜ} := {
       ∃ eₜ,
       inline_expr progₛ defₛ.(data_definition_body) eₜ ∧
       progₜ !! func =
-        Some {|
-          data_definition_annot :=
-            defₛ.(data_definition_annot) ;
-          data_definition_body :=
-            eₜ ;
-        |} ;
+        Some (
+          rec: defₛ.(data_definition_annot) :=
+            eₜ
+        )%data_def ;
 }.
 #[global] Arguments inline : clear implicits.

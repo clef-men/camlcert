@@ -11,65 +11,50 @@ From simuliris.tmc Require Import
 
 Definition list_append : data_human_program := {[
   "list_append" :=
-    {|data_human_definition_annot :=
-        [] ;
-      data_human_definition_param :=
-        BNamed "arg" ;
-      data_human_definition_body :=
-        let: "xs" := ![𝟙] "arg" in
-        let: "ys" := ![𝟚] "arg" in
-        match: "xs" with
-          NIL =>
-            NILₕ
-        | CONS "x", "xs" =>
-            CONSₕ "x" ($"list_append" ("xs", "ys"))
-        end
-    |}
-]}.
+    rec: "arg" :=
+      let: "xs" := ![𝟙] "arg" in
+      let: "ys" := ![𝟚] "arg" in
+      match: "xs" with
+        NIL =>
+          NILₕ
+      | CONS "x", "xs" =>
+          CONSₕ "x" ($"list_append" ("xs", "ys"))
+      end
+]}%data_human_def.
 
 Definition list_append_tmc : data_human_program := {[
   "list_append" :=
-    {|data_human_definition_annot :=
-        [] ;
-      data_human_definition_param :=
-        BNamed "arg" ;
-      data_human_definition_body :=
-        let: "xs" := ![𝟙] "arg" in
-        let: "ys" := ![𝟚] "arg" in
-        match: "xs" with
-          NIL =>
-            NILₕ
-        | CONS "x", "xs" =>
-            let: "dst" := CONSₕ "x" #ₕ() in
-            ( let: "arg" := ("xs", "ys") in
-              $"list_append_dps" ("dst", 𝟚, "arg")
-            ) ;;
-            "dst"
-        end
-    |} ;
+    rec: "arg" :=
+      let: "xs" := ![𝟙] "arg" in
+      let: "ys" := ![𝟚] "arg" in
+      match: "xs" with
+        NIL =>
+          NILₕ
+      | CONS "x", "xs" =>
+          let: "dst" := CONSₕ "x" #ₕ() in
+          ( let: "arg" := ("xs", "ys") in
+            $"list_append_dps" ("dst", 𝟚, "arg")
+          ) ;;
+          "dst"
+      end ;
   "list_append_dps" :=
-    {|data_human_definition_annot :=
-        [] ;
-      data_human_definition_param :=
-        BNamed "arg" ;
-      data_human_definition_body :=
-        let: "dst_idx" := ![𝟙] "arg" in
-        let: "idx" := ![𝟚] "dst_idx" in
-        let: "dst" := ![𝟙] "dst_idx" in
-        let: "arg" := ![𝟚] "arg" in
-        let: "xs" := ![𝟙] "arg" in
-        let: "ys" := ![𝟚] "arg" in
-        match: "xs" with
-          NIL =>
-          "dst" <-["idx"]- NILₕ
-        | CONS "x", "xs" =>
-            let: "dst'" := CONSₕ "x" #ₕ() in
-            "dst" <-["idx"]- "dst'" ;;
-            let: "arg" := ("xs", "ys") in
-            $"list_append_dps" ("dst'", 𝟚, "arg")
-        end
-    |}
-]}.
+    rec: "arg" :=
+      let: "dst_idx" := ![𝟙] "arg" in
+      let: "idx" := ![𝟚] "dst_idx" in
+      let: "dst" := ![𝟙] "dst_idx" in
+      let: "arg" := ![𝟚] "arg" in
+      let: "xs" := ![𝟙] "arg" in
+      let: "ys" := ![𝟚] "arg" in
+      match: "xs" with
+        NIL =>
+        "dst" <-["idx"]- NILₕ
+      | CONS "x", "xs" =>
+          let: "dst'" := CONSₕ "x" #ₕ() in
+          "dst" <-["idx"]- "dst'" ;;
+          let: "arg" := ("xs", "ys") in
+          $"list_append_dps" ("dst'", 𝟚, "arg")
+      end
+]}%data_human_def.
 
 Lemma list_append_tmc_sound :
   data_program_refinement

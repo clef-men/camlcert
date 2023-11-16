@@ -184,3 +184,21 @@ Notation "'match:' e0 'with' 'NIL' => e1 | 'CONS' => e2 'end'" :=
 ( only parsing,
   e0, e1, e2 at level 200
 ) : data_expr_scope.
+
+Declare Scope data_def_scope.
+Delimit Scope data_def_scope with data_def.
+Bind Scope data_def_scope with data_definition.
+
+Notation "'rec:' annot := body" := (
+  Build_data_definition annot body%data_expr
+)(at level 200,
+  annot at level 1,
+  body at level 200,
+  format "'[' 'rec:'  annot  :=  '/  ' body ']'"
+) : data_def_scope.
+Notation "'rec:=' body" := (
+  Build_data_definition [] body%data_expr
+)(at level 200,
+  body at level 200,
+  format "'[' 'rec:='  '/  ' body ']'"
+) : data_def_scope.

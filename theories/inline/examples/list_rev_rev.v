@@ -8,81 +8,48 @@ From simuliris.data_human_lang Require Import
   notations.
 From simuliris.inline Require Import
   soundness.
+Bind Scope data_human_def_scope with data_human_definition.
 
 Definition list_rev_rev : data_human_program := {[
   "list_rev_append" :=
-    {|data_human_definition_annot :=
-        [] ;
-      data_human_definition_param :=
-        BNamed "arg" ;
-      data_human_definition_body :=
-        let: "xs" := ![𝟙] "arg" in
-        let: "ys" := ![𝟚] "arg" in
-        match: "xs" with
-          NIL =>
-            "ys"
-        | CONS "x", "xs" =>
-            $"list_rev_append" ("xs", CONSₕ "x" "ys")
-        end
-    |} ;
+    rec: "arg" :=
+      let: "xs" := ![𝟙] "arg" in
+      let: "ys" := ![𝟚] "arg" in
+      match: "xs" with
+        NIL =>
+          "ys"
+      | CONS "x", "xs" =>
+          $"list_rev_append" ("xs", CONSₕ "x" "ys")
+      end ;
   "list_rev" :=
-    {|data_human_definition_annot :=
-        [] ;
-      data_human_definition_param :=
-        BNamed "xs" ;
-      data_human_definition_body := (
-        $"list_rev_append" ("xs", NILₕ)
-      )%data_human_expr
-    |} ;
+    rec: "xs" :=
+      $"list_rev_append" ("xs", NILₕ) ;
   "list_rev_rev" :=
-    {|data_human_definition_annot :=
-        [] ;
-      data_human_definition_param :=
-        BNamed "xs" ;
-      data_human_definition_body := (
-        $"list_rev" ((DataHumanFunc "list_rev" ["inline"]) "xs")
-      )%data_human_expr
-    |}
-]}.
+    rec: "xs" :=
+      $"list_rev" ((DataHumanFunc "list_rev" ["inline"]) "xs")
+]}%data_human_def.
 
 Definition list_rev_rev_inline : data_human_program := {[
   "list_rev_append" :=
-    {|data_human_definition_annot :=
-        [] ;
-      data_human_definition_param :=
-        BNamed "arg" ;
-      data_human_definition_body :=
-        let: "xs" := ![𝟙] "arg" in
-        let: "ys" := ![𝟚] "arg" in
-        match: "xs" with
-          NIL =>
-            "ys"
-        | CONS "x", "xs" =>
-            $"list_rev_append" ("xs", CONSₕ "x" "ys")
-        end
-    |} ;
+    rec: "arg" :=
+      let: "xs" := ![𝟙] "arg" in
+      let: "ys" := ![𝟚] "arg" in
+      match: "xs" with
+        NIL =>
+          "ys"
+      | CONS "x", "xs" =>
+          $"list_rev_append" ("xs", CONSₕ "x" "ys")
+      end ;
   "list_rev" :=
-    {|data_human_definition_annot :=
-        [] ;
-      data_human_definition_param :=
-        BNamed "xs" ;
-      data_human_definition_body := (
-        $"list_rev_append" ("xs", NILₕ)
-      )%data_human_expr
-    |} ;
+    rec: "xs" :=
+      $"list_rev_append" ("xs", NILₕ) ;
   "list_rev_rev" :=
-    {|data_human_definition_annot :=
-        [] ;
-      data_human_definition_param :=
-        BNamed "xs" ;
-      data_human_definition_body := (
-        $"list_rev" (
-          let: "arg" := "xs" in
-          $"list_rev_append" ("arg", NILₕ)
-        )
-      )%data_human_expr
-    |}
-]}.
+    rec: "xs" :=
+      $"list_rev" (
+        let: "arg" := "xs" in
+        $"list_rev_append" ("arg", NILₕ)
+      )
+]}%data_human_def.
 
 Lemma list_rev_rev_inline_sound :
   data_program_refinement

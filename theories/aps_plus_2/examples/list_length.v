@@ -11,54 +11,39 @@ From simuliris.aps_plus_2 Require Import
 
 Definition list_length : data_human_program := {[
   "list_length" :=
-    {|data_human_definition_annot :=
-        [] ;
-      data_human_definition_param :=
-        BNamed "arg" ;
-      data_human_definition_body :=
-        match: ![𝟙] "arg" with
-          NIL =>
-            0
-        | CONS <>, "xs" =>
-            1 + $"list_length" "xs"
-        end
-    |}
-]}.
+    rec: "arg" :=
+      match: ![𝟙] "arg" with
+        NIL =>
+          0
+      | CONS <>, "xs" =>
+          1 + $"list_length" "xs"
+      end
+]}%data_human_def.
 
 Definition list_length_aps_plus : data_human_program := {[
   "list_length" :=
-    {|data_human_definition_annot :=
-        [] ;
-      data_human_definition_param :=
-        BNamed "arg" ;
-      data_human_definition_body :=
-        match: ![𝟙] "arg" with
-          NIL =>
-            0
-        | CONS "<>", "xs" =>
-            let: "acc" := 1 in
-            let: "arg" := "xs" in
-            $"list_length_aps" ("acc", "arg")
-        end
-    |} ;
+    rec: "arg" :=
+      match: ![𝟙] "arg" with
+        NIL =>
+          0
+      | CONS "<>", "xs" =>
+          let: "acc" := 1 in
+          let: "arg" := "xs" in
+          $"list_length_aps" ("acc", "arg")
+      end ;
   "list_length_aps" :=
-    {|data_human_definition_annot :=
-        [] ;
-      data_human_definition_param :=
-        BNamed "arg" ;
-      data_human_definition_body :=
-        let: "acc" := ![𝟙] "arg" in
-        let: "arg" := ![𝟚] "arg" in
-        match: ![𝟙] "arg" with
-          NIL =>
-            0 + "acc"
-        | CONS "<>", "xs" =>
-            let: "acc" := 1 + "acc" in
-            let: "arg" := "xs" in
-            $"list_length_aps" ("acc", "arg")
-        end
-    |}
-]}.
+    rec: "arg" :=
+      let: "acc" := ![𝟙] "arg" in
+      let: "arg" := ![𝟚] "arg" in
+      match: ![𝟙] "arg" with
+        NIL =>
+          0 + "acc"
+      | CONS "<>", "xs" =>
+          let: "acc" := 1 + "acc" in
+          let: "arg" := "xs" in
+          $"list_length_aps" ("acc", "arg")
+      end
+]}%data_human_def.
 
 Section list_length_aps_plus_sound.
   Variable aps_plus_sound : ∀ progₛ progₜ,

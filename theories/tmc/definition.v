@@ -163,12 +163,10 @@ Record tmc {progₛ progₜ} := {
       ∃ eₜ,
       tmc_expr_dir tmc_ξ defₛ.(data_definition_body) eₜ ∧
       progₜ !! func =
-        Some {|
-          data_definition_annot :=
-            defₛ.(data_definition_annot) ;
-          data_definition_body :=
-            eₜ ;
-        |} ;
+        Some (
+          rec: defₛ.(data_definition_annot) :=
+            eₜ
+        )%data_def ;
 
   tmc_dps func defₛ func_dps :
     progₛ !! func = Some defₛ →
@@ -176,15 +174,13 @@ Record tmc {progₛ progₜ} := {
       ∃ eₜ,
       tmc_expr_dps tmc_ξ $1 $2 defₛ.(data_definition_body) eₜ ∧
       progₜ !! func_dps =
-        Some {|
-          data_definition_annot :=
-            defₛ.(data_definition_annot) ;
-          data_definition_body :=
+        Some (
+          rec: defₛ.(data_definition_annot) :=
             let: ![𝟙] $0 in
             let: ![𝟚] $0 in
             let: ![𝟙] $1 in
             let: ![𝟚] $3 in
-            eₜ ;
-        |} ;
+            eₜ
+        )%data_def ;
 }.
 #[global] Arguments tmc : clear implicits.

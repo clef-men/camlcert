@@ -136,23 +136,19 @@ Record compose {func1 func2 progₛ progₜ} := {
       ∃ eₜ,
       compose_expr_dir func1 func2 compose_func defₛ.(data_definition_body) eₜ ∧
       progₜ !! func =
-        Some {|
-          data_definition_annot :=
-            defₛ.(data_definition_annot) ;
-          data_definition_body :=
-            eₜ ;
-        |} ;
+        Some (
+          rec: defₛ.(data_definition_annot) :=
+            eₜ
+        )%data_def ;
 
   compose_comp :
     ∃ defₛ eₜ,
     progₛ !! func1 = Some defₛ ∧
     compose_expr_comp func1 func2 compose_func defₛ.(data_definition_body) eₜ ∧
     progₜ !! compose_func =
-      Some {|
-        data_definition_annot :=
-          defₛ.(data_definition_annot) ;
-        data_definition_body :=
-          eₜ ;
-      |} ;
+      Some (
+        rec: defₛ.(data_definition_annot) :=
+          eₜ
+      )%data_def ;
 }.
 #[global] Arguments compose : clear implicits.
