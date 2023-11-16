@@ -141,16 +141,16 @@ Notation "( e1 , e2 , .. , en )" :=
 : data_human_expr_scope.
 
 Notation NILₕ :=
-  (&data_tag_nil #ₕ() #ₕ())%data_human_expr
+  #ₕ()
 ( only parsing
 ).
 Notation CONSₕ :=
-  (&data_tag_cons)%data_human_expr
+  (&0)%data_human_expr
 ( only parsing
 ).
 Notation "'match:' e0 'with' 'NIL' => e1 | 'CONS' x , y => e2 'end'" :=
   ( let: "__match" := e0 in
-    if: !"__match" = data_tag_nil then (
+    if: "__match" = NILₕ then (
       e1
     ) else (
       let: y := ![𝟚] "__match" in

@@ -159,21 +159,17 @@ Notation "( e1 , e2 , .. , en )" :=
   (&data_tag_pair .. (&data_tag_pair e1 e2) .. en)%data_expr
 : data_expr_scope.
 
-Definition data_tag_nil : data_tag :=
-  0.
-Definition data_tag_cons : data_tag :=
-  1.
 Notation NIL :=
-  (&data_tag_nil #() #())%data_expr
+  #()
 ( only parsing
 ).
 Notation CONS :=
-  (&data_tag_cons)%data_expr
+  (&0)%data_expr
 ( only parsing
 ).
 Notation "'match:' e0 'with' 'NIL' => e1 | 'CONS' => e2 'end'" :=
   ( let: e0 in
-    if: !$0 = data_tag_nil then (
+    if: $0 = NIL then (
       e1.[ren (+1)]
     ) else (
       let: ![𝟚] $0 in
