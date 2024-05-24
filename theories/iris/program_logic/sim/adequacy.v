@@ -4,11 +4,11 @@ From Paco Require Import
 From iris.base_logic Require Import
   bi.
 
-From simuliris Require Import
+From camlcert Require Import
   prelude.
-From simuliris.common Require Import
+From camlcert.common Require Import
   induction.
-From simuliris.iris.program_logic Require Import
+From camlcert.iris.program_logic Require Import
   refinement
   idiverges
   sim.proofmode

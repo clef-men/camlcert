@@ -1,7 +1,7 @@
 From iris.bi Require Export
   bi.
 
-From simuliris Require Import
+From camlcert Require Import
   prelude.
 
 Class CUpd PROP :=

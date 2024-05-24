@@ -7,7 +7,7 @@ From Paco Require Import
 From iris.algebra Require Export
   ofe.
 
-From simuliris Require Import
+From camlcert Require Import
   prelude.
 
 Section LanguageMixin.

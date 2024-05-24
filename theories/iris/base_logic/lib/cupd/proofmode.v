@@ -4,11 +4,11 @@ From iris.proofmode Require Import
 From diaframe Require Import
   util_instances.
 
-From simuliris Require Import
+From camlcert Require Import
   prelude.
-From simuliris.iris Require Export
+From camlcert.iris Require Export
   proofmode.
-From simuliris.iris.base_logic Require Export
+From camlcert.iris.base_logic Require Export
   lib.cupd.rules.
 
 Section bi_cupd.

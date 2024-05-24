@@ -1,8 +1,8 @@
-From simuliris Require Import
+From camlcert Require Import
   prelude.
-From simuliris.data_lang Require Export
+From camlcert.data_lang Require Export
   metatheory.
-From simuliris.inline Require Export
+From camlcert.inline Require Export
   definition.
 
 Section inline_expr.

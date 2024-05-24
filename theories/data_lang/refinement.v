@@ -1,11 +1,11 @@
-From simuliris Require Import
+From camlcert Require Import
   prelude.
-From simuliris.iris.program_logic Require Export
+From camlcert.iris.program_logic Require Export
   refinement.
-From simuliris.data_lang Require Export
+From camlcert.data_lang Require Export
   language
   metatheory.
-From simuliris.data_lang Require Import
+From camlcert.data_lang Require Import
   notations.
 
 Definition data_program_refinement (progₛ progₜ : data_program) :=

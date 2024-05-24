@@ -3,13 +3,13 @@ From iris.base_logic Require Export
 From iris.base_logic Require Import
   lib.gset_bij.
 
-From simuliris Require Import
+From camlcert Require Import
   prelude.
-From simuliris.common Require Export
+From camlcert.common Require Export
   typeclasses.
-From simuliris.iris Require Import
+From camlcert.iris Require Import
   proofmode.
-From simuliris.iris.base_logic Require Export
+From camlcert.iris.base_logic Require Export
   lib.sim.heap.
 
 Import heap.notations.

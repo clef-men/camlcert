@@ -1,13 +1,13 @@
 From iris.proofmode Require Import
   proofmode.
 
-From simuliris Require Import
+From camlcert Require Import
   prelude.
-From simuliris.iris.base_logic Require Export
+From camlcert.iris.base_logic Require Export
   lib.sim.heap_bij.
-From simuliris.iris.program_logic Require Export
+From camlcert.iris.program_logic Require Export
   sim.definition.
-From simuliris.data_lang Require Export
+From camlcert.data_lang Require Export
   language.
 
 Import heap.notations.

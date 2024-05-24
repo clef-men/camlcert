@@ -1,7 +1,7 @@
 From Autosubst Require Export
   Autosubst.
 
-From simuliris Require Export
+From camlcert Require Export
   prelude.
 
 Section subst.

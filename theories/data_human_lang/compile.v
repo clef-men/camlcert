@@ -1,10 +1,10 @@
-From simuliris Require Import
+From camlcert Require Import
   prelude.
-From simuliris.data_lang Require Export
+From camlcert.data_lang Require Export
   metatheory.
-From simuliris.data_lang Require Import
+From camlcert.data_lang Require Import
   notations.
-From simuliris.data_human_lang Require Export
+From camlcert.data_human_lang Require Export
   metatheory.
 
 Definition data_human_bindings :=

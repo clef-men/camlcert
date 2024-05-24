@@ -1,8 +1,8 @@
-From simuliris Require Import
+From camlcert Require Import
   prelude.
-From simuliris.data_lang Require Export
+From camlcert.data_lang Require Export
   metatheory.
-From simuliris.aps_plus_1 Require Export
+From camlcert.aps_plus_1 Require Export
   definition.
 
 Section aps_plus_expr.

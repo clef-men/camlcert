@@ -1,13 +1,13 @@
 From iris.bi Require Import
   fixpoint.
 
-From simuliris Require Import
+From camlcert Require Import
   prelude.
-From simuliris.iris.base_logic Require Import
+From camlcert.iris.base_logic Require Import
   lib.cupd.proofmode.
-From simuliris.iris.program_logic Require Export
+From camlcert.iris.program_logic Require Export
   sim.definition.
-From simuliris.iris.program_logic Require Import
+From camlcert.iris.program_logic Require Import
   sim.notations.
 
 #[local] Notation "Φ1 --∗ Φ2" :=

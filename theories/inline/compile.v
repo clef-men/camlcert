@@ -1,6 +1,6 @@
-From simuliris Require Import
+From camlcert Require Import
   prelude.
-From simuliris.inline Require Export
+From camlcert.inline Require Export
   metatheory.
 
 Implicit Types prog : data_program.

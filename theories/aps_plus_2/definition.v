@@ -1,8 +1,8 @@
-From simuliris Require Import
+From camlcert Require Import
   prelude.
-From simuliris.data_lang Require Export
+From camlcert.data_lang Require Export
   syntax.
-From simuliris.data_lang Require Import
+From camlcert.data_lang Require Import
   notations.
 
 Implicit Types func func_aps : data_function.

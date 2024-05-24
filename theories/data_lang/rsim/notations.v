@@ -1,6 +1,6 @@
-From simuliris Require Import
+From camlcert Require Import
   prelude.
-From simuliris.data_lang Require Export
+From camlcert.data_lang Require Export
   sim.notations
   rsim.definition.
 

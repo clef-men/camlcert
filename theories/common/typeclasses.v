@@ -1,7 +1,7 @@
 From iris.bi Require Import
   notation.
 
-From simuliris Require Import
+From camlcert Require Import
   prelude.
 
 Class SqSubset X :=

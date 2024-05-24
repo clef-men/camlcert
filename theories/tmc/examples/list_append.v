@@ -1,12 +1,12 @@
-From simuliris Require Import
+From camlcert Require Import
   prelude.
-From simuliris.data_lang Require Export
+From camlcert.data_lang Require Export
   refinement.
-From simuliris.data_human_lang Require Export
+From camlcert.data_human_lang Require Export
   compile.
-From simuliris.data_human_lang Require Import
+From camlcert.data_human_lang Require Import
   notations.
-From simuliris.tmc Require Import
+From camlcert.tmc Require Import
   soundness.
 
 Definition list_append : data_human_program := {[

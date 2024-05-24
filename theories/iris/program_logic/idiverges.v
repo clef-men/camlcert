@@ -6,13 +6,13 @@ From iris.bi Require Import
 From iris.base_logic Require Import
   bi.
 
-From simuliris Require Import
+From camlcert Require Import
   prelude.
-From simuliris.iris Require Import
+From camlcert.iris Require Import
   proofmode.
-From simuliris.iris.base_logic Require Import
+From camlcert.iris.base_logic Require Import
   satisfiable.
-From simuliris.iris.program_logic Require Import
+From camlcert.iris.program_logic Require Import
   language.
 
 Section bi.

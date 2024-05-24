@@ -1,7 +1,7 @@
 From Coq.Program Require Import
   Tactics.
 
-From simuliris.prelude Require Export
+From camlcert.prelude Require Export
   base.
 
 Ltac done :=

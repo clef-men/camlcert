@@ -6,9 +6,9 @@ From iris.bi Require Import
 From iris.base_logic Require Import
   lib.gen_heap.
 
-From simuliris Require Import
+From camlcert Require Import
   prelude.
-From simuliris.iris Require Import
+From camlcert.iris Require Import
   proofmode.
 
 Class SimHeapGpreS Σ locₛ valₛ locₜ valₜ `{Countable locₛ, Countable locₜ} := {

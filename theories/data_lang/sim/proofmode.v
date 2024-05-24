@@ -2,13 +2,13 @@ From iris.proofmode Require Import
   coq_tactics
   reduction.
 
-From simuliris Require Import
+From camlcert Require Import
   prelude.
-From simuliris.iris.program_logic Require Export
+From camlcert.iris.program_logic Require Export
   sim.proofmode.
-From simuliris.data_lang Require Export
+From camlcert.data_lang Require Export
   sim.basic_rules.
-From simuliris.data_lang Require Import
+From camlcert.data_lang Require Import
   sim.notations.
 
 Section sim_GS.

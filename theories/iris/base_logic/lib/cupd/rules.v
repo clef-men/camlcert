@@ -1,6 +1,6 @@
-From simuliris Require Import
+From camlcert Require Import
   prelude.
-From simuliris.iris.base_logic Require Export
+From camlcert.iris.base_logic Require Export
   lib.cupd.definition.
 
 Section bi_cupd.

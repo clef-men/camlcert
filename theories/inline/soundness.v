@@ -1,16 +1,16 @@
-From simuliris Require Import
+From camlcert Require Import
   prelude.
-From simuliris.iris.program_logic Require Import
+From camlcert.iris.program_logic Require Import
   sim.adequacy.
-From simuliris.data_lang Require Import
+From camlcert.data_lang Require Import
   refinement
   subexpr
   sim.proofmode
   rsim.rules
   rsim.notations.
-From simuliris.inline Require Export
+From camlcert.inline Require Export
   definition.
-From simuliris.inline Require Import
+From camlcert.inline Require Import
   metatheory.
 
 Section sim_GS.

@@ -1,6 +1,6 @@
-From simuliris Require Import
+From camlcert Require Import
   prelude.
-From simuliris.data_lang Require Export
+From camlcert.data_lang Require Export
   syntax.
 
 Coercion data_index_to_Z (idx : data_index) : Z :=

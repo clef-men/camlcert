@@ -1,6 +1,6 @@
-From simuliris Require Import
+From camlcert Require Import
   prelude.
-From simuliris.data_human_lang Require Export
+From camlcert.data_human_lang Require Export
   syntax.
 
 Implicit Types prog : data_human_program.

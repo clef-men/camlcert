@@ -1,4 +1,4 @@
-From simuliris.prelude Require Export
+From camlcert.prelude Require Export
   base
   tactics
   tactic_flag.

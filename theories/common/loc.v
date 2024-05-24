@@ -3,7 +3,7 @@ From stdpp Require Import
   numbers
   gmap.
 
-From simuliris Require Import
+From camlcert Require Import
   prelude.
 
 #[local] Open Scope Z_scope.

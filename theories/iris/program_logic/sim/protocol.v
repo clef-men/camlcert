@@ -1,9 +1,9 @@
 From iris.bi Require Import
   bi.
 
-From simuliris Require Import
+From camlcert Require Import
   prelude.
-From simuliris.iris.program_logic Require Export
+From camlcert.iris.program_logic Require Export
   ectx_language.
 
 Section bi.

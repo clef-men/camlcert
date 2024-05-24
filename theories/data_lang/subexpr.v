@@ -1,8 +1,8 @@
-From simuliris Require Import
+From camlcert Require Import
   prelude.
-From simuliris.common Require Import
+From camlcert.common Require Import
   relation.
-From simuliris.data_lang Require Export
+From camlcert.data_lang Require Export
   tactics.
 
 Inductive data_subexprdir : data_expr → data_expr → Prop :=

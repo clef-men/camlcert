@@ -1,13 +1,13 @@
 From Coq Require Import
   FunctionalExtensionality.
 
-From simuliris Require Import
+From camlcert Require Import
   prelude.
-From simuliris.iris Require Import
+From camlcert.iris Require Import
   proofmode.
-From simuliris.data_lang Require Export
+From camlcert.data_lang Require Export
   sim.definition.
-From simuliris.data_lang Require Import
+From camlcert.data_lang Require Import
   notations.
 
 Definition bisubst :=

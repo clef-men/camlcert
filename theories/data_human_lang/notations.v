@@ -1,8 +1,8 @@
-From simuliris Require Import
+From camlcert Require Import
   prelude.
-From simuliris.data_lang Require Export
+From camlcert.data_lang Require Export
   notations.
-From simuliris.data_human_lang Require Export
+From camlcert.data_human_lang Require Export
   syntax.
 
 Coercion DataHumanIndex : data_index >-> data_human_val.

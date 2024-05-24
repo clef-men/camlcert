@@ -1,7 +1,7 @@
 name:
-  "coq-tmc"
+  "coq-camlcert"
 synopsis:
-  "Verification of the TMC program transformation"
+  "CamlCert"
 opam-version:
   "2.0"
 maintainer:
@@ -12,9 +12,9 @@ authors: [
   "François Pottier"
 ]
 homepage:
-  "https://github.com/clef-men/tmc"
+  "https://github.com/clef-men/camlcert"
 bug-reports:
-  "https://github.com/clef-men/tmc/issues"
+  "https://github.com/clef-men/camlcert/issues"
 depends: [
   "coq" {= "8.15.2"}
   "coq-stdpp" {= "dev.2023-06-01.0.d1254759"}

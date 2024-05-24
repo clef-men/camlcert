@@ -1,12 +1,12 @@
-From simuliris Require Import
+From camlcert Require Import
   prelude.
-From simuliris.data_lang Require Export
+From camlcert.data_lang Require Export
   refinement.
-From simuliris.data_human_lang Require Export
+From camlcert.data_human_lang Require Export
   compile.
-From simuliris.data_human_lang Require Import
+From camlcert.data_human_lang Require Import
   notations.
-From simuliris.compose Require Import
+From camlcert.compose Require Import
   soundness.
 
 Definition list_rev_rev : data_human_program := {[

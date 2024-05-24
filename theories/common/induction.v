@@ -1,4 +1,4 @@
-From simuliris Require Import
+From camlcert Require Import
   prelude.
 
 Section nat_strong_ind.

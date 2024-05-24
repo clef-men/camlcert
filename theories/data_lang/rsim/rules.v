@@ -1,10 +1,10 @@
-From simuliris Require Import
+From camlcert Require Import
   prelude.
-From simuliris.data_lang Require Export
+From camlcert.data_lang Require Export
   metatheory
   sim.derived_rules
   rsim.definition.
-From simuliris.data_lang Require Import
+From camlcert.data_lang Require Import
   sim.proofmode
   rsim.notations.
 

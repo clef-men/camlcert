@@ -3,7 +3,7 @@ From iris.bi Require Import
 From iris.base_logic Require Import
   bi.
 
-From simuliris Require Import
+From camlcert Require Import
   prelude.
 
 Section Satisfiable.

@@ -1,11 +1,11 @@
 From stdpp Require Import
   stringmap.
 
-From simuliris Require Import
+From camlcert Require Import
   prelude.
-From simuliris.data_lang Require Import
+From camlcert.data_lang Require Import
   subexpr.
-From simuliris.compose Require Export
+From camlcert.compose Require Export
   metatheory.
 
 Implicit Types prog progₛ progₜ : data_program.

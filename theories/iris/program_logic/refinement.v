@@ -1,8 +1,8 @@
-From simuliris Require Import
+From camlcert Require Import
   prelude.
-From simuliris.common Require Export
+From camlcert.common Require Export
   typeclasses.
-From simuliris.iris.program_logic Require Export
+From camlcert.iris.program_logic Require Export
   language.
 
 Section behaviour.

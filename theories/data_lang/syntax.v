@@ -4,9 +4,9 @@ From stdpp Require Export
 From stdpp Require Import
   countable.
 
-From simuliris Require Import
+From camlcert Require Import
   prelude.
-From simuliris.common Require Export
+From camlcert.common Require Export
   autosubst
   three
   loc

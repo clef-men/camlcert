@@ -1,13 +1,13 @@
-From simuliris Require Import
+From camlcert Require Import
   prelude.
-From simuliris.iris.program_logic Require Export
+From camlcert.iris.program_logic Require Export
   sim.rules.
-From simuliris.iris.program_logic Require Import
+From camlcert.iris.program_logic Require Import
   sim.proofmode.
-From simuliris.data_lang Require Export
+From camlcert.data_lang Require Export
   tactics
   sim.definition.
-From simuliris.data_lang Require Import
+From camlcert.data_lang Require Import
   metatheory
   sim.notations.
 

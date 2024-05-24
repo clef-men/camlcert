@@ -1,7 +1,7 @@
 From stdpp Require Import
   countable.
 
-From simuliris Require Import
+From camlcert Require Import
   prelude.
 
 Inductive three :=

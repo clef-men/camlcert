@@ -1,8 +1,8 @@
-From simuliris Require Import
+From camlcert Require Import
   prelude.
-From simuliris.iris.program_logic Require Export
+From camlcert.iris.program_logic Require Export
   ectxi_language.
-From simuliris.data_lang Require Export
+From camlcert.data_lang Require Export
   semantics.
 
 Implicit Types l : loc.

@@ -2,7 +2,7 @@
 -arg -w -arg -uniform-inheritance
 -arg -w -arg -ambiguous-paths
 
--Q theories simuliris
+-Q theories camlcert
 
 theories/prelude/base.v
 theories/prelude/tactics.v

@@ -1,8 +1,8 @@
-From simuliris Require Import
+From camlcert Require Import
   prelude.
-From simuliris.data_lang Require Export
+From camlcert.data_lang Require Export
   rsim.bisubst.
-From simuliris.data_lang Require Import
+From camlcert.data_lang Require Import
   sim.notations.
 
 Section sim_GS.

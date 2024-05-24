@@ -1,8 +1,8 @@
-From simuliris Require Import
+From camlcert Require Import
   prelude.
-From simuliris.data_lang Require Export
+From camlcert.data_lang Require Export
   metatheory.
-From simuliris.tmc Require Export
+From camlcert.tmc Require Export
   definition.
 
 Section tmc_expr.

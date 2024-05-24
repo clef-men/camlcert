@@ -1,9 +1,9 @@
 From stdpp Require Export
   binders.
 
-From simuliris Require Import
+From camlcert Require Import
   prelude.
-From simuliris.data_lang Require Export
+From camlcert.data_lang Require Export
   syntax.
 
 Notation data_human_name :=

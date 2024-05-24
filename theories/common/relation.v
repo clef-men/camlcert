@@ -1,4 +1,4 @@
-From simuliris Require Import
+From camlcert Require Import
   prelude.
 
 Section relation.
