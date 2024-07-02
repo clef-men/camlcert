@@ -141,9 +141,13 @@ Section tmc_expr.
           eₜ.
 End tmc_expr.
 
-Scheme tmc_expr_dir_dps_ind := Minimality for tmc_expr_dir Sort Prop
-with tmc_expr_dps_dir_ind := Minimality for tmc_expr_dps Sort Prop.
-Combined Scheme tmc_expr_ind from tmc_expr_dir_dps_ind, tmc_expr_dps_dir_ind.
+Scheme tmc_expr_dir_dps_ind :=
+  Minimality for tmc_expr_dir Sort Prop
+with tmc_expr_dps_dir_ind :=
+  Minimality for tmc_expr_dps Sort Prop.
+Combined Scheme tmc_expr_ind from
+  tmc_expr_dir_dps_ind,
+  tmc_expr_dps_dir_ind.
 
 Create HintDb tmc.
 

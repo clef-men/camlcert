@@ -136,9 +136,13 @@ Section aps_plus_expr.
           (if: eₜ0 then eₜ1 else eₜ2).
 End aps_plus_expr.
 
-Scheme aps_plus_expr_dir_aps_ind := Minimality for aps_plus_expr_dir Sort Prop
-with aps_plus_expr_aps_dir_ind := Minimality for aps_plus_expr_aps Sort Prop.
-Combined Scheme aps_plus_expr_ind from aps_plus_expr_dir_aps_ind, aps_plus_expr_aps_dir_ind.
+Scheme aps_plus_expr_dir_aps_ind :=
+  Minimality for aps_plus_expr_dir Sort Prop
+with aps_plus_expr_aps_dir_ind :=
+  Minimality for aps_plus_expr_aps Sort Prop.
+Combined Scheme aps_plus_expr_ind from
+  aps_plus_expr_dir_aps_ind,
+  aps_plus_expr_aps_dir_ind.
 
 Create HintDb aps_plus.
 
