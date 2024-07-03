@@ -4,6 +4,8 @@ From camlcert.data_lang Require Export
   metatheory.
 From camlcert.inline Require Export
   definition.
+From camlcert Require Import
+  options.
 
 Section inline_expr.
   Context (prog : data_program).

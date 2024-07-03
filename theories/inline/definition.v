@@ -4,6 +4,8 @@ From camlcert.data_lang Require Export
   syntax.
 From camlcert.data_lang Require Import
   notations.
+From camlcert Require Import
+  options.
 
 Implicit Types func : data_function.
 Implicit Types annot : data_annotation.

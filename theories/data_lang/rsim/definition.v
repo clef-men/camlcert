@@ -4,6 +4,8 @@ From camlcert.data_lang Require Export
   rsim.bisubst.
 From camlcert.data_lang Require Import
   sim.notations.
+From camlcert Require Import
+  options.
 
 Section sim_GS.
   Context `{sim_programs : !SimPrograms data_ectx_lang data_ectx_lang}.

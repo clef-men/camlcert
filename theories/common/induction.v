@@ -1,5 +1,7 @@
 From camlcert Require Import
   prelude.
+From camlcert Require Import
+  options.
 
 Section nat_strong_ind.
   Variable P : nat → Prop.

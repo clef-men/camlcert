@@ -11,6 +11,10 @@ From camlcert.common Require Export
   three
   loc
   typeclasses.
+From camlcert Require Import
+  options.
+From camlcert Require Import
+  options.
 
 Notation data_index :=
   three

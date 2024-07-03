@@ -8,6 +8,9 @@ From camlcert.data_human_lang Require Import
   notations.
 From camlcert.inline Require Import
   soundness.
+From camlcert Require Import
+  options.
+
 Bind Scope data_human_def_scope with data_human_definition.
 
 Definition list_rev_rev : data_human_program := {[

@@ -5,6 +5,8 @@ From camlcert.data_lang Require Export
 From camlcert.data_lang Require Import
   ectx_decompositions
   metatheory.
+From camlcert Require Import
+  options.
 
 Create HintDb data_lang.
 

@@ -3,6 +3,8 @@ From stdpp Require Import
 
 From camlcert Require Import
   prelude.
+From camlcert Require Import
+  options.
 
 Inductive three :=
   | Zero

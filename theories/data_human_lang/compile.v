@@ -6,6 +6,8 @@ From camlcert.data_lang Require Import
   notations.
 From camlcert.data_human_lang Require Export
   metatheory.
+From camlcert Require Import
+  options.
 
 Definition data_human_bindings :=
   list binder.

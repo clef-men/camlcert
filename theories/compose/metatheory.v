@@ -4,6 +4,8 @@ From camlcert.data_lang Require Export
   metatheory.
 From camlcert.compose Require Export
   definition.
+From camlcert Require Import
+  options.
 
 Section compose_expr.
   Context (func1 func2 func : data_function).

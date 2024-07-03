@@ -7,6 +7,8 @@ From camlcert.data_lang Require Export
 From camlcert.data_lang Require Import
   sim.proofmode
   rsim.notations.
+From camlcert Require Import
+  options.
 
 Section sim_GS.
   Context `{sim_programs : !SimPrograms data_ectx_lang data_ectx_lang}.

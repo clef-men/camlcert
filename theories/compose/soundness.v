@@ -12,6 +12,8 @@ From camlcert.compose Require Export
   definition.
 From camlcert.compose Require Import
   metatheory.
+From camlcert Require Import
+  options.
 
 Section sim_GS.
   Context `{sim_programs : !SimPrograms data_ectx_lang data_ectx_lang}.
@@ -201,7 +203,7 @@ Section sim_GS.
       rewrite /K. simplify.
       iDestruct (compose_expr_comp_specification $! (≈)%I with "[//] []") as "Hsim"; [auto with data_lang.. | naive_solver | iSmash |].
       erewrite (subst_data_program_scoped' ids inhabitant.ₛ# _ sim_progₛ); [| done..].
-      rewrite (subst_data_expr_scoped_1' _ inhabitant.ₜ# vₜ); last first.
+      rewrite (subst_data_expr_scoped_1' _ inhabitant.ₜ# vₜ).
       { eapply data_expr_scoped_compose_expr_comp; naive_solver. }
       erewrite bisubst_consₛ, bisubst_consₜ.
       iApply (sim_mono' with "[Hsim] [HΨ]").

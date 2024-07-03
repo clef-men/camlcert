@@ -7,6 +7,8 @@ From camlcert.common Require Export
   typeclasses.
 From camlcert.iris.program_logic Require Export
   language.
+From camlcert Require Import
+  options.
 
 Section EctxLanguageMixin.
   Context {expr val program state : Type}.

@@ -9,6 +9,8 @@ From camlcert.iris.base_logic Require Import
   lib.cupd.proofmode.
 From camlcert.iris.program_logic Require Export
   sim.protocol.
+From camlcert Require Import
+  options.
 
 Class SimPrograms Λₛ Λₜ := {
   sim_progₛ : program Λₛ ;

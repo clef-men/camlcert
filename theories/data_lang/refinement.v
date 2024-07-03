@@ -7,6 +7,8 @@ From camlcert.data_lang Require Export
   metatheory.
 From camlcert.data_lang Require Import
   notations.
+From camlcert Require Import
+  options.
 
 Definition data_program_refinement (progₛ progₜ : data_program) :=
   map_Forall (λ (func : data_function) _,

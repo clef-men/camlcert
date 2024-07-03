@@ -5,6 +5,8 @@ From camlcert Require Import
   prelude.
 From camlcert.data_lang Require Export
   syntax.
+From camlcert Require Import
+  options.
 
 Notation data_human_name :=
   string

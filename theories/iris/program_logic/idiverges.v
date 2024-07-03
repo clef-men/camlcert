@@ -14,6 +14,8 @@ From camlcert.iris.base_logic Require Import
   satisfiable.
 From camlcert.iris.program_logic Require Import
   language.
+From camlcert Require Import
+  options.
 
 Section bi.
   Context `{!BiBUpd PROP} `{!BiAffine PROP}.

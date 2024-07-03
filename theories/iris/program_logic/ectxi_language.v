@@ -2,6 +2,8 @@ From camlcert Require Import
   prelude.
 From camlcert.iris.program_logic Require Export
   ectx_language.
+From camlcert Require Import
+  options.
 
 Section EctxiLanguageMixin.
   Context {expr val program state : Type}.

@@ -7,6 +7,8 @@ From camlcert.data_lang Require Import
   subexpr.
 From camlcert.compose Require Export
   metatheory.
+From camlcert Require Import
+  options.
 
 Implicit Types prog progₛ progₜ : data_program.
 
@@ -171,7 +173,7 @@ Proof.
   - rewrite dom_insert_L dom_fmap_L //.
   - intros func defₛ Hfuncₛ. eexists. split.
     + apply compose_compile_expr_dir_sound.
-    + rewrite lookup_insert_ne; last first.
+    + rewrite lookup_insert_ne.
       { pose proof (compose_compile_fresh_sound func1 func2 progₛ). naive_solver. }
       rewrite lookup_fmap Hfuncₛ //.
   - repeat eexists; first done.

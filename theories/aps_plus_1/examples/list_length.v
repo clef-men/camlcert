@@ -8,6 +8,8 @@ From camlcert.data_human_lang Require Import
   notations.
 From camlcert.aps_plus_1 Require Import
   soundness.
+From camlcert Require Import
+  options.
 
 Definition list_length : data_human_program := {[
   "list_length" :=

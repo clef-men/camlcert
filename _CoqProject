@@ -9,6 +9,8 @@ theories/prelude/tactics.v
 theories/prelude/tactic_flag.v
 theories/prelude/prelude.v
 
+theories/options.v
+
 theories/common/typeclasses.v
 theories/common/autosubst.v
 theories/common/relation.v

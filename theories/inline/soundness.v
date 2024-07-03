@@ -12,6 +12,8 @@ From camlcert.inline Require Export
   definition.
 From camlcert.inline Require Import
   metatheory.
+From camlcert Require Import
+  options.
 
 Section sim_GS.
   Context `{sim_programs : !SimPrograms data_ectx_lang data_ectx_lang}.
@@ -143,7 +145,7 @@ Section sim_GS.
       iExists _, _. iSplit; first eauto 10 with data_lang.
       iDestruct (inline_expr_specification $! (≈)%I with "[//] []") as "Hsim"; [auto with data_lang.. | naive_solver | iSmash |].
       erewrite (subst_data_program_scoped' ids inhabitant.ₛ# _ sim_progₛ); [| done..].
-      rewrite (subst_data_expr_scoped_1' _ inhabitant.ₜ# vₜ); last first.
+      rewrite (subst_data_expr_scoped_1' _ inhabitant.ₜ# vₜ).
       { eapply data_expr_scoped_inline_expr; [| done |]; naive_solver. }
       erewrite bisubst_consₛ, bisubst_consₜ.
       sim_mono "Hsim".

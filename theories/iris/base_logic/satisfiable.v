@@ -5,6 +5,8 @@ From iris.base_logic Require Import
 
 From camlcert Require Import
   prelude.
+From camlcert Require Import
+  options.
 
 Section Satisfiable.
   Context `{!BiBUpd PROP} `{!BiAffine PROP}.

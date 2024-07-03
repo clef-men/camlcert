@@ -11,6 +11,8 @@ From camlcert.iris Require Import
   proofmode.
 From camlcert.iris.base_logic Require Export
   lib.sim.heap.
+From camlcert Require Import
+  options.
 
 Import heap.notations.
 

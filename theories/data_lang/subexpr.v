@@ -4,6 +4,8 @@ From camlcert.common Require Import
   relation.
 From camlcert.data_lang Require Export
   tactics.
+From camlcert Require Import
+  options.
 
 Inductive data_subexprdir : data_expr → data_expr → Prop :=
   | data_subexprdir_let_1 e1 e2 :

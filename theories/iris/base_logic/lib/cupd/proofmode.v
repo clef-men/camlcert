@@ -10,6 +10,8 @@ From camlcert.iris Require Export
   proofmode.
 From camlcert.iris.base_logic Require Export
   lib.cupd.rules.
+From camlcert Require Import
+  options.
 
 Section bi_cupd.
   Context `{BiCUpd PROP}.

@@ -3,6 +3,8 @@ From Autosubst Require Export
 
 From camlcert Require Export
   prelude.
+From camlcert Require Import
+  options.
 
 Section subst.
   Context `{!Ids term, !Rename term, !Subst term, !SubstLemmas term}.

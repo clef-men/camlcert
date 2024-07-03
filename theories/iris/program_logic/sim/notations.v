@@ -2,6 +2,8 @@ From camlcert Require Import
   prelude.
 From camlcert.iris.program_logic Require Export
   sim.definition.
+From camlcert Require Import
+  options.
 
 Notation "'SIM' eₛ ≳ eₜ [[ Χ ] ] {{ Φ } }" := (
   sim Χ Φ%I eₛ eₜ

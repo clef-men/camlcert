@@ -10,6 +10,8 @@ From camlcert Require Import
   prelude.
 From camlcert.iris Require Import
   proofmode.
+From camlcert Require Import
+  options.
 
 Class SimHeapGpreS Σ locₛ valₛ locₜ valₜ `{Countable locₛ, Countable locₜ} := {
   sim_heap_GpreS_heapₛ_GpreS : gen_heapGpreS locₛ valₛ Σ ;

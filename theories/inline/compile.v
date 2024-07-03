@@ -2,6 +2,8 @@ From camlcert Require Import
   prelude.
 From camlcert.inline Require Export
   metatheory.
+From camlcert Require Import
+  options.
 
 Implicit Types prog : data_program.
 

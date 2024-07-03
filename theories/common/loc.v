@@ -5,6 +5,8 @@ From stdpp Require Import
 
 From camlcert Require Import
   prelude.
+From camlcert Require Import
+  options.
 
 #[local] Open Scope Z_scope.
 

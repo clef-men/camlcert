@@ -13,6 +13,8 @@ From camlcert.iris.program_logic Require Import
   idiverges
   sim.proofmode
   sim.notations.
+From camlcert Require Import
+  options.
 
 Section sim.
   Context `{!Similar (val Λₛ) (val Λₜ)}.

@@ -2,6 +2,8 @@ From camlcert Require Import
   prelude.
 From camlcert.data_lang Require Export
   language.
+From camlcert Require Import
+  options.
 
 Fixpoint data_ectx_decompositions e :=
   let data_ectx_decompositions_with k e :=

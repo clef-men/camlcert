@@ -9,6 +9,8 @@ From iris.algebra Require Export
 
 From camlcert Require Import
   prelude.
+From camlcert Require Import
+  options.
 
 Section LanguageMixin.
   Context {expr val program state : Type}.

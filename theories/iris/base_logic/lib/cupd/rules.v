@@ -2,6 +2,8 @@ From camlcert Require Import
   prelude.
 From camlcert.iris.base_logic Require Export
   lib.cupd.definition.
+From camlcert Require Import
+  options.
 
 Section bi_cupd.
   Context `{BiCUpd PROP}.

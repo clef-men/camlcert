@@ -4,6 +4,8 @@ From camlcert.data_lang Require Export
   notations.
 From camlcert.data_human_lang Require Export
   syntax.
+From camlcert Require Import
+  options.
 
 Coercion DataHumanIndex : data_index >-> data_human_val.
 Coercion DataHumanTag : data_tag >-> data_human_val.

@@ -4,6 +4,8 @@ From camlcert.data_lang Require Export
   metatheory.
 From camlcert.tmc Require Export
   definition.
+From camlcert Require Import
+  options.
 
 Section tmc_expr.
   Context (ξ : tmc_mapping).

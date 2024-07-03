@@ -4,6 +4,8 @@ From camlcert.iris.program_logic Require Export
   ectxi_language.
 From camlcert.data_lang Require Export
   semantics.
+From camlcert Require Import
+  options.
 
 Implicit Types l : loc.
 Implicit Types v w : data_val.

@@ -8,6 +8,8 @@ From camlcert.data_human_lang Require Import
   notations.
 From camlcert.aps_plus_2 Require Import
   definition.
+From camlcert Require Import
+  options.
 
 Definition list_sum : data_human_program := {[
   "list_sum" :=

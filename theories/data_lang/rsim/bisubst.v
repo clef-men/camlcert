@@ -9,6 +9,8 @@ From camlcert.data_lang Require Export
   sim.definition.
 From camlcert.data_lang Require Import
   notations.
+From camlcert Require Import
+  options.
 
 Definition bisubst :=
   var → data_val * data_val.

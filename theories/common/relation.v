@@ -1,5 +1,7 @@
 From camlcert Require Import
   prelude.
+From camlcert Require Import
+  options.
 
 Section relation.
   Context `{R : relation X}.

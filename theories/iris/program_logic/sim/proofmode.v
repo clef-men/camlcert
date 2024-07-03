@@ -10,6 +10,8 @@ From camlcert.iris.program_logic Require Export
   sim.rules.
 From camlcert.iris.program_logic Require Import
   sim.notations.
+From camlcert Require Import
+  options.
 
 Section sim_state.
   Context `{sim_programs : !SimPrograms Λₛ Λₜ}.
@@ -160,7 +162,7 @@ Section sim_state.
       envs_entails Δ (SIM K @@ eₛ1 ≳ eₜ [[ Χ ]] {{ Φ }}).
     Proof.
       pose proof @pure_exec_fill_pure_exec.
-      intros. rewrite -sim_pure_stepsₛ //.
+      intros. rewrite -sim_pure_stepsₛ; last done.
       eapply rtc_nsteps_2, pure_exec_pure_steps. done.
     Qed.
     Lemma tac_sim_pure_execₜ Δ Φ n ϕ eₛ K eₜ1 eₜ2 :
@@ -170,7 +172,7 @@ Section sim_state.
       envs_entails Δ (SIM eₛ ≳ K @@ eₜ1 [[ Χ ]] {{ Φ }}).
     Proof.
       pose proof @pure_exec_fill_pure_exec.
-      intros. rewrite -sim_pure_stepsₜ //.
+      intros. rewrite -sim_pure_stepsₜ; last done.
       eapply rtc_nsteps_2, pure_exec_pure_steps. done.
     Qed.
   End sim.

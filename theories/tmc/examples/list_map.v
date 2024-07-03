@@ -8,6 +8,8 @@ From camlcert.data_human_lang Require Import
   notations.
 From camlcert.tmc Require Import
   soundness.
+From camlcert Require Import
+  options.
 
 Definition list_map : data_human_program := {[
   "list_map" :=

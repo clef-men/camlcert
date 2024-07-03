@@ -3,6 +3,8 @@ From camlcert Require Import
 From camlcert.data_lang Require Export
   sim.notations
   rsim.definition.
+From camlcert Require Import
+  options.
 
 Notation "'SIM' eₛ ⩾ eₜ [[ Χ ] ] {{ Φ } }" := (
   rsim Χ Φ%I eₛ%data_expr eₜ%data_expr

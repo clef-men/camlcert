@@ -3,6 +3,8 @@ From iris.bi Require Export
 
 From camlcert Require Import
   prelude.
+From camlcert Require Import
+  options.
 
 Class CUpd PROP :=
   cupd : PROP → PROP.

@@ -9,6 +9,8 @@ From camlcert.iris.program_logic Require Export
   sim.definition.
 From camlcert.iris.program_logic Require Import
   sim.notations.
+From camlcert Require Import
+  options.
 
 #[local] Notation "Φ1 --∗ Φ2" :=
   (∀ x1 x2, Φ1 x1 x2 -∗ Φ2 x1 x2)%I

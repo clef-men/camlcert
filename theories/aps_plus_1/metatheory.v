@@ -4,6 +4,8 @@ From camlcert.data_lang Require Export
   metatheory.
 From camlcert.aps_plus_1 Require Export
   definition.
+From camlcert Require Import
+  options.
 
 Section aps_plus_expr.
   Context (ξ : aps_plus_mapping).

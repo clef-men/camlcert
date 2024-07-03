@@ -8,6 +8,8 @@ From camlcert.data_human_lang Require Import
   notations.
 From camlcert.compose Require Import
   soundness.
+From camlcert Require Import
+  options.
 
 Definition list_rev_rev : data_human_program := {[
   "list_rev_append" :=

@@ -2,6 +2,8 @@ From camlcert Require Import
   prelude.
 From camlcert.data_lang Require Export
   syntax.
+From camlcert Require Import
+  options.
 
 Coercion data_index_to_Z (idx : data_index) : Z :=
   match idx with

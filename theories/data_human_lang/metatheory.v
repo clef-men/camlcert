@@ -2,6 +2,8 @@ From camlcert Require Import
   prelude.
 From camlcert.data_human_lang Require Export
   syntax.
+From camlcert Require Import
+  options.
 
 Implicit Types prog : data_human_program.
 

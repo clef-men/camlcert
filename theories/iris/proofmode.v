@@ -6,6 +6,8 @@ From diaframe Require Export
 
 From camlcert Require Import
   prelude.
+From camlcert Require Import
+  options.
 
 (* FIXME: some goals are solved by [done] but not by [iSmash] *)
 Tactic Notation "iSmash+" :=

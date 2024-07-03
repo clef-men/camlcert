@@ -12,6 +12,8 @@ From camlcert.aps_plus_1 Require Export
   definition.
 From camlcert.aps_plus_1 Require Import
   metatheory.
+From camlcert Require Import
+  options.
 
 Section sim_GS.
   Context `{sim_programs : !SimPrograms data_ectx_lang data_ectx_lang}.

@@ -4,6 +4,8 @@ From camlcert.data_lang Require Export
   syntax.
 From camlcert.data_lang Require Import
   notations.
+From camlcert Require Import
+  options.
 
 Definition data_state :=
   gmap loc data_val.

@@ -4,6 +4,8 @@ From camlcert.data_lang Require Export
   syntax.
 From camlcert.data_lang Require Import
   notations.
+From camlcert Require Import
+  options.
 
 Implicit Types n : Z.
 Implicit Types func func_aps : data_function.

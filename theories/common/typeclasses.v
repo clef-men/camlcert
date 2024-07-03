@@ -3,6 +3,8 @@ From iris.bi Require Import
 
 From camlcert Require Import
   prelude.
+From camlcert Require Import
+  options.
 
 Class SqSubset X :=
   sqsubset : relation X.
