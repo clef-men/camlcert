@@ -80,6 +80,13 @@ Section tmc_expr.
         tmc_expr_dir
           (&tag eₛ1 eₛ2)
           (let: &tag #() eₜ2 in eₜ1 ;; $0)
+    | tmc_expr_dir_block_dps tag eₛ1 eₛ2 eₜ1 eₜ2 eₜ :
+        tmc_expr_dps $0 𝟙 eₛ1.[ren (+1)] eₜ1 →
+        tmc_expr_dps $0 𝟚 eₛ2.[ren (+1)] eₜ2 →
+        eₜ = (let: &tag #() #() in eₜ1 ;; eₜ2 ;; $0)%data_expr →
+        tmc_expr_dir
+          (&tag eₛ1 eₛ2)
+          eₜ
     | tmc_expr_dir_block_det tag eₛ1 eₛ2 eₜ1 eₜ2 :
         tmc_expr_dir eₛ1 eₜ1 →
         tmc_expr_dir eₛ2 eₜ2 →
@@ -136,6 +143,13 @@ Section tmc_expr.
         tmc_expr_dir eₛ2 eₜ2 →
         tmc_expr_dps $0 𝟙 eₛ1.[ren (+1)] eₜ1 →
         eₜ = (let: &tag #() eₜ2 in dst.[ren (+1)] <-[idx.[ren (+1)]]- $0 ;; eₜ1)%data_expr →
+        tmc_expr_dps dst idx
+          (&tag eₛ1 eₛ2)
+          eₜ
+    | tmc_expr_dps_block dst idx tag eₛ1 eₛ2 eₜ1 eₜ2 eₜ :
+        tmc_expr_dps $0 𝟙 eₛ1.[ren (+1)] eₜ1 →
+        tmc_expr_dps $0 𝟚 eₛ2.[ren (+1)] eₜ2 →
+        eₜ = (let: &tag #() #() in dst.[ren (+1)] <-[idx.[ren (+1)]]- $0 ;; eₜ1 ;; eₜ2)%data_expr →
         tmc_expr_dps dst idx
           (&tag eₛ1 eₛ2)
           eₜ.

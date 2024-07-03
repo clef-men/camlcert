@@ -213,19 +213,19 @@ Qed.
 Lemma data_expr_scoped_ren ξ n scope e :
   (∀ x, ξ x ≤ x + n) →
   data_expr_scoped scope e →
-  data_expr_scoped (scope + n) e.[ren ξ].
+  data_expr_scoped (n + scope) e.[ren ξ].
 Proof.
   revert scope ξ n. elim e; try naive_solver lia.
   - intros x scope ξ n Hξ Hscoped.
     eapply (Nat.le_lt_trans _ (x + n)); naive_solver lia.
   - intros e1 IH1 e2 IH2 scope ξ n Hξ (Hscoped1 & Hscoped2).
     split; first naive_solver.
-    asimpl. rewrite -Nat.add_succ_l. apply IH2; last done.
+    asimpl. rewrite -Nat.add_succ_r. apply IH2; last done.
     intros []; simpl; [lia | rewrite -Nat.succ_le_mono //].
 Qed.
 Lemma data_expr_scoped_lift n scope e :
   data_expr_scoped scope e →
-  data_expr_scoped (scope + n) e.[ren (+n)].
+  data_expr_scoped (n + scope) e.[ren (+n)].
 Proof.
   apply data_expr_scoped_ren. naive_solver lia.
 Qed.
@@ -233,5 +233,5 @@ Lemma data_expr_scoped_lift1 scope e :
   data_expr_scoped scope e →
   data_expr_scoped (S scope) e.[ren (+1)].
 Proof.
-  rewrite -Nat.add_1_r. apply data_expr_scoped_lift.
+  rewrite -Nat.add_1_l. apply data_expr_scoped_lift.
 Qed.

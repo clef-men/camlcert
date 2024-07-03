@@ -37,6 +37,12 @@ Section tmc_expr.
       eauto using tmc_expr_dir_refl with tmc
     | intros * ? ? ? IHdps **; simplify;
       econstructor; try naive_solver; try apply IHdps with (up ς); autosubst
+    | intros * ? IHdps1 ? IHdps2 **; simplify;
+      econstructor;
+      [ apply IHdps1 with (up ς); autosubst
+      | apply IHdps2 with (up ς); autosubst
+      | autosubst
+      ]
     ].
   Qed.
   Lemma tmc_expr_dir_subst ς eₛ eₛ' eₜ eₜ' :
@@ -83,6 +89,13 @@ Section tmc_expr.
       simpl. split_and!; try naive_solver lia.
       apply IH1; try naive_solver lia.
       apply data_expr_scoped_lift1. done.
+    - intros * Hdps1 IH1 Hdps2 IH2 -> scope (Hscoped1 & Hscoped2).
+      simpl. split_and!; try lia.
+      + apply IH1; try naive_solver lia.
+        apply data_expr_scoped_lift1. done.
+      + apply data_expr_scoped_lift1.
+        apply IH2; try naive_solver lia.
+        apply data_expr_scoped_lift1. done.
     - intros * Hdir1 IH1 Hdps2 IH2 scope Hdst Hidx (Hscoped1 & Hscoped2).
       split; first auto.
       apply IH2; try done; apply data_expr_scoped_lift1; done.
@@ -101,6 +114,16 @@ Section tmc_expr.
       + apply data_expr_scoped_lift1. done.
       + apply (data_expr_scoped_le (S (S scope))); first lia.
         apply data_expr_scoped_lift1, IH1; try naive_solver lia.
+        apply data_expr_scoped_lift1. done.
+    - intros * Hdps1 IH1 Hdps2 IH2 -> scope Hdst Hidx (Hscoped1 & Hscoped2).
+      simpl. split_and!; try lia.
+      + apply data_expr_scoped_lift1. done.
+      + apply data_expr_scoped_lift1. done.
+      + apply (data_expr_scoped_le (S (S scope))); first lia.
+        apply data_expr_scoped_lift1, IH1; try naive_solver lia.
+        apply data_expr_scoped_lift1. done.
+      + asimpl.
+        apply (data_expr_scoped_lift 2), IH2; try naive_solver lia.
         apply data_expr_scoped_lift1. done.
   Qed.
   Lemma data_expr_scoped_tmc_expr_dir scope eₛ eₜ :

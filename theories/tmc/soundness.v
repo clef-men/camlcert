@@ -138,6 +138,7 @@ Section sim_GS.
       | intros Hdir1 _ Hdir2 _ IHdirₛ _
       | intros Hdir1 _ Hdps2 _ IHdirₛ IHdpsₛ
       | intros Hdir1 _ Hdps2 _ IHdirₛ IHdpsₛ
+      | intros Hdps1 _ Hdps2 _ -> _ IHdpsₛ
       | intros _ _ _ _ _ _
       | intros Hdir1 _ Hdir2 _ IHdirₛ _
       | intros Hdir1 _ Hdir2 _ Hdir3 _ IHdirₛ _
@@ -147,6 +148,7 @@ Section sim_GS.
       | intros Hdir0 _ Hdps1 _ Hdps2 _ IHdirₛ IHdpsₛ dst' idx' -> ->
       | intros Hdir1 _ Hdps2 _ -> IHdirₛ IHdpsₛ dst' idx' -> ->
       | intros Hdir2 _ Hdps1 _ -> IHdirₛ IHdpsₛ dst' idx' -> ->
+      | intros Hdps1 _ Hdps2 _ -> _ IHdpsₛ dst' idx' -> ->
       ];
       iIntros "%Hwf %Φ Hpre HΦ".
     (* tmc_expr_dir *)
@@ -209,6 +211,31 @@ Section sim_GS.
       iDestruct (sim_heap_bij_tie_eq_2 with "Hlₛ2 Hlₜ2 [//]") as "Hl2".
       sim_heap_bij_insert.
       sim_pures.
+    - iIntros "%Γ % % (-> & ->) #HΓ /=".
+      sim_blockₛ1.
+      rewrite sim_post_vals_unseal.
+      sim_apply sim_block_valₜ. iIntros "%lₜ Hlₜ0 Hlₜ1 Hlₜ2". iApply sim_post.
+      rewrite -sim_post_vals_unseal.
+      sim_apply (IHdpsₛ lₜ 𝟙 eₛ1 eₜ1.[#lₜ/] with "Hlₜ1 [Hlₜ0 Hlₜ2 HΦ]"); first 4 last.
+      { autosubst. }
+      { auto with data_lang. }
+      { eapply tmc_expr_dps_subst; first apply Hdps1; autosubst. }
+      { auto with data_lang. }
+      iIntros "%vₛ1 % (%vₜ1 & -> & Hlₜ1 & #Hv1)".
+      sim_apply (IHdpsₛ lₜ 𝟚 eₛ2 eₜ2.[#lₜ/] with "Hlₜ2 [Hlₜ0 Hlₜ1 HΦ]"); first 4 last.
+      { autosubst. }
+      { auto with data_lang. }
+      { eapply tmc_expr_dps_subst; first apply Hdps2; autosubst. }
+      { auto with data_lang. }
+      iIntros "%vₛ2 % (%vₜ2 & -> & Hlₜ2 & #Hv2)".
+      sim_block_detₛ as lₛ "Hlₛ0" "Hlₛ1" "Hlₛ2".
+      iDestruct (sim_heap_bij_tie_eq_2 with "Hlₛ0 Hlₜ0 [//]") as "Hl0".
+      sim_heap_bij_insert.
+      iDestruct (sim_heap_bij_tie_eq_2 with "Hlₛ1 Hlₜ1 [//]") as "Hl1".
+      sim_heap_bij_insert.
+      iDestruct (sim_heap_bij_tie_eq_2 with "Hlₛ2 Hlₜ2 [//]") as "Hl2".
+      sim_heap_bij_insert.
+      sim_pures.
     - iSmash.
     - iApply rsimv_load; last iSmash;
        iApply IHdirₛ; auto with data_lang.
@@ -261,6 +288,32 @@ Section sim_GS.
       { eapply tmc_expr_dps_subst; eauto; autosubst. }
       { auto with data_lang. }
       iIntros "%vₛ1 % (%vₜ1 & -> & Hlₜ1 & #Hv1)".
+      sim_block_detₛ as lₛ "Hlₛ0" "Hlₛ1" "Hlₛ2".
+      iDestruct (sim_heap_bij_tie_eq_2 with "Hlₛ0 Hlₜ0 [//]") as "Hl0".
+      sim_heap_bij_insert.
+      iDestruct (sim_heap_bij_tie_eq_2 with "Hlₛ1 Hlₜ1 [//]") as "Hl1".
+      sim_heap_bij_insert.
+      iDestruct (sim_heap_bij_tie_eq_2 with "Hlₛ2 Hlₜ2 [//]") as "Hl2".
+      sim_heap_bij_insert.
+      iSmash.
+    - iIntros "%Γ % % (-> & ->) #HΓ /=".
+      sim_blockₛ1.
+      rewrite sim_post_vals_unseal.
+      sim_apply sim_block_valₜ. iIntros "%lₜ Hlₜ0 Hlₜ1 Hlₜ2". iApply sim_post.
+      rewrite -sim_post_vals_unseal.
+      sim_storeₜ.
+      sim_apply (IHdpsₛ lₜ 𝟙 eₛ1 eₜ1.[#lₜ/] with "Hlₜ1 [Hpre Hlₜ0 Hlₜ2 HΦ]"); first 4 last.
+      { autosubst. }
+      { auto with data_lang. }
+      { eapply tmc_expr_dps_subst; first apply Hdps1; autosubst. }
+      { auto with data_lang. }
+      iIntros "%vₛ1 % (%vₜ1 & -> & Hlₜ1 & #Hv1)".
+      sim_apply (IHdpsₛ lₜ 𝟚 eₛ2 eₜ2.[#lₜ/] with "Hlₜ2 [Hpre Hlₜ0 Hlₜ1 HΦ]"); first 4 last.
+      { autosubst. }
+      { auto with data_lang. }
+      { eapply tmc_expr_dps_subst; first apply Hdps2; autosubst. }
+      { auto with data_lang. }
+      iIntros "%vₛ2 % (%vₜ2 & -> & Hlₜ2 & #Hv2)".
       sim_block_detₛ as lₛ "Hlₛ0" "Hlₛ1" "Hlₛ2".
       iDestruct (sim_heap_bij_tie_eq_2 with "Hlₛ0 Hlₜ0 [//]") as "Hl0".
       sim_heap_bij_insert.

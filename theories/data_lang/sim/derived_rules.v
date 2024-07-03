@@ -180,6 +180,20 @@ Section sim_GS.
       all: sim_mono "Hsim"; iIntros "% % (%vₛ & %vₜ1 & (-> & ->) & #Hv)".
       all: sim_block_detₜ as l "Hl0" "Hl1" "Hl2".
     Qed.
+    Lemma sim_block_valₜ Φ eₛ tag vₜ1 vₜ2 :
+      ( ∀ l,
+        (l +ₗ 0) ↦ₜ tag -∗
+        (l +ₗ 1) ↦ₜ vₜ1 -∗
+        (l +ₗ 2) ↦ₜ vₜ2 -∗
+        SIM eₛ ≳ l [[ Χ ]] {{ Φ }}
+      ) -∗
+      SIM eₛ ≳ &tag vₜ1 vₜ2 [[ Χ ]] {{ Φ }}.
+    Proof.
+      iIntros "Hsim".
+      sim_blockₜ.
+      all: sim_block_detₜ as l "Hl0" "Hl1" "Hl2".
+      all: iSmash.
+    Qed.
 
     Lemma sim_load Φ eₛ1 eₛ2 eₜ1 eₜ2 :
       SIM eₛ1 ≳ eₜ1 [[ Χ ]] {{ sim_post_vals' (≈) }} -∗
