@@ -36,6 +36,7 @@ Section sim_GS.
       ∀ vₛ' vₜ',
       vₛ' ≈ vₜ' -∗
       Ψ vₛ' vₜ'.
+
   Definition inline_protocol_inline Ψ eₛ eₜ : iProp Σ :=
     ∃ func annot defₛ e_funcₛ e_funcₜ vₛ vₜ,
     ⌜sim_progₛ !! func = Some defₛ ∧ e_funcₛ = defₛ.(data_definition_body) ∧ inline_expr sim_progₛ e_funcₛ e_funcₜ⌝ ∗
@@ -44,18 +45,19 @@ Section sim_GS.
       ∀ vₛ' vₜ',
       vₛ' ≈ vₜ' -∗
       Ψ vₛ' vₜ'.
+
   Definition inline_protocol Ψ eₛ eₜ : iProp Σ :=
     inline_protocol_dir Ψ eₛ eₜ ∨
     inline_protocol_inline Ψ eₛ eₜ.
 
-  Definition inline_expr_spec eₛ eₜ :=
+  Definition inline_expr_specification eₛ eₜ :=
     data_program_scoped sim_progₛ →
     inline_expr sim_progₛ eₛ eₜ →
     data_expr_well_formed sim_progₛ eₛ →
     {{{ True }}} eₛ ⩾ eₜ [[ inline_protocol ]] {{{# (≈) }}}.
 
-  Lemma inline_expr_specification eₛ eₜ :
-    inline_expr_spec eₛ eₜ.
+  Lemma inline_expr_spec eₛ eₜ :
+    inline_expr_specification eₛ eₜ.
   Proof.
     intros Hprogₛ_scoped. induction 1 as
       [
@@ -136,14 +138,14 @@ Section sim_GS.
       iExists _, _. iSplit; first eauto 10 with data_lang. sim_asimpl.
       erewrite (subst_data_program_scoped' ids inhabitant.ₛ# _ sim_progₛ); [| done..].
       erewrite (subst_data_program_scoped' ids inhabitant.ₜ# _ sim_progₜ); [| done..].
-      iDestruct (inline_expr_specification $! (≈)%I with "[//] [] [//] []") as "Hsim"; eauto.
+      iDestruct (inline_expr_spec $! (≈)%I with "[//] [] [//] []") as "Hsim"; eauto.
       + iApply (bisubst_cons_well_formed with "Hv").
         iApply bisubst_inhabitant_well_formed.
       + rewrite -bisubst_consₛ -bisubst_consₜ.
         sim_mono "Hsim". rewrite sim_post_vals_unseal. iSmash.
     - iDestruct "Hprotocol" as "(%func & %annot & %defₛ & %e_funcₛ & %e_funcₜ & %vₛ & %vₜ & (%Hfunc & -> & %Hinline_func) & (-> & ->) & #Hv & HΨ)".
       iExists _, _. iSplit; first eauto 10 with data_lang.
-      iDestruct (inline_expr_specification $! (≈)%I with "[//] []") as "Hsim"; [auto with data_lang.. | naive_solver | iSmash |].
+      iDestruct (inline_expr_spec $! (≈)%I with "[//] []") as "Hsim"; [auto with data_lang.. | naive_solver | iSmash |].
       erewrite (subst_data_program_scoped' ids inhabitant.ₛ# _ sim_progₛ); [| done..].
       rewrite (subst_data_expr_scoped_1' _ inhabitant.ₜ# vₜ).
       { eapply data_expr_scoped_inline_expr; [| done |]; naive_solver. }

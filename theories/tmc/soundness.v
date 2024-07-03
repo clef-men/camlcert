@@ -37,6 +37,7 @@ Section sim_GS.
       ∀ vₛ' vₜ',
       vₛ' ≈ vₜ' -∗
       Ψ vₛ' vₜ'.
+
   Definition tmc_protocol_dps Ψ eₛ eₜ : iProp Σ :=
     ∃ func annot vₛ func_dps l1 l2 dst idx vₜ,
     ⌜func ∈ dom sim_progₛ ∧ tmc.(tmc_ξ) !! func = Some func_dps⌝ ∗
@@ -49,6 +50,7 @@ Section sim_GS.
       (dst +ₗ idx) ↦ₜ vₜ' -∗
       vₛ' ≈ vₜ' -∗
       Ψ vₛ' #().
+
   Definition tmc_protocol Ψ eₛ eₜ : iProp Σ :=
     tmc_protocol_dir Ψ eₛ eₜ ∨
     tmc_protocol_dps Ψ eₛ eₜ.
@@ -82,52 +84,55 @@ Section sim_GS.
 
   Definition tmc_expr_dir_post :=
     (≈)%I.
-  Definition tmc_expr_dps_post dst idx vₛ vₜ : iProp Σ :=
-    ∃ vₜ',
-    ⌜vₜ = ()%data_val⌝ ∗ (dst +ₗ idx) ↦ₜ vₜ' ∗ vₛ ≈ vₜ'.
-
-  Definition tmc_expr_dir_spec' eₛ eₜ :=
+  Definition tmc_expr_dir_specification' eₛ eₜ :=
     data_expr_well_formed sim_progₛ eₛ →
     {{{ True }}} eₛ ⩾ eₜ [[ tmc_protocol ]] {{{# tmc_expr_dir_post }}}.
-  Definition tmc_expr_dir_spec eₛ eₜ :=
+  Definition tmc_expr_dir_specification eₛ eₜ :=
     tmc_expr_dir tmc.(tmc_ξ) eₛ eₜ →
-    tmc_expr_dir_spec' eₛ eₜ.
-  Definition tmc_expr_dps_spec' dst idx eₛ eₜ :=
+    tmc_expr_dir_specification' eₛ eₜ.
+
+  Definition tmc_expr_dps_post dst idx vₛ vₜ : iProp Σ :=
+    ∃ vₜ',
+    ⌜vₜ = ()%data_val⌝ ∗
+    (dst +ₗ idx) ↦ₜ vₜ' ∗
+    vₛ ≈ vₜ'.
+  Definition tmc_expr_dps_specification' dst idx eₛ eₜ :=
     data_expr_well_formed sim_progₛ eₛ →
     {{{ (dst +ₗ idx) ↦ₜ () }}} eₛ ⩾ eₜ [[ tmc_protocol ]] {{{# tmc_expr_dps_post dst idx }}}.
-  Definition tmc_expr_dps_spec dst idx eₛ eₜ :=
+  Definition tmc_expr_dps_specification dst idx eₛ eₜ :=
     tmc_expr_dps tmc.(tmc_ξ) dst idx eₛ eₜ →
-    tmc_expr_dps_spec' dst idx eₛ eₜ.
-  Definition tmc_expr_spec eₛ eₜ :=
-    tmc_expr_dir_spec eₛ eₜ ∧
-    ∀ dst idx, tmc_expr_dps_spec dst idx eₛ eₜ.
+    tmc_expr_dps_specification' dst idx eₛ eₜ.
 
-  Lemma tmc_expr_specification eₛ eₜ :
-    tmc_expr_spec eₛ eₜ.
+  Definition tmc_expr_specification eₛ eₜ :=
+    tmc_expr_dir_specification eₛ eₜ ∧
+    ∀ dst idx, tmc_expr_dps_specification dst idx eₛ eₜ.
+
+  Lemma tmc_expr_spec eₛ eₜ :
+    tmc_expr_specification eₛ eₜ.
   Proof.
     revert eₜ. induction eₛ as [eₛ IHeₛ] using (well_founded_ind data_subexpr_wf).
     cut (
       ( ∀ eₛ eₜ,
         tmc_expr_dir tmc.(tmc_ξ) eₛ eₜ →
-        (∀ eₛ' eₜ', eₛ' ⊏ eₛ → tmc_expr_dir_spec eₛ' eₜ') →
-        (∀ dst idx eₛ' eₜ', eₛ' ⊏ eₛ → tmc_expr_dps_spec dst idx eₛ' eₜ') →
-        tmc_expr_dir_spec' eₛ eₜ
+        (∀ eₛ' eₜ', eₛ' ⊏ eₛ → tmc_expr_dir_specification eₛ' eₜ') →
+        (∀ dst idx eₛ' eₜ', eₛ' ⊏ eₛ → tmc_expr_dps_specification dst idx eₛ' eₜ') →
+        tmc_expr_dir_specification' eₛ eₜ
       ) ∧ (
         ∀ (dst idx : data_expr) eₛ eₜ,
         tmc_expr_dps tmc.(tmc_ξ) dst idx eₛ eₜ →
-        (∀ eₛ' eₜ', eₛ' ⊏ eₛ → tmc_expr_dir_spec eₛ' eₜ') →
-        (∀ dst idx eₛ' eₜ', eₛ' ⊏ eₛ → tmc_expr_dps_spec dst idx eₛ' eₜ') →
+        (∀ eₛ' eₜ', eₛ' ⊏ eₛ → tmc_expr_dir_specification eₛ' eₜ') →
+        (∀ dst idx eₛ' eₜ', eₛ' ⊏ eₛ → tmc_expr_dps_specification dst idx eₛ' eₜ') →
         ∀ dst' idx',
         dst = dst' →
         idx = idx' →
-        tmc_expr_dps_spec' dst' idx' eₛ eₜ
+        tmc_expr_dps_specification' dst' idx' eₛ eₜ
       )
     ). {
-      rewrite /tmc_expr_spec /tmc_expr_dir_spec /tmc_expr_dps_spec.
+      rewrite /tmc_expr_specification /tmc_expr_dir_specification /tmc_expr_dps_specification.
       naive_solver.
     }
     clear eₛ IHeₛ. apply tmc_expr_ind;
-      rewrite /tmc_expr_dir_spec' /tmc_expr_dps_spec';
+      rewrite /tmc_expr_dir_specification' /tmc_expr_dps_specification';
       intros *;
       [ intros _ _
       | intros _ _
@@ -325,15 +330,15 @@ Section sim_GS.
       sim_heap_bij_insert.
       iSmash.
   Qed.
-  Lemma tmc_expr_dir_specification eₛ eₜ :
-    tmc_expr_dir_spec eₛ eₜ.
+  Lemma tmc_expr_dir_spec eₛ eₜ :
+    tmc_expr_dir_specification eₛ eₜ.
   Proof.
-    eapply proj1, tmc_expr_specification.
+    eapply proj1, tmc_expr_spec.
   Qed.
-  Lemma tmc_expr_dps_specification dst idx eₛ eₜ :
-    tmc_expr_dps_spec dst idx eₛ eₜ.
+  Lemma tmc_expr_dps_spec dst idx eₛ eₜ :
+    tmc_expr_dps_specification dst idx eₛ eₜ.
   Proof.
-    revert dst idx. eapply proj2, tmc_expr_specification.
+    revert dst idx. eapply proj2, tmc_expr_spec.
   Qed.
 
   Lemma tmc_simv_close Φ eₛ eₜ :
@@ -351,7 +356,7 @@ Section sim_GS.
       iExists _, _. iSplit; first eauto 10 with data_lang. sim_asimpl.
       erewrite (subst_data_program_scoped' ids inhabitant.ₛ# _ sim_progₛ); [| done..].
       erewrite (subst_data_program_scoped' ids inhabitant.ₜ# _ sim_progₜ); [| done..].
-      iDestruct (tmc_expr_dir_specification $! tmc_expr_dir_post with "[//] [] [//] []") as "Hsim"; eauto.
+      iDestruct (tmc_expr_dir_spec $! tmc_expr_dir_post with "[//] [] [//] []") as "Hsim"; eauto.
       + iApply (bisubst_cons_well_formed with "Hv").
         iApply bisubst_inhabitant_well_formed.
       + rewrite -bisubst_consₛ -bisubst_consₜ.
@@ -368,7 +373,7 @@ Section sim_GS.
       erewrite (subst_data_program_scoped' ids inhabitant.ₛ# _ sim_progₛ); [| done..].
       erewrite (subst_data_expr_scoped_1' (#l2 .: #l1 .: ids) inhabitant.ₜ#); last first.
       { eapply data_expr_scoped_tmc_expr_dps; naive_solver. }
-      iDestruct (tmc_expr_dps_specification $! (tmc_expr_dps_post dst idx) with "Hdst [] [//] []") as "Hsim"; eauto.
+      iDestruct (tmc_expr_dps_spec $! (tmc_expr_dps_post dst idx) with "Hdst [] [//] []") as "Hsim"; eauto.
       + iApply (bisubst_cons_well_formed with "Hv").
         iApply bisubst_inhabitant_well_formed.
       + rewrite -bisubst_consₛ -bisubst_consₜ. asimpl.

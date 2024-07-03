@@ -36,6 +36,7 @@ Section sim_GS.
       ∀ vₛ' vₜ',
       vₛ' ≈ vₜ' -∗
       Ψ vₛ' vₜ'.
+
   Definition compose_protocol_comp Ψ eₛ eₜ : iProp Σ :=
     ∃ annot1 annot2 vₛ vₜ,
     ⌜eₛ = (DataFunc func2 annot2) ((DataFunc func1 annot1) vₛ) ∧ eₜ = (DataFunc compose.(compose_func) annot1) vₜ⌝ ∗
@@ -43,17 +44,18 @@ Section sim_GS.
       ∀ vₛ' vₜ',
       vₛ' ≈ vₜ' -∗
       Ψ vₛ' vₜ'.
+
   Definition compose_protocol Ψ eₛ eₜ : iProp Σ :=
     compose_protocol_dir Ψ eₛ eₜ ∨
     compose_protocol_comp Ψ eₛ eₜ.
 
-  Definition compose_expr_dir_spec eₛ eₜ :=
+  Definition compose_expr_dir_specification eₛ eₜ :=
     compose_expr_dir func1 func2 compose.(compose_func) eₛ eₜ →
     data_expr_well_formed sim_progₛ eₛ →
     {{{ True }}} eₛ ⩾ eₜ [[ compose_protocol ]] {{{# (≈) }}}.
 
-  Lemma compose_expr_dir_specification eₛ eₜ :
-    compose_expr_dir_spec eₛ eₜ.
+  Lemma compose_expr_dir_spec eₛ eₜ :
+    compose_expr_dir_specification eₛ eₜ.
   Proof.
     induction 1 as
       [
@@ -116,13 +118,13 @@ Section sim_GS.
       + iApply IH3; auto with data_lang.
   Qed.
 
-  Definition compose_expr_comp_spec annot eₛ eₜ :=
+  Definition compose_expr_comp_specification annot eₛ eₜ :=
     compose_expr_comp func1 func2 compose.(compose_func) eₛ eₜ →
     data_expr_well_formed sim_progₛ eₛ →
     {{{ True }}} (DataFunc func2 annot) eₛ ⩾ eₜ [[ compose_protocol ]] {{{# (≈) }}}.
 
-  Lemma compose_expr_comp_specification annot eₛ eₜ :
-    compose_expr_comp_spec annot eₛ eₜ.
+  Lemma compose_expr_comp_spec annot eₛ eₜ :
+    compose_expr_comp_specification annot eₛ eₜ.
   Proof.
     induction 1 as
       [ * Hdir
@@ -132,14 +134,14 @@ Section sim_GS.
       ];
       iIntros "%Hwf %Φ _ HΦ".
     - iIntros "%Γ % % (-> & ->) #HΓ /=".
-      sim_apply (compose_expr_dir_specification with "[//] [HΦ]").
+      sim_apply (compose_expr_dir_spec with "[//] [HΦ]").
       iIntros "%vₛ %vₜ #Hv".
       iApply (sim_apply_protocol (sim_post_vals' (≈))). iIntros "%σₛ %σₜ $ !>". iSplitR.
       { pose proof compose.(compose_defined2). rewrite /sim_post_vals'. iSmash. }
       iIntros "% % (%vₛ' & %vₜ' & (-> & ->) & HΨ)".
       sim_post.
     - iIntros "%Γ % % (-> & ->) #HΓ /=".
-      sim_apply (compose_expr_dir_specification with "[//] [HΦ]"); first auto with data_lang.
+      sim_apply (compose_expr_dir_spec with "[//] [HΦ]"); first auto with data_lang.
       iIntros "%vₛ1 %vₜ1 #Hv1".
       sim_pures.
       erewrite bisubst_consₛ, bisubst_consₜ.
@@ -149,7 +151,7 @@ Section sim_GS.
       { auto with data_lang. }
       iSmash.
     - iIntros "%Γ % % (-> & ->) #HΓ /=".
-      sim_apply (compose_expr_dir_specification with "[//] [HΦ]"); first auto with data_lang.
+      sim_apply (compose_expr_dir_spec with "[//] [HΦ]"); first auto with data_lang.
       iIntros "%vₛ %vₜ #Hv".
       iApply (sim_apply_protocol (sim_post_vals' (≈))). iIntros "%σₛ %σₜ $ !>". iSplitR.
       { rewrite /sim_post_vals'. iSmash. }
@@ -159,7 +161,7 @@ Section sim_GS.
       rewrite sim_post_vals_unseal. sim_bindₛ (if: _ then _ else _)%data_expr.
       sim_apply sim_if.
       { rewrite -simv_unseal.
-        sim_apply (compose_expr_dir_specification with "[//]"); first auto with data_lang.
+        sim_apply (compose_expr_dir_spec with "[//]"); first auto with data_lang.
       }
       iSplit; sim_post; rewrite -simv_unseal.
       + iApply (IH1 with "[//] [HΦ] [] HΓ"); first 2 last.
@@ -187,7 +189,7 @@ Section sim_GS.
       iExists _, _. iSplit; first eauto 10 with data_lang. sim_asimpl.
       erewrite (subst_data_program_scoped' ids inhabitant.ₛ# _ sim_progₛ); [| done..].
       erewrite (subst_data_program_scoped' ids inhabitant.ₜ# _ sim_progₜ); [| done..].
-      iDestruct (compose_expr_dir_specification $! (≈)%I with "[//] [] [//] []") as "Hsim"; eauto.
+      iDestruct (compose_expr_dir_spec $! (≈)%I with "[//] [] [//] []") as "Hsim"; eauto.
       + iApply (bisubst_cons_well_formed with "Hv").
         iApply bisubst_inhabitant_well_formed.
       + rewrite -bisubst_consₛ -bisubst_consₜ.
@@ -201,7 +203,7 @@ Section sim_GS.
         eapply pure_head_step_fill_pure_step. eauto with data_lang.
       }
       rewrite /K. simplify.
-      iDestruct (compose_expr_comp_specification $! (≈)%I with "[//] []") as "Hsim"; [auto with data_lang.. | naive_solver | iSmash |].
+      iDestruct (compose_expr_comp_spec $! (≈)%I with "[//] []") as "Hsim"; [auto with data_lang.. | naive_solver | iSmash |].
       erewrite (subst_data_program_scoped' ids inhabitant.ₛ# _ sim_progₛ); [| done..].
       rewrite (subst_data_expr_scoped_1' _ inhabitant.ₜ# vₜ).
       { eapply data_expr_scoped_compose_expr_comp; naive_solver. }

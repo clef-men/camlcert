@@ -36,6 +36,7 @@ Section sim_GS.
       ∀ vₛ' vₜ',
       vₛ' ≈ vₜ' -∗
       Ψ vₛ' vₜ'.
+
   Definition aps_plus_protocol_aps Ψ eₛ eₜ : iProp Σ :=
     ∃ func annot vₛ func_aps l acc vₜ,
     ⌜func ∈ dom sim_progₛ ∧ aps_plus.(aps_plus_ξ) !! func = Some func_aps⌝ ∗
@@ -45,6 +46,7 @@ Section sim_GS.
       ∀ vₛ' eₜ',
       ⌜if vₛ' is DataInt n then eₜ' = (acc + n)%Z else strongly_stuck sim_progₜ eₜ'⌝ -∗
       Ψ vₛ' eₜ'.
+
   Definition aps_plus_protocol Ψ eₛ eₜ : iProp Σ :=
     aps_plus_protocol_dir Ψ eₛ eₜ ∨
     aps_plus_protocol_aps Ψ eₛ eₜ.
@@ -68,52 +70,53 @@ Section sim_GS.
 
   Definition aps_plus_expr_dir_post :=
     sim_post_vals' (≈).
+  Definition aps_plus_expr_dir_specification' eₛ eₜ :=
+    data_expr_well_formed sim_progₛ eₛ →
+    {{{ True }}} eₛ ⩾ eₜ [[ aps_plus_protocol ]] {{{ aps_plus_expr_dir_post }}}.
+  Definition aps_plus_expr_dir_specification eₛ eₜ :=
+    aps_plus_expr_dir aps_plus.(aps_plus_ξ) eₛ eₜ →
+    aps_plus_expr_dir_specification' eₛ eₜ.
+
   Definition aps_plus_expr_aps_post acc eₛ eₜ : iProp Σ :=
     ∃ vₛ,
     ⌜eₛ = vₛ⌝ ∗
     ⌜if vₛ is DataInt n then eₜ = (acc + n)%Z else strongly_stuck sim_progₜ eₜ⌝.
-
-  Definition aps_plus_expr_dir_spec' eₛ eₜ :=
-    data_expr_well_formed sim_progₛ eₛ →
-    {{{ True }}} eₛ ⩾ eₜ [[ aps_plus_protocol ]] {{{ aps_plus_expr_dir_post }}}.
-  Definition aps_plus_expr_dir_spec eₛ eₜ :=
-    aps_plus_expr_dir aps_plus.(aps_plus_ξ) eₛ eₜ →
-    aps_plus_expr_dir_spec' eₛ eₜ.
-  Definition aps_plus_expr_aps_spec' acc eₛ eₜ :=
+  Definition aps_plus_expr_aps_specification' acc eₛ eₜ :=
     data_expr_well_formed sim_progₛ eₛ →
     {{{ True }}} eₛ ⩾ eₜ [[ aps_plus_protocol ]] {{{ aps_plus_expr_aps_post acc }}}.
-  Definition aps_plus_expr_aps_spec acc eₛ eₜ :=
+  Definition aps_plus_expr_aps_specification acc eₛ eₜ :=
     aps_plus_expr_aps aps_plus.(aps_plus_ξ) acc eₛ eₜ →
-    aps_plus_expr_aps_spec' acc eₛ eₜ.
-  Definition aps_plus_expr_spec eₛ eₜ :=
-    aps_plus_expr_dir_spec eₛ eₜ ∧
-    ∀ acc, aps_plus_expr_aps_spec acc eₛ eₜ.
+    aps_plus_expr_aps_specification' acc eₛ eₜ.
 
-  Lemma aps_plus_expr_specification eₛ eₜ :
-    aps_plus_expr_spec eₛ eₜ.
+  Definition aps_plus_expr_specification eₛ eₜ :=
+    aps_plus_expr_dir_specification eₛ eₜ ∧
+    ∀ acc, aps_plus_expr_aps_specification acc eₛ eₜ.
+
+  Lemma aps_plus_expr_spec eₛ eₜ :
+    aps_plus_expr_specification eₛ eₜ.
   Proof.
     revert eₜ. induction eₛ as [eₛ IHeₛ] using (well_founded_ind data_subexpr_wf).
     cut (
       ( ∀ eₛ eₜ,
         aps_plus_expr_dir aps_plus.(aps_plus_ξ) eₛ eₜ →
-        (∀ eₛ' eₜ', eₛ' ⊏ eₛ → aps_plus_expr_dir_spec eₛ' eₜ') →
-        (∀ acc eₛ' eₜ', eₛ' ⊏ eₛ → aps_plus_expr_aps_spec acc eₛ' eₜ') →
-        aps_plus_expr_dir_spec' eₛ eₜ
+        (∀ eₛ' eₜ', eₛ' ⊏ eₛ → aps_plus_expr_dir_specification eₛ' eₜ') →
+        (∀ acc eₛ' eₜ', eₛ' ⊏ eₛ → aps_plus_expr_aps_specification acc eₛ' eₜ') →
+        aps_plus_expr_dir_specification' eₛ eₜ
       ) ∧ (
         ∀ (acc : data_expr) eₛ eₜ,
         aps_plus_expr_aps aps_plus.(aps_plus_ξ) acc eₛ eₜ →
-        (∀ eₛ' eₜ', eₛ' ⊏ eₛ → aps_plus_expr_dir_spec eₛ' eₜ') →
-        (∀ acc eₛ' eₜ', eₛ' ⊏ eₛ → aps_plus_expr_aps_spec acc eₛ' eₜ') →
+        (∀ eₛ' eₜ', eₛ' ⊏ eₛ → aps_plus_expr_dir_specification eₛ' eₜ') →
+        (∀ acc eₛ' eₜ', eₛ' ⊏ eₛ → aps_plus_expr_aps_specification acc eₛ' eₜ') →
         ∀ acc',
         acc = acc' →
-        aps_plus_expr_aps_spec' acc' eₛ eₜ
+        aps_plus_expr_aps_specification' acc' eₛ eₜ
       )
     ). {
-      rewrite /aps_plus_expr_spec /aps_plus_expr_dir_spec /aps_plus_expr_aps_spec in IHeₛ |- *.
+      rewrite /aps_plus_expr_specification /aps_plus_expr_dir_specification /aps_plus_expr_aps_specification in IHeₛ |- *.
       naive_solver.
     }
     clear eₛ IHeₛ. apply aps_plus_expr_ind;
-      rewrite /aps_plus_expr_dir_spec' /aps_plus_expr_dir_post /sim_post_vals' /aps_plus_expr_aps_spec';
+      rewrite /aps_plus_expr_dir_specification' /aps_plus_expr_dir_post /sim_post_vals' /aps_plus_expr_aps_specification';
       intros *;
       [ intros _ _
       | intros _ _
@@ -228,15 +231,15 @@ Section sim_GS.
       iSplit;
         iApply (IHapsₛ with "[//] [HΦ]"); [auto with data_lang.. | iSmash].
   Qed.
-  Lemma aps_plus_expr_dir_specification eₛ eₜ :
-    aps_plus_expr_dir_spec eₛ eₜ.
+  Lemma aps_plus_expr_dir_spec eₛ eₜ :
+    aps_plus_expr_dir_specification eₛ eₜ.
   Proof.
-    eapply proj1, aps_plus_expr_specification.
+    eapply proj1, aps_plus_expr_spec.
   Qed.
-  Lemma aps_plus_expr_aps_specification acc eₛ eₜ :
-    aps_plus_expr_aps_spec acc eₛ eₜ.
+  Lemma aps_plus_expr_aps_spec acc eₛ eₜ :
+    aps_plus_expr_aps_specification acc eₛ eₜ.
   Proof.
-    revert acc. eapply proj2, aps_plus_expr_specification.
+    revert acc. eapply proj2, aps_plus_expr_spec.
   Qed.
 
   Lemma aps_plus_sim_close Φ eₛ eₜ :
@@ -254,7 +257,7 @@ Section sim_GS.
       iExists _, _. iSplit; first eauto 10 with data_lang.
       erewrite (subst_data_program_scoped' ids inhabitant.ₛ# _ sim_progₛ); [| done..].
       erewrite (subst_data_program_scoped' ids inhabitant.ₜ# _ sim_progₜ); [| done..].
-      iDestruct (aps_plus_expr_dir_specification $! aps_plus_expr_dir_post with "[//] [] [//] []") as "Hsim"; eauto.
+      iDestruct (aps_plus_expr_dir_spec $! aps_plus_expr_dir_post with "[//] [] [//] []") as "Hsim"; eauto.
       + iApply (bisubst_cons_well_formed with "Hv").
         iApply bisubst_inhabitant_well_formed.
       + rewrite -bisubst_consₛ -bisubst_consₜ.
@@ -271,7 +274,7 @@ Section sim_GS.
       erewrite (subst_data_program_scoped' ids inhabitant.ₛ# _ sim_progₛ); [| done..].
       erewrite (subst_data_expr_scoped_1' (#l .: ids) inhabitant.ₜ#); last first.
       { eapply data_expr_scoped_aps_plus_expr_aps; naive_solver. }
-      iDestruct (aps_plus_expr_aps_specification $! (aps_plus_expr_aps_post acc) with "[//] [] [//] []") as "Hsim"; eauto.
+      iDestruct (aps_plus_expr_aps_spec $! (aps_plus_expr_aps_post acc) with "[//] [] [//] []") as "Hsim"; eauto.
       + iApply (bisubst_cons_well_formed with "Hv").
         iApply bisubst_inhabitant_well_formed.
       + rewrite -bisubst_consₛ -bisubst_consₜ. asimpl.
