@@ -2,7 +2,7 @@ From camlcert Require Import
   prelude.
 From camlcert.data_lang Require Export
   metatheory.
-From camlcert.tmc Require Export
+From camlcert.tmc_1 Require Export
   definition.
 From camlcert Require Import
   options.

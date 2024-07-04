@@ -63,11 +63,15 @@ theories/data_human_lang/notations.v
 theories/data_human_lang/metatheory.v
 theories/data_human_lang/compile.v
 
-theories/tmc/definition.v
-theories/tmc/metatheory.v
-theories/tmc/soundness.v
-theories/tmc/examples/list_append.v
-theories/tmc/examples/list_map.v
+theories/tmc_1/definition.v
+theories/tmc_1/metatheory.v
+theories/tmc_1/soundness.v
+theories/tmc_1/examples/list_append.v
+theories/tmc_1/examples/list_map.v
+
+theories/tmc_2/definition.v
+theories/tmc_2/metatheory.v
+theories/tmc_2/soundness.v
 
 theories/aps_plus_1/definition.v
 theories/aps_plus_1/metatheory.v

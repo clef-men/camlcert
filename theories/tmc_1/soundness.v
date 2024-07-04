@@ -8,9 +8,9 @@ From camlcert.data_lang Require Import
   sim.proofmode
   rsim.rules
   rsim.notations.
-From camlcert.tmc Require Export
+From camlcert.tmc_1 Require Export
   definition.
-From camlcert.tmc Require Import
+From camlcert.tmc_1 Require Import
   metatheory.
 From camlcert Require Import
   options.

@@ -6,79 +6,73 @@ From camlcert.data_human_lang Require Export
   compile.
 From camlcert.data_human_lang Require Import
   notations.
-From camlcert.tmc Require Import
+From camlcert.tmc_1 Require Import
   soundness.
 From camlcert Require Import
   options.
 
-Definition list_map : data_human_program := {[
-  "list_map" :=
+Definition list_append : data_human_program := {[
+  "list_append" :=
     rec: "arg" :=
-      let: "fn" := ![𝟙] "arg" in
-      let: "xs" := ![𝟚] "arg" in
+      let: "xs" := ![𝟙] "arg" in
+      let: "ys" := ![𝟚] "arg" in
       match: "xs" with
         NIL =>
           NILₕ
       | CONS "x", "xs" =>
-          let: "y" := DataHumanCall "fn" "x" in
-          CONSₕ "y" ($"list_map" ("fn", "xs"))
+          CONSₕ "x" ($"list_append" ("xs", "ys"))
       end
 ]}%data_human_def.
 
-Definition list_map_tmc : data_human_program := {[
-  "list_map" :=
+Definition list_append_tmc : data_human_program := {[
+  "list_append" :=
     rec: "arg" :=
-      let: "fn" := ![𝟙] "arg" in
-      let: "xs" := ![𝟚] "arg" in
+      let: "xs" := ![𝟙] "arg" in
+      let: "ys" := ![𝟚] "arg" in
       match: "xs" with
         NIL =>
           NILₕ
       | CONS "x", "xs" =>
-          let: "y" := DataHumanCall "fn" "x" in
-          let: "dst" := CONSₕ "y" #ₕ() in
-          ( let: "arg" := ("fn", "xs") in
-            $"list_map_dps" ("dst", 𝟚, "arg")
+          let: "dst" := CONSₕ "x" #ₕ() in
+          ( let: "arg" := ("xs", "ys") in
+            $"list_append_dps" ("dst", 𝟚, "arg")
           ) ;;
           "dst"
       end ;
-  "list_map_dps" :=
+  "list_append_dps" :=
     rec: "arg" :=
       let: "dst_idx" := ![𝟙] "arg" in
       let: "idx" := ![𝟚] "dst_idx" in
       let: "dst" := ![𝟙] "dst_idx" in
       let: "arg" := ![𝟚] "arg" in
-      let: "fn" := ![𝟙] "arg" in
-      let: "xs" := ![𝟚] "arg" in
+      let: "xs" := ![𝟙] "arg" in
+      let: "ys" := ![𝟚] "arg" in
       match: "xs" with
         NIL =>
-          "dst" <-["idx"]- NILₕ
+        "dst" <-["idx"]- NILₕ
       | CONS "x", "xs" =>
-          let: "y" := DataHumanCall "fn" "x" in
-          let: "dst'" := CONSₕ "y" #ₕ() in
+          let: "dst'" := CONSₕ "x" #ₕ() in
           "dst" <-["idx"]- "dst'" ;;
-          let: "arg" := ("fn", "xs") in
-          $"list_map_dps" ("dst'", 𝟚, "arg")
+          let: "arg" := ("xs", "ys") in
+          $"list_append_dps" ("dst'", 𝟚, "arg")
       end
 ]}%data_human_def.
 
-Lemma list_map_tmc_sound :
+Lemma list_append_tmc_sound :
   data_program_refinement
-    (data_human_program_compile list_map)
-    (data_human_program_compile list_map_tmc).
+    (data_human_program_compile list_append)
+    (data_human_program_compile list_append_tmc).
 Proof.
-  rewrite /list_map /list_map_tmc. apply tmc_sound.
+  rewrite /list_append /list_append_tmc. apply tmc_sound.
   - split.
     + apply data_human_program_compile_well_formed.
       rewrite /data_human_program_well_formed map_Forall_singleton //.
     + apply data_human_program_compile_scoped.
   - rewrite /data_human_program_compile map_fmap_singleton fmap_insert map_fmap_singleton /=.
-    exists {["list_map" := "list_map_dps"]}; try set_solver.
+    exists {["list_append" := "list_append_dps"]}; try set_solver.
     + intros * (<- & <-)%lookup_singleton_Some.
       rewrite lookup_insert.
       eexists. split; last done. eauto 10 with tmc.
     + intros * (<- & <-)%lookup_singleton_Some (_ & <-)%lookup_singleton_Some.
-      eexists. split; last done. repeat constructor.
-      eapply tmc_expr_dps_block_1; first constructor.
-      * eapply tmc_expr_dps_call; eauto with tmc.
-      * done.
+      eexists. split; last done. eauto 10 with tmc.
 Qed.
