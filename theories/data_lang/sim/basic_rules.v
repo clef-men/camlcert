@@ -413,7 +413,7 @@ Section sim_GS.
       ( (l +ₗ idx) ↦ₛ v -∗
         SIM #() ≳ e [[ Χ ]] {{ Φ }}
       ) -∗
-      SIM l <-[idx]- v ≳ e [[ Χ ]] {{ Φ }}.
+      SIM l <-[idx] v ≳ e [[ Χ ]] {{ Φ }}.
     Proof.
       iIntros "Hl Hsim".
       iApply sim_head_stepₛ. iIntros "%σₛ %σₜ Hsi".
@@ -426,7 +426,7 @@ Section sim_GS.
       ( (l +ₗ idx) ↦ₜ v -∗
         SIM e ≳ #() [[ Χ ]] {{ Φ }}
       ) -∗
-      SIM e ≳ l <-[idx]- v [[ Χ ]] {{ Φ }}.
+      SIM e ≳ l <-[idx] v [[ Χ ]] {{ Φ }}.
     Proof.
       iIntros "Hl Hsim".
       iApply sim_head_stepₜ. iIntros "%σₛ %σₜ Hsi".
@@ -441,7 +441,7 @@ Section sim_GS.
       vₛ2 ≈ vₜ2 -∗
       vₛ3 ≈ vₜ3 -∗
       Φ #() #() -∗
-      SIM vₛ1 <-[vₛ2]- vₛ3 ≳ vₜ1 <-[vₜ2]- vₜ3 [[ Χ ]] {{ Φ }}.
+      SIM vₛ1 <-[vₛ2] vₛ3 ≳ vₜ1 <-[vₜ2] vₜ3 [[ Χ ]] {{ Φ }}.
     Proof.
       iIntros "Hv1 Hv2 Hv3 HΦ".
       destruct vₛ1, vₜ1; try iDestruct "Hv1" as %[]; try sim_strongly_stuck.
@@ -514,7 +514,7 @@ Section sim_GS.
       vₛ2 ≈ vₜ2 -∗
       vₛ3 ≈ vₜ3 -∗
       Φ ()%data_val ()%data_val -∗
-      SIM vₛ1 <-[vₛ2]- vₛ3 ≳ vₜ1 <-[vₜ2]- vₜ3 [[ Χ ]] {{# Φ }}.
+      SIM vₛ1 <-[vₛ2] vₛ3 ≳ vₜ1 <-[vₜ2] vₜ3 [[ Χ ]] {{# Φ }}.
     Proof.
       rewrite !simv_unseal.
       iIntros "#Hv1 #Hv2 #Hv3 HΦ".

@@ -98,8 +98,8 @@ Section aps_plus_expr.
         aps_plus_expr_dir eₛ2 eₜ2 →
         aps_plus_expr_dir eₛ3 eₜ3 →
         aps_plus_expr_dir
-          (eₛ1 <-[eₛ2]- eₛ3)
-          (eₜ1 <-[eₜ2]- eₜ3)
+          (eₛ1 <-[eₛ2] eₛ3)
+          (eₜ1 <-[eₜ2] eₜ3)
   with aps_plus_expr_aps : data_expr → data_expr → data_expr → Prop :=
     | aps_plus_expr_aps_base acc eₛ eₜ :
         aps_plus_expr_dir eₛ eₜ →

@@ -217,7 +217,7 @@ Section sim_GS.
       SIM eₛ2 ≳ eₜ2 [[ Χ ]] {{ sim_post_vals' (≈) }} -∗
       SIM eₛ3 ≳ eₜ3 [[ Χ ]] {{ sim_post_vals' (≈) }} -∗
       Φ #() #() -∗
-      SIM eₛ1 <-[eₛ2]- eₛ3 ≳ eₜ1 <-[eₜ2]- eₜ3 [[ Χ ]] {{ Φ }}.
+      SIM eₛ1 <-[eₛ2] eₛ3 ≳ eₜ1 <-[eₜ2] eₜ3 [[ Χ ]] {{ Φ }}.
     Proof.
       iIntros "Hsim1 Hsim2 Hsim3 HΦ".
       sim_mono "Hsim3". iIntros "% % (%vₛ3 & %vₜ3 & (-> & ->) & #Hv3)".
@@ -368,7 +368,7 @@ Section sim_GS.
       SIM eₛ2 ≳ eₜ2 [[ Χ ]] {{# (≈) }} -∗
       SIM eₛ3 ≳ eₜ3 [[ Χ ]] {{# (≈) }} -∗
       Φ ()%data_val ()%data_val -∗
-      SIM eₛ1 <-[eₛ2]- eₛ3 ≳ eₜ1 <-[eₜ2]- eₜ3 [[ Χ ]] {{# Φ }}.
+      SIM eₛ1 <-[eₛ2] eₛ3 ≳ eₜ1 <-[eₜ2] eₜ3 [[ Χ ]] {{# Φ }}.
     Proof.
       rewrite !simv_unseal.
       iIntros "Hsim1 Hsim2 Hsim3 HΦ".

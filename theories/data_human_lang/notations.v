@@ -132,10 +132,10 @@ Notation "! e" := (
   format "! e"
 ) : data_human_expr_scope.
 
-Notation "e1 <-[ e2 ]- e3" := (
+Notation "e1 <-[ e2 ] e3" := (
   DataHumanStore e1%data_human_expr e2%data_human_expr e3%data_human_expr
 )(at level 20,
-  format "e1  <-[ e2 ]-  e3"
+  format "e1  <-[ e2 ]  e3"
 ) : data_human_expr_scope.
 
 Notation "( e1 , e2 , .. , en )" :=

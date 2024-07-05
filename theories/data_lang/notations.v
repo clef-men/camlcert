@@ -149,10 +149,10 @@ Notation "! e" := (
   format "! e"
 ) : data_expr_scope.
 
-Notation "e1 <-[ e2 ]- e3" := (
+Notation "e1 <-[ e2 ] e3" := (
   DataStore e1%data_expr e2%data_expr e3%data_expr
 )(at level 20,
-  format "e1  <-[ e2 ]-  e3"
+  format "e1  <-[ e2 ]  e3"
 ) : data_expr_scope.
 
 Definition data_tag_pair : data_tag :=

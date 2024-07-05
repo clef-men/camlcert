@@ -146,7 +146,7 @@ Inductive data_head_step prog : data_expr → data_state → data_expr → data_
   | data_head_step_store l idx v w σ :
       σ !! (l +ₗ idx) = Some v →
       data_head_step prog
-        (l <-[idx]- w) σ
+        (l <-[idx] w) σ
         #() (<[l +ₗ idx := w]> σ).
 
 Lemma data_head_step_block_det' prog tag v1 v2 σ σ' :

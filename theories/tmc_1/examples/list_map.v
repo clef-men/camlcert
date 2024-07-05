@@ -51,11 +51,11 @@ Definition list_map_tmc : data_human_program := {[
       let: "xs" := ![𝟚] "arg" in
       match: "xs" with
         NIL =>
-          "dst" <-["idx"]- NILₕ
+          "dst" <-["idx"] NILₕ
       | CONS "x", "xs" =>
           let: "y" := DataHumanCall "fn" "x" in
           let: "dst'" := CONSₕ "y" #ₕ() in
-          "dst" <-["idx"]- "dst'" ;;
+          "dst" <-["idx"] "dst'" ;;
           let: "arg" := ("fn", "xs") in
           $"list_map_dps" ("dst'", 𝟚, "arg")
       end

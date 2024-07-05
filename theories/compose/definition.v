@@ -89,8 +89,8 @@ Section compose_expr.
         compose_expr_dir eₛ2 eₜ2 →
         compose_expr_dir eₛ3 eₜ3 →
         compose_expr_dir
-          (eₛ1 <-[eₛ2]- eₛ3)
-          (eₜ1 <-[eₜ2]- eₜ3).
+          (eₛ1 <-[eₛ2] eₛ3)
+          (eₜ1 <-[eₜ2] eₜ3).
 
   Inductive compose_expr_comp : data_expr → data_expr → Prop :=
     | compose_expr_comp_base eₛ eₜ :

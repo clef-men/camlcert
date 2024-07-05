@@ -175,15 +175,15 @@ Section tmc_expr.
         tmc_expr_dir eₛ2 eₜ2 →
         tmc_expr_dir eₛ3 eₜ3 →
         tmc_expr_dir
-          (eₛ1 <-[eₛ2]- eₛ3)
-          (eₜ1 <-[eₜ2]- eₜ3)
+          (eₛ1 <-[eₛ2] eₛ3)
+          (eₜ1 <-[eₜ2] eₜ3)
   with tmc_expr_dps : data_expr → data_expr → tmc_ctx → data_expr → data_expr → Prop :=
     | tmc_expr_dps_base dst idx C eₛ eₜ eₜ' :
         tmc_expr_dir eₛ eₜ →
         eₜ' = C @@ eₜ →
         tmc_expr_dps dst idx C
           eₛ
-          (dst <-[idx]- eₜ')
+          (dst <-[idx] eₜ')
     | tmc_expr_dps_let dst idx C eₛ1 eₛ2 eₜ1 eₜ2 :
         tmc_expr_dir eₛ1 eₜ1 →
         tmc_expr_dps dst.[ren (+1)] idx.[ren (+1)] C.|[ren (+1)] eₛ2 eₜ2 →
@@ -220,7 +220,7 @@ Section tmc_expr.
           eₜ
     | tmc_expr_dps_reify dst idx c C eₛ eₜ eₜ' :
         tmc_expr_dps $0 c.(tmc_ctxi_side) [] eₛ.[ren (+1)] eₜ →
-        eₜ' = (let: c @@ #() in dst.[ren (+1)] <-[idx.[ren (+1)]]- (C.|[ren (+1)] @@ $0) ;; eₜ)%data_expr →
+        eₜ' = (let: c @@ #() in dst.[ren (+1)] <-[idx.[ren (+1)]] (C.|[ren (+1)] @@ $0) ;; eₜ)%data_expr →
         tmc_expr_dps dst idx (c :: C)
           eₛ
           eₜ'.

@@ -92,8 +92,8 @@ Section inline_expr.
         inline_expr eₛ2 eₜ2 →
         inline_expr eₛ3 eₜ3 →
         inline_expr
-          (eₛ1 <-[eₛ2]- eₛ3)
-          (eₜ1 <-[eₜ2]- eₜ3).
+          (eₛ1 <-[eₛ2] eₛ3)
+          (eₜ1 <-[eₜ2] eₜ3).
 End inline_expr.
 
 Create HintDb inline.

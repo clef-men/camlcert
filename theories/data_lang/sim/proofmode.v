@@ -216,7 +216,7 @@ Section sim_GS.
     | Some Δ' =>
         envs_entails Δ' (SIM K @@ #() ≳ e [[ Χ ]] {{ Φ }})
     end →
-    envs_entails Δ (SIM K @@ #l <-[idx]- v ≳ e [[ Χ ]] {{ Φ }}).
+    envs_entails Δ (SIM K @@ #l <-[idx] v ≳ e [[ Χ ]] {{ Φ }}).
   Proof.
     rewrite envs_entails_unseal => Hlookup Hsim.
     destruct (envs_replace _ _ _ _) as [Δ' |] eqn:HΔ'; last done.
@@ -233,7 +233,7 @@ Section sim_GS.
     | Some Δ' =>
         envs_entails Δ' (SIM e ≳ K @@ #() [[ Χ ]] {{ Φ }})
     end →
-    envs_entails Δ (SIM e ≳ K @@ #l <-[idx]- v [[ Χ ]] {{ Φ }}).
+    envs_entails Δ (SIM e ≳ K @@ #l <-[idx] v [[ Χ ]] {{ Φ }}).
   Proof.
     rewrite envs_entails_unseal => Hlookup Hsim.
     destruct (envs_replace _ _ _ _) as [Δ' |] eqn:HΔ'; last done.
@@ -247,7 +247,7 @@ Section sim_GS.
     envs_entails Δ (vₛ2 ≈ vₜ2) →
     envs_entails Δ (vₛ3 ≈ vₜ3) →
     envs_entails Δ (SIM Kₛ @@ #() ≳ Kₜ @@ #() [[ Χ ]] {{ Φ }}) →
-    envs_entails Δ (SIM Kₛ @@ vₛ1 <-[vₛ2]- vₛ3 ≳ Kₜ @@ vₜ1 <-[vₜ2]- vₜ3 [[ Χ ]] {{ Φ }}).
+    envs_entails Δ (SIM Kₛ @@ vₛ1 <-[vₛ2] vₛ3 ≳ Kₜ @@ vₜ1 <-[vₜ2] vₜ3 [[ Χ ]] {{ Φ }}).
   Proof.
     rewrite envs_entails_unseal => Hv1 Hv2 Hv3 Hsim.
     iIntros "HΔ".

@@ -217,7 +217,7 @@ Section sim_GS.
       SIM eₛ2 ⩾ eₜ2 [[ Χ ]] {{ sim_post_vals' (≈) }} -∗
       SIM eₛ3 ⩾ eₜ3 [[ Χ ]] {{ sim_post_vals' (≈) }} -∗
       Φ #() #() -∗
-      SIM eₛ1 <-[eₛ2]- eₛ3 ⩾ eₜ1 <-[eₜ2]- eₜ3 [[ Χ ]] {{ Φ }}.
+      SIM eₛ1 <-[eₛ2] eₛ3 ⩾ eₜ1 <-[eₜ2] eₜ3 [[ Χ ]] {{ Φ }}.
     Proof.
       iIntros "Hrsim1 Hrsim2 Hrsim3 HΦ". rsim_intro.
       sim_apply (derived_rules.sim_store with "(Hrsim1 [//] HΓ) (Hrsim2 [//] HΓ) (Hrsim3 [//] HΓ)").
@@ -414,7 +414,7 @@ Section sim_GS.
       SIM eₛ2 ⩾ eₜ2 [[ Χ ]] {{# (≈) }} -∗
       SIM eₛ3 ⩾ eₜ3 [[ Χ ]] {{# (≈) }} -∗
       Φ ()%data_val ()%data_val -∗
-      SIM eₛ1 <-[eₛ2]- eₛ3 ⩾ eₜ1 <-[eₜ2]- eₜ3 [[ Χ ]] {{# Φ }}.
+      SIM eₛ1 <-[eₛ2] eₛ3 ⩾ eₜ1 <-[eₜ2] eₜ3 [[ Χ ]] {{# Φ }}.
     Proof.
       rewrite !rsimv_unseal.
       iIntros "Hrsim1 Hrsim2 Hrsim3 HΦ".
