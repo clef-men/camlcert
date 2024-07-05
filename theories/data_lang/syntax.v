@@ -8,7 +8,6 @@ From camlcert Require Import
   prelude.
 From camlcert.common Require Export
   autosubst
-  three
   loc
   typeclasses.
 From camlcert Require Import
@@ -16,30 +15,60 @@ From camlcert Require Import
 From camlcert Require Import
   options.
 
-Notation data_index :=
-  three
-( only parsing
-).
+Implicit Types b : bool.
+Implicit Types n : Z.
+Implicit Types l : loc.
+Implicit Types x : var.
+
+Inductive data_index :=
+  | DataZero
+  | DataOne
+  | DataTwo.
+Implicit Types idx : data_index.
+
+#[global] Instance data_index_eq_dec : EqDecision data_index :=
+  ltac:(solve_decision).
+#[global] Instance data_index_countable :
+  Countable data_index.
+Proof.
+  pose encode idx :=
+    match idx with
+    | DataZero => 0
+    | DataOne => 1
+    | DataTwo => 2
+    end.
+  pose decode (idx : nat) :=
+    match idx with
+    | 0 => DataZero
+    | 1 => DataOne
+    | _ => DataTwo
+    end.
+  apply (inj_countable' encode decode). intros []; done.
+Qed.
 
 Definition data_tag :=
   nat.
+Implicit Types tag : data_tag.
 
 Notation data_function :=
   string
 ( only parsing
 ).
+Implicit Types func : data_function.
 
 Definition data_annotation :=
   list string.
+Implicit Types annot : data_annotation.
 
 Inductive data_val :=
   | DataUnit
-  | DataIndex (idx : data_index)
-  | DataTag (tag : data_tag)
-  | DataInt (n : Z)
-  | DataBool (b : bool)
-  | DataLoc (l : loc)
-  | DataFunc (func : data_function) (annot : data_annotation).
+  | DataIndex idx
+  | DataTag tag
+  | DataBool b
+  | DataInt n
+  | DataLoc l
+  | DataFunc func annot.
+Implicit Types v : data_val.
 
 Definition DataFunc' func :=
   DataFunc func [].
@@ -59,27 +88,27 @@ Proof.
         inr $ inl idx
     | DataTag tag =>
         inr $ inr $ inl tag
-    | DataInt n =>
-        inr $ inr $ inr $ inl n
     | DataBool b =>
-        inr $ inr $ inr $ inr $ inl b
+        inr $ inr $ inr $ inl b
+    | DataInt n =>
+        inr $ inr $ inr $ inr $ inl n
     | DataLoc l =>
         inr $ inr $ inr $ inr $ inr $ inl l
     | DataFunc func annot =>
         inr $ inr $ inr $ inr $ inr $ inr (func, annot)
     end.
-  pose decode v :=
-    match v with
+  pose decode _v :=
+    match _v with
     | inl () =>
         DataUnit
     | inr (inl idx) =>
         DataIndex idx
     | inr (inr (inl tag)) =>
         DataTag tag
-    | inr (inr (inr (inl n))) =>
-        DataInt n
-    | inr (inr (inr (inr (inl b)))) =>
+    | inr (inr (inr (inl b))) =>
         DataBool b
+    | inr (inr (inr (inr (inl n)))) =>
+        DataInt n
     | inr (inr (inr (inr (inr (inl l))))) =>
         DataLoc l
     | inr (inr (inr (inr (inr (inr (func, annot)))))) =>
@@ -97,10 +126,10 @@ Qed.
         idx1 = idx2
     | DataTag tag1, DataTag tag2 =>
         tag1 = tag2
-    | DataInt i1, DataInt i2 =>
-        i1 = i2
     | DataBool b1, DataBool b2 =>
         b1 = b2
+    | DataInt n1, DataInt n2 =>
+        n1 = n2
     | DataLoc _, DataLoc _ =>
         True
     | DataFunc func1 annot1, DataFunc func2 annot2 =>
@@ -172,18 +201,19 @@ Proof.
 Qed.
 
 Inductive data_expr :=
-  | DataVal (v : data_val)
-  | DataVar (x : var)
+  | DataVal v
+  | DataVar x
   | DataLet (e1 : data_expr) (e2 : {bind data_expr})
   | DataCall (e1 e2 : data_expr)
   | DataUnop (op : data_unop) (e : data_expr)
   | DataBinop (op : data_binop) (e1 e2 : data_expr)
   | DataBinopDet (op : data_binop) (e1 e2 : data_expr)
   | DataIf (e0 e1 e2 : data_expr)
-  | DataBlock (tag : data_tag) (e1 e2 : data_expr)
-  | DataBlockDet (tag : data_tag) (e1 e2 : data_expr)
+  | DataBlock tag (e1 e2 : data_expr)
+  | DataBlockDet tag (e1 e2 : data_expr)
   | DataLoad (e1 e2 : data_expr)
   | DataStore (e1 e2 e3 : data_expr).
+Implicit Types e : data_expr.
 
 #[global] Instance data_expr_inhabited : Inhabited data_expr :=
   populate (DataVal inhabitant).
@@ -219,8 +249,8 @@ Proof.
     | DataStore e1 e2 e3 =>
         GenNode 9 [encode e1; encode e2; encode e3]
     end.
-  pose fix decode e :=
-    match e with
+  pose fix decode _e :=
+    match _e with
     | GenLeaf (inl v) =>
         DataVal v
     | GenLeaf (inr (inl x)) =>
@@ -260,6 +290,7 @@ Record data_definition := {
   data_definition_annot : data_annotation ;
   data_definition_body : data_expr ;
 }.
+Implicit Types def : data_definition.
 
 #[global] Instance data_definition_inhabited : Inhabited data_definition :=
   populate {|
@@ -275,9 +306,9 @@ Proof.
     ( def.(data_definition_annot),
       def.(data_definition_body)
     ).
-  pose decode def :=
-    {|data_definition_annot := def.1 ;
-      data_definition_body := def.2 ;
+  pose decode _def :=
+    {|data_definition_annot := _def.1 ;
+      data_definition_body := _def.2 ;
     |}.
   apply (inj_countable' encode decode). intros []; done.
 Qed.

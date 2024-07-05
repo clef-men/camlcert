@@ -5,11 +5,11 @@ From camlcert.data_lang Require Export
 From camlcert Require Import
   options.
 
-Coercion data_index_to_Z (idx : data_index) : Z :=
+Coercion data_index_to_Z idx : Z :=
   match idx with
-  | Zero => 0
-  | One => 1
-  | Two => 2
+  | DataZero => 0
+  | DataOne => 1
+  | DataTwo => 2
   end.
 
 Coercion DataIndex : data_index >-> data_val.
@@ -23,11 +23,11 @@ Coercion DataVal : data_val >-> data_expr.
 Coercion DataCall : data_expr >-> Funclass.
 
 Notation "𝟘" :=
-  Zero.
+  DataZero.
 Notation "𝟙" :=
-  One.
+  DataOne.
 Notation "𝟚" :=
-  Two.
+  DataTwo.
 
 Declare Scope data_val_scope.
 Delimit Scope data_val_scope with data_val.

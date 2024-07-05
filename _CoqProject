@@ -15,7 +15,6 @@ theories/common/typeclasses.v
 theories/common/autosubst.v
 theories/common/relation.v
 theories/common/induction.v
-theories/common/three.v
 theories/common/loc.v
 
 theories/iris/proofmode.v
