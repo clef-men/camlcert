@@ -142,8 +142,8 @@ Qed.
     end.
 
 Inductive data_unop :=
-  | DataOpNeg
-  | DataOpUminus.
+  | DataNeg
+  | DataUminus.
 
 #[global] Instance data_unop_eq_dec : EqDecision data_unop :=
   ltac:(solve_decision).
@@ -152,20 +152,20 @@ Inductive data_unop :=
 Proof.
   pose encode op :=
     match op with
-    | DataOpNeg => 0
-    | DataOpUminus => 1
+    | DataNeg => 0
+    | DataUminus => 1
     end.
   pose decode op :=
     match op with
-    | 0 => DataOpNeg
-    | _ => DataOpUminus
+    | 0 => DataNeg
+    | _ => DataUminus
     end.
   apply (inj_countable' encode decode). intros []; done.
 Qed.
 
 Inductive data_binop :=
-  | DataOpPlus | DataOpMinus | DataOpMult | DataOpQuot | DataOpRem
-  | DataOpLe | DataOpLt | DataOpGe | DataOpGt | DataOpEq | DataOpNe.
+  | DataPlus | DataMinus | DataMult | DataQuot | DataRem
+  | DataLe | DataLt | DataGe | DataGt | DataEq | DataNe.
 
 #[global] Instance data_binop_eq_dec : EqDecision data_binop :=
   ltac:(solve_decision).
@@ -174,31 +174,31 @@ Inductive data_binop :=
 Proof.
   pose encode op :=
     match op with
-    | DataOpPlus => 0
-    | DataOpMinus => 1
-    | DataOpMult => 2
-    | DataOpQuot => 3
-    | DataOpRem => 4
-    | DataOpLe => 5
-    | DataOpLt => 6
-    | DataOpGe => 7
-    | DataOpGt => 8
-    | DataOpEq => 9
-    | DataOpNe => 10
+    | DataPlus => 0
+    | DataMinus => 1
+    | DataMult => 2
+    | DataQuot => 3
+    | DataRem => 4
+    | DataLe => 5
+    | DataLt => 6
+    | DataGe => 7
+    | DataGt => 8
+    | DataEq => 9
+    | DataNe => 10
     end.
   pose decode op :=
     match op with
-    | 0 => DataOpPlus
-    | 1 => DataOpMinus
-    | 2 => DataOpMult
-    | 3 => DataOpQuot
-    | 4 => DataOpRem
-    | 5 => DataOpLe
-    | 6 => DataOpLt
-    | 7 => DataOpGe
-    | 8 => DataOpGt
-    | 9 => DataOpEq
-    | _ => DataOpNe
+    | 0 => DataPlus
+    | 1 => DataMinus
+    | 2 => DataMult
+    | 3 => DataQuot
+    | 4 => DataRem
+    | 5 => DataLe
+    | 6 => DataLt
+    | 7 => DataGe
+    | 8 => DataGt
+    | 9 => DataEq
+    | _ => DataNe
     end.
   apply (inj_countable' encode decode). intros []; done.
 Qed.

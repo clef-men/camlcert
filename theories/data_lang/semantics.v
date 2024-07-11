@@ -34,9 +34,9 @@ Implicit Types σ : data_state.
 
 Definition data_unop_eval op v :=
   match op, v with
-  | DataOpNeg, DataBool b =>
+  | DataNeg, DataBool b =>
       Some (DataBool (negb b))
-  | DataOpUminus, DataInt n =>
+  | DataUminus, DataInt n =>
       Some (DataInt (- n))
   | _, _ =>
       None
@@ -45,23 +45,23 @@ Definition data_unop_eval op v :=
 
 Definition data_binop_eval_int op n1 n2 :=
   match op with
-  | DataOpPlus =>
+  | DataPlus =>
       Some (DataInt (n1 + n2))
-  | DataOpMinus =>
+  | DataMinus =>
       Some (DataInt (n1 - n2))
-  | DataOpMult =>
+  | DataMult =>
       Some (DataInt (n1 * n2))
-  | DataOpQuot =>
+  | DataQuot =>
       Some (DataInt (n1 `quot` n2))
-  | DataOpRem =>
+  | DataRem =>
       Some (DataInt (n1 `rem` n2))
-  | DataOpLe =>
+  | DataLe =>
       Some (DataBool (bool_decide (n1 ≤ n2)%Z))
-  | DataOpLt =>
+  | DataLt =>
       Some (DataBool (bool_decide (n1 < n2)%Z))
-  | DataOpGe =>
+  | DataGe =>
       Some (DataBool (bool_decide (n1 >= n2)%Z))
-  | DataOpGt =>
+  | DataGt =>
       Some (DataBool (bool_decide (n1 > n2)%Z))
   | _ =>
       None
@@ -70,9 +70,9 @@ Definition data_binop_eval_int op n1 n2 :=
 
 Definition data_binop_eval op v1 v2 :=
   match op with
-  | DataOpEq =>
+  | DataEq =>
       Some (DataBool (bool_decide (v1 = v2)))
-  | DataOpNe =>
+  | DataNe =>
       Some (DataBool (bool_decide (v1 ≠ v2)))
   | _ =>
       match v1, v2 with

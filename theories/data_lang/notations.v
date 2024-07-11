@@ -71,44 +71,44 @@ Notation "e1 ;; e2" :=
 ) : data_expr_scope.
 
 Notation "~ e" := (
-  DataUnop DataOpNeg e%data_expr
+  DataUnop DataNeg e%data_expr
 ) : data_expr_scope.
 Notation "- e" := (
-  DataUnop DataOpUminus e%data_expr
+  DataUnop DataUminus e%data_expr
 ) : data_expr_scope.
 
 Notation "e1 + e2" := (
-  DataBinop DataOpPlus e1%data_expr e2%data_expr
+  DataBinop DataPlus e1%data_expr e2%data_expr
 ) : data_expr_scope.
 Notation "e1 - e2" := (
-  DataBinop DataOpMinus e1%data_expr e2%data_expr
+  DataBinop DataMinus e1%data_expr e2%data_expr
 ) : data_expr_scope.
 Notation "e1 * e2" := (
-  DataBinop DataOpMult e1%data_expr e2%data_expr
+  DataBinop DataMult e1%data_expr e2%data_expr
 ) : data_expr_scope.
 Notation "e1 `quot` e2" := (
-  DataBinop DataOpQuot e1%data_expr e2%data_expr
+  DataBinop DataQuot e1%data_expr e2%data_expr
 ) : data_expr_scope.
 Notation "e1 `rem` e2" := (
-  DataBinop DataOpRem e1%data_expr e2%data_expr
+  DataBinop DataRem e1%data_expr e2%data_expr
 ) : data_expr_scope.
 Notation "e1 ≤ e2" := (
-  DataBinop DataOpLe e1%data_expr e2%data_expr
+  DataBinop DataLe e1%data_expr e2%data_expr
 ) : data_expr_scope.
 Notation "e1 < e2" := (
-  DataBinop DataOpLt e1%data_expr e2%data_expr
+  DataBinop DataLt e1%data_expr e2%data_expr
 ) : data_expr_scope.
 Notation "e1 ≥ e2" := (
-  DataBinop DataOpGe e1%data_expr e2%data_expr
+  DataBinop DataGe e1%data_expr e2%data_expr
 ) : data_expr_scope.
 Notation "e1 > e2" := (
-  DataBinop DataOpGt e1%data_expr e2%data_expr
+  DataBinop DataGt e1%data_expr e2%data_expr
 ) : data_expr_scope.
 Notation "e1 = e2" := (
-  DataBinop DataOpEq e1%data_expr e2%data_expr
+  DataBinop DataEq e1%data_expr e2%data_expr
 ) : data_expr_scope.
 Notation "e1 ≠ e2" := (
-  DataBinop DataOpNe e1%data_expr e2%data_expr
+  DataBinop DataNe e1%data_expr e2%data_expr
 ) : data_expr_scope.
 
 Notation "'if:' e0 'then' e1 'else' e2" := (

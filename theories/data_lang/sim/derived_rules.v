@@ -82,11 +82,11 @@ Section sim_GS.
       all: sim_mono "Hsim1"; iIntros "% % (%vₛ1 & %vₜ1 & (-> & ->) & #Hv1)".
       all: sim_mono "Hsim2"; iIntros "% % (%vₛ2 & %vₜ2 & (-> & ->) & #Hv2)".
       all: sim_pures.
-      all: destruct (decide (op = DataOpEq)) as [-> | Hop1].
+      all: destruct (decide (op = DataEq)) as [-> | Hop1].
         1,3: sim_pures.
         1,2: iDestruct (data_val_bi_similar_agree with "Hv1 Hv2") as %Hiff.
         1,2: setoid_rewrite bool_decide_ext at 1; [iSmash | naive_solver].
-      all: destruct (decide (op = DataOpNe)) as [-> | Hop2].
+      all: destruct (decide (op = DataNe)) as [-> | Hop2].
         1,3: sim_pures.
         1,2: iDestruct (data_val_bi_similar_agree' with "Hv1 Hv2") as %Hiff.
         1,2: setoid_rewrite bool_decide_ext at 1; [iSmash | naive_solver].

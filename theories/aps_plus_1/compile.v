@@ -66,7 +66,7 @@ Fixpoint aps_plus_compile_expr' ξ acc ς e :=
         aps_plus_result_dir :=
           dir ;
         aps_plus_result_aps :=
-          DataBinop DataOpPlus acc' dir
+          DataBinop DataPlus acc' dir
       |}
   | DataVar x =>
       let dir := ς x in
@@ -75,7 +75,7 @@ Fixpoint aps_plus_compile_expr' ξ acc ς e :=
         aps_plus_result_dir :=
           dir ;
         aps_plus_result_aps :=
-          DataBinop DataOpPlus acc' dir ;
+          DataBinop DataPlus acc' dir ;
       |}
   | DataLet e1 e2 =>
       let res1 := aps_plus_compile_expr' ξ acc ς e1 in
@@ -97,7 +97,7 @@ Fixpoint aps_plus_compile_expr' ξ acc ς e :=
             aps_plus_result_dir :=
               dir ;
             aps_plus_result_aps :=
-              DataBinop DataOpPlus acc' dir ;
+              DataBinop DataPlus acc' dir ;
           |}
       | Some func_aps =>
           {|aps_plus_result_hint :=
@@ -118,7 +118,7 @@ Fixpoint aps_plus_compile_expr' ξ acc ς e :=
         aps_plus_result_dir :=
           dir ;
         aps_plus_result_aps :=
-          DataBinop DataOpPlus acc' dir ;
+          DataBinop DataPlus acc' dir ;
       |}
   | DataUnop op e =>
       let res := aps_plus_compile_expr' ξ acc ς e in
@@ -128,9 +128,9 @@ Fixpoint aps_plus_compile_expr' ξ acc ς e :=
         aps_plus_result_dir :=
           dir ;
         aps_plus_result_aps :=
-          DataBinop DataOpPlus acc' dir ;
+          DataBinop DataPlus acc' dir ;
       |}
-  | DataBinop DataOpPlus (DataVal (DataInt n)) e =>
+  | DataBinop DataPlus (DataVal (DataInt n)) e =>
       let res := aps_plus_compile_expr' ξ 0 ς e in
       if decide (ApsPlusMaybe ⊑ res.(aps_plus_result_hint)) then
         let res := aps_plus_compile_expr' ξ 0 (ς >> ren (+1)) e in
@@ -140,19 +140,19 @@ Fixpoint aps_plus_compile_expr' ξ acc ς e :=
             DataLet (DataVal $ DataInt n) $
             res.(aps_plus_result_aps) ;
           aps_plus_result_aps :=
-            DataLet (DataBinop DataOpPlus acc' (DataVal $ DataInt n)) $
+            DataLet (DataBinop DataPlus acc' (DataVal $ DataInt n)) $
             res.(aps_plus_result_aps) ;
         |}
       else
-        let dir := DataBinop DataOpPlus (DataVal (DataInt n)) res.(aps_plus_result_dir) in
+        let dir := DataBinop DataPlus (DataVal (DataInt n)) res.(aps_plus_result_dir) in
         {|aps_plus_result_hint :=
             ApsPlusNo ;
           aps_plus_result_dir :=
             dir ;
           aps_plus_result_aps :=
-            DataBinop DataOpPlus acc' dir ;
+            DataBinop DataPlus acc' dir ;
         |}
-  (* | DataBinop DataOpPlus e (DataVal (DataInt n)) => *)
+  (* | DataBinop DataPlus e (DataVal (DataInt n)) => *)
   (*     let res := aps_plus_compile_expr' ξ 0 ς e in *)
   (*     if decide (ApsPlusMaybe ⊑ res.(aps_plus_result_hint)) then *)
   (*       let res := aps_plus_compile_expr' ξ 0 (ς >> ren (+1)) e in *)
@@ -162,17 +162,17 @@ Fixpoint aps_plus_compile_expr' ξ acc ς e :=
   (*           DataLet (DataVal $ DataInt n) $ *)
   (*           res.(aps_plus_result_aps) ; *)
   (*         aps_plus_result_aps := *)
-  (*           DataLet (DataBinop DataOpPlus acc' (DataVal $ DataInt n)) $ *)
+  (*           DataLet (DataBinop DataPlus acc' (DataVal $ DataInt n)) $ *)
   (*           res.(aps_plus_result_aps) ; *)
   (*       |} *)
   (*     else *)
-  (*       let dir := DataBinop DataOpPlus res.(aps_plus_result_dir) (DataVal (DataInt n)) in *)
+  (*       let dir := DataBinop DataPlus res.(aps_plus_result_dir) (DataVal (DataInt n)) in *)
   (*       {|aps_plus_result_hint := *)
   (*           ApsPlusNo ; *)
   (*         aps_plus_result_dir := *)
   (*           dir ; *)
   (*         aps_plus_result_aps := *)
-  (*           DataBinop DataOpPlus acc' dir ; *)
+  (*           DataBinop DataPlus acc' dir ; *)
   (*       |} *)
   | DataBinop op e1 e2 =>
       let res1 := aps_plus_compile_expr' ξ acc ς e1 in
@@ -183,7 +183,7 @@ Fixpoint aps_plus_compile_expr' ξ acc ς e :=
         aps_plus_result_dir :=
           dir ;
         aps_plus_result_aps :=
-          DataBinop DataOpPlus acc' dir ;
+          DataBinop DataPlus acc' dir ;
       |}
   | DataBinopDet op e1 e2 =>
       let res1 := aps_plus_compile_expr' ξ acc ς e1 in
@@ -194,7 +194,7 @@ Fixpoint aps_plus_compile_expr' ξ acc ς e :=
         aps_plus_result_dir :=
           dir ;
         aps_plus_result_aps :=
-          DataBinop DataOpPlus acc' dir ;
+          DataBinop DataPlus acc' dir ;
       |}
   | DataIf e0 e1 e2 =>
       let res0 := aps_plus_compile_expr' ξ acc ς e0 in
@@ -216,7 +216,7 @@ Fixpoint aps_plus_compile_expr' ξ acc ς e :=
         aps_plus_result_dir :=
           dir ;
         aps_plus_result_aps :=
-          DataBinop DataOpPlus acc' dir ;
+          DataBinop DataPlus acc' dir ;
       |}
   | DataBlockDet tag e1 e2 =>
       let res1 := aps_plus_compile_expr' ξ acc ς e1 in
@@ -227,7 +227,7 @@ Fixpoint aps_plus_compile_expr' ξ acc ς e :=
         aps_plus_result_dir :=
           dir ;
         aps_plus_result_aps :=
-          DataBinop DataOpPlus acc' dir ;
+          DataBinop DataPlus acc' dir ;
       |}
   | DataLoad e1 e2 =>
       let res1 := aps_plus_compile_expr' ξ acc ς e1 in
@@ -238,7 +238,7 @@ Fixpoint aps_plus_compile_expr' ξ acc ς e :=
         aps_plus_result_dir :=
           dir ;
         aps_plus_result_aps :=
-          DataBinop DataOpPlus acc' dir ;
+          DataBinop DataPlus acc' dir ;
       |}
   | DataStore e1 e2 e3 =>
       let res1 := aps_plus_compile_expr' ξ acc ς e1 in
@@ -250,7 +250,7 @@ Fixpoint aps_plus_compile_expr' ξ acc ς e :=
         aps_plus_result_dir :=
           dir ;
         aps_plus_result_aps :=
-          DataBinop DataOpPlus acc' dir ;
+          DataBinop DataPlus acc' dir ;
       |}
   end.
 #[global] Arguments aps_plus_compile_expr' _ _ _ !_ / : assert.

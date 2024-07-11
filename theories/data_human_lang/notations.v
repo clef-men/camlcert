@@ -59,44 +59,44 @@ Notation "e1 ;; e2" := (
 ) : data_human_expr_scope.
 
 Notation "~ e" := (
-  DataHumanUnop DataOpNeg e%data_human_expr
+  DataHumanUnop DataNeg e%data_human_expr
 ) : data_human_expr_scope.
 Notation "- e" := (
-  DataHumanUnop DataOpUminus e%data_human_expr
+  DataHumanUnop DataUminus e%data_human_expr
 ) : data_human_expr_scope.
 
 Notation "e1 + e2" := (
-  DataHumanBinop DataOpPlus e1%data_human_expr e2%data_human_expr
+  DataHumanBinop DataPlus e1%data_human_expr e2%data_human_expr
 ) : data_human_expr_scope.
 Notation "e1 - e2" := (
-  DataHumanBinop DataOpMinus e1%data_human_expr e2%data_human_expr
+  DataHumanBinop DataMinus e1%data_human_expr e2%data_human_expr
 ) : data_human_expr_scope.
 Notation "e1 * e2" := (
-  DataHumanBinop DataOpMult e1%data_human_expr e2%data_human_expr
+  DataHumanBinop DataMult e1%data_human_expr e2%data_human_expr
 ) : data_human_expr_scope.
 Notation "e1 `quot` e2" := (
-  DataHumanBinop DataOpQuot e1%data_human_expr e2%data_human_expr
+  DataHumanBinop DataQuot e1%data_human_expr e2%data_human_expr
 ) : data_human_expr_scope.
 Notation "e1 `rem` e2" := (
-  DataHumanBinop DataOpRem e1%data_human_expr e2%data_human_expr
+  DataHumanBinop DataRem e1%data_human_expr e2%data_human_expr
 ) : data_human_expr_scope.
 Notation "e1 ≤ e2" := (
-  DataHumanBinop DataOpLe e1%data_human_expr e2%data_human_expr
+  DataHumanBinop DataLe e1%data_human_expr e2%data_human_expr
 ) : data_human_expr_scope.
 Notation "e1 < e2" := (
-  DataHumanBinop DataOpLt e1%data_human_expr e2%data_human_expr
+  DataHumanBinop DataLt e1%data_human_expr e2%data_human_expr
 ) : data_human_expr_scope.
 Notation "e1 ≥ e2" := (
-  DataHumanBinop DataOpGe e1%data_human_expr e2%data_human_expr
+  DataHumanBinop DataGe e1%data_human_expr e2%data_human_expr
 ) : data_human_expr_scope.
 Notation "e1 > e2" := (
-  DataHumanBinop DataOpGt e1%data_human_expr e2%data_human_expr
+  DataHumanBinop DataGt e1%data_human_expr e2%data_human_expr
 ) : data_human_expr_scope.
 Notation "e1 = e2" := (
-  DataHumanBinop DataOpEq e1%data_human_expr e2%data_human_expr
+  DataHumanBinop DataEq e1%data_human_expr e2%data_human_expr
 ) : data_human_expr_scope.
 Notation "e1 ≠ e2" := (
-  DataHumanBinop DataOpNe e1%data_human_expr e2%data_human_expr
+  DataHumanBinop DataNe e1%data_human_expr e2%data_human_expr
 ) : data_human_expr_scope.
 
 Notation "'if:' e0 'then' e1 'else' e2" := (

@@ -251,7 +251,7 @@ Section sim_GS.
         vₛ ≈ vₜ -∗
         Φ vₛ vₜ
       ) -∗
-      SIM DataBinopDet DataOpPlus vₛ1 vₛ2 ≳ DataBinopDet DataOpPlus vₜ1 vₜ2 [[ Χ ]] {{ Φ }}.
+      SIM DataBinopDet DataPlus vₛ1 vₛ2 ≳ DataBinopDet DataPlus vₜ1 vₜ2 [[ Χ ]] {{ Φ }}.
     Proof.
       iIntros "#Hv1 #Hv2 HΦ".
       destruct vₛ1, vₜ1; try iDestruct "Hv1" as %[]; try sim_strongly_stuck;
@@ -471,7 +471,7 @@ Section sim_GS.
         vₛ ≈ vₜ -∗
         Φ vₛ vₜ
       ) -∗
-      SIM DataBinopDet DataOpPlus vₛ1 vₛ2 ≳ DataBinopDet DataOpPlus vₜ1 vₜ2 [[ Χ ]] {{# Φ }}.
+      SIM DataBinopDet DataPlus vₛ1 vₛ2 ≳ DataBinopDet DataPlus vₜ1 vₜ2 [[ Χ ]] {{# Φ }}.
     Proof.
       rewrite !simv_unseal.
       iIntros "#Hv1 #Hv2 HΦ".
