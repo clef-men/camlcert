@@ -73,6 +73,11 @@ theories/tmc_1/examples/list_map.v
 theories/tmc_2/definition.v
 theories/tmc_2/metatheory.v
 theories/tmc_2/soundness.v
+theories/tmc_2/examples/list_append.v
+theories/tmc_2/examples/list_uappend.v
+theories/tmc_2/examples/list_map.v
+theories/tmc_2/examples/list_umap.v
+theories/tmc_2/examples/list_double.v
 
 theories/aps_plus_1/definition.v
 theories/aps_plus_1/metatheory.v
