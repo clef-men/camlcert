@@ -49,7 +49,7 @@ Definition list_append_tmc : data_human_program := {[
       let: "ys" := ![𝟚] "arg" in
       match: "xs" with
         NIL =>
-        "dst" <-["idx"] NILₕ
+          "dst" <-["idx"] NILₕ
       | CONS "x", "xs" =>
           let: "dst'" := CONSₕ "x" #ₕ() in
           "dst" <-["idx"] "dst'" ;;
