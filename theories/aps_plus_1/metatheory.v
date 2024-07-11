@@ -39,7 +39,7 @@ Section aps_plus_expr.
     | intros * ? ? ? IHaps **; simplify;
       econstructor; try naive_solver; try apply IHaps with (up ς); autosubst
     | intros * ? IHaps **; simplify;
-      econstructor; apply IHaps with (up ς); autosubst
+      econstructor; try apply IHaps with (up ς); autosubst
     ].
   Qed.
   Lemma aps_plus_expr_dir_subst ς eₛ eₛ' eₜ eₜ' :
@@ -76,6 +76,14 @@ Section aps_plus_expr.
     ).
   Proof.
     apply aps_plus_expr_ind; try naive_solver.
+    - intros * Haps IH -> scope (Hscoped1 & Hscoped2).
+      split; first auto.
+      apply IH; first naive_solver lia.
+      apply data_expr_scoped_lift1. done.
+    - intros * Haps IH -> scope (Hscoped1 & Hscoped2).
+      split; first auto.
+      apply IH; first naive_solver lia.
+      apply data_expr_scoped_lift1. done.
     - intros * Hdir1 IH1 Haps2 IH2 scope Hacc (Hscoped1 & Hscoped2).
       split; first auto.
       apply IH2; try done; apply data_expr_scoped_lift1; done.

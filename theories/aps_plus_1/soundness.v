@@ -124,8 +124,8 @@ Section sim_GS.
       | intros Hdir1 _ Hdir2 _ IHdirₛ _
       | intros Hdir _ IHdirₛ _
       | intros Hdir1 _ Hdir2 _ IHdirₛ _
-      | intros Haps _ _ IHapsₛ
-      | intros Haps _ _ IHapsₛ
+      | intros Haps _ -> _ IHapsₛ
+      | intros Haps _ -> _ IHapsₛ
       | intros _ _ _ _ _ _
       | intros Hdir0 _ Hdir1 _ Hdir2 _ IHdirₛ _
       | intros Hdir1 _ Hdir2 _ IHdirₛ _
@@ -158,14 +158,22 @@ Section sim_GS.
         iApply IHdirₛ; auto with data_lang.
     - iIntros "%Γ % % (-> & ->) #HΓ /=".
       sim_binopₛ1.
-      sim_apply (IHapsₛ with "[//] [HΦ]"); [auto with data_lang.. |].
+      sim_apply (IHapsₛ n eₛ eₜ.[#n/] with "[//] [HΦ]"); first 4 last.
+      { naive_solver autosubst. }
+      { auto with data_lang. }
+      { eapply aps_plus_expr_aps_subst; eauto; autosubst. }
+      { auto with data_lang. }
       iIntros "% %eₜ' (%vₛ & -> & %Heₜ')".
       destruct vₛ;
         sim_pures;
         iApply sim_strongly_stuck; auto with data_lang.
     - iIntros "%Γ % % (-> & ->) #HΓ /=".
-      sim_binopₛ2.
-      sim_apply (IHapsₛ with "[//] [HΦ]"); [auto with data_lang.. |].
+      sim_binopₛ1.
+      sim_apply (IHapsₛ n eₛ eₜ.[#n/] with "[//] [HΦ]"); first 4 last.
+      { naive_solver autosubst. }
+      { auto with data_lang. }
+      { eapply aps_plus_expr_aps_subst; eauto; autosubst. }
+      { auto with data_lang. }
       iIntros "% %eₜ' (%vₛ & -> & %Heₜ')".
       destruct vₛ;
         sim_pures;

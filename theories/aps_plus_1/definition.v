@@ -52,16 +52,18 @@ Section aps_plus_expr.
         aps_plus_expr_dir
           (DataBinop op eₛ1 eₛ2)
           (DataBinop op eₜ1 eₜ2)
-    | aps_plus_expr_dir_plus_1 n eₛ eₜ :
-        aps_plus_expr_aps n eₛ eₜ →
+    | aps_plus_expr_dir_plus_1 n eₛ eₜ eₜ' :
+        aps_plus_expr_aps $0 eₛ.[ren (+1)] eₜ →
+        eₜ' = (let: n in eₜ)%data_expr →
         aps_plus_expr_dir
           (n + eₛ)
-          eₜ
-    | aps_plus_expr_dir_plus_2 n eₛ eₜ :
-        aps_plus_expr_aps n eₛ eₜ →
+          eₜ'
+    | aps_plus_expr_dir_plus_2 n eₛ eₜ eₜ' :
+        aps_plus_expr_aps $0 eₛ.[ren (+1)] eₜ →
+        eₜ' = (let: n in eₜ)%data_expr →
         aps_plus_expr_dir
           (eₛ + n)
-          eₜ
+          eₜ'
     | aps_plus_expr_dir_binop_det op eₛ1 eₛ2 eₜ1 eₜ2 :
         aps_plus_expr_dir eₛ1 eₜ1 →
         aps_plus_expr_dir eₛ2 eₜ2 →

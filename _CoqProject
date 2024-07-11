@@ -77,6 +77,7 @@ theories/tmc_2/soundness.v
 theories/aps_plus_1/definition.v
 theories/aps_plus_1/metatheory.v
 theories/aps_plus_1/soundness.v
+theories/aps_plus_1/compile.v
 theories/aps_plus_1/examples/list_length.v
 
 theories/aps_plus_2/definition.v

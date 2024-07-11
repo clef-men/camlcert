@@ -29,8 +29,9 @@ Definition list_length_aps_plus : data_human_program := {[
         NIL =>
           0
       | CONS "<>", "xs" =>
+          let: "acc" := 1 in
           let: "arg" := "xs" in
-          $"list_length_aps" (1, "arg")
+          $"list_length_aps" ("acc", "arg")
       end ;
   "list_length_aps" :=
     rec: "arg" :=
@@ -38,7 +39,7 @@ Definition list_length_aps_plus : data_human_program := {[
       let: "arg" := ![𝟚] "arg" in
       match: ![𝟙] "arg" with
         NIL =>
-        "acc" + 0
+          "acc" + 0
       | CONS "<>", "xs" =>
           let: "acc" := "acc" + 1 in
           let: "arg" := "xs" in
