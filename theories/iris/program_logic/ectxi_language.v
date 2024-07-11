@@ -141,7 +141,7 @@ Section ectxi_language.
     split; try done || apply ectxi_language_mixin.
     - induction K as [| k K]; intros ?**; first done.
       apply (inj (k @@.)); auto using fill_item_inj.
-    - intros * Heq ? Hstep. revert K_redex Heq.
+    - intros * Heq ? Hstep. move: K_redex Heq.
       induction K as [| k K] using rev_ind; intros K_redex Heq.
       + naive_solver eauto using app_nil_r.
       + destruct K_redex as [| k_redex K_redex _] using rev_ind; intros.

@@ -22,7 +22,7 @@ Section compose_expr.
     eₜ' = eₜ.[ς] →
     compose_expr_dir func1 func2 func eₛ' eₜ'.
   Proof.
-    intros Hdir. revert ς eₛ' eₜ'. induction Hdir; intros ς eₛ' eₜ' -> ->;
+    intros Hdir. move: ς eₛ' eₜ'. induction Hdir; intros ς eₛ' eₜ' -> ->;
       eauto using compose_expr_dir_refl with compose.
   Qed.
   Lemma compose_expr_comp_subst ς eₛ eₛ' eₜ eₜ' :
@@ -31,7 +31,7 @@ Section compose_expr.
     eₜ' = eₜ.[ς] →
     compose_expr_comp func1 func2 func eₛ' eₜ'.
   Proof.
-    intros Hcomp. revert ς eₛ' eₜ'. induction Hcomp; intros ς eₛ' eₜ' -> ->;
+    intros Hcomp. move: ς eₛ' eₜ'. induction Hcomp; intros ς eₛ' eₜ' -> ->;
       eauto using compose_expr_dir_subst with compose.
   Qed.
 
@@ -40,7 +40,7 @@ Section compose_expr.
     data_expr_scoped scope eₛ →
     data_expr_scoped scope eₜ.
   Proof.
-    intros Hdir. revert scope. induction Hdir; intros scope;
+    intros Hdir. move: scope. induction Hdir; intros scope;
       naive_solver.
   Qed.
   Lemma data_expr_scoped_compose_expr_comp scope eₛ eₜ :
@@ -48,7 +48,7 @@ Section compose_expr.
     data_expr_scoped scope eₛ →
     data_expr_scoped scope eₜ.
   Proof.
-    intros Hcomp. revert scope. induction Hcomp; intros scope;
+    intros Hcomp. move: scope. induction Hcomp; intros scope;
       naive_solver eauto using data_expr_scoped_compose_expr_dir.
   Qed.
 End compose_expr.

@@ -104,7 +104,7 @@ Lemma data_human_expr_compile_well_formed prog bdgs e :
   data_human_expr_well_formed prog e →
   data_expr_well_formed (data_human_program_compile prog) (data_human_expr_compile bdgs e).
 Proof.
-  intros Hprog He. revert bdgs. induction e; intros bdgs; try naive_solver; simpl.
+  intros Hprog He. move: bdgs. induction e; intros bdgs; try naive_solver; simpl.
   - apply data_human_val_compile_well_formed; done.
   - destruct (data_human_bindings_lookup bdgs _); done.
 Qed.
@@ -121,7 +121,7 @@ Lemma data_human_bindings_lookup_aux_Some i bdgs x j :
   data_human_bindings_lookup_aux i bdgs x = Some j →
   i ≤ j < i + length bdgs.
 Proof.
-  revert i. induction bdgs as [| bdg bdgs]; simpl; intros i Hlookup; first done.
+  move: i. induction bdgs as [| bdg bdgs]; simpl; intros i Hlookup; first done.
   case_bool_decide.
   - naive_solver lia.
   - apply IHbdgs in Hlookup. lia.
@@ -137,7 +137,7 @@ Lemma data_human_expr_compile_scoped scope bdgs e :
   length bdgs = scope →
   data_expr_scoped scope (data_human_expr_compile bdgs e).
 Proof.
-  revert scope bdgs. induction e; simpl; intros scope bdgs Hlength; try naive_solver.
+  move: scope bdgs. induction e; simpl; intros scope bdgs Hlength; try naive_solver.
   destruct (data_human_bindings_lookup _ _) eqn:Hlookup; last done.
   rewrite -Hlength. eapply data_human_bindings_lookup_Some. done.
 Qed.

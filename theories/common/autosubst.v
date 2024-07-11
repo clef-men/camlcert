@@ -16,7 +16,7 @@ Section subst.
     x < n →
     upn n ς x = ids x.
   Proof.
-    revert x. induction n; intros x Hx; first lia.
+    move: x. induction n; intros x Hx; first lia.
     rewrite upnSE. destruct x; first done.
     rewrite /= IHn; [lia | autosubst].
   Qed.
@@ -24,7 +24,7 @@ Section subst.
     n ≤ x →
     upn n ς x = (ς (x - n)).[ren (+n)].
   Proof.
-    revert x. induction n; intros x Hx.
+    move: x. induction n; intros x Hx.
     - rewrite upn0 Nat.sub_0_r. autosubst.
     - rewrite upnSE. destruct x; first lia.
       asimpl. rewrite IHn; first lia. autosubst.

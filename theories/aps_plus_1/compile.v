@@ -308,7 +308,7 @@ Lemma aps_plus_compile_expr'_sound ξ acc ς e :
   aps_plus_expr_dir ξ e.[ς] res.(aps_plus_result_dir) ∧
   aps_plus_expr_aps ξ (DataVar acc) e.[ς] res.(aps_plus_result_aps).
 Proof.
-  revert acc ς. induction e as [| | | e1 | | op e1 ? e2 | | | | | |] => acc ς res /=.
+  move: acc ς. induction e as [| | | e1 | | op e1 ? e2 | | | | | |] => acc ς res /=.
   - auto with aps_plus.
   - auto with aps_plus.
   - naive_solver eauto with aps_plus.

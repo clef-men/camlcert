@@ -17,7 +17,7 @@ Section map_fold.
     ) →
     Q (gmap.gmap_dep_fold f j b mt) mt.
   Proof.
-    intros Hemp Hinsert. revert Q b j Hemp Hinsert.
+    intros Hemp Hinsert. move: Q b j Hemp Hinsert.
     induction mt as [|P ml mx mr ? IHl IHr] using gmap.gmap_dep_ind;
       intros Q b j Hemp Hinsert; [done|].
     rewrite gmap.gmap_dep_fold_GNode; first done.

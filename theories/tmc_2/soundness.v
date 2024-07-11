@@ -219,7 +219,7 @@ Section sim_GS.
   Lemma tmc_expr_spec eₛ eₜ :
     tmc_expr_specification eₛ eₜ.
   Proof.
-    revert eₛ eₜ.
+    move: eₛ eₜ.
     cut (
       ∀ C eₛ eₜ,
       tmc_expr_dir_specification eₛ eₜ ∧
@@ -244,7 +244,7 @@ Section sim_GS.
       remember (length C) as len eqn:Hlen.
       change eₛ with (projT1 (existT eₛ len)).
       change len with (projT2 (existT eₛ len)) in Hlen.
-      remember (existT eₛ len) as x eqn:Hx. clear Hx len eₛ. revert x C Hlen.
+      remember (existT eₛ len) as x eqn:Hx. clear Hx len eₛ. move: x C Hlen.
       induction x as [(eₛ, len) IHx] using (well_founded_ind (wf_lexprod _ _ _ _ data_subexpr_wf (λ _, Nat.lt_wf_0))).
       intros C Hlen. split.
       - apply H; clear eₜ.
@@ -498,7 +498,7 @@ Section sim_GS.
   Lemma tmc_expr_dps_spec dst idx C eₛ eₜ :
     tmc_expr_dps_specification dst idx C eₛ eₜ.
   Proof.
-    revert dst idx C. eapply proj2, tmc_expr_spec.
+    move: dst idx C. eapply proj2, tmc_expr_spec.
   Qed.
 
   Lemma tmc_simv_close Φ eₛ eₜ :

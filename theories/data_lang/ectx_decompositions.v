@@ -56,7 +56,7 @@ Lemma data_ectx_decompositions_sound e K e' :
   (K, e') ∈ data_ectx_decompositions e →
   e = K @@ e'.
 Proof.
-  revert K e'. induction e; simpl; intros;
+  move: K e'. induction e; simpl; intros;
     repeat match goal with
     | _ =>
         progress decompose_elem_of_list
@@ -78,7 +78,7 @@ Qed.
 Lemma data_ectx_decompositions_complete K e :
   (K, e) ∈ data_ectx_decompositions (K @@ e).
 Proof.
-  revert K e.
+  move: K e.
   assert (∀ K e, (reverse K, e) ∈ data_ectx_decompositions ((reverse K) @@ e)).
   { intros. induction K as [| k K]; first apply data_ectx_decompositions_base.
     rewrite reverse_cons -fill_op /=. destruct k; simpl;

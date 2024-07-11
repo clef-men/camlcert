@@ -95,7 +95,7 @@ Section sim_GS.
   Lemma aps_plus_expr_spec eₛ eₜ :
     aps_plus_expr_specification eₛ eₜ.
   Proof.
-    revert eₜ. induction eₛ as [eₛ IHeₛ] using (well_founded_ind data_subexpr_wf).
+    move: eₜ. induction eₛ as [eₛ IHeₛ] using (well_founded_ind data_subexpr_wf).
     cut (
       ( ∀ eₛ eₜ,
         aps_plus_expr_dir aps_plus.(aps_plus_ξ) eₛ eₜ →
@@ -247,7 +247,7 @@ Section sim_GS.
   Lemma aps_plus_expr_aps_spec acc eₛ eₜ :
     aps_plus_expr_aps_specification acc eₛ eₜ.
   Proof.
-    revert acc. eapply proj2, aps_plus_expr_spec.
+    move: acc. eapply proj2, aps_plus_expr_spec.
   Qed.
 
   Lemma aps_plus_sim_close Φ eₛ eₜ :

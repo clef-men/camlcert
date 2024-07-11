@@ -24,7 +24,7 @@ Section inline_expr.
     inline_expr prog eₛ' eₜ'.
   Proof.
     intros (Hprog_wf & Hprog_scoped) Hinline.
-    revert ς eₛ' eₜ'. induction Hinline; intros ς eₛ' eₜ' -> ->;
+    move: ς eₛ' eₜ'. induction Hinline; intros ς eₛ' eₜ' -> ->;
       eauto using inline_expr_refl with inline.
     eapply inline_expr_call_inline with (e_funcₛ := e_funcₛ.[up ς]); try naive_solver.
     erewrite (subst_data_program_scoped _ ids); asimpl; done.
@@ -37,7 +37,7 @@ Section inline_expr.
     data_expr_scoped scope eₜ.
   Proof.
     intros Hprog_scoped Hinline.
-    revert scope. induction Hinline; intros scope Hscoped;
+    move: scope. induction Hinline; intros scope Hscoped;
       try naive_solver.
     split; first naive_solver.
     apply (data_expr_scoped_le 1); [lia | naive_solver].

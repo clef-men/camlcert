@@ -110,7 +110,7 @@ Section sim_GS.
   Lemma tmc_expr_spec eₛ eₜ :
     tmc_expr_specification eₛ eₜ.
   Proof.
-    revert eₜ. induction eₛ as [eₛ IHeₛ] using (well_founded_ind data_subexpr_wf).
+    move: eₜ. induction eₛ as [eₛ IHeₛ] using (well_founded_ind data_subexpr_wf).
     cut (
       ( ∀ eₛ eₜ,
         tmc_expr_dir tmc.(tmc_ξ) eₛ eₜ →
@@ -338,7 +338,7 @@ Section sim_GS.
   Lemma tmc_expr_dps_spec dst idx eₛ eₜ :
     tmc_expr_dps_specification dst idx eₛ eₜ.
   Proof.
-    revert dst idx. eapply proj2, tmc_expr_spec.
+    move: dst idx. eapply proj2, tmc_expr_spec.
   Qed.
 
   Lemma tmc_simv_close Φ eₛ eₜ :

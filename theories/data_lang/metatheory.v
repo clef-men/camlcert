@@ -111,7 +111,7 @@ Lemma subst_data_expr_scoped ς1 ς2 scope e :
   data_expr_scoped scope e →
   e.[ς1] = e.[ς2].
 Proof.
-  revert ς1 ς2 scope. induction e as
+  move: ς1 ς2 scope. induction e as
     [ v
     | x
     | e1 IHe1 e2 IHe2
@@ -181,7 +181,7 @@ Lemma data_expr_scoped_le scope1 scope2 e :
   data_expr_scoped scope1 e →
   data_expr_scoped scope2 e.
 Proof.
-  revert scope1 scope2. elim e; try naive_solver lia.
+  move: scope1 scope2. elim e; try naive_solver lia.
   intros e1 IH1 e2 IH2 scope1 scope2 Hscoped (Hscoped1 & Hscoped2).
   split; first naive_solver. eapply IH2; last done. lia.
 Qed.
@@ -191,7 +191,7 @@ Lemma data_expr_scoped_upn_subst_data_val n v scope e :
   data_expr_scoped scope e →
   data_expr_scoped (scope - 1) e.[upn n (DataVal v .: ids)].
 Proof.
-  revert n scope. induction e; intros n scope; try naive_solver; simpl.
+  move: n scope. induction e; intros n scope; try naive_solver; simpl.
   - intros Hn Hx.
     destruct (Nat.lt_ge_cases x n) as [Hx' | (dx & ->)%Nat.le_sum].
     + rewrite upn_lt //=. lia.
@@ -217,7 +217,7 @@ Lemma data_expr_scoped_ren ξ n scope e :
   data_expr_scoped scope e →
   data_expr_scoped (n + scope) e.[ren ξ].
 Proof.
-  revert scope ξ n. elim e; try naive_solver lia.
+  move: scope ξ n. elim e; try naive_solver lia.
   - intros x scope ξ n Hξ Hscoped.
     eapply (Nat.le_lt_trans _ (x + n)); naive_solver lia.
   - intros e1 IH1 e2 IH2 scope ξ n Hξ (Hscoped1 & Hscoped2).

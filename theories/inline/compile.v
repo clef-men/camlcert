@@ -104,7 +104,7 @@ Definition inline_compile prog :=
 Lemma inline_compile_expr_sound prog depth e :
   inline_expr prog e (inline_compile_expr prog depth e).
 Proof.
-  revert e. induction depth; induction e.
+  move: e. induction depth; induction e.
   all: eauto with inline.
   all: do 4 (simpl; case_match; eauto with inline).
 Qed.

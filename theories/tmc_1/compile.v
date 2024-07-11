@@ -293,7 +293,7 @@ Lemma tmc_compile_expr'_sound ξ dst idx ς e :
   tmc_expr_dir ξ e.[ς] res.(tmc_result_dir) ∧
   tmc_expr_dps ξ (DataVar dst) idx e.[ς] res.(tmc_result_dps).
 Proof.
-  revert dst idx ς. induction e as [| | | e1 | | | | | | | |] => dst idx ς res /=.
+  move: dst idx ς. induction e as [| | | e1 | | | | | | | |] => dst idx ς res /=.
   - auto with tmc.
   - auto with tmc.
   - split; constructor; naive_solver.
