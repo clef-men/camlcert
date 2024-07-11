@@ -12,52 +12,45 @@ From camlcert Require Import
   options.
 
 Definition list_rev_rev : data_human_program := {[
-  "list_rev_append" :=
-    rec: "arg" :=
-      let: "xs" := ![𝟙] "arg" in
-      let: "ys" := ![𝟚] "arg" in
-      match: "xs" with
-        NIL =>
-          "ys"
-      | CONS "x", "xs" =>
-          $"list_rev_append" ("xs", CONSₕ "x" "ys")
-      end ;
-  "list_rev" :=
-    rec: "xs" :=
-      $"list_rev_append" ("xs", NILₕ) ;
-  "list_rev_rev" :=
-    rec: "xs" :=
-      (* First call to [list_rev] has been inlined, see inline/examples/list_rev_rev. *)
-      $"list_rev" ($"list_rev_append" ("xs", NILₕ))
+  "list_rev_append" := rec: "arg" :=
+    let: "xs" := ![𝟙] "arg" in
+    let: "ys" := ![𝟚] "arg" in
+    match: "xs" with
+      NIL =>
+        "ys"
+    | CONS "x", "xs" =>
+        $"list_rev_append" ("xs", CONSₕ "x" "ys")
+    end ;
+  "list_rev" := rec: "xs" :=
+    $"list_rev_append" ("xs", NILₕ) ;
+  "list_rev_rev" := rec: "xs" :=
+    (* First call to [list_rev] has been inlined, see inline/examples/list_rev_rev. *)
+    $"list_rev" ($"list_rev_append" ("xs", NILₕ))
 ]}%data_human_def.
 
 Definition list_rev_rev_compose : data_human_program := {[
-  "list_rev_list_rev_append" :=
-    rec: "arg" :=
-      let: "xs" := ![𝟙] "arg" in
-      let: "ys" := ![𝟚] "arg" in
-      match: "xs" with
-        NIL =>
-          $"list_rev" "ys"
-      | CONS "x", "xs" =>
-          $"list_rev_list_rev_append" ("xs", CONSₕ "x" "ys")
-      end ;
-  "list_rev_append" :=
-    rec: "arg" :=
-      let: "xs" := ![𝟙] "arg" in
-      let: "ys" := ![𝟚] "arg" in
-      match: "xs" with
-        NIL =>
-          "ys"
-      | CONS "x", "xs" =>
-          $"list_rev_append" ("xs", CONSₕ "x" "ys")
-      end ;
-  "list_rev" :=
-    rec: "xs" :=
-      $"list_rev_append" ("xs", NILₕ) ;
-  "list_rev_rev" :=
-    rec: "xs" :=
-      $"list_rev_list_rev_append" ("xs", NILₕ)
+  "list_rev_list_rev_append" := rec: "arg" :=
+    let: "xs" := ![𝟙] "arg" in
+    let: "ys" := ![𝟚] "arg" in
+    match: "xs" with
+      NIL =>
+        $"list_rev" "ys"
+    | CONS "x", "xs" =>
+        $"list_rev_list_rev_append" ("xs", CONSₕ "x" "ys")
+    end ;
+  "list_rev_append" := rec: "arg" :=
+    let: "xs" := ![𝟙] "arg" in
+    let: "ys" := ![𝟚] "arg" in
+    match: "xs" with
+      NIL =>
+        "ys"
+    | CONS "x", "xs" =>
+        $"list_rev_append" ("xs", CONSₕ "x" "ys")
+    end ;
+  "list_rev" := rec: "xs" :=
+    $"list_rev_append" ("xs", NILₕ) ;
+  "list_rev_rev" := rec: "xs" :=
+    $"list_rev_list_rev_append" ("xs", NILₕ)
 ]}%data_human_def.
 
 Lemma list_rev_rev_compose_sound :

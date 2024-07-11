@@ -12,54 +12,51 @@ From camlcert Require Import
   options.
 
 Definition list_map : data_human_program := {[
-  "list_map" :=
-    rec: "arg" :=
-      let: "fn" := ![𝟙] "arg" in
-      let: "xs" := ![𝟚] "arg" in
-      match: "xs" with
-        NIL =>
-          NILₕ
-      | CONS "x", "xs" =>
-          let: "y" := DataHumanCall "fn" "x" in
-          CONSₕ "y" ($"list_map" ("fn", "xs"))
-      end
+  "list_map" := rec: "arg" :=
+    let: "fn" := ![𝟙] "arg" in
+    let: "xs" := ![𝟚] "arg" in
+    match: "xs" with
+      NIL =>
+        NILₕ
+    | CONS "x", "xs" =>
+        let: "y" := DataHumanCall "fn" "x" in
+        CONSₕ "y" ($"list_map" ("fn", "xs"))
+    end
 ]}%data_human_def.
 
 Definition list_map_tmc : data_human_program := {[
-  "list_map" :=
-    rec: "arg" :=
-      let: "fn" := ![𝟙] "arg" in
-      let: "xs" := ![𝟚] "arg" in
-      match: "xs" with
-        NIL =>
-          NILₕ
-      | CONS "x", "xs" =>
-          let: "y" := DataHumanCall "fn" "x" in
-          let: "dst" := CONSₕ "y" #ₕ() in
-          ( let: "arg" := ("fn", "xs") in
-            $"list_map_dps" ("dst", 𝟚, "arg")
-          ) ;;
-          "dst"
-      end ;
-  "list_map_dps" :=
-    rec: "arg" :=
-      let: "dst_idx" := ![𝟙] "arg" in
-      let: "idx" := ![𝟚] "dst_idx" in
-      let: "dst" := ![𝟙] "dst_idx" in
-      let: "arg" := ![𝟚] "arg" in
-      let: "fn" := ![𝟙] "arg" in
-      let: "xs" := ![𝟚] "arg" in
-      match: "xs" with
-        NIL =>
-          "dst" <-["idx"] NILₕ
-      | CONS "x", "xs" =>
-          let: "y" := DataHumanCall "fn" "x" in
-          let: "y" := "y" in
-          let: "dst'" := CONSₕ "y" #ₕ() in
-          "dst" <-["idx"] "dst'" ;;
-          let: "arg" := ("fn", "xs") in
-          $"list_map_dps" ("dst'", 𝟚, "arg")
-      end
+  "list_map" := rec: "arg" :=
+    let: "fn" := ![𝟙] "arg" in
+    let: "xs" := ![𝟚] "arg" in
+    match: "xs" with
+      NIL =>
+        NILₕ
+    | CONS "x", "xs" =>
+        let: "y" := DataHumanCall "fn" "x" in
+        let: "dst" := CONSₕ "y" #ₕ() in
+        ( let: "arg" := ("fn", "xs") in
+          $"list_map_dps" ("dst", 𝟚, "arg")
+        ) ;;
+        "dst"
+    end ;
+  "list_map_dps" := rec: "arg" :=
+    let: "dst_idx" := ![𝟙] "arg" in
+    let: "idx" := ![𝟚] "dst_idx" in
+    let: "dst" := ![𝟙] "dst_idx" in
+    let: "arg" := ![𝟚] "arg" in
+    let: "fn" := ![𝟙] "arg" in
+    let: "xs" := ![𝟚] "arg" in
+    match: "xs" with
+      NIL =>
+        "dst" <-["idx"] NILₕ
+    | CONS "x", "xs" =>
+        let: "y" := DataHumanCall "fn" "x" in
+        let: "y" := "y" in
+        let: "dst'" := CONSₕ "y" #ₕ() in
+        "dst" <-["idx"] "dst'" ;;
+        let: "arg" := ("fn", "xs") in
+        $"list_map_dps" ("dst'", 𝟚, "arg")
+    end
 ]}%data_human_def.
 
 Lemma list_map_tmc_sound :
