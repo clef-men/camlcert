@@ -155,8 +155,6 @@ Notation "e1 <-[ e2 ] e3" := (
   format "e1  <-[ e2 ]  e3"
 ) : data_expr_scope.
 
-Definition data_tag_pair : data_tag :=
-  0.
 Notation "( e1 , e2 , .. , en )" :=
   (&data_tag_pair .. (&data_tag_pair e1 e2) .. en)%data_expr
 : data_expr_scope.

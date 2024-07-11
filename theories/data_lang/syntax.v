@@ -50,6 +50,9 @@ Definition data_tag :=
   nat.
 Implicit Types tag : data_tag.
 
+Definition data_tag_pair : data_tag :=
+  0.
+
 Notation data_function :=
   string
 ( only parsing
