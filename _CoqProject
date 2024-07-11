@@ -53,6 +53,7 @@ theories/data_lang/sim/notations.v
 theories/data_lang/sim/basic_rules.v
 theories/data_lang/sim/proofmode.v
 theories/data_lang/sim/derived_rules.v
+theories/data_lang/sim/adequacy.v
 theories/data_lang/rsim/bisubst.v
 theories/data_lang/rsim/definition.v
 theories/data_lang/rsim/notations.v

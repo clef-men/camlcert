@@ -1,11 +1,10 @@
 From camlcert Require Import
   prelude.
-From camlcert.iris.program_logic Require Import
-  sim.adequacy.
 From camlcert.data_lang Require Import
   refinement
   subexpr
   sim.proofmode
+  sim.adequacy
   rsim.rules
   rsim.notations.
 From camlcert.aps_plus_1 Require Export
@@ -290,43 +289,21 @@ Section sim_GS.
   Qed.
 End sim_GS.
 
-Section aps_plus_sound.
-  Context {progₛ progₜ : data_program}.
-  Context (Hwf : data_program_valid progₛ).
-  Context (aps_plus : aps_plus progₛ progₜ).
-
-  Notation Σ :=
-    sim_Σ.
-  Notation M :=
-    (iResUR Σ).
-
-  #[local] Instance aps_plus_sim_programs : SimPrograms data_ectx_lang data_ectx_lang :=
-    Build_SimPrograms progₛ progₜ.
-
-  #[local] Instance aps_plus_sim_GpreS :
-    SimGpreS Σ.
-  Proof.
-    apply subG_sim_GpreS, subG_refl.
-  Qed.
-
-  Lemma aps_plus_sound :
-    data_program_refinement progₛ progₜ.
-  Proof.
-    rewrite /data_program_refinement map_Forall_lookup => func eₛ Hfuncₛ vₛ vₜ Hvₛ Hv.
-    pose proof (sim_adequacy' (M := M)) as Hadequacy. apply Hadequacy.
-    iMod (sim_init ∅ ∅) as "(%sim_GS & Hsi & _ & _ & _ & _)".
-    iModIntro. iExists _, _. iFrame. iSplitR.
-    { clear dependent vₛ vₜ. iIntros "!> %vₛ %vₜ #Hv".
-      iApply (data_val_bi_similar_similar with "Hv").
-    }
-    iApply (aps_plus_sim_close (sim_programs := aps_plus_sim_programs) aps_plus); first done.
-    iApply (sim_apply_protocol (sim_post_vals (≈)%I)). iIntros "%σₛ %σₜ $ !>".
-    iSplitL.
-    - iLeft. iExists func, [], vₛ, vₜ. repeat iSplit; try iSmash.
-      + iPureIntro. simpl. eapply elem_of_dom_2. done.
-      + iApply data_val_similar_bi_similar; done.
-      + rewrite sim_post_vals_unseal /sim_post_vals'. iSmash.
-    - clear dependent vₛ eₛ vₜ. iIntros "%eₛ %eₜ Hsimilar".
-      rewrite sim_post_vals_unseal. sim_post.
-  Qed.
-End aps_plus_sound.
+Lemma aps_plus_sound progₛ progₜ :
+  data_program_valid progₛ →
+  aps_plus progₛ progₜ →
+  data_program_refinement progₛ progₜ.
+Proof.
+  intros Hwf Haps_plus.
+  pose sim_programs := Build_SimPrograms progₛ progₜ.
+  apply: sim_adequacy => sim_GS func defₛ vₛ vₜ Hlookup Hvₛ Hv.
+  iApply (aps_plus_sim_close (sim_programs := sim_programs) Haps_plus); first done.
+  iApply (sim_apply_protocol (sim_post_vals (≈)%I)). iIntros "%σₛ %σₜ $ !>".
+  iSplitL.
+  - iLeft. iExists func, [], vₛ, vₜ. repeat iSplit; try iSmash.
+    + iPureIntro. simpl. eapply elem_of_dom_2. done.
+    + iApply data_val_similar_bi_similar; done.
+    + rewrite sim_post_vals_unseal /sim_post_vals'. iSmash.
+  - iIntros "%eₛ %eₜ Hsimilar".
+    rewrite sim_post_vals_unseal. sim_post.
+Qed.
