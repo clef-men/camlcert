@@ -3,6 +3,8 @@ From camlcert Require Import
 From camlcert.data_lang Require Export
   notations
   sim.definition.
+From camlcert Require Import
+  options.
 
 Notation "l ↦ₛ{ dq } v" := (
   mapstoₛ (locₛ := loc) (valₛ := data_val) l dq v%data_val

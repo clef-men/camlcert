@@ -9,6 +9,8 @@ From camlcert.iris.program_logic Require Export
   sim.definition.
 From camlcert.data_lang Require Export
   language.
+From camlcert Require Import
+  options.
 
 Import heap.notations.
 

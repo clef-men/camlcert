@@ -10,6 +10,8 @@ From camlcert.data_lang Require Export
 From camlcert.data_lang Require Import
   metatheory
   sim.notations.
+From camlcert Require Import
+  options.
 
 Section sim_GS.
   Context `{sim_programs : !SimPrograms data_ectx_lang data_ectx_lang}.
@@ -310,9 +312,9 @@ Section sim_GS.
         ].
       }
       iDestruct (big_sepM_insert with "Hmapstos") as "(Hl2 & Hmapstos)".
-      { do 2 (rewrite lookup_insert_ne; last by intros ?%(inj _)). done. }
+      { do 2 (rewrite lookup_insert_ne; first by intros ?%(inj _)). done. }
       iDestruct (big_sepM_insert with "Hmapstos") as "(Hl1 & Hl0)".
-      { rewrite lookup_insert_ne; last by intros ?%(inj _). done. }
+      { rewrite lookup_insert_ne; first by intros ?%(inj _). done. }
       rewrite big_sepM_singleton.
       iExists #l, (σₛ' ∪ σₛ). iFrame. iSplitR; last iSmash.
       iPureIntro. apply data_head_step_block_det'.
@@ -335,9 +337,9 @@ Section sim_GS.
       iMod (sim_state_interp_alloc_bigₜ σₜ' with "Hsi") as "(Hsi & Hmapstos & _)".
       { rewrite !map_disjoint_insert_l . naive_solver apply map_disjoint_empty_l. }
       iDestruct (big_sepM_insert with "Hmapstos") as "(Hl2 & Hmapstos)".
-      { do 2 (rewrite lookup_insert_ne; last by intros ?%(inj _)). done. }
+      { do 2 (rewrite lookup_insert_ne; first by intros ?%(inj _)). done. }
       iDestruct (big_sepM_insert with "Hmapstos") as "(Hl1 & Hl0)".
-      { rewrite lookup_insert_ne; last by intros ?%(inj _). done. }
+      { rewrite lookup_insert_ne; first by intros ?%(inj _). done. }
       rewrite big_sepM_singleton.
       rewrite -!insert_union_l left_id. iFrame. iSmash.
     Qed.
