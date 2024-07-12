@@ -75,7 +75,7 @@ Proof.
       eexists. split; last done. eauto 10 with tmc.
     + intros * (<- & <-)%lookup_singleton_Some (_ & <-)%lookup_singleton_Some.
       eexists. split; last done. repeat constructor.
-      eapply tmc_expr_dps_block_1; first constructor.
+      eapply tmc_expr_dps_block_2; first constructor.
       * eapply tmc_expr_dps_call; eauto with tmc.
       * done.
 Qed.

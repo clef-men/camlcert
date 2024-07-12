@@ -140,21 +140,28 @@ Section tmc_expr.
           (&tag eₛ1 eₛ2)
           (&tag eₜ1 eₜ2)
     | tmc_expr_dir_block_dps_1 tag eₛ1 eₛ2 eₜ1 eₜ2 :
-        tmc_expr_dir eₛ1 eₜ1 →
-        tmc_expr_dps $0 𝟚 [] eₛ2.[ren (+1)] eₜ2 →
-        tmc_expr_dir
-          (&tag eₛ1 eₛ2)
-          (let: &tag eₜ1 #() in eₜ2 ;; $0)
-    | tmc_expr_dir_block_dps_2 tag eₛ1 eₛ2 eₜ1 eₜ2 :
         tmc_expr_dir eₛ2 eₜ2 →
         tmc_expr_dps $0 𝟙 [] eₛ1.[ren (+1)] eₜ1 →
         tmc_expr_dir
           (&tag eₛ1 eₛ2)
           (let: &tag #() eₜ2 in eₜ1 ;; $0)
-    | tmc_expr_dir_block_dps tag eₛ1 eₛ2 eₜ1 eₜ2 eₜ :
+    | tmc_expr_dir_block_dps_2 tag eₛ1 eₛ2 eₜ1 eₜ2 :
+        tmc_expr_dir eₛ1 eₜ1 →
+        tmc_expr_dps $0 𝟚 [] eₛ2.[ren (+1)] eₜ2 →
+        tmc_expr_dir
+          (&tag eₛ1 eₛ2)
+          (let: &tag eₜ1 #() in eₜ2 ;; $0)
+    | tmc_expr_dir_block_dps_12 tag eₛ1 eₛ2 eₜ1 eₜ2 eₜ :
         tmc_expr_dps $0 𝟙 [] eₛ1.[ren (+1)] eₜ1 →
         tmc_expr_dps $0 𝟚 [] eₛ2.[ren (+1)] eₜ2 →
         eₜ = (let: &tag #() #() in eₜ1 ;; eₜ2 ;; $0)%data_expr →
+        tmc_expr_dir
+          (&tag eₛ1 eₛ2)
+          eₜ
+    | tmc_expr_dir_block_dps_21 tag eₛ1 eₛ2 eₜ1 eₜ2 eₜ :
+        tmc_expr_dps $0 𝟙 [] eₛ1.[ren (+1)] eₜ1 →
+        tmc_expr_dps $0 𝟚 [] eₛ2.[ren (+1)] eₜ2 →
+        eₜ = (let: &tag #() #() in eₜ2 ;; eₜ1 ;; $0)%data_expr →
         tmc_expr_dir
           (&tag eₛ1 eₛ2)
           eₜ
@@ -205,16 +212,16 @@ Section tmc_expr.
           (if: eₛ0 then eₛ1 else eₛ2)
           (if: eₜ0 then eₜ1 else eₜ2)
     | tmc_expr_dps_block_1 dst idx C tag eₛ1 eₛ2 eₜ1 eₜ2 eₜ :
-        tmc_expr_dir eₛ1 eₜ1 →
-        tmc_expr_dps dst.[ren (+1)] idx.[ren (+1)] (TmcCtxi tag TmcRight $0 :: C.|[ren (+1)]) eₛ2.[ren (+1)] eₜ2 →
-        eₜ = (let: eₜ1 in eₜ2)%data_expr →
+        tmc_expr_dir eₛ2 eₜ2 →
+        tmc_expr_dps dst.[ren (+1)] idx.[ren (+1)] (TmcCtxi tag TmcLeft $0 :: C.|[ren (+1)]) eₛ1.[ren (+1)] eₜ1 →
+        eₜ = (let: eₜ2 in eₜ1)%data_expr →
         tmc_expr_dps dst idx C
           (&tag eₛ1 eₛ2)
           eₜ
     | tmc_expr_dps_block_2 dst idx C tag eₛ1 eₛ2 eₜ1 eₜ2 eₜ :
-        tmc_expr_dir eₛ2 eₜ2 →
-        tmc_expr_dps dst.[ren (+1)] idx.[ren (+1)] (TmcCtxi tag TmcLeft $0 :: C.|[ren (+1)]) eₛ1.[ren (+1)] eₜ1 →
-        eₜ = (let: eₜ2 in eₜ1)%data_expr →
+        tmc_expr_dir eₛ1 eₜ1 →
+        tmc_expr_dps dst.[ren (+1)] idx.[ren (+1)] (TmcCtxi tag TmcRight $0 :: C.|[ren (+1)]) eₛ2.[ren (+1)] eₜ2 →
+        eₜ = (let: eₜ1 in eₜ2)%data_expr →
         tmc_expr_dps dst idx C
           (&tag eₛ1 eₛ2)
           eₜ

@@ -259,13 +259,13 @@ Section tmc_expr.
     ).
   Proof.
     apply tmc_expr_ind; try naive_solver.
-    - intros * Hdir1 IH1 Hdps2 IH2 scope (Hscoped1 & Hscoped2).
-      simpl. split_and!; try naive_solver lia.
-      apply IH2; try naive_solver auto with lia.
-      apply data_expr_scoped_lift1. done.
     - intros * Hdir2 IH2 Hdps1 IH1 scope (Hscoped1 & Hscoped2).
       simpl. split_and!; try naive_solver lia.
       apply IH1; try naive_solver auto with lia.
+      apply data_expr_scoped_lift1. done.
+    - intros * Hdir1 IH1 Hdps2 IH2 scope (Hscoped1 & Hscoped2).
+      simpl. split_and!; try naive_solver lia.
+      apply IH2; try naive_solver auto with lia.
       apply data_expr_scoped_lift1. done.
     - intros * Hdps1 IH1 Hdps2 IH2 -> scope (Hscoped1 & Hscoped2).
       simpl. split_and!; try lia.
@@ -273,6 +273,13 @@ Section tmc_expr.
         apply data_expr_scoped_lift1. done.
       + apply data_expr_scoped_lift1.
         apply IH2; try naive_solver auto with lia.
+        apply data_expr_scoped_lift1. done.
+    - intros * Hdps1 IH1 Hdps2 IH2 -> scope (Hscoped1 & Hscoped2).
+      simpl. split_and!; try lia.
+      + apply IH2; try naive_solver auto with lia.
+        apply data_expr_scoped_lift1. done.
+      + apply data_expr_scoped_lift1.
+        apply IH1; try naive_solver auto with lia.
         apply data_expr_scoped_lift1. done.
     - intros * Hdir IH -> scope Hdst Hidx HC Heₛ.
       split_and!; try naive_solver.
