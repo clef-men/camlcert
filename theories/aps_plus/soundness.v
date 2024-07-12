@@ -7,9 +7,9 @@ From camlcert.data_lang Require Import
   sim.adequacy
   rsim.rules
   rsim.notations.
-From camlcert.aps_plus_1 Require Export
+From camlcert.aps_plus Require Export
   definition.
-From camlcert.aps_plus_1 Require Import
+From camlcert.aps_plus Require Import
   metatheory.
 From camlcert Require Import
   options.

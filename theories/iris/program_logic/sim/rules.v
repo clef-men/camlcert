@@ -349,16 +349,6 @@ Section sim_state.
       iApply (sim_body_monotone (λ _ _, R) with "[] [HN] [HM] [] HR Hsim"); iSmash.
     Qed.
 
-    (* TODO: sim_body_bind *)
-    (* TODO: sim_body_bindₛ *)
-    (* TODO: sim_body_bindₜ *)
-
-    (* TODO: sim_body_bind_inv *)
-    (* TODO: sim_body_bind_invₛ *)
-    (* TODO: sim_body_bind_invₜ *)
-
-    (* TODO: sim_body_decompose *)
-
     Lemma sim_body_stepsₛ Χ N M Φ eₛ eₜ :
       ( ∀ σₛ σₜ,
         sim_state_interp σₛ σₜ ==∗
@@ -1041,12 +1031,6 @@ Section sim_state.
       iIntros "%HN1 %HN2 Hsim HN".
       iApply (sim_inner_bindₜ' with "Hsim HN"). iSmash.
     Qed.
-
-    (* TODO: sim_inner_bind_inv *)
-    (* TODO: sim_inner_bind_invₛ *)
-    (* TODO: sim_inner_bind_invₜ *)
-
-    (* TODO: sim_inner_decompose *)
 
     Lemma sim_inner_stepsₛ Χ N Φ eₛ eₜ :
       NonExpansive N →

@@ -80,16 +80,11 @@ theories/tmc_2/examples/list_map.v
 theories/tmc_2/examples/list_umap.v
 theories/tmc_2/examples/list_double.v
 
-theories/aps_plus_1/definition.v
-theories/aps_plus_1/metatheory.v
-theories/aps_plus_1/soundness.v
-theories/aps_plus_1/compile.v
-theories/aps_plus_1/examples/list_length.v
-
-theories/aps_plus_2/definition.v
-theories/aps_plus_2/metatheory.v
-theories/aps_plus_2/examples/list_length.v
-theories/aps_plus_2/examples/list_sum.v
+theories/aps_plus/definition.v
+theories/aps_plus/metatheory.v
+theories/aps_plus/soundness.v
+theories/aps_plus/compile.v
+theories/aps_plus/examples/list_length.v
 
 theories/inline/definition.v
 theories/inline/metatheory.v

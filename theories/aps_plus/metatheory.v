@@ -2,7 +2,7 @@ From camlcert Require Import
   prelude.
 From camlcert.data_lang Require Export
   metatheory.
-From camlcert.aps_plus_2 Require Export
+From camlcert.aps_plus Require Export
   definition.
 From camlcert Require Import
   options.
@@ -38,6 +38,8 @@ Section aps_plus_expr.
       eauto using aps_plus_expr_dir_refl with aps_plus
     | intros * ? ? ? IHaps **; simplify;
       econstructor; try naive_solver; try apply IHaps with (up ς); autosubst
+    | intros * ? IHaps **; simplify;
+      econstructor; try apply IHaps with (up ς); autosubst
     ].
   Qed.
   Lemma aps_plus_expr_dir_subst ς eₛ eₛ' eₜ eₜ' :
@@ -74,26 +76,26 @@ Section aps_plus_expr.
     ).
   Proof.
     apply aps_plus_expr_ind; try naive_solver.
-    - intros * Hdir1 IH1 Haps2 IH2 scope (Hscoped1 & Hscoped2).
-      simpl. split_and!; try naive_solver lia.
-      apply IH2; try naive_solver lia.
+    - intros * Haps IH -> scope (Hscoped1 & Hscoped2).
+      split; first auto.
+      apply IH; first naive_solver lia.
       apply data_expr_scoped_lift1. done.
-    - intros * Hdir2 IH2 Haps1 IH1 scope (Hscoped1 & Hscoped2).
-      simpl. split_and!; try naive_solver lia.
-      apply IH1; try naive_solver lia.
+    - intros * Haps IH -> scope (Hscoped1 & Hscoped2).
+      split; first auto.
+      apply IH; first naive_solver lia.
       apply data_expr_scoped_lift1. done.
     - intros * Hdir1 IH1 Haps2 IH2 scope Hacc (Hscoped1 & Hscoped2).
       split; first auto.
       apply IH2; try done; apply data_expr_scoped_lift1; done.
     - intros * Hξ Hdir IH -> scope Hacc (_ & Hscoped).
       simpl. split_and!; [eauto using data_expr_scoped_lift1.. | lia].
-    - intros * Hdir1 IH1 Haps2 IH2 scope Hacc (Hscoped1 & Hscoped2).
+    - intros * Haps IH scope Hacc (Hscoped1 & Hscoped2).
       simpl. split_and!; try naive_solver lia.
-      apply IH2; first naive_solver lia.
+      apply IH; first naive_solver lia.
       apply data_expr_scoped_lift1. done.
-    - intros * Hdir2 IH2 Haps1 IH1 scope Hacc (Hscoped1 & Hscoped2).
+    - intros * Haps IH scope Hacc (Hscoped1 & Hscoped2).
       simpl. split_and!; try naive_solver lia.
-      apply IH1; first naive_solver lia.
+      apply IH; first naive_solver lia.
       apply data_expr_scoped_lift1. done.
   Qed.
   Lemma data_expr_scoped_aps_plus_expr_dir scope eₛ eₜ :
