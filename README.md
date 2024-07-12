@@ -35,7 +35,7 @@ They are organized as follows:
 * `compose/`: composition transformation.
 * `inline/`: inlining transformation.
 
-For each transformation, its directory is itself organized as follows:
+For each transformation, the corresponding directory is itself organized as follows:
 
 * `definition.v`: definition of the transformation relation.
 * `metatheory.v`: lemmas about substitution and well-formedness.
