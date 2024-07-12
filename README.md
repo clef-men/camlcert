@@ -32,8 +32,8 @@ They are organized as follows:
 * `tmc_1/`: TMC transformation without constructor compression.
 * `tmc_2/`: TMC transformation with constructor compression.
 * `aps_plus/`: APS transformation for the addition.
-* `compose/`: composition transformation.
 * `inline/`: inlining transformation.
+* `compose/`: composition transformation.
 
 For each transformation, the corresponding directory is itself organized as follows:
 
