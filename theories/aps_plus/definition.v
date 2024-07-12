@@ -121,7 +121,7 @@ Section aps_plus_expr.
         aps_plus_expr_aps acc
           ((DataFunc func annot) eₛ)
           eₜ'
-    | aps_plus_expr_aps_plus_1 acc n eₛ eₜ :
+    | aps_plus_expr_aps_plus acc n eₛ eₜ :
         aps_plus_expr_aps $0 eₛ.[ren (+1)] eₜ →
         aps_plus_expr_aps acc
           (n + eₛ)

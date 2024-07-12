@@ -2,7 +2,7 @@ From camlcert Require Import
   prelude.
 From camlcert.common Require Import
   gmap.
-From camlcert.aps_plus_1 Require Export
+From camlcert.aps_plus Require Export
   metatheory.
 From camlcert Require Import
   options.

@@ -6,7 +6,7 @@ From camlcert.data_human_lang Require Export
   compile.
 From camlcert.data_human_lang Require Import
   notations.
-From camlcert.aps_plus_1 Require Import
+From camlcert.aps_plus Require Import
   soundness.
 From camlcert Require Import
   options.
