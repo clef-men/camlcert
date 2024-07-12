@@ -5,13 +5,6 @@ From camlcert.data_lang Require Export
 From camlcert Require Import
   options.
 
-Coercion data_index_to_Z idx : Z :=
-  match idx with
-  | DataZero => 0
-  | DataOne => 1
-  | DataTwo => 2
-  end.
-
 Coercion DataIndex : data_index >-> data_val.
 Coercion DataTag : data_tag >-> data_val.
 Coercion DataInt : Z >-> data_val.

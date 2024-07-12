@@ -46,6 +46,13 @@ Proof.
   apply (inj_countable' encode decode). intros []; done.
 Qed.
 
+Coercion data_index_to_Z idx : Z :=
+  match idx with
+  | DataZero => 0
+  | DataOne => 1
+  | DataTwo => 2
+  end.
+
 Definition data_tag :=
   nat.
 Implicit Types tag : data_tag.
@@ -222,72 +229,169 @@ Implicit Types e : data_expr.
   populate (DataVal inhabitant).
 #[global] Instance data_expr_eq_dec : EqDecision data_expr :=
   ltac:(solve_decision).
+Variant data_encode_leaf :=
+  | DataEncodeVal v
+  | DataEncodeVar x
+  | DataEncodeUnop (op : data_unop)
+  | DataEncodeBinop (op : data_binop)
+  | DataEncodeTag tag.
+#[local] Instance data_encode_leaf_eq_dec : EqDecision data_encode_leaf :=
+  ltac:(solve_decision).
+#[local] Instance data_encode_leaf_countable :
+  Countable data_encode_leaf.
+Proof.
+  pose encode leaf :=
+    match leaf with
+    | DataEncodeVal v =>
+        inl $ inl $ inl $ inl v
+    | DataEncodeVar x =>
+        inl $ inl $ inl $ inr x
+    | DataEncodeUnop op =>
+        inl $ inl $ inr op
+    | DataEncodeBinop op =>
+        inl $ inr op
+    | DataEncodeTag tag =>
+        inr tag
+    end.
+  pose decode leaf :=
+    match leaf with
+    | inl (inl (inl (inl v))) =>
+        DataEncodeVal v
+    | inl (inl (inl (inr x))) =>
+        DataEncodeVar x
+    | inl (inl (inr op)) =>
+        DataEncodeUnop op
+    | inl (inr op) =>
+        DataEncodeBinop op
+    | inr tag =>
+        DataEncodeTag tag
+    end.
+  refine (inj_countable' encode decode _). intros []; done.
+Qed.
 #[global] Instance data_expr_countable :
   Countable data_expr.
 Proof.
+  #[local] Notation code_Let :=
+    0.
+  #[local] Notation code_Call :=
+    1.
+  #[local] Notation code_Unop :=
+    2.
+  #[local] Notation code_Binop :=
+    3.
+  #[local] Notation code_BinopDet :=
+    4.
+  #[local] Notation code_If :=
+    5.
+  #[local] Notation code_Block :=
+    6.
+  #[local] Notation code_BlockDet :=
+    7.
+  #[local] Notation code_Load :=
+    8.
+  #[local] Notation code_Store :=
+    9.
   pose fix encode e :=
     match e with
     | DataVal v =>
-        GenLeaf (inl v)
+        GenLeaf (DataEncodeVal v)
     | DataVar x =>
-        GenLeaf (inr $ inl x)
+        GenLeaf (DataEncodeVar x)
     | DataLet e1 e2 =>
-        GenNode 0 [encode e1; encode e2]
+        GenNode code_Let [encode e1; encode e2]
     | DataCall e1 e2 =>
-        GenNode 1 [encode e1; encode e2]
+        GenNode code_Call [encode e1; encode e2]
     | DataUnop op e =>
-        GenNode 2 [GenLeaf (inr $ inr $ inl op); encode e]
+        GenNode code_Unop [GenLeaf (DataEncodeUnop op); encode e]
     | DataBinop op e1 e2 =>
-        GenNode 3 [GenLeaf (inr $ inr $ inr $ inl op); encode e1; encode e2]
+        GenNode code_Binop [GenLeaf (DataEncodeBinop op); encode e1; encode e2]
     | DataBinopDet op e1 e2 =>
-        GenNode 4 [GenLeaf (inr $ inr $ inr $ inl op); encode e1; encode e2]
+        GenNode code_BinopDet [GenLeaf (DataEncodeBinop op); encode e1; encode e2]
     | DataIf e0 e1 e2 =>
-        GenNode 5 [encode e0; encode e1; encode e2]
+        GenNode code_If [encode e0; encode e1; encode e2]
     | DataBlock tag e1 e2 =>
-        GenNode 6 [GenLeaf (inr $ inr $ inr $ inr tag); encode e1; encode e2]
+        GenNode code_Block [GenLeaf (DataEncodeTag tag); encode e1; encode e2]
     | DataBlockDet tag e1 e2 =>
-        GenNode 7 [GenLeaf (inr $ inr $ inr $ inr tag); encode e1; encode e2]
+        GenNode code_BlockDet [GenLeaf (DataEncodeTag tag); encode e1; encode e2]
     | DataLoad e1 e2 =>
-        GenNode 8 [encode e1; encode e2]
+        GenNode code_Load [encode e1; encode e2]
     | DataStore e1 e2 e3 =>
-        GenNode 9 [encode e1; encode e2; encode e3]
+        GenNode code_Store [encode e1; encode e2; encode e3]
     end.
   pose fix decode _e :=
     match _e with
-    | GenLeaf (inl v) =>
+    | GenLeaf (DataEncodeVal v) =>
         DataVal v
-    | GenLeaf (inr (inl x)) =>
+    | GenLeaf (DataEncodeVar x) =>
         DataVar x
-    | GenNode 0 [e1; e2] =>
+    | GenNode code_Let [e1; e2] =>
         DataLet (decode e1) (decode e2)
-    | GenNode 1 [e1; e2] =>
+    | GenNode code_Call [e1; e2] =>
         DataCall (decode e1) (decode e2)
-    | GenNode 2 [GenLeaf (inr (inr (inl op))); e] =>
+    | GenNode code_Unop [GenLeaf (DataEncodeUnop op); e] =>
         DataUnop op (decode e)
-    | GenNode 3 [GenLeaf (inr (inr (inr (inl op)))); e1; e2] =>
+    | GenNode code_Binop [GenLeaf (DataEncodeBinop op); e1; e2] =>
         DataBinop op (decode e1) (decode e2)
-    | GenNode 4 [GenLeaf (inr (inr (inr (inl op)))); e1; e2] =>
+    | GenNode code_BinopDet [GenLeaf (DataEncodeBinop op); e1; e2] =>
         DataBinopDet op (decode e1) (decode e2)
-    | GenNode 5 [e0; e1; e2] =>
+    | GenNode code_If [e0; e1; e2] =>
         DataIf (decode e0) (decode e1) (decode e2)
-    | GenNode 6 [GenLeaf (inr (inr (inr (inr tag)))); e1; e2] =>
+    | GenNode code_Block [GenLeaf (DataEncodeTag tag); e1; e2] =>
         DataBlock tag (decode e1) (decode e2)
-    | GenNode 7 [GenLeaf (inr (inr (inr (inr tag)))); e1; e2] =>
+    | GenNode code_BlockDet [GenLeaf (DataEncodeTag tag); e1; e2] =>
         DataBlockDet tag (decode e1) (decode e2)
-    | GenNode 8 [e1; e2] =>
+    | GenNode code_Load [e1; e2] =>
         DataLoad (decode e1) (decode e2)
-    | GenNode 9 [e1; e2; e3] =>
+    | GenNode code_Store [e1; e2; e3] =>
         DataStore (decode e1) (decode e2) (decode e3)
     | _ =>
         @inhabitant _ data_expr_inhabited
     end.
-  apply (inj_countable' encode decode). intros e. induction e; simpl; congruence.
+  apply (inj_countable' encode decode).
+  intros e. induction e; simpl; congruence.
 Qed.
 
-#[global] Instance data_expr_ids : Ids data_expr. derive. Defined.
-#[global] Instance data_expr_rename : Rename data_expr. derive. Defined.
-#[global] Instance data_expr_subst : Subst data_expr. derive. Defined.
-#[global] Instance data_expr_subst_lemmas : SubstLemmas data_expr. derive. Qed.
+#[global] Instance data_expr_ids : Ids data_expr :=
+  ltac:(derive).
+#[global] Instance data_expr_rename : Rename data_expr :=
+  ltac:(derive).
+#[global] Instance data_expr_subst : Subst data_expr :=
+  ltac:(derive).
+#[global] Instance data_expr_subst_lemmas :
+  SubstLemmas data_expr.
+Proof.
+  derive.
+Qed.
+
+Notation data_of_val :=
+  DataVal
+( only parsing
+).
+Definition data_to_val e :=
+  match e with
+  | DataVal v =>
+      Some v
+  | _ =>
+      None
+  end.
+
+Lemma data_to_of_val e v :
+  e = data_of_val v →
+  data_to_val e = Some v.
+Proof.
+  naive_solver.
+Qed.
+Lemma data_of_to_val e v :
+  data_to_val e = Some v →
+  data_of_val v = e.
+Proof.
+  destruct e => //=. by intros [= <-].
+Qed.
+#[global] Instance data_of_val_inj :
+  Inj (=) (=) data_of_val.
+Proof.
+  intros ?*. congruence.
+Qed.
 
 Record data_definition := {
   data_definition_annot : data_annotation ;
