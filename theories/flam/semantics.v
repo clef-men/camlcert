@@ -18,6 +18,8 @@ Implicit Types x f : flam_var.
 Implicit Types k : flam_cont.
 Implicit Types simple : flam_simple.
 Implicit Types simples : list flam_simple.
+Implicit Types mut : flam_mut.
+Implicit Types rec : flam_rec.
 Implicit Types tag : flam_tag.
 Implicit Types named : flam_named.
 Implicit Types arity : flam_arity.
@@ -154,7 +156,7 @@ Inductive flam_env :=
   FlamEnv (vals : flam_var → flam_val) (conts : flam_cont → flam_continuation)
 with flam_continuation :=
   | FlamContinuation0
-  | FlamContinuation arity tm (env : flam_env).
+  | FlamContinuation rec arity tm (env : flam_env).
 Implicit Types env : flam_env.
 Implicit Types cont : flam_continuation.
 
@@ -499,12 +501,12 @@ Inductive flam_step prog : flam_env → flam_term → flam_state → flam_env �
         (flam_env_push_vals (FlamValClos funcs vs <$> seq 0 (length funcs)) env)
         tm
         σ
-  | flam_step_letcont env arity tm1 tm2 σ :
+  | flam_step_letcont env rec arity tm1 tm2 σ :
       flam_step prog
         env
-        (FlamLetCont arity tm1 tm2)
+        (FlamLetCont rec arity tm1 tm2)
         σ
-        (flam_env_push_cont (FlamContinuation arity tm1 env) env)
+        (flam_env_push_cont (FlamContinuation rec arity tm1 env) env)
         tm2
         σ
   | flam_step_apply env kind f func k1 cont1 k2 cont2 simples vs σ arity tm funcs ws i :
@@ -523,15 +525,18 @@ Inductive flam_step prog : flam_env → flam_term → flam_state → flam_env �
         (flam_env_push_conts [cont1; cont2] $ flam_env_push_vals (FlamValClos funcs ws i :: vs) inhabitant)
         tm
         σ
-  | flam_step_applycont env k simples vs σ arity tm env' :
-      env.(flam_env_conts) k = FlamContinuation arity tm env' →
+  | flam_step_applycont env k simples vs σ rec arity tm env' :
+      let cont := FlamContinuation rec arity tm env' in
+      env.(flam_env_conts) k = cont →
       length simples = arity →
       (flam_eval_simple prog env) <$> simples = Some <$> vs →
       flam_step prog
         env
         (FlamApplyCont (FlamCont k) simples)
         σ
-        (flam_env_push_vals vs env')
+        ( let env' := flam_env_push_vals vs env' in
+          if rec then flam_env_push_cont cont env' else env'
+        )
         tm
         σ
   | flam_step_switch env simple i arms σ arm :

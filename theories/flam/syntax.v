@@ -50,6 +50,11 @@ Inductive flam_mut :=
   | Mutable.
 Implicit Types mut : flam_mut.
 
+Inductive flam_rec :=
+  | Recursive
+  | Nonrecursive.
+Implicit Types rec : flam_rec.
+
 Definition flam_tag :=
   nat.
 Implicit Types tag : flam_tag.
@@ -115,7 +120,7 @@ Implicit Types arms : gmap flam_tag flam_arm.
 Inductive flam_term :=
   | FlamLet named (tm : flam_term)
   | FlamLetClos funcs simples (tm : flam_term)
-  | FlamLetCont arity (tm1 tm2 : flam_term)
+  | FlamLetCont rec arity (tm1 tm2 : flam_term)
   | FlamApply kind f simples k1 k2
   | FlamApplyCont (k : flam_cont') simples
   | FlamSwitch simple arms.
