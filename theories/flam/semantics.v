@@ -487,7 +487,7 @@ Inductive flam_step prog : flam_env → flam_term → flam_state → flam_env �
         env
         (FlamLet (FlamPrim (FlamBlock Mutable tag) simples) tm)
         σ
-        env
+        (flam_env_push_val (FlamValLoc l) env)
         tm
         (flam_state_alloc l (FlamHeader tag (length simples)) vs σ)
   | flam_step_letclos env funcs simples vs tm σ :
