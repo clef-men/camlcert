@@ -46,13 +46,13 @@ Definition FlamBool b :=
   FlamInt (Z.b2z b).
 
 Inductive flam_mut :=
-  | Immutable
-  | Mutable.
+  | FlamImmutable
+  | FlamMutable.
 Implicit Types mut : flam_mut.
 
 Inductive flam_rec :=
-  | Recursive
-  | Nonrecursive.
+  | FlamRecursive
+  | FlamNonrecursive.
 Implicit Types rec : flam_rec.
 
 Definition flam_tag :=

@@ -397,12 +397,12 @@ Definition flam_eval_prim3 σ op v1 v2 v3 :=
 
 Definition flam_eval_prim prim vs :=
   match prim with
-  | FlamBlock Immutable tag =>
+  | FlamBlock FlamImmutable tag =>
       if decide (0 < length vs) then
         Some $ FlamValBlock tag vs
       else
         None
-  | FlamBlock Mutable _ =>
+  | FlamBlock FlamMutable _ =>
       None
   end.
 #[global] Arguments flam_eval_prim !_ _ : assert.
@@ -487,7 +487,7 @@ Inductive flam_step prog : flam_env → flam_term → flam_state → flam_env �
       ) →
       flam_step prog
         env
-        (FlamLet (FlamPrim (FlamBlock Mutable tag) simples) tm)
+        (FlamLet (FlamPrim (FlamBlock FlamMutable tag) simples) tm)
         σ
         (flam_env_push_val (FlamValLoc l) env)
         tm
