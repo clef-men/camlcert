@@ -223,7 +223,7 @@ Proof.
   - intros e1 IH1 e2 IH2 scope ξ n Hξ (Hscoped1 & Hscoped2).
     split; first naive_solver.
     asimpl. rewrite -Nat.add_succ_r. apply IH2; last done.
-    intros []; simpl; [lia | rewrite -Nat.succ_le_mono //].
+    intros []; simpl; [lia | rewrite -Nat.succ_le_mono // ].
 Qed.
 Lemma data_expr_scoped_lift n scope e :
   data_expr_scoped scope e →

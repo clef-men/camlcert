@@ -102,3 +102,7 @@ theories/compose/metatheory.v
 theories/compose/soundness.v
 theories/compose/compile.v
 theories/compose/examples/list_rev_rev.v
+
+theories/flam/syntax.v
+theories/flam/semantics.v
+theories/flam/language.v

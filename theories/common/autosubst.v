@@ -6,6 +6,22 @@ From camlcert Require Export
 From camlcert Require Import
   options.
 
+Definition sapp {term} (tms : list term) ς :=
+  foldr scons ς tms.
+
+Notation "tms .+ ς" := (
+  sapp tms ς
+)(at level 60,
+  right associativity
+) : subst_scope.
+Notation "ς .[ tms //]" := (
+  subst (sapp tms ids) ς
+)(at level 2,
+  tms at level 200,
+  left associativity,
+  format "ς .[ tms //]"
+) : subst_scope.
+
 Section subst.
   Context `{!Ids term, !Rename term, !Subst term, !SubstLemmas term}.
 
