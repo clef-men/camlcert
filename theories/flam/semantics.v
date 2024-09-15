@@ -455,7 +455,7 @@ Inductive flam_step prog : flam_env → flam_term → flam_state → flam_env �
         (flam_env_push_val v env)
         tm
         σ'
-  | flam_step_equal_fail env simple1 v1 simple2 v2 tm σ :
+  | flam_step_let_equal_fail env simple1 v1 simple2 v2 tm σ :
       flam_eval_simple prog env simple1 = Some v1 →
       flam_eval_simple prog env simple2 = Some v2 →
       flam_val_neq v1 v2 →
@@ -466,7 +466,7 @@ Inductive flam_step prog : flam_env → flam_term → flam_state → flam_env �
         (flam_env_push_val (FlamValBool false) env)
         tm
         σ
-  | flam_step_equal_suc env simple1 v1 simple2 v2 tm σ :
+  | flam_step_let_equal_suc env simple1 v1 simple2 v2 tm σ :
       flam_eval_simple prog env simple1 = Some v1 →
       flam_eval_simple prog env simple2 = Some v2 →
       v1 = v2 →
@@ -477,7 +477,7 @@ Inductive flam_step prog : flam_env → flam_term → flam_state → flam_env �
         (flam_env_push_val (FlamValBool true) env)
         tm
         σ
-  | flam_step_block env tag simples vs tm σ l :
+  | flam_step_let_block env tag simples vs tm σ l :
       0 < length simples →
       (flam_eval_simple prog env) <$> simples = Some <$> vs →
       σ.(flam_state_headers) !! l = None →
