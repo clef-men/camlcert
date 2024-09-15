@@ -46,8 +46,8 @@ Definition FlamBool b :=
   FlamInt (Z.b2z b).
 
 Inductive flam_mut :=
-  | FlamImmutable
-  | FlamMutable.
+  | FlamMutable
+  | FlamImmutable.
 Implicit Types mut : flam_mut.
 
 Inductive flam_rec :=
