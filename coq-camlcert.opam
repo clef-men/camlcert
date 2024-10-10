@@ -8,8 +8,6 @@ maintainer:
   "clement.allain@inria.fr"
 authors: [
   "Clément Allain"
-  "Gabriel Scherer"
-  "François Pottier"
 ]
 homepage:
   "https://github.com/clef-men/camlcert"
