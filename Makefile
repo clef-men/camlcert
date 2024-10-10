@@ -1,14 +1,16 @@
+targets_nocoq := depend
+
 .PHONY : all
 all :
 
 .PHONY : depend
 depend :
-	@ opam install . --deps-only --verbose
+	@ opam install . --deps-only --yes
 
 Makefile.coq : _CoqProject
 	@ coq_makefile -f $< -o $@
 
-ifeq (,$(filter depend,$(MAKECMDGOALS)))
+ifeq (,$(filter $(targets_nocoq),$(MAKECMDGOALS)))
 -include Makefile.coq
 endif
 

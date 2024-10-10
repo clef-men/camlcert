@@ -5,11 +5,18 @@ It aims at verifying program transformations from the OCaml compiler.
 
 ## Building
 
-Assuming that you have [opam](https://opam.ocaml.org/) (>= 2.0) installed, run the following commands, which create a local opam switch, install dependencies and compile Coq proofs:
+First, you need to install [opam](https://opam.ocaml.org/) (>= 2.0).
+
+To make sure it is up-to-date, run:
 
 ```
 opam update --all --repositories
-opam switch create . --yes --deps-only --repos default,coq-released=https://coq.inria.fr/opam/released,iris-dev=git+https://gitlab.mpi-sws.org/iris/opam.git
+```
+
+To compile Coq proofs, run the following commands:
+
+```
+opam switch create . --deps-only --repos default,coq-released=https://coq.inria.fr/opam/released,iris-dev=git+https://gitlab.mpi-sws.org/iris/opam.git --yes
 eval $(opam env --switch=. --set-switch)
 make
 ```
