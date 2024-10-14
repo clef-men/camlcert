@@ -81,7 +81,7 @@ developments, all at the same time.
 
 In the following we include an exhaustive list of all formal claims in
 the article, and their counterpart in the Coq development, if
-available.
+available. All paths are given relative to the `theories/` directory.
 
 #### Section 1: introduction
 
@@ -90,7 +90,7 @@ in the Coq development. They are specific instances, given for
 exposition purposes, of the general correctness result of the
 transformation:
 - the statement "map >= map" (the first one) is an instance of
-    `tmc_expr_dir_specification'` in theories/tmc_2/soundness.v
+    `tmc_expr_dir_specification'` in `tmc_2/soundness.v`
 - the statement "map >= map_dps" (the second one) is an instance of
     `tmc_expr_dps_specification'`, same file
 
@@ -102,15 +102,15 @@ rest of the article will make this clearer.)
 
 The definition of Datalang (figures 1 and 2) is given in
 
-- `theories/data_lang/syntax.v` (`data_expr`, `data_definition`, `data_program`)
-- `theories/data_lang/notations.v` (notations, including the syntactic sugar of Figure 2)
+- `data_lang/syntax.v` (`data_expr`, `data_definition`, `data_program`)
+- `data_lang/notations.v` (notations, including the syntactic sugar of Figure 2)
 
 The operational semantics (figure 3) is mostly given in
-`theories/data_lang/semantics.v` . This file contains the head-reduction rules (`data_head_step`) and the evaluation contexts (`data_excti`). There is a generic machinery to define the small-step semantics in `theories/iris/program_logics`, which is instantiated for DataLang in `theories/data_lang/language.v`.
+`data_lang/semantics.v` . This file contains the head-reduction rules (`data_head_step`) and the evaluation contexts (`data_excti`). There is a generic machinery to define the small-step semantics in `iris/program_logics`, which is instantiated for DataLang in `data_lang/language.v`.
 
-The example of List.map in DataLang (figure 4) is included in `theories/tmc_1/examples/list_map.v`.
+The example of List.map in DataLang (figure 4) is included in `tmc_1/examples/list_map.v`.
 
-The definition of the TMC transformations, as relations, are in `theories/tmc_1/definition.v`:
+The definition of the TMC transformations, as relations, are in `tmc_1/definition.v`:
 - the whole-program transformation (Figure 5) is the `tmc` Record at the end
 - the direct-style transformation (Figure 6) is `tmc_expr_dir`
 - the DPS transformation (Figure 7) is `tmc_expr_dps`
@@ -120,7 +120,7 @@ The definition of the TMC transformations, as relations, are in `theories/tmc_1/
 
 We prove that the transformation relations are effective by defining
 a function from an input program to a related output program. The
-proof is in `theories/tmc_1/compile.v`. The meat of the definition is
+proof is in `tmc_1/compile.v`. The meat of the definition is
 in `tmc_compile_expr'`, and the fact that it realizes the relation is
 stated in `tmc_compile_sound`.
 
@@ -133,8 +133,8 @@ covered in our Coq development.
 One notable exception is the "Constructor Compression" optimization
 described in Section 3.4. This is a refinement of the TMC
 transformation that we also included in our formal development. It is
-developed in `theories/tmc_2`, which is mostly a copy and extension of
-`theories/tmc_1` with constructor compression (it lacks some minor
+developed in `tmc_2/`, which is mostly a copy and extension of
+`tmc_1/` with constructor compression (it lacks some minor
 aspects, for example it does not currently have
 a `compile.v` function).
 
@@ -147,14 +147,14 @@ To see that `tmc_2/` supports constructor compression, look at:
 #### Section 4: Specifying TMC
 
 The specification of the direct-style transformation (Section 4.1) is
-`tmc_expr_dir_specification'` in `theories/tmc_1/soundness.v`
+`tmc_expr_dir_specification'` in `tmc_1/soundness.v`
 
 The specification of the DPS transformation (Section 4.2) is
-`tmc_expr_dps_specification'` in `theories/tmc_1/soundness.v`
+`tmc_expr_dps_specification'` in `tmc_1/soundness.v`
 
 The heap bijection is defined in ... . The BijInsert rule in the paper
 corresponds to the lemma `sim_state_interp_heap_bij_insert` in
-`theories/data_lang/sim/basic_rules.v`. The relation with the paper
+`data_lang/sim/basic_rules.v`. The relation with the paper
 deserves an explanation:
 
 ```coq
@@ -163,7 +163,7 @@ deserves an explanation:
     lₛ ≈ lₜ.
 ```
 
-The bowtie symbol (the two locations have similar values) is a generic notation defined by a typeclass in `theories/common/typeclasses.v`, which is instantiated in `theories/iris/base_logic/sim/heap_bij.v` as follows:
+The bowtie symbol (the two locations have similar values) is a generic notation defined by a typeclass in `common/typeclasses.v`, which is instantiated in `iris/base_logic/sim/heap_bij.v` as follows:
 
 ```coq
     Definition sim_heap_bij_tie lₛ lₜ : iProp Σ :=
@@ -173,7 +173,7 @@ The bowtie symbol (the two locations have similar values) is a generic notation 
       Build_BiTie sim_heap_bij_tie.
 ```
 
-where you can recognize the precondition from the paper. This definition in `iris/base_logic` is itself parametrized over a syntactic class of value with a similarity relation, and its use in `data_lang` comes from an instantiation found in `theories/data_lang/sim/definition.v` (`Instance data_val_bi_similar`). The definition of value similarity (Figure 10) is precisely given in this instance, as the argument to `Build_BiSimilar`.
+where you can recognize the precondition from the paper. This definition in `iris/base_logic` is itself parametrized over a syntactic class of value with a similarity relation, and its use in `data_lang` comes from an instantiation found in `data_lang/sim/definition.v` (`Instance data_val_bi_similar`). The definition of value similarity (Figure 10) is precisely given in this instance, as the argument to `Build_BiSimilar`.
 
 
 #### Section 5: Relational Separation Logic
@@ -185,8 +185,8 @@ standard in the Iris community (an extra monotonicity property is baked in) – 
   https://gitlab.mpi-sws.org/iris/iris/-/blob/6dece4170850ea78e38b6b6c12fe3a5494966ab4/iris/bi/weakestpre.v#L82-85
 
 The rules of the relational program logic in Figure 11 are defined as lemmas in the Coq development.
-The language-independent rules are in `theories/iris/program_logic/sim/rules.v`
-and the DataLang-specific rules are in `theories/data_lang/sim/{basic,derived}_rules.v`.
+The language-independent rules are in `iris/program_logic/sim/rules.v`
+and the DataLang-specific rules are in `data_lang/sim/{basic,derived}_rules.v`.
 
 In more details:
 - RelPost, RelStuck, RelBind: `sim_post`, `sim_strongly_stuck`, `sim_bind` (in `program_logic/sim/rules.v`)
@@ -208,13 +208,36 @@ The X{TMC} protocol in Figure 12 is defined in `tmc_1/soundness.v`: `tmc_protoco
 
 Our Coq development also contains correctness proofs for related
 program transformations, such as inlining and accumulator-passing
-style. Their development are in `theories/inline` and
-`theories/aps_plus`, they follow the same structure, including
+style. Their development are in `inline/` and
+`aps_plus/`, they follow the same structure, including
 a `compile.v` function deciding a particular transformation
-strategy -- for `inline`, we inline function calls that carry an
+strategy -- for `inline/`, we inline function calls that carry an
 inlining annotation.
 
 
-#### Section 7
+#### Section 7: Proof of the specification
 
-TODO
+Lemmas 7.1 and 7.2 (the proof that the TMC transformations respect the TMC specifications) are proved mutually-recursively in `Lemma tmc_expr_spec` in `tmc_1/soundness.v`. The statements found in the paper correspond to two direct colloraries found right below, `Lemma tmc_expr_dir_spec` and `Lemma tmc_expr_dps_spec`.
+
+#### Section 8: Simulation
+
+##### 8.1: Definition
+
+The definition of the simulation relation, in Figure 14, is given in `iris/program_logic/sim/definition.v`. The definition of `sim-body` is fairly easy to recognize. The least- and biggest-fixpoints used to define `sim-body` and `sim` come from the `iris.bi.fixpoint` [module](https://plv.mpi-sws.org/coqdoc/iris/iris.bi.lib.fixpoint.html) of the Iris standard library. The notations (eₛ ≳ eₜ <X> [Φ]) and (eₛ ≳ eₜ <X> {Φ}) correspond to notations in `iris/programₗogic/notations.v`, the second one is defined as `simv` in `iris/program_logic/sim`, with the post-condition restricted to values defined by `sim_post_vals'` in the same file.
+
+This definition in `iris/program_logic/sim` is language-generic, it is parametrized over the notion of reduction step of the language. More precisely, both source and target languages are parameters that must implement the `Structure ectx_language` defined in `iris/program_logic/ectx_language.v`. DataLang declares an instance of this structure, `Canonical data_ectx_lang` in `data_lang/language.v`.
+
+##### 8.2: Simulation Closure
+
+Theorem 8.2 (Simulation Closure) is `Lemma sim_close` in `iris/program_logic/sim/rules.v`. There is no separate definition 8.1 of admissibility, it is inlined in the statement of the lemma. The file follows with a series of progressively simpler (and weaker) statements, culminating in `sim_close_pure_head_step` which uses what is shown in 8.2 as the "simpler condition that implies admissibility", and is indeed the lemma used in the proof of `tmc_simv_close` in `tmc_1/soundness.v`.
+
+##### 8.3: Adequacy
+
+The notions of behaviors and expression refinement in Figure 15 are defined in `iris/program_logic/refinement.v`. They are parametrized over a notion of Iris language (`language`) and value similarity relation (`Similar`), instantiated for DataLang in `Canonical data_lang` (`data_lang/language.v`) and `Instance data_val_similar` (`data_lang/syntax.v`). The notion of program refinement (pₛ ⊒ pₜ) is not defined in the language-independent part (the distinction between expressions and program is DataLang-specific), it is `data_program_refinement` in `data_lang/refinement.v`.
+
+The statement of Theorem 8.3 (Simulation adequacy) corresponds to `Lemma sim_adequacy'` in `iris/program_logic/sim/adequacy.v`. (This language-generic statement a slightly more complex form, the hypothesis is itself parametrized over the assumption that the value simulation relation is adequate.)
+It is intantiated for DataLang as `Lemma sim_adequacy` in `data_lang/sim/adequacy.v`, where it talks about whole DataLang programs rather than just expressions as in the language-generic statement.
+
+##### 8.4: Transformation soundness
+
+Theorem 8.4 (Transformation soundness) is `Lemma tmc_sound` in `tmc_1/soundness.v`.
