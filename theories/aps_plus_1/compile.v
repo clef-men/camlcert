@@ -52,211 +52,206 @@ Definition aps_plus_hint_le hint1 hint2 :=
 
 Record aps_plus_result := {
   aps_plus_result_hint : aps_plus_hint ;
-  aps_plus_result_dir : data_expr ;
-  aps_plus_result_aps : data_expr ;
+  aps_plus_result_dir : (var → data_expr) → data_expr ;
+  aps_plus_result_aps : (var → data_expr) → data_expr ;
 }.
 
-Fixpoint aps_plus_compile_expr' ξ acc ς e :=
+Fixpoint aps_plus_compile_expr ξ acc e :=
   let acc' := DataVar acc in
   match e with
   | DataVal _ =>
       let dir := e in
       {|aps_plus_result_hint :=
           ApsPlusNo ;
-        aps_plus_result_dir :=
+        aps_plus_result_dir ς :=
           dir ;
-        aps_plus_result_aps :=
+        aps_plus_result_aps ς :=
           DataBinop DataPlus acc' dir
       |}
   | DataVar x =>
-      let dir := ς x in
+      let dir ς := ς x in
       {|aps_plus_result_hint :=
           ApsPlusNo ;
         aps_plus_result_dir :=
           dir ;
-        aps_plus_result_aps :=
-          DataBinop DataPlus acc' dir ;
+        aps_plus_result_aps ς :=
+          DataBinop DataPlus acc' (dir ς) ;
       |}
   | DataLet e1 e2 =>
-      let res1 := aps_plus_compile_expr' ξ acc ς e1 in
-      let res2 := aps_plus_compile_expr' ξ (S acc) (up ς) e2 in
+      let res1 := aps_plus_compile_expr ξ acc e1 in
+      let res2 := aps_plus_compile_expr ξ (S acc) e2 in
       {|aps_plus_result_hint :=
           res2.(aps_plus_result_hint) ;
-        aps_plus_result_dir :=
-          DataLet res1.(aps_plus_result_dir) res2.(aps_plus_result_dir) ;
-        aps_plus_result_aps :=
-          DataLet res1.(aps_plus_result_dir) res2.(aps_plus_result_aps) ;
+        aps_plus_result_dir ς :=
+          DataLet (res1.(aps_plus_result_dir) ς) (res2.(aps_plus_result_dir) (up ς)) ;
+        aps_plus_result_aps ς :=
+          DataLet (res1.(aps_plus_result_dir) ς) (res2.(aps_plus_result_aps) (up ς)) ;
       |}
   | DataCall (DataVal (DataFunc func annot)) e =>
-      let res := aps_plus_compile_expr' ξ acc ς e in
-      let dir := DataCall (DataVal $ DataFunc func annot) res.(aps_plus_result_dir) in
+      let res := aps_plus_compile_expr ξ acc e in
+      let dir ς := DataCall (DataVal $ DataFunc func annot) (res.(aps_plus_result_dir) ς) in
       match ξ !! func with
       | None =>
           {|aps_plus_result_hint :=
               ApsPlusNo ;
             aps_plus_result_dir :=
               dir ;
-            aps_plus_result_aps :=
-              DataBinop DataPlus acc' dir ;
+            aps_plus_result_aps ς :=
+              DataBinop DataPlus acc' (dir ς) ;
           |}
       | Some func_aps =>
           {|aps_plus_result_hint :=
               if decide (aps_plus_annotation ∈ annot) then ApsPlusYes else ApsPlusMaybe ;
             aps_plus_result_dir :=
               dir ;
-            aps_plus_result_aps :=
-              DataLet res.(aps_plus_result_dir) $
+            aps_plus_result_aps ς :=
+              DataLet (res.(aps_plus_result_dir) ς) $
               DataCall (DataVal $ DataFunc func_aps annot) (DataBlock data_tag_pair (DataVar $ S acc) (DataVar 0)) ;
           |}
       end
   | DataCall e1 e2 =>
-      let res1 := aps_plus_compile_expr' ξ acc ς e1 in
-      let res2 := aps_plus_compile_expr' ξ acc ς e2 in
-      let dir := DataCall res1.(aps_plus_result_dir) res2.(aps_plus_result_dir) in
+      let res1 := aps_plus_compile_expr ξ acc e1 in
+      let res2 := aps_plus_compile_expr ξ acc e2 in
+      let dir ς := DataCall (res1.(aps_plus_result_dir) ς) (res2.(aps_plus_result_dir) ς) in
       {|aps_plus_result_hint :=
           ApsPlusNo ;
         aps_plus_result_dir :=
           dir ;
-        aps_plus_result_aps :=
-          DataBinop DataPlus acc' dir ;
+        aps_plus_result_aps ς :=
+          DataBinop DataPlus acc' (dir ς) ;
       |}
   | DataUnop op e =>
-      let res := aps_plus_compile_expr' ξ acc ς e in
-      let dir := DataUnop op res.(aps_plus_result_dir) in
+      let res := aps_plus_compile_expr ξ acc e in
+      let dir ς := DataUnop op (res.(aps_plus_result_dir) ς) in
       {|aps_plus_result_hint :=
           ApsPlusNo ;
         aps_plus_result_dir :=
           dir ;
-        aps_plus_result_aps :=
-          DataBinop DataPlus acc' dir ;
+        aps_plus_result_aps ς :=
+          DataBinop DataPlus acc' (dir ς) ;
       |}
   | DataBinop DataPlus (DataVal (DataInt n)) e =>
-      let res := aps_plus_compile_expr' ξ 0 ς e in
+      let res := aps_plus_compile_expr ξ 0 e in
       if decide (ApsPlusMaybe ⊑ res.(aps_plus_result_hint)) then
-        let res := aps_plus_compile_expr' ξ 0 (ς >> ren (+1)) e in
         {|aps_plus_result_hint :=
             res.(aps_plus_result_hint) ;
-          aps_plus_result_dir :=
+          aps_plus_result_dir ς :=
             DataLet (DataVal $ DataInt n) $
-            res.(aps_plus_result_aps) ;
-          aps_plus_result_aps :=
+            res.(aps_plus_result_aps) (ς >> ren (+1))  ;
+          aps_plus_result_aps ς :=
             DataLet (DataBinop DataPlus acc' (DataVal $ DataInt n)) $
-            res.(aps_plus_result_aps) ;
+            res.(aps_plus_result_aps) (ς >> ren (+1)) ;
         |}
       else
-        let dir := DataBinop DataPlus (DataVal (DataInt n)) res.(aps_plus_result_dir) in
+        let dir ς := DataBinop DataPlus (DataVal (DataInt n)) (res.(aps_plus_result_dir) ς) in
         {|aps_plus_result_hint :=
             ApsPlusNo ;
           aps_plus_result_dir :=
             dir ;
-          aps_plus_result_aps :=
-            DataBinop DataPlus acc' dir ;
+          aps_plus_result_aps ς :=
+            DataBinop DataPlus acc' (dir ς) ;
         |}
   (* | DataBinop DataPlus e (DataVal (DataInt n)) => *)
-  (*     let res := aps_plus_compile_expr' ξ 0 ς e in *)
+  (*     let res := aps_plus_compile_expr ξ 0 e in *)
   (*     if decide (ApsPlusMaybe ⊑ res.(aps_plus_result_hint)) then *)
-  (*       let res := aps_plus_compile_expr' ξ 0 (ς >> ren (+1)) e in *)
   (*       {|aps_plus_result_hint := *)
   (*           res.(aps_plus_result_hint) ; *)
-  (*         aps_plus_result_dir := *)
+  (*         aps_plus_result_dir ς := *)
   (*           DataLet (DataVal $ DataInt n) $ *)
-  (*           res.(aps_plus_result_aps) ; *)
-  (*         aps_plus_result_aps := *)
+  (*           res.(aps_plus_result_aps) (ς >> ren (+1)) ; *)
+  (*         aps_plus_result_aps ς := *)
   (*           DataLet (DataBinop DataPlus acc' (DataVal $ DataInt n)) $ *)
-  (*           res.(aps_plus_result_aps) ; *)
+  (*           res.(aps_plus_result_aps) (ς >> ren (+1)) ; *)
   (*       |} *)
   (*     else *)
-  (*       let dir := DataBinop DataPlus res.(aps_plus_result_dir) (DataVal (DataInt n)) in *)
+  (*       let dir ς := DataBinop DataPlus (res.(aps_plus_result_dir) ς) (DataVal (DataInt n)) in *)
   (*       {|aps_plus_result_hint := *)
   (*           ApsPlusNo ; *)
   (*         aps_plus_result_dir := *)
   (*           dir ; *)
-  (*         aps_plus_result_aps := *)
-  (*           DataBinop DataPlus acc' dir ; *)
+  (*         aps_plus_result_aps ς := *)
+  (*           DataBinop DataPlus acc' (dir ς) ; *)
   (*       |} *)
   | DataBinop op e1 e2 =>
-      let res1 := aps_plus_compile_expr' ξ acc ς e1 in
-      let res2 := aps_plus_compile_expr' ξ acc ς e2 in
-      let dir := DataBinop op res1.(aps_plus_result_dir) res2.(aps_plus_result_dir) in
+      let res1 := aps_plus_compile_expr ξ acc e1 in
+      let res2 := aps_plus_compile_expr ξ acc e2 in
+      let dir ς := DataBinop op (res1.(aps_plus_result_dir) ς) (res2.(aps_plus_result_dir) ς) in
       {|aps_plus_result_hint :=
           ApsPlusNo ;
         aps_plus_result_dir :=
           dir ;
-        aps_plus_result_aps :=
-          DataBinop DataPlus acc' dir ;
+        aps_plus_result_aps ς :=
+          DataBinop DataPlus acc' (dir ς) ;
       |}
   | DataBinopDet op e1 e2 =>
-      let res1 := aps_plus_compile_expr' ξ acc ς e1 in
-      let res2 := aps_plus_compile_expr' ξ acc ς e2 in
-      let dir := DataBinopDet op res1.(aps_plus_result_dir) res2.(aps_plus_result_dir) in
+      let res1 := aps_plus_compile_expr ξ acc e1 in
+      let res2 := aps_plus_compile_expr ξ acc e2 in
+      let dir ς := DataBinopDet op (res1.(aps_plus_result_dir) ς) (res2.(aps_plus_result_dir) ς) in
       {|aps_plus_result_hint :=
           ApsPlusNo ;
         aps_plus_result_dir :=
           dir ;
-        aps_plus_result_aps :=
-          DataBinop DataPlus acc' dir ;
+        aps_plus_result_aps ς :=
+          DataBinop DataPlus acc' (dir ς) ;
       |}
   | DataIf e0 e1 e2 =>
-      let res0 := aps_plus_compile_expr' ξ acc ς e0 in
-      let res1 := aps_plus_compile_expr' ξ acc ς e1 in
-      let res2 := aps_plus_compile_expr' ξ acc ς e2 in
+      let res0 := aps_plus_compile_expr ξ acc e0 in
+      let res1 := aps_plus_compile_expr ξ acc e1 in
+      let res2 := aps_plus_compile_expr ξ acc e2 in
       {|aps_plus_result_hint :=
           res1.(aps_plus_result_hint) ⊔ res2.(aps_plus_result_hint) ;
-        aps_plus_result_dir :=
-          DataIf res0.(aps_plus_result_dir) res1.(aps_plus_result_dir) res2.(aps_plus_result_dir) ;
-        aps_plus_result_aps :=
-          DataIf res0.(aps_plus_result_dir) res1.(aps_plus_result_aps) res2.(aps_plus_result_aps) ;
+        aps_plus_result_dir ς :=
+          DataIf (res0.(aps_plus_result_dir) ς) (res1.(aps_plus_result_dir) ς) (res2.(aps_plus_result_dir) ς) ;
+        aps_plus_result_aps ς :=
+          DataIf (res0.(aps_plus_result_dir) ς) (res1.(aps_plus_result_aps) ς) (res2.(aps_plus_result_aps) ς) ;
       |}
   | DataBlock tag e1 e2 =>
-      let res1 := aps_plus_compile_expr' ξ acc ς e1 in
-      let res2 := aps_plus_compile_expr' ξ acc ς e2 in
-      let dir := DataBlock tag res1.(aps_plus_result_dir) res2.(aps_plus_result_dir) in
+      let res1 := aps_plus_compile_expr ξ acc e1 in
+      let res2 := aps_plus_compile_expr ξ acc e2 in
+      let dir ς := DataBlock tag (res1.(aps_plus_result_dir) ς) (res2.(aps_plus_result_dir) ς) in
       {|aps_plus_result_hint :=
           ApsPlusNo ;
         aps_plus_result_dir :=
           dir ;
-        aps_plus_result_aps :=
-          DataBinop DataPlus acc' dir ;
+        aps_plus_result_aps ς :=
+          DataBinop DataPlus acc' (dir ς) ;
       |}
   | DataBlockDet tag e1 e2 =>
-      let res1 := aps_plus_compile_expr' ξ acc ς e1 in
-      let res2 := aps_plus_compile_expr' ξ acc ς e2 in
-      let dir := DataBlockDet tag res1.(aps_plus_result_dir) res2.(aps_plus_result_dir) in
+      let res1 := aps_plus_compile_expr ξ acc e1 in
+      let res2 := aps_plus_compile_expr ξ acc e2 in
+      let dir ς := DataBlockDet tag (res1.(aps_plus_result_dir) ς) (res2.(aps_plus_result_dir) ς) in
       {|aps_plus_result_hint :=
           ApsPlusNo ;
         aps_plus_result_dir :=
           dir ;
-        aps_plus_result_aps :=
-          DataBinop DataPlus acc' dir ;
+        aps_plus_result_aps ς :=
+          DataBinop DataPlus acc' (dir ς) ;
       |}
   | DataLoad e1 e2 =>
-      let res1 := aps_plus_compile_expr' ξ acc ς e1 in
-      let res2 := aps_plus_compile_expr' ξ acc ς e2 in
-      let dir := DataLoad res1.(aps_plus_result_dir) res2.(aps_plus_result_dir) in
+      let res1 := aps_plus_compile_expr ξ acc e1 in
+      let res2 := aps_plus_compile_expr ξ acc e2 in
+      let dir ς := DataLoad (res1.(aps_plus_result_dir) ς) (res2.(aps_plus_result_dir) ς) in
       {|aps_plus_result_hint :=
           ApsPlusNo ;
         aps_plus_result_dir :=
           dir ;
-        aps_plus_result_aps :=
-          DataBinop DataPlus acc' dir ;
+        aps_plus_result_aps ς :=
+          DataBinop DataPlus acc' (dir ς) ;
       |}
   | DataStore e1 e2 e3 =>
-      let res1 := aps_plus_compile_expr' ξ acc ς e1 in
-      let res2 := aps_plus_compile_expr' ξ acc ς e2 in
-      let res3 := aps_plus_compile_expr' ξ acc ς e3 in
-      let dir := DataStore res1.(aps_plus_result_dir) res2.(aps_plus_result_dir) res3.(aps_plus_result_dir) in
+      let res1 := aps_plus_compile_expr ξ acc e1 in
+      let res2 := aps_plus_compile_expr ξ acc e2 in
+      let res3 := aps_plus_compile_expr ξ acc e3 in
+      let dir ς := DataStore (res1.(aps_plus_result_dir) ς) (res2.(aps_plus_result_dir) ς) (res3.(aps_plus_result_dir) ς) in
       {|aps_plus_result_hint :=
           ApsPlusNo ;
         aps_plus_result_dir :=
           dir ;
-        aps_plus_result_aps :=
-          DataBinop DataPlus acc' dir ;
+        aps_plus_result_aps ς :=
+          DataBinop DataPlus acc' (dir ς) ;
       |}
   end.
-#[global] Arguments aps_plus_compile_expr' _ _ _ !_ / : assert.
-
-Definition aps_plus_compile_expr ξ acc e :=
-  aps_plus_compile_expr' ξ acc ids e.
+#[global] Arguments aps_plus_compile_expr _ _ !_ / : assert.
 
 Definition aps_plus_compute_mapping' progₛ : aps_plus_mapping * _ :=
   map_fold (λ func defₛ '(ξ, img),
@@ -278,7 +273,7 @@ Definition aps_plus_compile' progₛ ξ :=
         {|data_definition_annot :=
             annot ;
           data_definition_body :=
-            res.(aps_plus_result_dir) ;
+            res.(aps_plus_result_dir) ids ;
         |}
       ]> progₜ
     in
@@ -293,7 +288,7 @@ Definition aps_plus_compile' progₛ ξ :=
               data_definition_body :=
                 DataLet (DataLoad (DataVar 0) (DataVal $ DataIndex DataOne)) $
                 DataLet (DataLoad (DataVar 1) (DataVal $ DataIndex DataTwo)) $
-                res.(aps_plus_result_aps) ;
+                res.(aps_plus_result_aps) ids ;
             |}
           ]> progₜ
       end
@@ -303,16 +298,16 @@ Definition aps_plus_compile' progₛ ξ :=
 Definition aps_plus_compile progₛ :=
   aps_plus_compile' progₛ (aps_plus_compute_mapping progₛ).
 
-Lemma aps_plus_compile_expr'_sound ξ acc ς e :
-  let res := aps_plus_compile_expr' ξ acc ς e in
-  aps_plus_expr_dir ξ e.[ς] res.(aps_plus_result_dir) ∧
-  aps_plus_expr_aps ξ (DataVar acc) e.[ς] res.(aps_plus_result_aps).
+Lemma aps_plus_compile_expr_sound' ξ acc ς e :
+  let res := aps_plus_compile_expr ξ acc e in
+  aps_plus_expr_dir ξ e.[ς] (res.(aps_plus_result_dir) ς) ∧
+  aps_plus_expr_aps ξ (DataVar acc) e.[ς] (res.(aps_plus_result_aps) ς).
 Proof.
   move: acc ς. induction e as [| | | e1 | | op e1 ? e2 | | | | | |] => acc ς res /=.
   - auto with aps_plus.
   - auto with aps_plus.
   - naive_solver eauto with aps_plus.
-  - rewrite {}/res /aps_plus_compile_expr' -/aps_plus_compile_expr'.
+  - rewrite {}/res /aps_plus_compile_expr -/aps_plus_compile_expr.
     destruct e1 as [[| | | | | | func annot] | | | | | | | | | | |].
     all: try naive_solver auto with aps_plus.
     destruct (ξ !! func) as [func_aps |] eqn:?.
@@ -337,18 +332,18 @@ Proof.
 Qed.
 Lemma aps_plus_compile_expr_sound ξ acc e :
   let res := aps_plus_compile_expr ξ acc e in
-  aps_plus_expr_dir ξ e res.(aps_plus_result_dir) ∧
-  aps_plus_expr_aps ξ (DataVar acc) e res.(aps_plus_result_aps).
+  aps_plus_expr_dir ξ e (res.(aps_plus_result_dir) ids) ∧
+  aps_plus_expr_aps ξ (DataVar acc) e (res.(aps_plus_result_aps) ids).
 Proof.
-  rewrite -{-1}(subst_id e). apply aps_plus_compile_expr'_sound.
+  rewrite -{-1}(subst_id e). apply aps_plus_compile_expr_sound'.
 Qed.
 Lemma aps_plus_compile_expr_sound_dir ξ acc e :
-  aps_plus_expr_dir ξ e (aps_plus_compile_expr ξ acc e).(aps_plus_result_dir).
+  aps_plus_expr_dir ξ e ((aps_plus_compile_expr ξ acc e).(aps_plus_result_dir) ids).
 Proof.
   apply aps_plus_compile_expr_sound.
 Qed.
 Lemma aps_plus_compile_expr_sound_aps ξ acc e :
-  aps_plus_expr_aps ξ (DataVar acc) e (aps_plus_compile_expr ξ acc e).(aps_plus_result_aps).
+  aps_plus_expr_aps ξ (DataVar acc) e ((aps_plus_compile_expr ξ acc e).(aps_plus_result_aps) ids).
 Proof.
   apply aps_plus_compile_expr_sound.
 Qed.

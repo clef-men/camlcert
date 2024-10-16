@@ -52,194 +52,189 @@ Definition tmc_hint_le hint1 hint2 :=
 
 Record tmc_result := {
   tmc_result_hint : tmc_hint ;
-  tmc_result_dir : data_expr ;
-  tmc_result_dps : data_expr ;
+  tmc_result_dir : (var → data_expr) → data_expr ;
+  tmc_result_dps : (var → data_expr) → data_expr ;
 }.
 
-Fixpoint tmc_compile_expr' ξ dst idx ς e :=
+Fixpoint tmc_compile_expr ξ dst idx e :=
   let dst' := DataVar dst in
   match e with
   | DataVal _ =>
       let dir := e in
       {|tmc_result_hint :=
           TmcNo ;
-        tmc_result_dir :=
+        tmc_result_dir ς :=
           dir ;
-        tmc_result_dps :=
+        tmc_result_dps ς :=
           DataStore dst' idx dir ;
       |}
   | DataVar x =>
-      let dir := ς x in
+      let dir ς := ς x in
       {|tmc_result_hint :=
           TmcNo ;
         tmc_result_dir :=
           dir ;
-        tmc_result_dps :=
-          DataStore dst' idx dir ;
+        tmc_result_dps ς :=
+          DataStore dst' idx (dir ς) ;
       |}
   | DataLet e1 e2 =>
-      let res1 := tmc_compile_expr' ξ dst idx ς e1 in
-      let res2 := tmc_compile_expr' ξ (S dst) idx.[ren (+1)] (up ς) e2 in
+      let res1 := tmc_compile_expr ξ dst idx e1 in
+      let res2 := tmc_compile_expr ξ (S dst) idx.[ren (+1)] e2 in
       {|tmc_result_hint :=
           res2.(tmc_result_hint) ;
-        tmc_result_dir :=
-          DataLet res1.(tmc_result_dir) res2.(tmc_result_dir) ;
-        tmc_result_dps :=
-          DataLet res1.(tmc_result_dir) res2.(tmc_result_dps) ;
+        tmc_result_dir ς :=
+          DataLet (res1.(tmc_result_dir) ς) (res2.(tmc_result_dir) (up ς)) ;
+        tmc_result_dps ς :=
+          DataLet (res1.(tmc_result_dir) ς) (res2.(tmc_result_dps) (up ς)) ;
       |}
   | DataCall (DataVal (DataFunc func annot)) e =>
-      let res := tmc_compile_expr' ξ dst idx ς e in
-      let dir := DataCall (DataVal $ DataFunc func annot) res.(tmc_result_dir) in
+      let res := tmc_compile_expr ξ dst idx e in
+      let dir ς := DataCall (DataVal $ DataFunc func annot) (res.(tmc_result_dir) ς) in
       match ξ !! func with
       | None =>
           {|tmc_result_hint :=
               TmcNo ;
             tmc_result_dir :=
               dir ;
-            tmc_result_dps :=
-              DataStore dst' idx dir ;
+            tmc_result_dps ς :=
+              DataStore dst' idx (dir ς) ;
           |}
       | Some func_dps =>
           {|tmc_result_hint :=
               if decide (tmc_annotation ∈ annot) then TmcYes else TmcMaybe ;
             tmc_result_dir :=
               dir ;
-            tmc_result_dps :=
-              DataLet res.(tmc_result_dir) $
+            tmc_result_dps ς :=
+              DataLet (res.(tmc_result_dir) ς) $
               DataCall (DataVal $ DataFunc func_dps annot) (DataBlock data_tag_pair (DataBlock data_tag_pair (DataVar $ S dst) idx.[ren (+1)]) (DataVar 0)) ;
           |}
       end
   | DataCall e1 e2 =>
-      let res1 := tmc_compile_expr' ξ dst idx ς e1 in
-      let res2 := tmc_compile_expr' ξ dst idx ς e2 in
-      let dir := DataCall res1.(tmc_result_dir) res2.(tmc_result_dir) in
+      let res1 := tmc_compile_expr ξ dst idx e1 in
+      let res2 := tmc_compile_expr ξ dst idx e2 in
+      let dir ς := DataCall (res1.(tmc_result_dir) ς) (res2.(tmc_result_dir) ς) in
       {|tmc_result_hint :=
           TmcNo ;
         tmc_result_dir :=
           dir ;
-        tmc_result_dps :=
-          DataStore dst' idx dir ;
+        tmc_result_dps ς :=
+          DataStore dst' idx (dir ς) ;
       |}
   | DataUnop op e =>
-      let res := tmc_compile_expr' ξ dst idx ς e in
-      let dir := DataUnop op res.(tmc_result_dir) in
+      let res := tmc_compile_expr ξ dst idx e in
+      let dir ς := DataUnop op (res.(tmc_result_dir) ς) in
       {|tmc_result_hint :=
           TmcNo ;
         tmc_result_dir :=
           dir ;
-        tmc_result_dps :=
-          DataStore dst' idx dir ;
+        tmc_result_dps ς :=
+          DataStore dst' idx (dir ς) ;
       |}
   | DataBinop op e1 e2 =>
-      let res1 := tmc_compile_expr' ξ dst idx ς e1 in
-      let res2 := tmc_compile_expr' ξ dst idx ς e2 in
-      let dir := DataBinop op res1.(tmc_result_dir) res2.(tmc_result_dir) in
+      let res1 := tmc_compile_expr ξ dst idx e1 in
+      let res2 := tmc_compile_expr ξ dst idx e2 in
+      let dir ς := DataBinop op (res1.(tmc_result_dir) ς) (res2.(tmc_result_dir) ς) in
       {|tmc_result_hint :=
           TmcNo ;
         tmc_result_dir :=
           dir ;
-        tmc_result_dps :=
-          DataStore dst' idx dir ;
+        tmc_result_dps ς :=
+          DataStore dst' idx (dir ς) ;
       |}
   | DataBinopDet op e1 e2 =>
-      let res1 := tmc_compile_expr' ξ dst idx ς e1 in
-      let res2 := tmc_compile_expr' ξ dst idx ς e2 in
-      let dir := DataBinopDet op res1.(tmc_result_dir) res2.(tmc_result_dir) in
+      let res1 := tmc_compile_expr ξ dst idx e1 in
+      let res2 := tmc_compile_expr ξ dst idx e2 in
+      let dir ς := DataBinopDet op (res1.(tmc_result_dir) ς) (res2.(tmc_result_dir) ς) in
       {|tmc_result_hint :=
           TmcNo ;
         tmc_result_dir :=
           dir ;
-        tmc_result_dps :=
-          DataStore dst' idx dir ;
+        tmc_result_dps ς :=
+          DataStore dst' idx (dir ς) ;
       |}
   | DataIf e0 e1 e2 =>
-      let res0 := tmc_compile_expr' ξ dst idx ς e0 in
-      let res1 := tmc_compile_expr' ξ dst idx ς e1 in
-      let res2 := tmc_compile_expr' ξ dst idx ς e2 in
+      let res0 := tmc_compile_expr ξ dst idx e0 in
+      let res1 := tmc_compile_expr ξ dst idx e1 in
+      let res2 := tmc_compile_expr ξ dst idx e2 in
       {|tmc_result_hint :=
           res1.(tmc_result_hint) ⊔ res2.(tmc_result_hint) ;
-        tmc_result_dir :=
-          DataIf res0.(tmc_result_dir) res1.(tmc_result_dir) res2.(tmc_result_dir) ;
-        tmc_result_dps :=
-          DataIf res0.(tmc_result_dir) res1.(tmc_result_dps) res2.(tmc_result_dps) ;
+        tmc_result_dir ς :=
+          DataIf (res0.(tmc_result_dir) ς) (res1.(tmc_result_dir) ς) (res2.(tmc_result_dir) ς) ;
+        tmc_result_dps ς :=
+          DataIf (res0.(tmc_result_dir) ς) (res1.(tmc_result_dps) ς) (res2.(tmc_result_dps) ς) ;
       |}
   | DataBlock tag e1 e2 =>
-      let res1 := tmc_compile_expr' ξ 0 (DataVal $ DataIndex DataOne) ς e1 in
-      let res2 := tmc_compile_expr' ξ 0 (DataVal $ DataIndex DataTwo) ς e2 in
+      let res1 := tmc_compile_expr ξ 0 (DataVal $ DataIndex DataOne) e1 in
+      let res2 := tmc_compile_expr ξ 0 (DataVal $ DataIndex DataTwo) e2 in
       if decide (res2.(tmc_result_hint) ⊔ TmcMaybe ⊑ res1.(tmc_result_hint)) then
-        let res1 := tmc_compile_expr' ξ 0 (DataVal $ DataIndex DataOne) (ς >> ren (+1)) e1 in
         {|tmc_result_hint :=
             res1.(tmc_result_hint) ;
-          tmc_result_dir :=
-            DataLet (DataBlock tag (DataVal DataUnit) res2.(tmc_result_dir)) $
-            DataLet res1.(tmc_result_dps) $
+          tmc_result_dir ς :=
+            DataLet (DataBlock tag (DataVal DataUnit) (res2.(tmc_result_dir) ς)) $
+            DataLet (res1.(tmc_result_dps) (ς >> ren (+1))) $
             DataVar 1 ;
-          tmc_result_dps :=
-            DataLet (DataBlock tag (DataVal DataUnit) res2.(tmc_result_dir)) $
+          tmc_result_dps ς :=
+            DataLet (DataBlock tag (DataVal DataUnit) (res2.(tmc_result_dir) ς)) $
             DataLet (DataStore (DataVar $ S dst) idx.[ren (+1)] (DataVar 0)) $
-            res1.(tmc_result_dps).[ren (+1)] ;
+            (res1.(tmc_result_dps) (ς >> ren (+1))).[ren (+1)] ;
         |}
       else if decide (TmcMaybe ⊑ res2.(tmc_result_hint)) then
-        let res2 := tmc_compile_expr' ξ 0 (DataVal $ DataIndex DataTwo) (ς >> ren (+1)) e2 in
         {|tmc_result_hint :=
             res2.(tmc_result_hint) ;
-          tmc_result_dir :=
-            DataLet (DataBlock tag res1.(tmc_result_dir) (DataVal DataUnit)) $
-            DataLet res2.(tmc_result_dps) $
+          tmc_result_dir ς :=
+            DataLet (DataBlock tag (res1.(tmc_result_dir) ς) (DataVal DataUnit)) $
+            DataLet (res2.(tmc_result_dps) (ς >> ren (+1))) $
             DataVar 1 ;
-          tmc_result_dps :=
-            DataLet (DataBlock tag res1.(tmc_result_dir) (DataVal DataUnit)) $
+          tmc_result_dps ς :=
+            DataLet (DataBlock tag (res1.(tmc_result_dir) ς) (DataVal DataUnit)) $
             DataLet (DataStore (DataVar $ S dst) idx.[ren (+1)] (DataVar 0)) $
-            res2.(tmc_result_dps).[ren (+1)] ;
+            (res2.(tmc_result_dps) (ς >> ren (+1))).[ren (+1)] ;
         |}
       else
-        let dir := DataBlock tag res1.(tmc_result_dir) res2.(tmc_result_dir) in
+        let dir ς := DataBlock tag (res1.(tmc_result_dir) ς) (res2.(tmc_result_dir) ς) in
         {|tmc_result_hint :=
             TmcNo ;
           tmc_result_dir :=
             dir ;
-          tmc_result_dps :=
-            DataStore dst' idx dir ;
+          tmc_result_dps ς :=
+            DataStore dst' idx (dir ς) ;
         |}
   | DataBlockDet tag e1 e2 =>
-      let res1 := tmc_compile_expr' ξ dst idx ς e1 in
-      let res2 := tmc_compile_expr' ξ dst idx ς e2 in
-      let dir := DataBlockDet tag res1.(tmc_result_dir) res2.(tmc_result_dir) in
+      let res1 := tmc_compile_expr ξ dst idx e1 in
+      let res2 := tmc_compile_expr ξ dst idx e2 in
+      let dir ς := DataBlockDet tag (res1.(tmc_result_dir) ς) (res2.(tmc_result_dir) ς) in
       {|tmc_result_hint :=
           TmcNo ;
         tmc_result_dir :=
           dir ;
-        tmc_result_dps :=
-          DataStore dst' idx dir ;
+        tmc_result_dps ς :=
+          DataStore dst' idx (dir ς) ;
       |}
   | DataLoad e1 e2 =>
-      let res1 := tmc_compile_expr' ξ dst idx ς e1 in
-      let res2 := tmc_compile_expr' ξ dst idx ς e2 in
-      let dir := DataLoad res1.(tmc_result_dir) res2.(tmc_result_dir) in
+      let res1 := tmc_compile_expr ξ dst idx e1 in
+      let res2 := tmc_compile_expr ξ dst idx e2 in
+      let dir ς := DataLoad (res1.(tmc_result_dir) ς) (res2.(tmc_result_dir) ς) in
       {|tmc_result_hint :=
           TmcNo ;
         tmc_result_dir :=
           dir ;
-        tmc_result_dps :=
-          DataStore dst' idx dir ;
+        tmc_result_dps ς :=
+          DataStore dst' idx (dir ς) ;
       |}
   | DataStore e1 e2 e3 =>
-      let res1 := tmc_compile_expr' ξ dst idx ς e1 in
-      let res2 := tmc_compile_expr' ξ dst idx ς e2 in
-      let res3 := tmc_compile_expr' ξ dst idx ς e3 in
-      let dir := DataStore res1.(tmc_result_dir) res2.(tmc_result_dir) res3.(tmc_result_dir) in
+      let res1 := tmc_compile_expr ξ dst idx e1 in
+      let res2 := tmc_compile_expr ξ dst idx e2 in
+      let res3 := tmc_compile_expr ξ dst idx e3 in
+      let dir ς := DataStore (res1.(tmc_result_dir) ς) (res2.(tmc_result_dir) ς) (res3.(tmc_result_dir) ς) in
       {|tmc_result_hint :=
           TmcNo ;
         tmc_result_dir :=
           dir ;
-        tmc_result_dps :=
-          DataStore dst' idx dir ;
+        tmc_result_dps ς :=
+          DataStore dst' idx (dir ς) ;
       |}
   end.
-#[global] Arguments tmc_compile_expr' _ _ _ _ !_ / : assert.
-
-Definition tmc_compile_expr ξ dst idx e :=
-  tmc_compile_expr' ξ dst idx ids e.
+#[global] Arguments tmc_compile_expr _ _ _ !_ / : assert.
 
 Definition tmc_compute_mapping' progₛ : tmc_mapping * _ :=
   map_fold (λ func defₛ '(ξ, img),
@@ -261,7 +256,7 @@ Definition tmc_compile' progₛ ξ :=
         {|data_definition_annot :=
             annot ;
           data_definition_body :=
-            res.(tmc_result_dir) ;
+            res.(tmc_result_dir) ids ;
         |}
       ]> progₜ
     in
@@ -278,7 +273,7 @@ Definition tmc_compile' progₛ ξ :=
                 DataLet (DataLoad (DataVar 0) (DataVal $ DataIndex DataTwo)) $
                 DataLet (DataLoad (DataVar 1) (DataVal $ DataIndex DataOne)) $
                 DataLet (DataLoad (DataVar 3) (DataVal $ DataIndex DataTwo)) $
-                res.(tmc_result_dps) ;
+                res.(tmc_result_dps) ids ;
             |}
           ]> progₜ
       end
@@ -288,16 +283,16 @@ Definition tmc_compile' progₛ ξ :=
 Definition tmc_compile progₛ :=
   tmc_compile' progₛ (tmc_compute_mapping progₛ).
 
-Lemma tmc_compile_expr'_sound ξ dst idx ς e :
-  let res := tmc_compile_expr' ξ dst idx ς e in
-  tmc_expr_dir ξ e.[ς] res.(tmc_result_dir) ∧
-  tmc_expr_dps ξ (DataVar dst) idx e.[ς] res.(tmc_result_dps).
+Lemma tmc_compile_expr_sound' ξ dst idx ς e :
+  let res := tmc_compile_expr ξ dst idx e in
+  tmc_expr_dir ξ e.[ς] (res.(tmc_result_dir) ς) ∧
+  tmc_expr_dps ξ (DataVar dst) idx e.[ς] (res.(tmc_result_dps) ς).
 Proof.
   move: dst idx ς. induction e as [| | | e1 | | | | | | | |] => dst idx ς res /=.
   - auto with tmc.
   - auto with tmc.
   - split; constructor; naive_solver.
-  - rewrite {}/res /tmc_compile_expr' -/tmc_compile_expr'.
+  - rewrite {}/res /tmc_compile_expr -/tmc_compile_expr.
     destruct e1 as [[| | | | | | func annot] | | | | | | | | | | |].
     all: try (split; constructor; naive_solver auto with tmc).
     destruct (ξ !! func) as [func_dps |] eqn:?.
@@ -317,18 +312,18 @@ Proof.
 Qed.
 Lemma tmc_compile_expr_sound ξ dst idx e :
   let res := tmc_compile_expr ξ dst idx e in
-  tmc_expr_dir ξ e res.(tmc_result_dir) ∧
-  tmc_expr_dps ξ (DataVar dst) idx e res.(tmc_result_dps).
+  tmc_expr_dir ξ e (res.(tmc_result_dir) ids) ∧
+  tmc_expr_dps ξ (DataVar dst) idx e (res.(tmc_result_dps) ids).
 Proof.
-  rewrite -{-1}(subst_id e). apply tmc_compile_expr'_sound.
+  rewrite -{-1}(subst_id e). apply tmc_compile_expr_sound'.
 Qed.
 Lemma tmc_compile_expr_sound_dir ξ dst idx e :
-  tmc_expr_dir ξ e (tmc_compile_expr ξ dst idx e).(tmc_result_dir).
+  tmc_expr_dir ξ e ((tmc_compile_expr ξ dst idx e).(tmc_result_dir) ids).
 Proof.
   apply tmc_compile_expr_sound.
 Qed.
 Lemma tmc_compile_expr_sound_dps ξ dst idx e :
-  tmc_expr_dps ξ (DataVar dst) idx e (tmc_compile_expr ξ dst idx e).(tmc_result_dps).
+  tmc_expr_dps ξ (DataVar dst) idx e ((tmc_compile_expr ξ dst idx e).(tmc_result_dps) ids).
 Proof.
   apply tmc_compile_expr_sound.
 Qed.
