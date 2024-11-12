@@ -9,6 +9,7 @@ maintainer:
 authors: [
   "Clément Allain"
 ]
+license: "ISC"
 homepage:
   "https://github.com/clef-men/camlcert"
 bug-reports:
