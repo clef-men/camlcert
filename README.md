@@ -1,3 +1,8 @@
+This artifact is available online at:
+
+- https://github.com/clef-men/camlcert/tree/popl2025
+- https://doi.org/10.5281/zenodo.13937564
+
 ## Building
 
 First, you need to install [opam](https://opam.ocaml.org/) (>= 2.0).
@@ -8,12 +13,17 @@ To make sure it is up-to-date, run:
 opam update --all --repositories
 ```
 
-To compile Coq proofs, run the following commands:
+Then, create a new local `opam` switch and install dependencies (precise versions are listed in [`coq-camlcert.opam`](coq-camlcert.opam)) with:
 
 ```
 opam switch create . --deps-only --repos default,coq-released=https://coq.inria.fr/opam/released,iris-dev=git+https://gitlab.mpi-sws.org/iris/opam.git --yes
 eval $(opam env --switch=. --set-switch)
-make
+```
+
+Finally, to compile Coq proofs, run:
+
+```
+make -j
 ```
 
 ## Architecture
